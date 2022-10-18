@@ -1810,10 +1810,11 @@
 								]; */
 
 				}	
-
+				
 				$infos['assign_to'] = $employee_name->bill_to;
 				$infos['reference_number'] = $arf_header->reference_number;
-				$infos['systemlink'] = "<a href='https://localhost/dam/public/admin/receiving_asset/getADFStatus/$arf_header->id'>I have read and agree to the terms of use, and have received this item.</a>";
+				$infos['systemlink'] = "<a href='http://dam-test.digitstrading.ph/public/admin/receiving_asset/getADFStatus/$arf_header->id'>I have read and agree to the terms of use, and have received this item.</a>";
+				//$infos['systemlink'] = "<a href='https://localhost/dam/public/admin/receiving_asset/getADFStatus/$arf_header->id'>I have read and agree to the terms of use, and have received this item.</a>";
 				$infos['mo_reference_number'] = '<p>'. implode("<br>", $mo_reference_number) .'</p>';
 				$infos['asset_code'] = '<p>'. implode("<br>", $asset_code) .'</p>';
 				$infos['digits_code'] = '<p>'. implode("<br>", $digits_code) .'</p>';
