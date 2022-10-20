@@ -8,6 +8,7 @@
 	use App\BodyRequest;
 	use App\ApprovalMatrix;
 	use App\StatusMatrix;
+	use App\CommentsGoodDefect;
 	use App\MoveOrder;
 	//use Illuminate\Http\Request;
 	//use Illuminate\Support\Facades\Input;
@@ -541,6 +542,11 @@
 
 			$defective_text 			= $fields['defective_text'];
 
+			//good and defect value
+			$arf_number = $fields['arf_number'];
+			$digits_code = $fields['digits_code'];
+			$asset_code = $fields['asset_code'];
+			$comments = $fields['comments'];
 
 			$HeaderID 					= MoveOrder::where('id', $id)->first();
 
@@ -657,6 +663,18 @@
 			}
 			*/
 
+			//save defect and good comments
+			CommentsGoodDefect::Create(
+				[
+					'arf_number' => $arf_number,
+					'digits_code' => $digits_code,
+					'asset_code' => $asset_code,
+					'comments' => $comments, 
+					'users' => CRUDBooster::myId(),
+					'created_at' => date('Y-m-d H:i:s'),
+				]
+			);   
+
 
 	    }
 
@@ -758,8 +776,6 @@
 						)
 				->where('header_request.id', $HeaderID->header_request_id)->first();
 
-
-
 			$data['MoveOrder'] = MoveOrder::
 				select(
 				  'mo_body_request.*',
@@ -773,6 +789,16 @@
 				->get();	
 
 			$data['HeaderID'] = MoveOrder::where('id', $id)->first();
+
+			$data['comments'] = CommentsGoodDefect::
+			leftjoin('cms_users', 'comments_good_defect_tbl.users', '=', 'cms_users.id')
+			->select(
+				'comments_good_defect_tbl.*',
+				'comments_good_defect_tbl.id as bodyId',
+				'cms_users.name'
+			  )
+			  ->where('comments_good_defect_tbl.arf_number', $data['Header']->reference_number)
+			  ->get();
 
 			return $this->view("assets.picking-request", $data);
 		}

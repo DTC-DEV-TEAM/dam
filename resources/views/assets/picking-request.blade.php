@@ -1,4 +1,25 @@
 @extends('crudbooster::admin_template')
+    @push('head')
+        <style type="text/css">   
+            .comment_div {
+                box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+                background: #f5f5f5;
+                height: 300px;
+                padding: 10px;
+                overflow-y: scroll;
+                word-wrap: break-word;
+            }
+            .text-comment{
+                display: block;
+                background: #fff;
+                padding:5px;
+                border-radius: 2px;
+                box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+                margin-bottom:0;
+            }
+            
+        </style>
+    @endpush
 @section('content')
 
 @if(g('return_url'))
@@ -143,6 +164,10 @@
                                                                             <input type="hidden" name="good_text[]" id="good_text{{$tableRow1}}" value="0" />
 
                                                                             <input type="checkbox" name="good[]" id="good{{$tableRow1}}" class="good" required data-id="{{$tableRow1}}" value="0"/>
+                                                                            <!-- for good and defect comment -->
+                                                                            <input type="hidden" name="arf_number" id="arf_number" value="{{$Header->reference_number}}" />
+                                                                            <input type="hidden" name="digits_code" id="digits_code" value="{{$rowresult->digits_code}}" />
+                                                                            <input type="hidden" name="asset_code" id="asset_code" value="{{$rowresult->asset_code}}" />
                                                                         </td>
 
                                                                         <td style="text-align:center" height="10">
@@ -266,10 +291,42 @@
                 </div>
 
             @endif 
+           
+             <!-- Comment Section -->
+            <div class="row">  
+                <div class="col-md-12">
+                <hr>
+                 <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Comments:</label>
+                        <div class="comment_div">
+                            <span class="text-comment">
+                                @foreach($comments as $comment)
+                                <p style="margin-top:5px"><strong>{{ $comment->name }}:</strong>  {{ $comment->comments }} </p>
+                                <p style="text-align:right; font-size:10px; font-style: italic; border-bottom:1px solid #d2d6de"> {{ $comment->created_at }} </p>
+                                @endforeach
+                            </span>
+                        </div>
+                        <br>
+                        <select required selected data-placeholder="-- Please Select Defect Comments --" id="comments" name="comments" class="form-select select2" style="width:100%;">
+                            <option value=""></option>
+                            <option value="Screen light fails. ..">Screen light fails. ..</option>
+                            <option value="Your computer does not turn on. ...">Your computer does not turn on. ...</option>
+                            <option value="The screen is blank. ...">The screen is blank. ...</option>
+                            <option value="Laptop shuts down or freezes. ...">Laptop shuts down or freezes. ...</option>
+                            <option value="The battery does not charge properly. ...">The battery does not charge properly. ...</option>
+                            <option value="Screen light fails. ...">Screen light fails. ...</option>
+                            <option value="Freezing Of Mouse Cursor">Freezing Of Mouse Cursor</option>
+                            <option value="Faulty Batteries">Faulty Batteries</option>
 
- 
+                        </select>
+                        <!-- <textarea placeholder="Comment ..." rows="3" class="form-control" name="comments"></textarea> -->
+                    </div>
+                 </div>
+                </div>
+            </div>  
         </div>
-
+      
 
         <div class='panel-footer'>
 
@@ -281,6 +338,8 @@
         
         </div>
 
+         
+
     </form>
 
 
@@ -290,7 +349,7 @@
 @endsection
 @push('bottom')
 <script type="text/javascript">
-
+$('.select2').select2({placeholder_text_single : "-- Select --"})
     function preventBack() {
         window.history.forward();
     }

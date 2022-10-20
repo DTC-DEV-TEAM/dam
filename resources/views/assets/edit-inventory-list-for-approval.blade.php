@@ -221,7 +221,7 @@
                             <td>{{$res->value}}</td>
                             <td>{{$res->quantity}}</td> 
                             <th>
-                                <input class="form-control serial_no" type="text" placeholder="Serial No (Include if available)" name="serial_no[]" style="width:100%" data-index="1" value="{{ $res->serial_no ? $res->serial_no : "" }}">
+                                <input class="form-control serial_no"  type="text" placeholder="Serial No (Put N/A if not applicable)" name="serial_no[]" style="width:100%" data-index="1" value="{{ $res->serial_no ? $res->serial_no : "" }}">
                             </th>    
                             <td>{{$res->warranty_coverage}}</td>                                                                                                                  
                             </tr>
@@ -397,6 +397,23 @@
                     }
                 }
 
+                 //each value validation
+                 var v = $("input[name^='serial_no']").length;
+                    var value = $("input[name^='serial_no']");
+                    for(i=0;i<v;i++){
+                        if(value.eq(i).val() == 0){
+                            swal({  
+                                    type: 'error',
+                                    title: 'Put N/A in Serial No if not available',
+                                    icon: 'error',
+                                    customClass: 'swal-wide'
+                                });
+                                event.preventDefault();
+                                return false;
+                        }
+                
+                }
+
                 //check existing
                 $.each(checkRowFinal, function(index, item) {
                     if($.inArray(item, data.items) != -1){
@@ -568,5 +585,10 @@
             location.reload();  
         }, 2000); 
     }
+
+    $('.serial_no').keyup(function() {
+			this.value = this.value.toLocaleUpperCase();
+	});
+
     </script>
 @endpush

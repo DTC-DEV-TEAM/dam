@@ -31,6 +31,22 @@
                     0% { transform: rotate(0deg); }
                     100% { transform: rotate(360deg); }
                 }
+            .comment_div {
+                box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+                background: #f5f5f5;
+                height: 300px;
+                padding: 10px;
+                overflow-y: scroll;
+                word-wrap: break-word;
+            }
+            .text-comment{
+                display: block;
+                background: #fff;
+                padding:5px;
+                border-radius: 2px;
+                box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+                margin-bottom:0;
+            }
             
         </style>
     @endpush
@@ -49,6 +65,8 @@
     <form action='{{CRUDBooster::mainpath('edit-save/'.$Body->id)}}' method="POST" id="EditInventoryForm" enctype="multipart/form-data">
         <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
         <input type="hidden" value="{{$Body->id}}" name="request_type_id" id="request_type_id">
+        <input type="hidden" value="{{$Body->digits_code}}" name="digits_code" id="digits_code">
+        <input type="hidden" value="{{$Body->asset_code}}" name="asset_code" id="asset_code">
 
         <div class='panel-body'>
         <div class="row">     
@@ -87,8 +105,38 @@
                        </div>
              </div>
             </div>
-                   
+            <br>
+            <!-- Comment Section -->
+            <div class="row">  
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Comments:</label>
+                        <div class="comment_div">
+                            <span class="text-comment">
+                            @foreach($comments as $comment)
+                            <p style="margin-top:5px"><strong>{{ $comment->name }}:</strong>  {{ $comment->comments }} </p>
+                            <p style="text-align:right; font-size:10px; font-style: italic; border-bottom:1px solid #d2d6de"> {{ $comment->created_at }} </p>
+                            @endforeach
+                            </span>
+                        </div>
+                        <br>
+                        <select required selected data-placeholder="-- Please Select Defect Comments --" id="comments" name="comments" class="form-select select2" style="width:100%;">
+                            <option value=""></option>
+                            <option value="Screen light fails. ..">Screen light fails. ..</option>
+                            <option value="Your computer does not turn on. ...">Your computer does not turn on. ...</option>
+                            <option value="The screen is blank. ...">The screen is blank. ...</option>
+                            <option value="Laptop shuts down or freezes. ...">Laptop shuts down or freezes. ...</option>
+                            <option value="The battery does not charge properly. ...">The battery does not charge properly. ...</option>
+                            <option value="Screen light fails. ...">Screen light fails. ...</option>
+                            <option value="Freezing Of Mouse Cursor">Freezing Of Mouse Cursor</option>
+                            <option value="Faulty Batteries">Faulty Batteries</option>
+                        </select>
+                        <!-- <textarea placeholder="Comment ..." rows="3" class="form-control" name="comments"></textarea> -->
+                    </div>
+                </div>
+            </div>  
         </div>
+        
 
         <div class='panel-footer'>
 
@@ -109,7 +157,13 @@
     <script type="text/javascript">
         $(document).ready(function() {
             $('.select2').select2({placeholder_text_single : "-- Select --"})
-
+            var item_condition = $('#item_condition').val().toLowerCase().replace(/\s/g, '');
+            console.log(item_condition);
+                if(item_condition == "defective"){
+                    $("#item_condition").prop('disabled', true);
+                }else{
+                    $("#item_condition").prop('disabled', false);
+                }
             $("#btnEditSubmit").click(function(event) {
             event.preventDefault();
                 swal({

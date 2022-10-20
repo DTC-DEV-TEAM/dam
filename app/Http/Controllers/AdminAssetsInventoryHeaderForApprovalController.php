@@ -120,7 +120,7 @@
 	        | 
 	        */
 	        $this->addaction = array();
-			if(CRUDBooster::myPrivilegeName() == "Asset Custodian" OR CRUDBooster::myPrivilegeName() == "Super Administrator"){ 
+			if(CRUDBooster::myPrivilegeName() == "Asset Custodian"){ 
 			    $this->addaction[] = ['url'=>CRUDBooster::mainpath('detail-view/[id]'),'icon'=>'fa fa-eye','color'=>'default'];
 			}else if(CRUDBooster::myPrivilegeName() == "IT" OR CRUDBooster::myPrivilegeName() == "Admin" OR CRUDBooster::myPrivilegeName() == "Super Administrator" ){
 				$for_approval = DB::table('statuses')->where('id', 20)->value('id');

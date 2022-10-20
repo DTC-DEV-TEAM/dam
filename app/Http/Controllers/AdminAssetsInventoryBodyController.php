@@ -7,6 +7,7 @@
 	use App\AssetsInventoryHeader;
 	use App\AssetsHeaderImages;
 	use App\AssetsInventoryBody;
+	use App\CommentsGoodDefect;
 	use Maatwebsite\Excel\Facades\Excel;
 	use PhpOffice\PhpSpreadsheet\Spreadsheet;
 	use PhpOffice\PhpSpreadsheet\Reader\Exception;
@@ -53,7 +54,7 @@
 			$this->col[] = ["label"=>"Item Condition","name"=>"item_condition"];
 			$this->col[] = ["label"=>"Item Description","name"=>"item_description"];
 			$this->col[] = ["label"=>"Value","name"=>"value","callback_php"=>'number_format($row->value)'];
-			// $this->col[] = ["label"=>"Item Type","name"=>"item_id","join"=>"assets,item_type"];
+			$this->col[] = ["label"=>"RR Date","name"=>"header_id","join"=>"assets_inventory_header,rr_date","visible" => false];
 			$this->col[] = ["label"=>"Quantity","name"=>"quantity"];
 			$this->col[] = ["label"=>"Date Created","name"=>"created_at"];
 			// $this->col[] = ["label"=>"Warranty Coverage Year","name"=>"warranty_coverage"];
@@ -360,12 +361,27 @@
 	    public function hook_before_edit(&$postdata,$id) {        
 	        $fields = Request::all();
 			$id =  $fields['request_type_id'];
+			$digits_code =  $fields['digits_code'];
+			$asset_code =  $fields['asset_code'];
 			$item_condition =  $fields['item_condition'];
+			$comments =  $fields['comments'];
 			DB::table('assets_inventory_body')->where('id', $id)
 			->update([
 				'item_condition' => $item_condition,
+				'statuses_id' => 23,
 				'updated_by' => CRUDBooster::myId()
 			]);
+
+			CommentsGoodDefect::Create(
+				[
+					'digits_code' => $digits_code,
+					'asset_code' => $asset_code,
+					'comments' => $comments, 
+					'users' => CRUDBooster::myId(),
+					'created_at' => date('Y-m-d H:i:s'),
+				]
+			);   
+			CRUDBooster::redirect(CRUDBooster::mainpath('edit/'.$id), trans("Edit Successfully!"), 'success');
 	    }
 
 	    /* 
@@ -433,7 +449,18 @@
 				'assets_inventory_body.*',
 				'assets_inventory_body.id as bodyId'
 			  )->where('assets_inventory_body.id', $id)->first();
-            //dd($data['Body']);
+
+			$data['comments'] = CommentsGoodDefect::
+			leftjoin('cms_users', 'comments_good_defect_tbl.users', '=', 'cms_users.id')
+			->select(
+				'comments_good_defect_tbl.*',
+				'comments_good_defect_tbl.id as bodyId',
+				'cms_users.name'
+			  )
+			  ->where('comments_good_defect_tbl.digits_code', $data['Body']->digits_code)
+			  ->where('comments_good_defect_tbl.asset_code', $data['Body']->asset_code)
+			  ->get();
+            //dd($data['comments']);
 			  return $this->view("assets.edit_assets_inventory", $data);
 		}
 		public function getDetail($id){
