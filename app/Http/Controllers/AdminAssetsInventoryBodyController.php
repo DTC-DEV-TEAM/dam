@@ -8,6 +8,7 @@
 	use App\AssetsHeaderImages;
 	use App\AssetsInventoryBody;
 	use App\CommentsGoodDefect;
+	use App\GoodDefectLists;
 	use Maatwebsite\Excel\Facades\Excel;
 	use PhpOffice\PhpSpreadsheet\Spreadsheet;
 	use PhpOffice\PhpSpreadsheet\Reader\Exception;
@@ -460,6 +461,7 @@
 			  ->where('comments_good_defect_tbl.digits_code', $data['Body']->digits_code)
 			  ->where('comments_good_defect_tbl.asset_code', $data['Body']->asset_code)
 			  ->get();
+			$data['good_defect_lists'] = GoodDefectLists::all();
             //dd($data['comments']);
 			  return $this->view("assets.edit_assets_inventory", $data);
 		}

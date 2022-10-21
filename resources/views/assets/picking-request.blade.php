@@ -309,16 +309,10 @@
                         </div>
                         <br>
                         <select required selected data-placeholder="-- Please Select Defect Comments --" id="comments" name="comments" class="form-select select2" style="width:100%;">
-                            <option value=""></option>
-                            <option value="Screen light fails. ..">Screen light fails. ..</option>
-                            <option value="Your computer does not turn on. ...">Your computer does not turn on. ...</option>
-                            <option value="The screen is blank. ...">The screen is blank. ...</option>
-                            <option value="Laptop shuts down or freezes. ...">Laptop shuts down or freezes. ...</option>
-                            <option value="The battery does not charge properly. ...">The battery does not charge properly. ...</option>
-                            <option value="Screen light fails. ...">Screen light fails. ...</option>
-                            <option value="Freezing Of Mouse Cursor">Freezing Of Mouse Cursor</option>
-                            <option value="Faulty Batteries">Faulty Batteries</option>
-
+                            @foreach($good_defect_lists as $good_defect_list)
+                                <option value=""></option>
+                                <option value="{{ $good_defect_list->defect_description }}">{{ $good_defect_list->defect_description }}</option>
+                            @endforeach
                         </select>
                         <!-- <textarea placeholder="Comment ..." rows="3" class="form-control" name="comments"></textarea> -->
                     </div>

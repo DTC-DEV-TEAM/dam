@@ -10,6 +10,8 @@
 	use App\StatusMatrix;
 	use App\CommentsGoodDefect;
 	use App\MoveOrder;
+	use App\GoodDefectLists;
+	
 	//use Illuminate\Http\Request;
 	//use Illuminate\Support\Facades\Input;
 	use Illuminate\Support\Facades\Log;
@@ -799,7 +801,7 @@
 			  )
 			  ->where('comments_good_defect_tbl.arf_number', $data['Header']->reference_number)
 			  ->get();
-
+			$data['good_defect_lists'] = GoodDefectLists::all();
 			return $this->view("assets.picking-request", $data);
 		}
 
