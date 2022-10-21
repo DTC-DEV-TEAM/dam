@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 20, 2022 at 11:53 AM
+-- Generation Time: Oct 21, 2022 at 11:58 AM
 -- Server version: 10.1.38-MariaDB
 -- PHP Version: 7.4.29
 
@@ -664,9 +664,9 @@ INSERT INTO `assets_inventory_body` (`id`, `header_id`, `item_id`, `statuses_id`
 (9, 2, 353, 23, NULL, '3', '40000293', 'OFC SUP DTC DIGITAL HUB MOUSE PAD', '2000.00', NULL, 1, 'S16', '2027-10-20', NULL, 'A1000009', '40000293A1000009', 'Defective', 'IT ASSETS', 'Inventory', 601, NULL, NULL, NULL, '2022-10-20 07:54:55', NULL, NULL, NULL),
 (10, 3, 353, 23, NULL, '3', '40000293', 'OFC SUP DTC DIGITAL HUB MOUSE PAD', '2000.00', NULL, 1, 'S-1', '2025-10-20', NULL, 'A1000010', '40000293A1000010', 'Defective', 'IT ASSETS', 'Inventory', 601, 601, NULL, NULL, '2022-10-20 09:22:40', NULL, NULL, NULL),
 (11, 3, 353, 23, NULL, '3', '40000293', 'OFC SUP DTC DIGITAL HUB MOUSE PAD', '2000.00', NULL, 1, 'S-2', '2025-10-20', NULL, 'A1000011', '40000293A1000011', 'Defective', 'IT ASSETS', 'Inventory', 601, 601, NULL, NULL, '2022-10-20 09:22:40', NULL, NULL, NULL),
-(12, 3, 353, 6, NULL, '3', '40000293', 'OFC SUP DTC DIGITAL HUB MOUSE PAD', '2000.00', NULL, 1, 'S-3', '2025-10-20', NULL, 'A1000012', '40000293A1000012', 'Good', 'IT ASSETS', 'Inventory', 601, NULL, NULL, NULL, '2022-10-20 09:22:40', NULL, NULL, NULL),
+(12, 3, 353, 23, NULL, '3', '40000293', 'OFC SUP DTC DIGITAL HUB MOUSE PAD', '2000.00', NULL, 1, 'S-3', '2025-10-20', NULL, 'A1000012', '40000293A1000012', 'Defective', 'IT ASSETS', 'Inventory', 601, 601, NULL, NULL, '2022-10-20 09:22:40', NULL, NULL, NULL),
 (13, 3, 353, 23, NULL, '3', '40000293', 'OFC SUP DTC DIGITAL HUB MOUSE PAD', '2000.00', NULL, 1, 'S-4', '2025-10-20', NULL, 'A1000013', '40000293A1000013', 'Defective', 'IT ASSETS', 'Inventory', 601, 601, NULL, NULL, '2022-10-20 09:22:40', NULL, NULL, NULL),
-(14, 3, 353, 2, NULL, '3', '40000293', 'OFC SUP DTC DIGITAL HUB MOUSE PAD', '2000.00', NULL, 1, 'S-5', '2025-10-20', NULL, 'A1000014', '40000293A1000014', 'Good', 'IT ASSETS', 'Inventory', 601, NULL, NULL, NULL, '2022-10-20 09:22:40', NULL, NULL, NULL);
+(14, 3, 353, 23, NULL, '3', '40000293', 'OFC SUP DTC DIGITAL HUB MOUSE PAD', '2000.00', NULL, 1, 'S-5', '2025-10-20', NULL, 'A1000014', '40000293A1000014', 'Defective', 'IT ASSETS', 'Inventory', 601, NULL, NULL, NULL, '2022-10-20 09:22:40', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -851,7 +851,7 @@ CREATE TABLE `body_request` (
 
 INSERT INTO `body_request` (`id`, `header_request_id`, `line_status_id`, `digits_code`, `asset_code`, `item_description`, `category_id`, `sub_category_id`, `serial_no`, `remarks`, `quantity`, `unit_cost`, `total_unit_cost`, `item_id`, `created_by`, `updated_by`, `created_at`, `updated_at`, `deleted_at`, `deleted_by`, `app_id`, `app_id_others`, `image`, `recommendation`, `reco_digits_code`, `reco_item_description`, `to_reco`, `mo_plug`, `location_id`, `to_mo`) VALUES
 (1, 1, NULL, NULL, NULL, 'LAPTOP', 'IT ASSETS', 'LAPTOP', NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, '2022-10-20 07:56:56', '2022-10-20 08:03:52', NULL, NULL, '', NULL, '', 'ADVANCED', '40000252', 'LAPTOP-LENOVO CORE I5', 1, 1, '3', 0),
-(2, 1, NULL, NULL, NULL, 'MOUSE', 'IT ASSETS', 'COMPUTER ACCESSORIES', NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, '2022-10-20 07:56:56', '2022-10-20 09:24:08', NULL, NULL, '', NULL, '', NULL, '40000293', 'OFC SUP DTC DIGITAL HUB MOUSE PAD', 0, 1, '3', 0);
+(2, 1, NULL, NULL, NULL, 'MOUSE', 'IT ASSETS', 'COMPUTER ACCESSORIES', NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, '2022-10-20 07:56:56', '2022-10-21 07:11:18', NULL, NULL, '', NULL, '', NULL, '40000293', 'OFC SUP DTC DIGITAL HUB MOUSE PAD', 0, 1, '3', 1);
 
 -- --------------------------------------------------------
 
@@ -7531,7 +7531,37 @@ INSERT INTO `cms_logs` (`id`, `ipaddress`, `useragent`, `url`, `description`, `d
 (4830, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'it@digits.ph logout', '', 597, '2022-10-20 09:23:30', NULL),
 (4831, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'asset@digits.ph login with IP Address 127.0.0.1', '', 599, '2022-10-20 09:23:41', NULL),
 (4832, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'asset@digits.ph logout', '', 599, '2022-10-20 09:24:23', NULL),
-(4833, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'it@digits.ph login with IP Address 127.0.0.1', '', 597, '2022-10-20 09:24:31', NULL);
+(4833, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'it@digits.ph login with IP Address 127.0.0.1', '', 597, '2022-10-20 09:24:31', NULL),
+(4834, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'marvinmosico@digits.ph logout', '', 601, '2022-10-20 10:01:48', NULL),
+(4835, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'marvinmosico@digits.ph login with IP Address 127.0.0.1', '', 601, '2022-10-21 06:24:12', NULL),
+(4836, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'it@digits.ph login with IP Address 127.0.0.1', '', 597, '2022-10-21 06:24:37', NULL),
+(4837, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/good_defect_lists/add-save', 'Add New Data  at Good and Defect Lists', '', 601, '2022-10-21 06:31:08', NULL),
+(4838, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/good_defect_lists/add-save', 'Add New Data  at Good and Defect Lists', '', 601, '2022-10-21 06:31:27', NULL);
+INSERT INTO `cms_logs` (`id`, `ipaddress`, `useragent`, `url`, `description`, `details`, `id_cms_users`, `created_at`, `updated_at`) VALUES
+(4839, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/good_defect_lists/add-save', 'Add New Data  at Good and Defect Lists', '', 601, '2022-10-21 06:31:49', NULL),
+(4840, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/good_defect_lists/add-save', 'Add New Data  at Good and Defect Lists', '', 601, '2022-10-21 06:32:05', NULL),
+(4841, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/good_defect_lists/add-save', 'Add New Data  at Good and Defect Lists', '', 601, '2022-10-21 06:32:21', NULL),
+(4842, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/good_defect_lists/add-save', 'Add New Data  at Good and Defect Lists', '', 601, '2022-10-21 06:32:32', NULL),
+(4843, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/good_defect_lists/add-save', 'Add New Data  at Good and Defect Lists', '', 601, '2022-10-21 06:32:44', NULL),
+(4844, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/good_defect_lists/add-save', 'Add New Data  at Good and Defect Lists', '', 601, '2022-10-21 06:32:55', NULL),
+(4845, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/good_defect_lists/delete/8', 'Delete data 8 at Good and Defect Lists', '', 601, '2022-10-21 06:51:17', NULL),
+(4846, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/good_defect_lists/action-selected', 'Delete data 7,6,5,4,3,2,1 at Good and Defect Lists', '', 601, '2022-10-21 06:51:45', NULL),
+(4847, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/good_defect_lists/add-save', 'Add New Data  at Good and Defect Lists', '', 601, '2022-10-21 06:53:15', NULL),
+(4848, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/good_defect_lists/add-save', 'Add New Data  at Good and Defect Lists', '', 601, '2022-10-21 06:56:02', NULL),
+(4849, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/good_defect_lists/add-save', 'Add New Data  at Good and Defect Lists', '', 601, '2022-10-21 06:57:07', NULL),
+(4850, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/good_defect_lists/add-save', 'Add New Data  at Good and Defect Lists', '', 601, '2022-10-21 06:57:22', NULL),
+(4851, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/good_defect_lists/add-save', 'Add New Data  at Good and Defect Lists', '', 601, '2022-10-21 06:58:00', NULL),
+(4852, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/good_defect_lists/add-save', 'Add New Data  at Good and Defect Lists', '', 601, '2022-10-21 06:58:23', NULL),
+(4853, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/good_defect_lists/add-save', 'Add New Data  at Good and Defect Lists', '', 601, '2022-10-21 06:58:36', NULL),
+(4854, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/good_defect_lists/add-save', 'Add New Data  at Good and Defect Lists', '', 601, '2022-10-21 06:58:50', NULL),
+(4855, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/good_defect_lists/add-save', 'Add New Data  at Good and Defect Lists', '', 601, '2022-10-21 06:59:21', NULL),
+(4856, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/good_defect_lists/add-save', 'Add New Data  at Good and Defect Lists', '', 601, '2022-10-21 06:59:36', NULL),
+(4857, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/good_defect_lists/add-save', 'Add New Data  at Good and Defect Lists', '', 601, '2022-10-21 06:59:54', NULL),
+(4858, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/good_defect_lists/add-save', 'Add New Data  at Good and Defect Lists', '', 601, '2022-10-21 07:00:09', NULL),
+(4859, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/good_defect_lists/add-save', 'Add New Data  at Good and Defect Lists', '', 601, '2022-10-21 07:00:46', NULL),
+(4860, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/good_defect_lists/add-save', 'Add New Data  at Good and Defect Lists', '', 601, '2022-10-21 07:01:02', NULL),
+(4861, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/good_defect_lists/add-save', 'Add New Data  at Good and Defect Lists', '', 601, '2022-10-21 07:01:15', NULL),
+(4862, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'marvinmosico@digits.ph logout', '', 601, '2022-10-21 07:28:41', NULL);
 
 -- --------------------------------------------------------
 
@@ -7598,7 +7628,8 @@ INSERT INTO `cms_menus` (`id`, `name`, `type`, `path`, `color`, `icon`, `parent_
 (102, 'Move Order', 'Route', 'AdminMoveOrderControllerGetIndex', 'normal', 'fa fa-files-o', 0, 1, 0, 1, 7, '2022-09-05 03:23:20', '2022-09-05 03:23:57'),
 (103, 'Warehouse Location', 'Route', 'AdminWarehouseLocationModelControllerGetIndex', NULL, 'fa fa-circle-o', 84, 1, 0, 1, 12, '2022-10-12 03:06:37', NULL),
 (104, 'Add Inventory', 'Route', 'AdminAssetsInventoryHeaderForApprovalControllerGetIndex', 'normal', 'fa fa-circle-o', 96, 1, 0, 1, 1, '2022-10-12 03:12:18', '2022-10-12 03:29:57'),
-(105, 'Deployed Asset', 'Route', 'AdminDeployedAssetControllerGetIndex', 'normal', 'fa fa-files-o', 0, 1, 0, 1, 11, '2022-10-19 02:36:00', '2022-10-19 02:41:54');
+(105, 'Deployed Asset', 'Route', 'AdminDeployedAssetControllerGetIndex', 'normal', 'fa fa-files-o', 0, 1, 0, 1, 11, '2022-10-19 02:36:00', '2022-10-19 02:41:54'),
+(106, 'Good and Defect Lists', 'Route', 'AdminGoodDefectListsControllerGetIndex', NULL, 'fa fa-files-o', 84, 1, 0, 1, 13, '2022-10-21 06:29:23', NULL);
 
 -- --------------------------------------------------------
 
@@ -7843,7 +7874,8 @@ INSERT INTO `cms_menus_privileges` (`id`, `id_cms_menus`, `id_cms_privileges`) V
 (637, 96, 1),
 (639, 105, 2),
 (640, 105, 8),
-(641, 105, 1);
+(641, 105, 1),
+(642, 106, 1);
 
 -- --------------------------------------------------------
 
@@ -7964,7 +7996,8 @@ INSERT INTO `cms_moduls` (`id`, `name`, `icon`, `path`, `table_name`, `controlle
 (92, 'Move Order', 'fa fa-files-o', 'move_order', 'header_request', 'AdminMoveOrderController', 0, 0, '2022-09-05 03:23:20', NULL, NULL),
 (93, 'Warehouse Location', 'fa fa-circle-o', 'warehouse_location_model', 'warehouse_location_model', 'AdminWarehouseLocationModelController', 0, 0, '2022-10-12 03:06:37', NULL, NULL),
 (94, 'Add Inventory', 'fa fa-circle-o', 'assets_inventory_header_for_approval', 'assets_inventory_header_for_approval', 'AdminAssetsInventoryHeaderForApprovalController', 0, 0, '2022-10-12 03:12:18', NULL, NULL),
-(95, 'Deployed Asset', 'fa fa-files-o', 'deployed_asset', 'header_request', 'AdminDeployedAssetController', 0, 0, '2022-10-19 02:36:00', NULL, NULL);
+(95, 'Deployed Asset', 'fa fa-files-o', 'deployed_asset', 'header_request', 'AdminDeployedAssetController', 0, 0, '2022-10-19 02:36:00', NULL, NULL),
+(96, 'Good and Defect Lists', 'fa fa-files-o', 'good_defect_lists', 'good_defect_lists', 'AdminGoodDefectListsController', 0, 0, '2022-10-21 06:29:22', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -8149,7 +8182,8 @@ INSERT INTO `cms_privileges_roles` (`id`, `is_visible`, `is_create`, `is_read`, 
 (434, 1, 0, 1, 0, 0, 8, 95, NULL, NULL),
 (435, 1, 0, 1, 1, 0, 8, 88, NULL, NULL),
 (436, 1, 1, 1, 1, 0, 8, 65, NULL, NULL),
-(437, 1, 0, 1, 0, 0, 8, 76, NULL, NULL);
+(437, 1, 0, 1, 0, 0, 8, 76, NULL, NULL),
+(438, 1, 1, 1, 1, 1, 1, 96, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -8330,7 +8364,9 @@ INSERT INTO `comments_good_defect_tbl` (`id`, `arf_number`, `digits_code`, `asse
 (14, NULL, '40000293', 'A1000010', 'Freezing Of Mouse Cursor', 601, '2022-10-20 09:32:10', '2022-10-20 09:32:10'),
 (15, NULL, '40000293', 'A1000011', 'Faulty Batteries', 601, '2022-10-20 09:32:45', '2022-10-20 09:32:45'),
 (16, NULL, '40000293', 'A1000013', 'Freezing Of Mouse Cursor', 601, '2022-10-20 09:33:26', '2022-10-20 09:33:26'),
-(17, NULL, '40000252', 'A1000005', 'Laptop shuts down or freezes. ...', 601, '2022-10-20 09:39:19', '2022-10-20 09:39:19');
+(17, NULL, '40000252', 'A1000005', 'Laptop shuts down or freezes. ...', 601, '2022-10-20 09:39:19', '2022-10-20 09:39:19'),
+(18, NULL, '40000293', 'A1000012', 'Freezing Of Mouse Cursor', 601, '2022-10-21 06:44:42', '2022-10-21 06:44:42'),
+(19, 'ARF-0000001', '40000293', 'A1000014', 'Uneven Behaviour Of Mouse Pointer', 597, '2022-10-21 07:11:18', '2022-10-21 07:11:18');
 
 -- --------------------------------------------------------
 
@@ -9240,6 +9276,42 @@ CREATE TABLE `generated_assets_histories` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `good_defect_lists`
+--
+
+CREATE TABLE `good_defect_lists` (
+  `id` int(11) NOT NULL,
+  `defect_description` varchar(255) DEFAULT NULL,
+  `created_by` int(11) DEFAULT NULL,
+  `updated_by` int(11) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `good_defect_lists`
+--
+
+INSERT INTO `good_defect_lists` (`id`, `defect_description`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
+(9, 'Laptop does not turn on', 601, 0, '2022-10-21 06:53:15', NULL),
+(10, 'The screen is blank', 601, NULL, '2022-10-21 06:56:02', NULL),
+(11, 'Laptop turns on and off repeatedly', 601, NULL, '2022-10-21 06:57:07', NULL),
+(12, 'The laptop makes weird noise while running', 601, NULL, '2022-10-21 06:57:22', NULL),
+(13, 'Laptop shuts down or freezes', 601, NULL, '2022-10-21 06:58:00', NULL),
+(14, 'Uneven Behaviour Of Mouse Pointer', 601, NULL, '2022-10-21 06:58:23', NULL),
+(15, 'Slow Or Fast Movement Of Cursor', 601, NULL, '2022-10-21 06:58:36', NULL),
+(16, 'Freezing Of Mouse Cursor', 601, NULL, '2022-10-21 06:58:50', NULL),
+(17, 'Faulty Batteries', 601, NULL, '2022-10-21 06:59:21', NULL),
+(18, 'The battery does not charge properly', 601, NULL, '2022-10-21 06:59:36', NULL),
+(19, 'Keyboard keys stopped working', 601, NULL, '2022-10-21 06:59:54', NULL),
+(20, 'Repetitive beep sound on starting', 601, NULL, '2022-10-21 07:00:09', NULL),
+(21, 'Double-Click Issue', 601, NULL, '2022-10-21 07:00:46', NULL),
+(22, 'Mouse Stops Working At All', 601, NULL, '2022-10-21 07:01:02', NULL),
+(23, 'Hardware Issues', 601, NULL, '2022-10-21 07:01:15', NULL);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `header_request`
 --
 
@@ -9312,7 +9384,7 @@ CREATE TABLE `header_request` (
 --
 
 INSERT INTO `header_request` (`id`, `reference_number`, `mo_reference_number`, `status_id`, `employee_name`, `company_name`, `position`, `department`, `store_branch`, `purpose`, `conditions`, `quantity_total`, `cost_total`, `total`, `approved_by`, `approved_at`, `created_by`, `updated_by`, `created_at`, `updated_at`, `deleted_at`, `rejected_at`, `requestor_comments`, `request_type_id`, `privilege_id`, `approver_comments`, `to_reco`, `it_comments`, `recommended_by`, `recommended_at`, `cancelled_by`, `cancelled_at`, `purchased1_by`, `purchased1_at`, `purchased2_by`, `purchased2_at`, `ac_comments`, `mo_by`, `mo_at`, `print_by`, `print_at`, `picked_by`, `picked_at`, `print_by_form`, `print_at_form`, `received_by`, `received_at`, `closed_by`, `closed_at`, `quote_date`, `po_date`, `po_number`, `employee_dr_date`, `dr_number`, `application`, `application_others`, `mo_plug`, `closing_plug`, `to_print`, `location_id`, `to_mo`) VALUES
-(1, 'ARF-0000001', NULL, 18, '91', '1', 'ASSOCIATE SOFTWARE DEVELOPER', '26', NULL, '2', NULL, 5, NULL, '53000.00', 593, '2022-10-20 07:57:21', 592, NULL, '2022-10-20 07:56:56', '2022-10-20 09:24:08', NULL, NULL, 'test', 1, 2, 'test', 1, 'test', 597, '2022-10-20 07:58:02', NULL, NULL, 599, '2022-10-20 07:59:01', 599, '2022-10-20 07:59:01', 'test', 599, '2022-10-20 09:24:08', 599, '2022-10-20 08:04:00', 597, '2022-10-20 08:44:26', NULL, NULL, NULL, NULL, NULL, NULL, 'N/A', '2022-10-19', '123123', NULL, NULL, 'VIBER, WHATSAPP', NULL, 1, 0, 0, '3,3', 0);
+(1, 'ARF-0000001', NULL, 18, '91', '1', 'ASSOCIATE SOFTWARE DEVELOPER', '26', NULL, '2', NULL, 5, NULL, '53000.00', 593, '2022-10-20 07:57:21', 592, NULL, '2022-10-20 07:56:56', '2022-10-21 07:11:18', NULL, NULL, 'test', 1, 2, 'test', 1, 'test', 597, '2022-10-20 07:58:02', NULL, NULL, 599, '2022-10-20 07:59:01', 599, '2022-10-20 07:59:01', 'test', 599, '2022-10-20 09:24:08', 599, '2022-10-20 08:04:00', 597, '2022-10-20 08:44:26', NULL, NULL, NULL, NULL, NULL, NULL, 'N/A', '2022-10-19', '123123', NULL, NULL, 'VIBER, WHATSAPP', NULL, 1, 0, 0, '3,3', 1);
 
 -- --------------------------------------------------------
 
@@ -9583,11 +9655,11 @@ CREATE TABLE `mo_body_request` (
 --
 
 INSERT INTO `mo_body_request` (`id`, `status_id`, `mo_reference_number`, `header_request_id`, `body_request_id`, `item_id`, `inventory_id`, `digits_code`, `asset_code`, `item_description`, `category_id`, `sub_category_id`, `serial_no`, `remarks`, `quantity`, `unit_cost`, `total_unit_cost`, `printed_at`, `created_by`, `updated_by`, `created_at`, `updated_at`, `deleted_at`, `to_reco`, `to_pick`, `mo_plug`, `to_print`, `closed_at`, `location_id`, `location_id_list`, `good`, `defective`) VALUES
-(1, 8, 'MO-000000103', 1, 2, 353, 7, '40000293', 'A1000007', 'OFC SUP DTC DIGITAL HUB MOUSE PAD', 'IT ASSETS', 'COMPUTER ACCESSORIES', 'S14', NULL, 1, '2000.00', '2000.00', '2022-10-20 08:04:00', 599, NULL, '2022-10-20 08:03:52', '2022-10-20 09:21:28', NULL, 1, 1, 1, 1, NULL, '3', NULL, 0, 1),
-(2, 18, 'MO-000000103', 1, 1, 268, 6, '40000252', 'A1000006', 'LAPTOP-LENOVO CORE I5', 'IT ASSETS', 'LAPTOP', 'S13', NULL, 1, '45000.00', '45000.00', '2022-10-20 08:04:00', 599, NULL, '2022-10-20 08:03:52', '2022-10-20 09:21:28', NULL, 1, 1, 1, 1, NULL, '3', NULL, 1, 0),
-(4, 8, 'MO-000000303', 1, 2, 353, 8, '40000293', 'A1000008', 'OFC SUP DTC DIGITAL HUB MOUSE PAD', 'IT ASSETS', 'COMPUTER ACCESSORIES', 'S15', NULL, 1, '2000.00', '2000.00', '2022-10-20 08:47:28', 599, NULL, '2022-10-20 08:45:35', '2022-10-20 09:21:28', NULL, 1, 1, 1, 1, NULL, '3', NULL, 0, 1),
-(6, 8, 'MO-000000403', 1, 2, 353, 9, '40000293', 'A1000009', 'OFC SUP DTC DIGITAL HUB MOUSE PAD', 'IT ASSETS', 'COMPUTER ACCESSORIES', 'S16', NULL, 1, '2000.00', '2000.00', '2022-10-20 09:13:32', 599, NULL, '2022-10-20 09:13:21', '2022-10-20 09:21:28', NULL, 1, 1, 1, 1, NULL, '3', NULL, 0, 1),
-(8, 15, 'MO-000000503', 1, 2, 353, 14, '40000293', 'A1000014', 'OFC SUP DTC DIGITAL HUB MOUSE PAD', 'IT ASSETS', 'COMPUTER ACCESSORIES', 'S-5', NULL, 1, '2000.00', '2000.00', '2022-10-20 09:24:18', 599, NULL, '2022-10-20 09:24:08', '2022-10-20 09:24:18', NULL, 1, 0, 1, 0, NULL, '3', NULL, 0, 0);
+(1, 8, 'MO-000000103', 1, 2, 353, 7, '40000293', 'A1000007', 'OFC SUP DTC DIGITAL HUB MOUSE PAD', 'IT ASSETS', 'COMPUTER ACCESSORIES', 'S14', NULL, 1, '2000.00', '2000.00', '2022-10-20 08:04:00', 599, NULL, '2022-10-20 08:03:52', '2022-10-21 07:11:18', NULL, 1, 1, 1, 1, NULL, '3', NULL, 0, 1),
+(2, 18, 'MO-000000103', 1, 1, 268, 6, '40000252', 'A1000006', 'LAPTOP-LENOVO CORE I5', 'IT ASSETS', 'LAPTOP', 'S13', NULL, 1, '45000.00', '45000.00', '2022-10-20 08:04:00', 599, NULL, '2022-10-20 08:03:52', '2022-10-21 07:11:18', NULL, 1, 1, 1, 1, NULL, '3', NULL, 1, 0),
+(4, 8, 'MO-000000303', 1, 2, 353, 8, '40000293', 'A1000008', 'OFC SUP DTC DIGITAL HUB MOUSE PAD', 'IT ASSETS', 'COMPUTER ACCESSORIES', 'S15', NULL, 1, '2000.00', '2000.00', '2022-10-20 08:47:28', 599, NULL, '2022-10-20 08:45:35', '2022-10-21 07:11:18', NULL, 1, 1, 1, 1, NULL, '3', NULL, 0, 1),
+(6, 8, 'MO-000000403', 1, 2, 353, 9, '40000293', 'A1000009', 'OFC SUP DTC DIGITAL HUB MOUSE PAD', 'IT ASSETS', 'COMPUTER ACCESSORIES', 'S16', NULL, 1, '2000.00', '2000.00', '2022-10-20 09:13:32', 599, NULL, '2022-10-20 09:13:21', '2022-10-21 07:11:18', NULL, 1, 1, 1, 1, NULL, '3', NULL, 0, 1),
+(8, 8, 'MO-000000503', 1, 2, 353, 14, '40000293', 'A1000014', 'OFC SUP DTC DIGITAL HUB MOUSE PAD', 'IT ASSETS', 'COMPUTER ACCESSORIES', 'S-5', NULL, 1, '2000.00', '2000.00', '2022-10-20 09:24:18', 599, NULL, '2022-10-20 09:24:08', '2022-10-21 07:11:18', NULL, 1, 1, 1, 1, NULL, '3', NULL, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -10814,6 +10886,12 @@ ALTER TABLE `generated_assets_histories`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `good_defect_lists`
+--
+ALTER TABLE `good_defect_lists`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `header_request`
 --
 ALTER TABLE `header_request`
@@ -11051,25 +11129,25 @@ ALTER TABLE `cms_email_templates`
 -- AUTO_INCREMENT for table `cms_logs`
 --
 ALTER TABLE `cms_logs`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4834;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4863;
 
 --
 -- AUTO_INCREMENT for table `cms_menus`
 --
 ALTER TABLE `cms_menus`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=106;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=107;
 
 --
 -- AUTO_INCREMENT for table `cms_menus_privileges`
 --
 ALTER TABLE `cms_menus_privileges`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=642;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=643;
 
 --
 -- AUTO_INCREMENT for table `cms_moduls`
 --
 ALTER TABLE `cms_moduls`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=96;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
 
 --
 -- AUTO_INCREMENT for table `cms_notifications`
@@ -11087,7 +11165,7 @@ ALTER TABLE `cms_privileges`
 -- AUTO_INCREMENT for table `cms_privileges_roles`
 --
 ALTER TABLE `cms_privileges_roles`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=438;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=439;
 
 --
 -- AUTO_INCREMENT for table `cms_settings`
@@ -11117,7 +11195,7 @@ ALTER TABLE `cms_users`
 -- AUTO_INCREMENT for table `comments_good_defect_tbl`
 --
 ALTER TABLE `comments_good_defect_tbl`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `companies`
@@ -11168,6 +11246,12 @@ ALTER TABLE `generated_assets_histories`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `good_defect_lists`
+--
+ALTER TABLE `good_defect_lists`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+
+--
 -- AUTO_INCREMENT for table `header_request`
 --
 ALTER TABLE `header_request`
@@ -11189,7 +11273,7 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT for table `mo_body_request`
 --
 ALTER TABLE `mo_body_request`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `positions`
