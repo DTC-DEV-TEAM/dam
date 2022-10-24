@@ -143,8 +143,7 @@
                                                 <th>Deployed To</th>       
                                                 <th>Item Condition</th>                                               
                                                 <th>Item Description</th> 
-                                                <th>Value</th> 
-                                                <th>Item Type</th>                                            
+                                                <th>Value</th>                                         
                                                 <th>Quantity</th>    
                                                 <th>Warranty Coverage Year</th>                                           
                                                 <th>Item Photo</th>     
@@ -169,7 +168,6 @@
                                                 <td>{{$res->item_condition}}</td> 
                                                 <td>{{$res->item_description}}</td>   
                                                 <td>{{$res->value}}</td>
-                                                <td>{{$res->itemType}}</td> 
                                                 <td>{{$res->quantity}}</td>     
                                                 <td>{{$res->warranty_coverage}}</td>                                                      
                                                 <td>

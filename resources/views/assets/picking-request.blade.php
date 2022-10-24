@@ -17,7 +17,7 @@
                 box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
                 margin-bottom:0;
             }
-            
+            .select2-container--default .select2-selection--multiple .select2-selection__choice{color:black;}
         </style>
     @endpush
 @section('content')
@@ -166,8 +166,8 @@
                                                                             <input type="checkbox" name="good[]" id="good{{$tableRow1}}" class="good" required data-id="{{$tableRow1}}" value="0"/>
                                                                             <!-- for good and defect comment -->
                                                                             <input type="hidden" name="arf_number" id="arf_number" value="{{$Header->reference_number}}" />
-                                                                            <input type="hidden" name="digits_code" id="digits_code" value="{{$rowresult->digits_code}}" />
-                                                                            <input type="hidden" name="asset_code" id="asset_code" value="{{$rowresult->asset_code}}" />
+                                                                            <input type="hidden" name="digits_code[]" id="digits_code" value="{{$rowresult->digits_code}}" />
+                                                                            <input type="hidden" name="asset_code[]" id="asset_code" value="{{$rowresult->asset_code}}" />
                                                                         </td>
 
                                                                         <td style="text-align:center" height="10">
@@ -300,15 +300,15 @@
                     <div class="form-group">
                         <label>Comments:</label>
                         <div class="comment_div">
+                        @foreach($comments as $comment)
                             <span class="text-comment">
-                                @foreach($comments as $comment)
                                 <p style="margin-top:5px"><strong>{{ $comment->name }}:</strong>  {{ $comment->comments }} </p>
                                 <p style="text-align:right; font-size:10px; font-style: italic; border-bottom:1px solid #d2d6de"> {{ $comment->created_at }} </p>
-                                @endforeach
                             </span>
+                        @endforeach
                         </div>
                         <br>
-                        <select required selected data-placeholder="-- Please Select Defect Comments --" id="comments" name="comments" class="form-select select2" style="width:100%;">
+                        <select required selected data-placeholder="-- Please Select Defect Comments --" id="comments[]" name="comments" class="form-select select2" style="width:100%;" multiple="multiple">
                             @foreach($good_defect_lists as $good_defect_list)
                                 <option value=""></option>
                                 <option value="{{ $good_defect_list->defect_description }}">{{ $good_defect_list->defect_description }}</option>
@@ -343,7 +343,14 @@
 @endsection
 @push('bottom')
 <script type="text/javascript">
-$('.select2').select2({placeholder_text_single : "-- Select --"})
+$('.select2').select2({
+    placeholder_text_single : "-- Select --",
+    multiple: true,
+    minimumResultsForSearch: 20});
+    var searchfield = $(this).find('.select2-search--inline');
+    var selection = $(this).find('.select2-selection__rendered');
+    $(this).find('.select2-search__field').html("");
+    selection.prepend(searchfield);
     function preventBack() {
         window.history.forward();
     }

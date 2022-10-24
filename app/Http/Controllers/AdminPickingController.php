@@ -549,7 +549,7 @@
 			$digits_code = $fields['digits_code'];
 			$asset_code = $fields['asset_code'];
 			$comments = $fields['comments'];
-
+			
 			$HeaderID 					= MoveOrder::where('id', $id)->first();
 
 			//dd($HeaderID->header_request_id);
@@ -666,17 +666,18 @@
 			*/
 
 			//save defect and good comments
-			CommentsGoodDefect::Create(
-				[
-					'arf_number' => $arf_number,
-					'digits_code' => $digits_code,
-					'asset_code' => $asset_code,
-					'comments' => $comments, 
-					'users' => CRUDBooster::myId(),
-					'created_at' => date('Y-m-d H:i:s'),
-				]
-			);   
-
+			$container = [];
+			$containerSave = [];
+			foreach($comments as $key => $val){
+				$container['arf_number'] = $arf_number;
+				$container['digits_code'] = $digits_code[$key];
+				$container['asset_code'] = $asset_code[$key];
+				$container['comments'] = $val;
+				$container['users'] = CRUDBooster::myId();
+				$container['created_at'] = date('Y-m-d H:i:s');
+				$containerSave[] = $container;
+			}
+			CommentsGoodDefect::insert($containerSave);
 
 	    }
 
@@ -789,7 +790,10 @@
 				->leftjoin('statuses', 'mo_body_request.status_id', '=', 'statuses.id')
 				->orderby('mo_body_request.id', 'desc')
 				->get();	
-
+            foreach($data['MoveOrder'] as $codes) {
+				$digits_code['digits_code'] = $codes['digits_code'];
+				$asset_code['asset_code'] = $codes['asset_code'];
+			}
 			$data['HeaderID'] = MoveOrder::where('id', $id)->first();
 
 			$data['comments'] = CommentsGoodDefect::
@@ -799,7 +803,8 @@
 				'comments_good_defect_tbl.id as bodyId',
 				'cms_users.name'
 			  )
-			  ->where('comments_good_defect_tbl.arf_number', $data['Header']->reference_number)
+			  ->where('comments_good_defect_tbl.digits_code', $digits_code['digits_code'])
+			  ->where('comments_good_defect_tbl.asset_code', $asset_code['asset_code'])
 			  ->get();
 			$data['good_defect_lists'] = GoodDefectLists::all();
 			return $this->view("assets.picking-request", $data);

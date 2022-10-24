@@ -702,9 +702,9 @@
 				[
 					'id' => $id, 
 					'po_no' => $header->po_no, 
-					'invoice_date' => $invoice_date,
-					'invoice_no' => $invoice_no,
-					'rr_date' => $rr_date,
+					'invoice_date' => $header->invoice_date,
+					'invoice_no' => $header->invoice_no,
+					'rr_date' => $header->rr_date,
 					'location' => $header->location,
 					'header_approval_status' => 6,
 					'created_by' => $header->header_created_by,

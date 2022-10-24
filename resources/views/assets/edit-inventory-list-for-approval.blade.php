@@ -146,14 +146,14 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label"><span style="color:red">*</span>  Invoice Date</label>
-                            <input type="text" class="form-control date" placeholder="Select Date" name="invoice_date" id="invoice_date" value="{{ $Header->invoice_date ? $Header->invoice_date : "" }}">
+                            <input type="text" class="form-control date" placeholder="Select Date" name="invoice_date" id="invoice_date">
                         
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label"><span style="color:red">*</span>  Invoice No.</label>
-                            <input type="text" class="form-control" style="" placeholder="Invoice NO" name="invoice_no" id="invoice_no" value="{{ $Header->invoice_no ? $Header->invoice_no : "" }}">
+                            <input type="text" class="form-control" style="" placeholder="Invoice NO" name="invoice_no" id="invoice_no">
                         </div>
                     </div>
                     
@@ -165,7 +165,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label"><span style="color:red">*</span> RR Date</label>
-                            <input class="form-control date" type="text" placeholder="Select Date" name="rr_date" id="rr_date" value="{{ $Header->rr_date ? $Header->rr_date : "" }}">
+                            <input class="form-control date" type="text" placeholder="Select Date" name="rr_date" id="rr_date">
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -344,14 +344,25 @@
                 var n = $("input[name^='digits_code']").length;
                 var dc_codes = $("input[name^='digits_code']");
                 var serial_no = $("input[name^='serial_no']");
+
+                var remove_na = [];
+                for(i=0;i<n;i++){
+                    remove_na_value = serial_no.eq(i).val();
+                    remove_na.push(remove_na_value);
+                }
+                var removeItem = 'N/A';
+                remove_na = jQuery.grep(remove_na, function(value) {
+                return value != removeItem;
+                });
+                
+                // console.log(remove_na);
                 var cont_one = [];
                 for(i=0;i<n;i++){
-                dc_value =  dc_codes.eq(i).val().concat('-',serial_no.eq(i).val());
-                cont_one.push(dc_value);
+                    dc_value =  dc_codes.eq(i).val().concat('-',serial_no.eq(i).val());
+                    cont_one.push(dc_value);
                 }
                 
                 var checkRow = cont_one;
-                console.log(checkRow);
                 var checkRowFinal = checkRow.filter(function(elem, index, self) {
                     return index === self.indexOf(elem);
                 });
