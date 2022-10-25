@@ -127,8 +127,8 @@
                                                         <tbody id="bodyTable">
                                                             <tr class="tbl_header_color dynamicRows">
                                                                 <!-- <th width="13%" class="text-center">{{ trans('message.table.action') }}</th>  -->
-                                                                <th width="13%" class="text-center">Good</th> 
-                                                                <th width="13%" class="text-center">Defective</th>
+                                                                <th width="5%" class="text-center">Good</th> 
+                                                                <th class="text-center">Defective</th>
                                                                 <th width="10%" class="text-center">{{ trans('message.table.mo_reference_number') }}</th>
                                                                 <!-- <th width="13%" class="text-center">{{ trans('message.table.status_id') }}</th> -->
                                                                 <th width="10%" class="text-center">{{ trans('message.table.digits_code') }}</th>
@@ -139,6 +139,7 @@
                                                                 <!-- <th width="8%" class="text-center">{{ trans('message.table.item_cost') }}</th>
                                                                 <th width="16%" class="text-center">{{ trans('message.table.item_total_cost') }}</th>
                                                                 -->
+                                                                <th>Comments</th>
                                                                 
                                                             </tr>
                                                             
@@ -217,7 +218,14 @@
                                                                         <td style="text-align:center" height="10">
                                                                             {{$rowresult->total_unit_cost}}
                                                                         </td> -->
-    
+                                                                        <td>
+                                                                        <select required selected data-placeholder="-- Select Comments --" id="comments[]" name="comments[]" class="form-select select2" style="width:100%;" multiple="multiple">
+                                                                            @foreach($good_defect_lists as $good_defect_list)
+                                                                                <option value=""></option>
+                                                                                <option value="{{$rowresult->asset_code}}. '-' .{{$good_defect_list->defect_description }}">{{ $good_defect_list->defect_description }}</option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                        </td>
                                                                         
     
                                                                     </tr>
@@ -296,7 +304,6 @@
             <div class="row">  
                 <div class="col-md-12">
                 <hr>
-                 <div class="col-md-6">
                     <div class="form-group">
                         <label>Comments:</label>
                         <div class="comment_div">
@@ -308,16 +315,10 @@
                       
                         </div>
                         <br>
-                        <select required selected data-placeholder="-- Select Comments --" id="comments[]" name="comments[]" class="form-select select2" style="width:100%;" multiple="multiple">
-                            @foreach($good_defect_lists as $good_defect_list)
-                                <option value=""></option>
-                                <option value="{{ $good_defect_list->defect_description }}">{{ $good_defect_list->defect_description }}</option>
-                            @endforeach
-                        </select>
+                        
                         <!-- <textarea placeholder="Comment ..." rows="3" class="form-control" name="comments"></textarea> -->
                     </div>
                  </div>
-                </div>
             </div>  
         </div>
       
@@ -343,6 +344,9 @@
 @endsection
 @push('bottom')
 <script type="text/javascript">
+$(function(){
+    $('body').addClass("sidebar-collapse");
+});
 $('.select2').select2({
     placeholder_text_single : "-- Select --",
     multiple: true});
@@ -367,8 +371,19 @@ $('.select2').select2({
     $('.good').change(function() {
         var asset_code = $(this).val();
         var id = $(this).attr("data-id");
-       if($('#good'+id).is(':checked')){
-        $.ajax({
+  
+        var ischecked= $(this).is(':checked');
+        if(ischecked == false){
+            $(".comment_div").html("");
+            $("#good_text"+id).val("0");
+            //$("#defective"+id).val("0");
+            count_pick--;
+            if(count_pick == 0){
+                $('#btnSubmit').attr("disabled", true);
+            }                
+        }else{
+            $('#defective'+id).not(this).prop('checked', false); 
+            $.ajax({
             url: "{{ route('assets.get.comments') }}",
             dataType: "json",
             type: "POST",
@@ -379,8 +394,8 @@ $('.select2').select2({
                 var json = JSON.parse(JSON.stringify(data.items));
                 if(data.items != null){
                     $.each(json, function (index, item) { 
-                            var row = '<span class="text-comment">' + 
-                                      '<p style="margin-top:5px"><strong>' + item.name + 
+                            var row = '<span class="text-comment" id="text-comment-id'+id+'">' + 
+                                      '<p style="margin-top:5px"><strong>' + item.asset_code + 
                                       ':</strong>' + item.comments + 
                                       '</p>' + 
                                       '<p style="text-align:right; font-size:10px; font-style: italic; border-bottom:1px solid #d2d6de">' + item.created_at + 
@@ -396,20 +411,6 @@ $('.select2').select2({
                 
             }
         });
-       }else{
-        $(".comment_div").html("");
-       }
-        
-        var ischecked= $(this).is(':checked');
-        if(ischecked == false){
-
-            $("#good_text"+id).val("0");
-            //$("#defective"+id).val("0");
-            count_pick--;
-            if(count_pick == 0){
-                $('#btnSubmit').attr("disabled", true);
-            }                
-        }else{
             $("#good_text"+id).val("1");
             //$("#defective"+id).val("1");
             count_pick++;
@@ -420,10 +421,27 @@ $('.select2').select2({
 
 
     $('.defective').change(function() {
+        // $('.good').not(this).prop('checked', false);    
         var asset_code = $(this).val();
         var id = $(this).attr("data-id");
-        if($('#defective' + id).is(':checked')){
-            $.ajax({
+            
+        var ischecked= $(this).is(':checked');
+            if(ischecked == false){
+
+                //$("#good"+id).val("0");
+                $(".comment_div").html("");
+                $("#defective_text"+id).val("0");
+
+                count_pick--;
+
+                if(count_pick == 0){
+                    $('#btnSubmit').attr("disabled", true);
+                }
+
+                    
+            }else{
+                $('#good'+id).not(this).prop('checked', false); 
+                $.ajax({
                 url: "{{ route('assets.get.comments') }}",
                 dataType: "json",
                 type: "POST",
@@ -434,8 +452,8 @@ $('.select2').select2({
                     var json = JSON.parse(JSON.stringify(data.items));
                     if(data.items != null){
                         $.each(json, function (index, item) { 
-                                var row = '<span class="text-comment">' + 
-                                        '<p style="margin-top:5px"><strong>' + item.name + 
+                                var row = '<span class="text-comment" id="text-comment-id'+id+'">' + 
+                                        '<p style="margin-top:5px"><strong>' + item.asset_code+ 
                                         ':</strong>' + item.comments + 
                                         '</p>' + 
                                         '<p style="text-align:right; font-size:10px; font-style: italic; border-bottom:1px solid #d2d6de">' + item.created_at + 
@@ -451,26 +469,6 @@ $('.select2').select2({
                     
                 }
             });
-        }else{
-            $(".comment_div").html("");
-        }
-
-        var ischecked= $(this).is(':checked');
-            if(ischecked == false){
-
-                //$("#good"+id).val("0");
-
-                $("#defective_text"+id).val("0");
-
-                count_pick--;
-
-                if(count_pick == 0){
-                    $('#btnSubmit').attr("disabled", true);
-                }
-
-                    
-            }else{
-
                 //$("#good"+id).val("1");
 
                 $("#defective_text"+id).val("1");

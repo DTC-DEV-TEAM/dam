@@ -549,7 +549,20 @@
 			$digits_code = $fields['digits_code'];
 			$asset_code = $fields['asset_code'];
 			$comments = $fields['comments'];
-
+			// $container = [];
+			// $containerSave = [];
+			// foreach((array)$asset_code as $key => $val){
+			// 	$container['arf_number'] = $arf_number;
+			// 	$container['digits_code'] = $digits_code[$key];
+			// 	$container['asset_code'] = $val;
+		
+			// 	$container['comments'] = $comments;
+				
+			// 	$container['users'] = CRUDBooster::myId();
+			// 	$container['created_at'] = date('Y-m-d H:i:s');
+			// 	$containerSave[] = $container;
+			// }
+            // dd($containerSave);
 			$HeaderID 					= MoveOrder::where('id', $id)->first();
 
 			//dd($HeaderID->header_request_id);
