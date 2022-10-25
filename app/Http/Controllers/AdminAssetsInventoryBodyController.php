@@ -366,22 +366,32 @@
 			$asset_code =  $fields['asset_code'];
 			$item_condition =  $fields['item_condition'];
 			$comments =  $fields['comments'];
+			if($item_condition === "Good"){
+               $status = 6;
+			}else{
+				$status = 23;
+			}
+			//dd($item_condition);
 			DB::table('assets_inventory_body')->where('id', $id)
 			->update([
 				'item_condition' => $item_condition,
-				'statuses_id' => 23,
+				'statuses_id' => $status,
 				'updated_by' => CRUDBooster::myId()
 			]);
 
-			CommentsGoodDefect::Create(
-				[
-					'digits_code' => $digits_code,
-					'asset_code' => $asset_code,
-					'comments' => $comments, 
-					'users' => CRUDBooster::myId(),
-					'created_at' => date('Y-m-d H:i:s'),
-				]
-			);   
+			//save defect and good comments
+			$container = [];
+			$containerSave = [];
+			foreach($comments as $key => $val){
+				$container['arf_number'] = NULL;
+				$container['digits_code'] = $digits_code;
+				$container['asset_code'] = $asset_code;
+				$container['comments'] = $val;
+				$container['users'] = CRUDBooster::myId();
+				$container['created_at'] = date('Y-m-d H:i:s');
+				$containerSave[] = $container;
+			}
+			CommentsGoodDefect::insert($containerSave);
 			CRUDBooster::redirect(CRUDBooster::mainpath('edit/'.$id), trans("Edit Successfully!"), 'success');
 	    }
 

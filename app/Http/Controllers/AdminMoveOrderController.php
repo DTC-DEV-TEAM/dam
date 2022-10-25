@@ -1825,8 +1825,7 @@
 
 				CRUDBooster::sendEmail(['to'=>'rickyalnin201995@gmail.com','data'=>$infos,'template'=>'assets_confirmation','attachments'=>$files]);
 				
-
-				CRUDBooster::sendEmail(['to'=>'marvinmosico@digits.ph','data'=>$infos,'template'=>'assets_confirmation','attachments'=>$files]);
+				CRUDBooster::sendEmail(['to'=>$employee_name->email_address,'data'=>$infos,'template'=>'assets_confirmation','attachments'=>$files]);
 
 				if($arf_header->print_by_form == null){
 

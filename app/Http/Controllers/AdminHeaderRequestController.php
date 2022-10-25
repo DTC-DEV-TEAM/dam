@@ -1311,5 +1311,44 @@
 					echo json_encode($data);
 				 }
 
+				 //Get Assets Hitory tru modal
+				public function getComments(Request $request) {
+					$fields = Request::all();
+					$data = array();
+					$data['status_no'] = 0;
+					$data['message']   ='No Item Found!';
+					$data['items'] = array();
+					$asset_code = $fields['asset_code'];
+					$items = DB::table('comments_good_defect_tbl')
+						->where('comments_good_defect_tbl.asset_code', $asset_code)	
+						->join('cms_users', 'comments_good_defect_tbl.users', '=', 'cms_users.id')
+						->select(	'comments_good_defect_tbl.*',
+									'cms_users.*'
+								)
+						->get();
+		
+					if($items){
+							$data['id'] = $request->id;
+							$data['status'] = 1;
+							$data['problem']  = 1;
+							$data['status_no'] = 1;
+							$data['message']   ='Item Found';
+							$i = 0;
+							foreach ($items as $key => $value) {
+		
+								$return_data[$i]['id']          = 		$value->id;
+								$return_data[$i]['asset_code'] = 		$value->asset_code;
+								$return_data[$i]['comments'] = 		$value->comments;
+								$return_data[$i]['name'] = 		$value->name;
+								$return_data[$i]['created_at'] = 		$value->created_at;
+								$i++;
+			
+							}
+							$data['items'] = $return_data;
+						}	
+					echo json_encode($data);
+					exit;  
+				}
+
 
 	}

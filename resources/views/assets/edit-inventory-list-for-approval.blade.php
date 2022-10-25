@@ -354,19 +354,26 @@
                 remove_na = jQuery.grep(remove_na, function(value) {
                 return value != removeItem;
                 });
-                
-                // console.log(remove_na);
+                var checker = remove_na ? remove_na.length : n;
+                //FOR NA
                 var cont_one = [];
-                for(i=0;i<n;i++){
-                    dc_value =  dc_codes.eq(i).val().concat('-',serial_no.eq(i).val());
+                for(i=0;i<checker;i++){
+                    //dc_value =  dc_codes.eq(i).val().concat('-',serial_no.eq(i).val());
+                    dc_value =  dc_codes.eq(i).val().concat('-',remove_na[i]);
                     cont_one.push(dc_value);
                 }
-                
-                var checkRow = cont_one;
+                //FOR NOT NA
+                var for_not_na = [];
+                for(i=0;i<n;i++){
+                    for_not_na_value =  dc_codes.eq(i).val().concat('-',serial_no.eq(i).val());
+                    for_not_na.push(for_not_na_value);
+                }
+                var checkRowForNa = cont_one;
+                var checkRow = cont_one.length !== 0 ? cont_one : for_not_na;
                 var checkRowFinal = checkRow.filter(function(elem, index, self) {
                     return index === self.indexOf(elem);
                 });
-
+               
                 //header image validation
                 for (var i = 0; i < $("#si_dr").get(0).files.length; ++i) {
                     var file1=$("#si_dr").get(0).files[i].name;
@@ -392,30 +399,34 @@
                     }
                 }
                 //not allowed duplicate
-                var finalDuplicateData = checkRow;
+                var finalDuplicateData = checkRowForNa;
                 var dupArrData = finalDuplicateData.sort(); 
-                if($('.serial_no').val() != ""){
-                    for (var i = 0; i < dupArrData.length - 1; i++) {
-                    if (dupArrData[i + 1] == dupArrData[i]) {
-                        swal({
-                                type: 'error',
-                                title: 'Not allowed duplicate Serial No. and Digits Code!',
-                                icon: 'error'
-                            }); 
-                            event.preventDefault();
-                            return false;
+
+                if(dupArrData.length !== 0){
+                    if($('.serial_no').val() != ""){
+                        for (var i = 0; i < dupArrData.length - 1; i++) {
+                        if (dupArrData[i + 1] == dupArrData[i]) {
+                            swal({
+                                    type: 'error',
+                                    title: 'Not allowed duplicate Serial No. and Digits Code!/Put N/A(not NA, na)',
+                                    icon: 'error'
+                                }); 
+                                event.preventDefault();
+                                return false;
+                            }
                         }
                     }
                 }
+                
 
                  //each value validation
                  var v = $("input[name^='serial_no']").length;
-                    var value = $("input[name^='serial_no']");
+                 var value = $("input[name^='serial_no']");
                     for(i=0;i<v;i++){
                         if(value.eq(i).val() == 0){
                             swal({  
                                     type: 'error',
-                                    title: 'Put N/A in Serial No if not available',
+                                    title: 'Put N/A in Serial No if not available/Put N/A(not NA, na)',
                                     icon: 'error',
                                     customClass: 'swal-wide'
                                 });
@@ -423,8 +434,10 @@
                                 return false;
                         }
                 
-                }
+                    }
 
+               
+       
                 //check existing
                 $.each(checkRowFinal, function(index, item) {
                     if($.inArray(item, data.items) != -1){

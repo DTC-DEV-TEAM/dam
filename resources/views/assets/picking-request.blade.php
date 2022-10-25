@@ -163,7 +163,7 @@
 
                                                                             <input type="hidden" name="good_text[]" id="good_text{{$tableRow1}}" value="0" />
 
-                                                                            <input type="checkbox" name="good[]" id="good{{$tableRow1}}" class="good" required data-id="{{$tableRow1}}" value="0"/>
+                                                                            <input type="checkbox" name="good[]" id="good{{$tableRow1}}" class="good" required data-id="{{$tableRow1}}" value="{{$rowresult->asset_code}}"/>
                                                                             <!-- for good and defect comment -->
                                                                             <input type="hidden" name="arf_number" id="arf_number" value="{{$Header->reference_number}}" />
                                                                             <input type="hidden" name="digits_code[]" id="digits_code" value="{{$rowresult->digits_code}}" />
@@ -174,7 +174,7 @@
 
                                                                             <input type="hidden" name="defective_text[]" id="defective_text{{$tableRow1}}" value="0" />
 
-                                                                            <input type="checkbox" name="defective[]" id="defective{{$tableRow1}}" class="defective" required data-id="{{$tableRow1}}"  value="0"/>
+                                                                            <input type="checkbox" name="defective[]" id="defective{{$tableRow1}}" class="defective" required data-id="{{$tableRow1}}"  value="{{$rowresult->asset_code}}"/>
                                                                         </td>
 
                                                                         <td style="text-align:center" height="10">
@@ -300,15 +300,15 @@
                     <div class="form-group">
                         <label>Comments:</label>
                         <div class="comment_div">
-                        @foreach($comments as $comment)
-                            <span class="text-comment">
-                                <p style="margin-top:5px"><strong>{{ $comment->name }}:</strong>  {{ $comment->comments }} </p>
+                        
+                            <!-- <span class="text-comment">
+                                <p style="margin-top:5px"><strong> </strong>   </p>
                                 <p style="text-align:right; font-size:10px; font-style: italic; border-bottom:1px solid #d2d6de"> {{ $comment->created_at }} </p>
-                            </span>
-                        @endforeach
+                            </span> -->
+                      
                         </div>
                         <br>
-                        <select required selected data-placeholder="-- Please Select Defect Comments --" id="comments[]" name="comments" class="form-select select2" style="width:100%;" multiple="multiple">
+                        <select required selected data-placeholder="-- Select Comments --" id="comments[]" name="comments[]" class="form-select select2" style="width:100%;" multiple="multiple">
                             @foreach($good_defect_lists as $good_defect_list)
                                 <option value=""></option>
                                 <option value="{{ $good_defect_list->defect_description }}">{{ $good_defect_list->defect_description }}</option>
@@ -345,8 +345,7 @@
 <script type="text/javascript">
 $('.select2').select2({
     placeholder_text_single : "-- Select --",
-    multiple: true,
-    minimumResultsForSearch: 20});
+    multiple: true});
     var searchfield = $(this).find('.select2-search--inline');
     var selection = $(this).find('.select2-selection__rendered');
     $(this).find('.select2-search__field').html("");
@@ -363,33 +362,57 @@ $('.select2').select2({
 
     var count_pick = 0;
 
+    var a = 0;
+    var alreadyAdded = [];
     $('.good').change(function() {
-
+        var asset_code = $(this).val();
         var id = $(this).attr("data-id");
-
+       if($('#good'+id).is(':checked')){
+        $.ajax({
+            url: "{{ route('assets.get.comments') }}",
+            dataType: "json",
+            type: "POST",
+            data: {
+                "asset_code": asset_code
+            },
+            success: function (data) {
+                var json = JSON.parse(JSON.stringify(data.items));
+                if(data.items != null){
+                    $.each(json, function (index, item) { 
+                            var row = '<span class="text-comment">' + 
+                                      '<p style="margin-top:5px"><strong>' + item.name + 
+                                      ':</strong>' + item.comments + 
+                                      '</p>' + 
+                                      '<p style="text-align:right; font-size:10px; font-style: italic; border-bottom:1px solid #d2d6de">' + item.created_at + 
+                                      '</p></span>'
+                                      ;
+                    $(".comment_div").append(row);
+                   }); 
+                }else{
+                    var row = '<tpstyle="text-align:center">' + 'No Comment yet' + '</p>'
+                    $(".comment_div").append(row);
+                }
+                 
+                
+            }
+        });
+       }else{
+        $(".comment_div").html("");
+       }
+        
         var ischecked= $(this).is(':checked');
-
         if(ischecked == false){
 
             $("#good_text"+id).val("0");
-
             //$("#defective"+id).val("0");
-
             count_pick--;
-
             if(count_pick == 0){
                 $('#btnSubmit').attr("disabled", true);
-            }
-
-                
+            }                
         }else{
-
             $("#good_text"+id).val("1");
-
             //$("#defective"+id).val("1");
-
             count_pick++;
-
             $('#btnSubmit').attr("disabled", false);
         }
 
@@ -397,11 +420,42 @@ $('.select2').select2({
 
 
     $('.defective').change(function() {
-
+        var asset_code = $(this).val();
         var id = $(this).attr("data-id");
+        if($('#defective' + id).is(':checked')){
+            $.ajax({
+                url: "{{ route('assets.get.comments') }}",
+                dataType: "json",
+                type: "POST",
+                data: {
+                    "asset_code": asset_code
+                },
+                success: function (data) {
+                    var json = JSON.parse(JSON.stringify(data.items));
+                    if(data.items != null){
+                        $.each(json, function (index, item) { 
+                                var row = '<span class="text-comment">' + 
+                                        '<p style="margin-top:5px"><strong>' + item.name + 
+                                        ':</strong>' + item.comments + 
+                                        '</p>' + 
+                                        '<p style="text-align:right; font-size:10px; font-style: italic; border-bottom:1px solid #d2d6de">' + item.created_at + 
+                                        '</p></span>'
+                                        ;
+                        $(".comment_div").append(row);
+                    }); 
+                    }else{
+                        var row = '<tpstyle="text-align:center">' + 'No Comment yet' + '</p>'
+                        $(".comment_div").append(row);
+                    }
+                    
+                    
+                }
+            });
+        }else{
+            $(".comment_div").html("");
+        }
 
         var ischecked= $(this).is(':checked');
-
             if(ischecked == false){
 
                 //$("#good"+id).val("0");

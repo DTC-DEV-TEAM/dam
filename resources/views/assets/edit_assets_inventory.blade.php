@@ -47,7 +47,7 @@
                 box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
                 margin-bottom:0;
             }
-            
+            .select2-container--default .select2-selection--multiple .select2-selection__choice{color:black;}
         </style>
     @endpush
 @section('content')
@@ -120,7 +120,7 @@
                         @endforeach
                         </div>
                         <br>
-                        <select required selected data-placeholder="-- Please Select Defect Comments --" id="comments" name="comments" class="form-select select2" style="width:100%;">
+                        <select required selected data-placeholder="-- Select Comments --" id="comments[]" name="comments[]" class="form-select select2forcomments" style="width:100%;" multiple="multiple">
                             @foreach($good_defect_lists as $good_defect_list)
                                 <option value=""></option>
                                 <option value="{{ $good_defect_list->defect_description }}">{{ $good_defect_list->defect_description }}</option>
@@ -152,6 +152,11 @@
     <script type="text/javascript">
         $(document).ready(function() {
             $('.select2').select2({placeholder_text_single : "-- Select --"})
+
+            $('.select2forcomments').select2({
+            placeholder_text_single : "-- Select --",
+            multiple: true});
+            
             var item_condition = $('#item_condition').val().toLowerCase().replace(/\s/g, '');
             console.log(item_condition);
                 if(item_condition == "defective"){

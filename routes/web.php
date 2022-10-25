@@ -44,6 +44,7 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/get-rejectedProcess','AdminAssetsInventoryHeaderForApprovalController@getrejectedProcess')->name('assets.get.rejectedProcess');
     
     Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/get-history','AdminHeaderRequestController@getHistory')->name('assets.get.history');
+    Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/get-comments','AdminHeaderRequestController@getComments')->name('assets.get.comments');
     Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/get-checkData','AdminHeaderRequestController@getcheckData')->name('assets.get.checkData');
     Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/get-histories','AdminHeaderRequestController@getHistories')->name('assets.get.histories');
     Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/get-assetDescription','AdminHeaderRequestController@getassetDescription')->name('assets.get.assetDescription');
