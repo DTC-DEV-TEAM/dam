@@ -925,7 +925,7 @@
 
 		public function getExport() 
 		{
-			return Excel::download(new ExportHeaderInventory, 'add_inventory.xlsx');
+			return Excel::download(new ExportHeaderInventory, 'requested_inventory.xlsx');
 		}
 
 	}
