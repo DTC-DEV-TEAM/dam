@@ -108,13 +108,13 @@
             <br>
             <!-- Comment Section -->
             <div class="row">  
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <div class="form-group">
                         <label>Comments:</label>
                         <div class="comment_div">
                         @foreach($comments as $comment)
                             <span class="text-comment">
-                            <p style="margin-top:5px"><strong>{{ $comment->name }}:</strong>  {{ $comment->comments }} </p>
+                            <p style="margin-top:5px"><strong>{{ $comment->asset_code }}:</strong>  {{ $comment->comments }} </p>
                             <p style="text-align:right; font-size:10px; font-style: italic; border-bottom:1px solid #d2d6de"> {{ $comment->created_at }} </p>                 
                             </span>
                         @endforeach

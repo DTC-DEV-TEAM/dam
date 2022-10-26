@@ -222,7 +222,7 @@
                                                                         <select required selected data-placeholder="-- Select Comments --" id="comments[]" name="comments[]" class="form-select select2" style="width:100%;" multiple="multiple">
                                                                             @foreach($good_defect_lists as $good_defect_list)
                                                                                 <option value=""></option>
-                                                                                <option value="{{$rowresult->asset_code}}. '-' .{{$good_defect_list->defect_description }}">{{ $good_defect_list->defect_description }}</option>
+                                                                                <option value="{{ $rowresult->asset_code. '-' .$rowresult->digits_code. '-' .$good_defect_list->defect_description }}">{{ $good_defect_list->defect_description }}</option>
                                                                             @endforeach
                                                                         </select>
                                                                         </td>
