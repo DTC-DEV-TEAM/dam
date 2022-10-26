@@ -157,13 +157,13 @@
             placeholder_text_single : "-- Select --",
             multiple: true});
             
-            var item_condition = $('#item_condition').val().toLowerCase().replace(/\s/g, '');
-            console.log(item_condition);
-                if(item_condition == "defective"){
-                    $("#item_condition").prop('disabled', true);
-                }else{
-                    $("#item_condition").prop('disabled', false);
-                }
+            // var item_condition = $('#item_condition').val().toLowerCase().replace(/\s/g, '');
+            // console.log(item_condition);
+            //     if(item_condition == "defective"){
+            //         $("#item_condition").prop('disabled', true);
+            //     }else{
+            //         $("#item_condition").prop('disabled', false);
+            //     }
             $("#btnEditSubmit").click(function(event) {
             event.preventDefault();
                 swal({

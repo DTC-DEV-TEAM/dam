@@ -403,9 +403,6 @@ $('.select2').select2({
                                       ;
                     $(".comment_div").append(row);
                    }); 
-                }else{
-                    var row = '<tpstyle="text-align:center">' + 'No Comment yet' + '</p>'
-                    $(".comment_div").append(row);
                 }
                  
                 
@@ -461,9 +458,6 @@ $('.select2').select2({
                                         ;
                         $(".comment_div").append(row);
                     }); 
-                    }else{
-                        var row = '<tpstyle="text-align:center">' + 'No Comment yet' + '</p>'
-                        $(".comment_div").append(row);
                     }
                     
                     

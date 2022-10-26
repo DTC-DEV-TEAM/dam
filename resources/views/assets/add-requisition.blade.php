@@ -363,9 +363,7 @@
         var app_count = 0;
 
         $('.application').change(function() {
-
             var ischecked= $(this).is(':checked');
-
             if(ischecked == false){
                 app_count--;
             }else{
@@ -549,11 +547,12 @@
 
                         var sub_category_id =  this.value;
 
-                        fruits.push(sub_category_id);
+                        //fruits.push(sub_category_id);
 
-                        //alert(fruits);
+                        //console.log(fruits);
 
-                        if( fruits.includes("LAPTOP") ){
+                        //if( fruits.includes("LAPTOP") ){
+                        if(sub_category_id === "LAPTOP" || sub_category_id === "DESKTOP"){
 
                             $("#application_div").show();
                            // $("#application_others_div").show();
