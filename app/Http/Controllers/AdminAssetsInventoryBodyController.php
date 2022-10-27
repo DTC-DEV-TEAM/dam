@@ -9,6 +9,7 @@
 	use App\AssetsInventoryBody;
 	use App\CommentsGoodDefect;
 	use App\GoodDefectLists;
+	use App\Exports\ExportMultipleSheet;
 	use Maatwebsite\Excel\Facades\Excel;
 	use PhpOffice\PhpSpreadsheet\Spreadsheet;
 	use PhpOffice\PhpSpreadsheet\Reader\Exception;
@@ -40,7 +41,7 @@
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
-			$this->button_export = true;
+			$this->button_export = false;
 			$this->table = "assets_inventory_body";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
@@ -154,8 +155,8 @@
 	        | 
 	        */
 	        $this->index_button = array();
-			// if(CRUDBooster::getCurrentMethod() == 'getIndex'){
-			// 	// $this->index_button[] = ["label"=>"Export","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('export-assets-body'),"color"=>"primary"];
+			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
+			    $this->index_button[] = ["label"=>"Export Data","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('asset-lists-export'),"color"=>"primary"];
 			// 	$this->index_button[] = ["label"=>"Add Inventory","icon"=>"fa fa-files-o","url"=>CRUDBooster::adminPath('assets_inventory_header/add-inventory'),"color"=>"success"];
 			// 	//$this->index_button[] = ["label"=>"Return Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-return'),"color"=>"success"];
 
@@ -163,7 +164,7 @@
 
 			// 	//$this->index_button[] = ["label"=>"Disposal Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-disposal'),"color"=>"success"];
 			
-			// }
+			}
 
 
 	        /* 
@@ -366,6 +367,8 @@
 			$asset_code =  $fields['asset_code'];
 			$item_condition =  $fields['item_condition'];
 			$comments =  $fields['comments'];
+			$other_comment =  $fields['other_comment'];
+		
 			if($item_condition === "Good"){
                $status = 6;
 			}else{
@@ -387,6 +390,7 @@
 				$container['digits_code'] = $digits_code;
 				$container['asset_code'] = $asset_code;
 				$container['comments'] = $val;
+				$container['other_comment'] = $other_comment;
 				$container['users'] = CRUDBooster::myId();
 				$container['created_at'] = date('Y-m-d H:i:s');
 				$containerSave[] = $container;
@@ -461,7 +465,7 @@
 				'assets_inventory_body.id as bodyId'
 			  )->where('assets_inventory_body.id', $id)->first();
 
-			$data['comments'] = CommentsGoodDefect::
+			$comments = CommentsGoodDefect::
 			leftjoin('cms_users', 'comments_good_defect_tbl.users', '=', 'cms_users.id')
 			->select(
 				'comments_good_defect_tbl.*',
@@ -470,7 +474,20 @@
 			  )
 			  ->where('comments_good_defect_tbl.digits_code', $data['Body']->digits_code)
 			  ->where('comments_good_defect_tbl.asset_code', $data['Body']->asset_code)
+			  ->where('comments_good_defect_tbl.comments', '!=' ,'OTHERS')
 			  ->get();
+			$other_comment = CommentsGoodDefect::
+			leftjoin('cms_users', 'comments_good_defect_tbl.users', '=', 'cms_users.id')
+			->select(DB::raw("CONCAT(comments_good_defect_tbl.comments ,'/', comments_good_defect_tbl.other_comment) AS comments, comments_good_defect_tbl.asset_code, cms_users.name")
+			  )
+			  ->where('comments_good_defect_tbl.digits_code', $data['Body']->digits_code)
+			  ->where('comments_good_defect_tbl.asset_code', $data['Body']->asset_code)
+			  ->where('comments_good_defect_tbl.comments', '=' ,'OTHERS')
+			  ->get();
+			//dd($other_comment);
+			$mergeData =  $comments->merge($other_comment);
+		
+			$data['comments'] = $mergeData;
 			$data['good_defect_lists'] = GoodDefectLists::all();
             //dd($data['comments']);
 			  return $this->view("assets.edit_assets_inventory", $data);
@@ -597,5 +614,9 @@
 			$this->ExportExcel($data_array);
 		}
 
+		public function getAssetListsExport() 
+		{
+			return Excel::download(new ExportMultipleSheet, 'asset_lists.xlsx');
+		}
 
 	}

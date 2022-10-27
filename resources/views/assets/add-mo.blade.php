@@ -29,7 +29,7 @@
                 padding: 20px;
                 border: 1px solid #888;
                 width: 40%;
-                height: 250px;
+                height: 270px;
             }
             
             /* The Close Button */
@@ -66,11 +66,12 @@
         <input type="hidden" value="1" name="request_type_id" id="request_type_id">
         <input type="hidden" name="freebies_val" id="freebies_val" value="0">
         <!-- Modal -->
-        <div id="myModal" class="modal">
+        <div id="myModal" class="modal" style="padding: auto">
             <!-- Modal content -->
             <div class="modal-content">
                 <div class='callout callout-info'>
                     <h5>SEARCH FOR <label id="item_search"></label></h5>
+                    <span style="font-style: italic">*NOTE: Please check and match the Item Description before sending request</span>
                     <input type="hidden"  class="form-control" id="add_item_id">
                     <input type="hidden"  class="form-control" id="button_count">
                     <input type="hidden"  class="form-control" id="button_remove">

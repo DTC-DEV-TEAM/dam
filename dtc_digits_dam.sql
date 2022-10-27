@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 25, 2022 at 11:34 AM
+-- Generation Time: Oct 27, 2022 at 12:12 PM
 -- Server version: 10.1.38-MariaDB
 -- PHP Version: 7.4.29
 
@@ -7760,7 +7760,90 @@ INSERT INTO `cms_logs` (`id`, `ipaddress`, `useragent`, `url`, `description`, `d
 (5132, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'asset@digits.ph logout', '', 599, '2022-10-25 09:29:54', NULL),
 (5133, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'federickchua@digits.ph login with IP Address 127.0.0.1', '', 592, '2022-10-25 09:30:06', NULL),
 (5134, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'federickchua@digits.ph logout', '', 592, '2022-10-25 09:30:46', NULL),
-(5135, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'it@digits.ph login with IP Address 127.0.0.1', '', 597, '2022-10-25 09:30:57', NULL);
+(5135, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'it@digits.ph login with IP Address 127.0.0.1', '', 597, '2022-10-25 09:30:57', NULL),
+(5136, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'it@digits.ph logout', '', 597, '2022-10-25 09:36:58', NULL),
+(5137, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'asset@digits.ph login with IP Address 127.0.0.1', '', 599, '2022-10-25 09:37:09', NULL),
+(5138, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'asset@digits.ph logout', '', 599, '2022-10-25 10:06:12', NULL),
+(5139, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'it@digits.ph login with IP Address 127.0.0.1', '', 597, '2022-10-25 10:06:19', NULL),
+(5140, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'it@digits.ph logout', '', 597, '2022-10-25 10:08:56', NULL),
+(5141, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'federickchua@digits.ph login with IP Address 127.0.0.1', '', 592, '2022-10-25 10:09:09', NULL),
+(5142, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'federickchua@digits.ph logout', '', 592, '2022-10-25 10:10:21', NULL),
+(5143, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'approverpersonnel@digits.ph login with IP Address 127.0.0.1', '', 593, '2022-10-25 10:10:35', NULL),
+(5144, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'approverpersonnel@digits.ph logout', '', 593, '2022-10-25 10:11:00', NULL),
+(5145, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'it@digits.ph login with IP Address 127.0.0.1', '', 597, '2022-10-25 10:11:07', NULL),
+(5146, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'it@digits.ph logout', '', 597, '2022-10-25 10:11:59', NULL),
+(5147, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'asset@digits.ph login with IP Address 127.0.0.1', '', 599, '2022-10-25 10:12:06', NULL),
+(5148, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'asset@digits.ph logout', '', 599, '2022-10-25 10:12:46', NULL),
+(5149, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'asset@digits.ph login with IP Address 127.0.0.1', '', 599, '2022-10-25 10:12:56', NULL),
+(5150, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'asset@digits.ph logout', '', 599, '2022-10-25 10:14:16', NULL),
+(5151, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'asset@digits.ph login with IP Address 127.0.0.1', '', 599, '2022-10-25 10:14:25', NULL),
+(5152, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'asset@digits.ph logout', '', 599, '2022-10-25 10:14:44', NULL),
+(5153, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'it@digits.ph login with IP Address 127.0.0.1', '', 597, '2022-10-25 10:14:51', NULL),
+(5154, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/users/add-save', 'Add New Data Requestor firstname 1 Requestor firstname 2 at Users Management', '', 601, '2022-10-25 10:36:10', NULL),
+(5155, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'it@digits.ph logout', '', 597, '2022-10-25 10:36:22', NULL),
+(5156, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'rq1@digits.ph login with IP Address 127.0.0.1', '', 609, '2022-10-25 10:36:31', NULL),
+(5157, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'rq1@digits.ph logout', '', 609, '2022-10-25 10:36:45', NULL),
+(5158, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/users/add-save', 'Add New Data Jack doe at Users Management', '', 601, '2022-10-25 10:40:35', NULL),
+(5159, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/users/add-save', 'Add New Data Jane Doe at Users Management', '', 601, '2022-10-25 10:41:20', NULL),
+(5160, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'it@digits.ph login with IP Address 127.0.0.1', '', 597, '2022-10-25 11:39:14', NULL),
+(5161, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'marvinmosico@digits.ph login with IP Address 127.0.0.1', '', 601, '2022-10-26 01:48:35', NULL),
+(5162, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'asset@digits.ph login with IP Address 127.0.0.1', '', 599, '2022-10-26 02:32:53', NULL),
+(5163, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'asset@digits.ph logout', '', 599, '2022-10-26 02:33:11', NULL),
+(5164, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'admin@digits.ph login with IP Address 127.0.0.1', '', 605, '2022-10-26 02:33:20', NULL),
+(5165, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'admin@digits.ph logout', '', 605, '2022-10-26 02:33:29', NULL),
+(5166, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'it@digits.ph login with IP Address 127.0.0.1', '', 597, '2022-10-26 02:33:37', NULL),
+(5167, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'it@digits.ph logout', '', 597, '2022-10-26 03:28:57', NULL),
+(5168, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'asset@digits.ph login with IP Address 127.0.0.1', '', 599, '2022-10-26 03:29:04', NULL),
+(5169, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'asset@digits.ph logout', '', 599, '2022-10-26 03:31:04', NULL),
+(5170, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'it@digits.ph login with IP Address 127.0.0.1', '', 597, '2022-10-26 03:31:11', NULL),
+(5171, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'it@digits.ph logout', '', 597, '2022-10-26 03:36:25', NULL),
+(5172, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'rq3@digits.ph login with IP Address 127.0.0.1', '', 610, '2022-10-26 03:36:55', NULL),
+(5173, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'rq3@digits.ph logout', '', 610, '2022-10-26 03:38:25', NULL),
+(5174, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'approverpersonnel@digits.ph login with IP Address 127.0.0.1', '', 593, '2022-10-26 03:38:39', NULL),
+(5175, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'approverpersonnel@digits.ph logout', '', 593, '2022-10-26 03:39:02', NULL),
+(5176, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'it@digits.ph login with IP Address 127.0.0.1', '', 597, '2022-10-26 03:39:11', NULL),
+(5177, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'it@digits.ph logout', '', 597, '2022-10-26 03:39:53', NULL),
+(5178, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'asset@digits.ph login with IP Address 127.0.0.1', '', 599, '2022-10-26 03:40:01', NULL),
+(5179, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'asset@digits.ph logout', '', 599, '2022-10-26 03:41:35', NULL),
+(5180, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'it@digits.ph login with IP Address 127.0.0.1', '', 597, '2022-10-26 03:41:42', NULL),
+(5181, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/good_defect_lists/edit-save/21', 'Update data  at Good and Defect Lists', '<table class=\"table table-striped\"><thead><tr><th>Key</th><th>Old Value</th><th>New Value</th></thead><tbody><tr><td>defect_description</td><td>Double-Click Issue</td><td>Double Click Issue</td></tr><tr><td>updated_by</td><td></td><td></td></tr></tbody></table>', 601, '2022-10-26 03:45:01', NULL),
+(5182, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'it@digits.ph logout', '', 597, '2022-10-26 03:46:16', NULL),
+(5183, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'asset@digits.ph login with IP Address 127.0.0.1', '', 599, '2022-10-26 03:46:23', NULL),
+(5184, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'asset@digits.ph logout', '', 599, '2022-10-26 03:54:01', NULL),
+(5185, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'hr@digits.ph login with IP Address 127.0.0.1', '', 594, '2022-10-26 03:54:09', NULL),
+(5186, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'hr@digits.ph logout', '', 594, '2022-10-26 03:56:01', NULL),
+(5187, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'marvinmosico@digits.ph logout', '', 601, '2022-10-26 05:44:33', NULL),
+(5188, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'marvinmosico@digits.ph login with IP Address 127.0.0.1', '', 601, '2022-10-26 07:59:03', NULL),
+(5189, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'marvinmosico@digits.ph logout', '', 601, '2022-10-26 08:20:28', NULL),
+(5190, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'marvinmosico@digits.ph login with IP Address 127.0.0.1', '', 601, '2022-10-26 08:29:36', NULL),
+(5191, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'rq1@digits.ph login with IP Address 127.0.0.1', '', 609, '2022-10-26 08:29:53', NULL),
+(5192, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'rq1@digits.ph logout', '', 609, '2022-10-26 09:08:30', NULL),
+(5193, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'approverpersonnel@digits.ph login with IP Address 127.0.0.1', '', 593, '2022-10-26 09:08:42', NULL),
+(5194, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'approverpersonnel@digits.ph logout', '', 593, '2022-10-26 09:08:57', NULL),
+(5195, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'it@digits.ph login with IP Address 127.0.0.1', '', 597, '2022-10-26 09:09:03', NULL),
+(5196, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'it@digits.ph logout', '', 597, '2022-10-26 09:09:31', NULL),
+(5197, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'asset@digits.ph login with IP Address 127.0.0.1', '', 599, '2022-10-26 09:09:38', NULL),
+(5198, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'asset@digits.ph logout', '', 599, '2022-10-26 09:20:24', NULL),
+(5199, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'it@digits.ph login with IP Address 127.0.0.1', '', 597, '2022-10-26 09:20:31', NULL),
+(5200, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'it@digits.ph logout', '', 597, '2022-10-26 09:27:24', NULL),
+(5201, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'rq1@digits.ph login with IP Address 127.0.0.1', '', 609, '2022-10-26 09:27:33', NULL),
+(5202, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'rq1@digits.ph logout', '', 609, '2022-10-26 09:34:43', NULL),
+(5203, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'asset@digits.ph login with IP Address 127.0.0.1', '', 599, '2022-10-26 09:34:49', NULL),
+(5204, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'asset@digits.ph logout', '', 599, '2022-10-26 09:57:31', NULL),
+(5205, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'marvinmosico@digits.ph login with IP Address 127.0.0.1', '', 601, '2022-10-26 10:20:21', NULL),
+(5206, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'marvinmosico@digits.ph logout', '', 601, '2022-10-26 10:51:25', NULL),
+(5207, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'marvinmosico@digits.ph login with IP Address 127.0.0.1', '', 601, '2022-10-27 04:08:41', NULL),
+(5208, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'rq1@digits.ph login with IP Address 127.0.0.1', '', 609, '2022-10-27 04:11:06', NULL),
+(5209, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'rq1@digits.ph logout', '', 609, '2022-10-27 04:34:59', NULL),
+(5210, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'approverpersonnel@digits.ph login with IP Address 127.0.0.1', '', 593, '2022-10-27 04:35:15', NULL),
+(5211, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'approverpersonnel@digits.ph logout', '', 593, '2022-10-27 04:35:55', NULL);
+INSERT INTO `cms_logs` (`id`, `ipaddress`, `useragent`, `url`, `description`, `details`, `id_cms_users`, `created_at`, `updated_at`) VALUES
+(5212, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'it@digits.ph login with IP Address 127.0.0.1', '', 597, '2022-10-27 04:36:06', NULL),
+(5213, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'it@digits.ph logout', '', 597, '2022-10-27 04:38:22', NULL),
+(5214, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'asset@digits.ph login with IP Address 127.0.0.1', '', 599, '2022-10-27 04:38:31', NULL),
+(5215, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'asset@digits.ph logout', '', 599, '2022-10-27 04:49:45', NULL),
+(5216, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'it@digits.ph login with IP Address 127.0.0.1', '', 597, '2022-10-27 04:50:01', NULL),
+(5217, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/good_defect_lists/add-save', 'Add New Data  at Good and Defect Lists', '', 601, '2022-10-27 04:51:39', NULL);
 
 -- --------------------------------------------------------
 
@@ -8539,7 +8622,10 @@ INSERT INTO `cms_users` (`id`, `name`, `first_name`, `last_name`, `user_name`, `
 (602, 'Christoff Sy', 'Christoff', 'Sy', 'SyC', 'uploads/3/2022-08/businessman.png', 'christoffsy@digits.ph', '$2y$10$kyUQIl7hUg3NAG87xhPLuepqCHpamom0Jr/jJzzmPZIc/8UfRaWya', 1, 'ACTIVE', 2, 0, '2022-08-16 14:33:37', NULL, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (603, 'AP Checker Personnel', 'AP Checker', 'Personnel', 'PersonnelA', 'uploads/3/2022-08/businessman.png', 'ap@digits.ph', '$2y$10$HaeLdHPC6BIeeVHikb0UzOft4kizYyQHxZytpVDxMICDWm9s2S3FS', 7, 'ACTIVE', 2, 0, '2022-08-18 09:20:23', NULL, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (604, 'Store Personnel', 'Store', 'Personnel', 'PersonnelS', 'uploads/3/2022-09/businessman.png', 'store@digits.ph', '$2y$10$0EfvJcWdy8KQZYqRvHV1seidpSO3o0HPdS8.bx.pEKzQ6baZiJ5yC', 8, 'ACTIVE', 2, 0, '2022-09-01 08:27:30', '2022-09-01 08:27:58', 3, 3, NULL, NULL, NULL, NULL, '53', NULL),
-(605, 'Admin Personnel', 'Admin', 'Personnel', 'PersonnelA', 'uploads/3/2022-10/businessman.png', 'admin@digits.ph', '$2y$10$TvhbDjWk9MfhfkYd9v5J6.2e.4f77NvaTM1fiVCFwPPFB95/txoBq', 9, 'ACTIVE', 2, 0, '2022-10-12 03:41:16', NULL, 3, NULL, NULL, NULL, NULL, NULL, '', NULL);
+(605, 'Admin Personnel', 'Admin', 'Personnel', 'PersonnelA', 'uploads/3/2022-10/businessman.png', 'admin@digits.ph', '$2y$10$TvhbDjWk9MfhfkYd9v5J6.2e.4f77NvaTM1fiVCFwPPFB95/txoBq', 9, 'ACTIVE', 2, 0, '2022-10-12 03:41:16', NULL, 3, NULL, NULL, NULL, NULL, NULL, '', NULL),
+(609, 'Requestor firstname 1 Requestor firstname 2', 'Requestor firstname 1', 'Requestor firstname 2', 'Requestor firstname 2R', 'uploads/mrs-avatar.png', 'rq1@digits.ph', '$2y$10$o5j.xU5gqvqgtAFwjmXOoOD3ES/ww/EaFJxuje/y4oI8aCkv3b.Cm', 2, 'ACTIVE', 2, 0, '2022-10-25 10:36:10', NULL, 601, NULL, NULL, NULL, 93, NULL, '', NULL),
+(610, 'Jack doe', 'Jack', 'doe', 'doeJ', 'uploads/mrs-avatar.png', 'rq3@digits.ph', '$2y$10$VCzLMfk0tp4cKyq3sHy/8uFnbk670WIJaSQrwIe..lsy4Mp2jD3zm', 2, 'ACTIVE', 2, 0, '2022-10-25 10:40:35', NULL, 601, NULL, NULL, NULL, 95, NULL, '', NULL),
+(611, 'Jane Doe', 'Jane', 'Doe', 'DoeJ', 'uploads/mrs-avatar.png', 'rq2@digits.ph', '$2y$10$qDldCdPyf8W9rihQuY3T9eVt2eFg3NkccELsMkisrm6jd.hlxRinm', 2, 'ACTIVE', 2, 0, '2022-10-25 10:41:20', NULL, 601, NULL, NULL, NULL, 94, NULL, '', NULL);
 
 -- --------------------------------------------------------
 
@@ -8553,6 +8639,7 @@ CREATE TABLE `comments_good_defect_tbl` (
   `digits_code` varchar(255) DEFAULT NULL,
   `asset_code` varchar(255) DEFAULT NULL,
   `comments` longtext,
+  `other_comment` varchar(255) DEFAULT NULL,
   `users` int(11) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -9426,7 +9513,10 @@ INSERT INTO `employees` (`id`, `employee_code`, `department_id`, `sub_department
 (64, 'EMP-0064', NULL, NULL, NULL, 'SOMBRERO, JENNY MARIE.EEE', 'SOMBRERO, JENNY MARIE', 'DIGITS BLDG. #56 MAYOR IGNACIO SANTOS DIAZ SAN MARTIN DE PORRES QUEZON NCR 1111 PHILIPPINES', 'DIGITS BLDG.', '#56 MAYOR IGNACIO SANTOS DIAZ', 'SAN MARTIN DE PORRES', 1060, 15, '1111', 10, 'SOMBRERO, JENNY MARIE', 'SOMBRERO', 'JENNY MARIE', NULL, NULL, 1, 18, 3, '2022-07-05 03:34:44', '2022-07-21 14:36:22', NULL),
 (65, 'EMP-0065', NULL, NULL, NULL, 'VELASCO, KATLEEN JOY.EEE', 'VELASCO, KATLEEN JOY', 'DIGITS BLDG. #56 MAYOR IGNACIO SANTOS DIAZ SAN MARTIN DE PORRES QUEZON NCR 1111 PHILIPPINES', 'DIGITS BLDG.', '#56 MAYOR IGNACIO SANTOS DIAZ', 'SAN MARTIN DE PORRES', 1060, 15, '1111', 10, 'VELASCO, KATLEEN JOY', 'VELASCO', 'KATLEEN JOY', NULL, NULL, 1, 18, 3, '2022-07-06 08:00:40', '2022-07-21 14:36:10', NULL),
 (66, 'EMP-0066', NULL, NULL, NULL, 'ONDRADE, JANICE.EEE', 'ONDRADE, JANICE', 'DIGITS BLDG. #56 MAYOR IGNACIO SANTOS DIAZ SAN MARTIN DE PORRES QUEZON NCR 1111 PHILIPPINES', 'DIGITS BLDG.', '#56 MAYOR IGNACIO SANTOS DIAZ', 'SAN MARTIN DE PORRES', 1060, 15, '1111', 10, 'ONDRADE, JANICE', 'ONDRADE', 'JANICE', NULL, NULL, 1, 18, 3, '2022-07-08 05:14:14', '2022-07-21 14:35:56', NULL),
-(91, 'EMP-0067', 26, 48, 'ASSOCIATE SOFTWARE DEVELOPER', 'CHUA, FREDERICK WADE.EEE', 'CHUA, FREDERICK WADE', 'DIGITS BLDG #56 MAYOR IGNACIO SANTOS DIAZ SAN MARTIN DE PORRES QUEZON NCR 1111 PHILIPPINES', 'DIGITS BLDG', '#56 MAYOR IGNACIO SANTOS DIAZ', 'SAN MARTIN DE PORRES', 1060, 15, '1111', 10, 'CHUA, FREDERICK WADE', 'CHUA', 'FREDERICK WADE', '1', NULL, 1, 3, NULL, '2022-09-01 06:28:27', NULL, NULL);
+(91, 'EMP-0067', 26, 48, 'ASSOCIATE SOFTWARE DEVELOPER', 'CHUA, FREDERICK WADE.EEE', 'CHUA, FREDERICK WADE', 'DIGITS BLDG #56 MAYOR IGNACIO SANTOS DIAZ SAN MARTIN DE PORRES QUEZON NCR 1111 PHILIPPINES', 'DIGITS BLDG', '#56 MAYOR IGNACIO SANTOS DIAZ', 'SAN MARTIN DE PORRES', 1060, 15, '1111', 10, 'CHUA, FREDERICK WADE', 'CHUA', 'FREDERICK WADE', '1', NULL, 1, 3, NULL, '2022-09-01 06:28:27', NULL, NULL),
+(93, 'EMP-0068', 26, 48, 'ASSOCIATE SOFTWARE DEVELOPER/BUSINESS ANALYST', 'DOE, JHON.EEE', 'DOE, JHON', 'DIGITS BLDG #56 MAYOR IGNACIO SANTOS DIAZ SAN MARTIN DE PORRES QUEZON NCR 1111 PHILIPPINES', 'DIGITS BLDG', '#56 MAYOR IGNACIO SANTOS DIAZ', 'SAN MARTIN DE PORRES', 1060, 15, '1111', 10, 'DOE, JHON', 'DOE', 'JHON', '1', 'rq1@digits.ph', 1, 601, 601, '2022-10-25 10:35:14', '2022-10-25 10:38:01', NULL),
+(94, 'EMP-0069', 26, 48, 'ASSOCIATE SOFTWARE DEVELOPER/BUSINESS ANALYST', 'DOE, JANE.EEE', 'DOE, JANE', 'DIGITS BLDG #56 MAYOR IGNACIO SANTOS DIAZ SAN MARTIN DE PORRES QUEZON NCR 1111 PHILIPPINES', 'DIGITS BLDG', '#56 MAYOR IGNACIO SANTOS DIAZ', 'SAN MARTIN DE PORRES', 1060, 15, '1111', 10, 'DOE, JANE', 'DOE', 'JANE', '1', 'rq2@digits.ph', 1, 601, 601, '2022-10-25 10:37:27', '2022-10-25 10:38:16', NULL),
+(95, 'EMP-0070', 26, 48, 'ASSOCIATE SOFTWARE DEVELOPER/BUSINESS ANALYST', 'DOE, JACK.EEE', 'DOE, JACK', 'DIGITS BLDG #56 MAYOR IGNACIO SANTOS DIAZ SAN MARTIN DE PORRES QUEZON NCR 1111 PHILIPPINES', 'DIGITS BLDG', '#56 MAYOR IGNACIO SANTOS DIAZ', 'SAN MARTIN DE PORRES', 1060, 15, '1111', 10, 'DOE, JACK', 'DOE', 'JACK', '1', 'rq3@digits.ph', 1, 601, NULL, '2022-10-25 10:38:56', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -9495,10 +9585,11 @@ INSERT INTO `good_defect_lists` (`id`, `defect_description`, `created_by`, `upda
 (18, 'The battery does not charge properly', 601, NULL, '2022-10-21 06:59:36', NULL),
 (19, 'Keyboard keys stopped working', 601, NULL, '2022-10-21 06:59:54', NULL),
 (20, 'Repetitive beep sound on starting', 601, NULL, '2022-10-21 07:00:09', NULL),
-(21, 'Double-Click Issue', 601, NULL, '2022-10-21 07:00:46', NULL),
+(21, 'Double Click Issue', 601, NULL, '2022-10-21 07:00:46', '2022-10-26 03:45:01'),
 (22, 'Mouse Stops Working At All', 601, NULL, '2022-10-21 07:01:02', NULL),
 (23, 'Hardware Issues', 601, NULL, '2022-10-21 07:01:15', NULL),
-(24, 'Scratches at the back', 601, NULL, '2022-10-24 03:37:52', NULL);
+(24, 'Scratches at the back', 601, NULL, '2022-10-24 03:37:52', NULL),
+(25, 'OTHERS', 601, NULL, '2022-10-27 04:51:39', NULL);
 
 -- --------------------------------------------------------
 
@@ -11302,7 +11393,7 @@ ALTER TABLE `cms_email_templates`
 -- AUTO_INCREMENT for table `cms_logs`
 --
 ALTER TABLE `cms_logs`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5136;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5218;
 
 --
 -- AUTO_INCREMENT for table `cms_menus`
@@ -11362,7 +11453,7 @@ ALTER TABLE `cms_statistic_components`
 -- AUTO_INCREMENT for table `cms_users`
 --
 ALTER TABLE `cms_users`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=609;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=612;
 
 --
 -- AUTO_INCREMENT for table `comments_good_defect_tbl`
@@ -11404,7 +11495,7 @@ ALTER TABLE `digits_imfs`
 -- AUTO_INCREMENT for table `employees`
 --
 ALTER TABLE `employees`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=93;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=96;
 
 --
 -- AUTO_INCREMENT for table `fulfillment_histories`
@@ -11422,7 +11513,7 @@ ALTER TABLE `generated_assets_histories`
 -- AUTO_INCREMENT for table `good_defect_lists`
 --
 ALTER TABLE `good_defect_lists`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `header_request`

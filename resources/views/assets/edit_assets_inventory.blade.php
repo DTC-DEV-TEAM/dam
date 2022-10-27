@@ -112,7 +112,7 @@
                     <div class="form-group">
                         <label>Comments:</label>
                         <div class="comment_div">
-                        @foreach($comments as $comment)
+                        @foreach($comments as $key => $comment)
                             <span class="text-comment">
                             <p style="margin-top:5px"><strong>{{ $comment->asset_code }}:</strong>  {{ $comment->comments }} </p>
                             <p style="text-align:right; font-size:10px; font-style: italic; border-bottom:1px solid #d2d6de"> {{ $comment->created_at }} </p>                 
@@ -120,12 +120,18 @@
                         @endforeach
                         </div>
                         <br>
-                        <select required selected data-placeholder="-- Select Comments --" id="comments[]" name="comments[]" class="form-select select2forcomments" style="width:100%;" multiple="multiple">
+                        <select required selected data-placeholder="-- Select Comments --" id="comments" name="comments[]" class="form-select select2forcomments" style="width:100%;" multiple="multiple">
                             @foreach($good_defect_lists as $good_defect_list)
                                 <option value=""></option>
                                 <option value="{{ $good_defect_list->defect_description }}">{{ $good_defect_list->defect_description }}</option>
                             @endforeach
                         </select>
+                        <br>
+                        <br>
+                        <div class="form-group" id="others" style="display:none">
+                        <label class="control-label"> Other Comment</label>
+                            <input class="form-control" type="text"  placeholder="Please input comments" name="other_comment" id="other_comment">
+                        </div>
                         <!-- <textarea placeholder="Comment ..." rows="3" class="form-control" name="comments"></textarea> -->
                     </div>
                 </div>
@@ -156,14 +162,24 @@
             $('.select2forcomments').select2({
             placeholder_text_single : "-- Select --",
             multiple: true});
+            $("#comments").find(':selected').attr('disabled','disabled');
+            $("#comments").trigger('change');
             
-            // var item_condition = $('#item_condition').val().toLowerCase().replace(/\s/g, '');
-            // console.log(item_condition);
-            //     if(item_condition == "defective"){
-            //         $("#item_condition").prop('disabled', true);
-            //     }else{
-            //         $("#item_condition").prop('disabled', false);
-            //     }
+            $('#comments').change(function(){
+              var value =  this.value;
+              var allselected = [];
+              $("#comments :selected").each(function() {
+                allselected.push(this.value.toLowerCase().replace(/\s/g, ''));
+              });
+            
+              if($.inArray("others",allselected) > -1){
+                $('#others').show();
+              }else{
+                $('#others').hide();
+              }
+ 
+            });
+
             $("#btnEditSubmit").click(function(event) {
             event.preventDefault();
                 swal({

@@ -887,7 +887,6 @@
         });
 
         $("#btnSubmit").click(function(event) {
-
             var strconfirm = confirm("Are you sure you want to send this request?");
             if (strconfirm == true) {
 
@@ -931,13 +930,11 @@
                     
                 });
 
-                if(app_count == 0){
-
-                    alert("Application cannot be empty!");
-                    event.preventDefault(); // cancel default behavior
-
-                }
-                
+                    if(app_count == 0 && $.inArray($(".sub_category_id").val(),['LAPTOP','DESKTOP']) > -1){
+                        alert("Application cannot be empty!");
+                        event.preventDefault(); // cancel default behavior
+                    }
+                  
             }else{
 
                 return false;
