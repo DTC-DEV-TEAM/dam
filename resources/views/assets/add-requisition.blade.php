@@ -557,12 +557,12 @@
 
                         var sub_category_id =  this.value;
 
-                        //fruits.push(sub_category_id);
+                        fruits.push(sub_category_id);
 
                         //console.log(fruits);
 
-                        //if( fruits.includes("LAPTOP") ){
-                        if(sub_category_id === "LAPTOP" || sub_category_id === "DESKTOP"){
+                        if( fruits.includes("LAPTOP") || fruits.includes("DESKTOP")){
+                        //if(sub_category_id === "LAPTOP" || sub_category_id === "DESKTOP"){
 
                             $("#application_div").show();
                            // $("#application_others_div").show();

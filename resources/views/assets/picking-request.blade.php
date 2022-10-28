@@ -231,7 +231,7 @@
   
                                                                     <tr id="others{{$tableRow1}}" style="display:none">
                                                                     <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                                                                    <td><input type="text" class="form-control" placeholder="Please input other comments" name="other_comment[]"></td>                                                   
+                                                                    <td><input type="text" class="form-control" placeholder="Please input other comments" id="inputValue{{$tableRow1}}" name="other_comment[]"></td>                                                   
                                                                     </tr>
 
                                                                     <?Php $cost_total = $rowresult->total_unit_cost; ?>
@@ -499,6 +499,8 @@ $('.select2').select2({
                 $('#others'+other_id).show();
             }else{
                 $('#others'+other_id).hide();
+                $('#others'+other_id).hide();
+                $('#inputValue'+other_id).val("");
             }
 
         });

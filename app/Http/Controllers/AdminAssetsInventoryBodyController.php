@@ -484,10 +484,10 @@
 			  ->where('comments_good_defect_tbl.asset_code', $data['Body']->asset_code)
 			  ->where('comments_good_defect_tbl.comments', '=' ,'OTHERS')
 			  ->get();
-			//dd($other_comment);
-			$mergeData =  $comments->merge($other_comment);
-		
+			$mergeData = collect();
+			$mergeData =  $comments->toBase()->merge($other_comment);
 			$data['comments'] = $mergeData;
+			
 			$data['good_defect_lists'] = GoodDefectLists::all();
             //dd($data['comments']);
 			  return $this->view("assets.edit_assets_inventory", $data);
