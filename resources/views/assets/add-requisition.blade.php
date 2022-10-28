@@ -6,6 +6,15 @@
                     font-size:14px !important;
                     color:black !important;
             }
+            .select2-selection__rendered {
+                line-height: 31px !important;
+            }
+            .select2-container .select2-selection--single {
+                height: 35px !important;
+            }
+            .select2-selection__arrow {
+                height: 34px !important;
+            }
 
         </style>
     @endpush
@@ -336,7 +345,7 @@
             null;
         };
         setTimeout("preventBack()", 0);
-
+        
         var tableRow = 1;
 
         $("#application_div").hide();
@@ -421,8 +430,8 @@
 
 
                         '<td>'+
-                            '<select class="form-control sub_category_id" name="sub_category_id[]" data-id="' + tableRow + '" id="sub_category_id' + tableRow + '" required >' +
-                            '  <option value="">- Select Sub Category -</option>' +
+                            '<select selected data-placeholder="- Select Sub Category -" class="form-control sub_category_id" name="sub_category_id[]" data-id="' + tableRow + '" id="sub_category_id' + tableRow + '" required style="width:100%">' +
+                            '  <option value=""></option>' +
                             '        @foreach($sub_categories as $data)'+
                             '        <option value="{{$data->class_description}}">{{$data->class_description}}</option>'+
                             '         @endforeach'+
@@ -455,7 +464,8 @@
                     //$('#sub_category_id'+tableRow).attr('disabled', true);
 
                     $('.js-example-basic-multiple').select2();
-
+                    $('.sub_category_id').select2({
+                    placeholder_text_single : "- Select Sub Category -"});
                     $('#app_id'+tableRow).change(function(){
 
                             /*var appothers = this.value;
@@ -586,7 +596,7 @@
 
                 var id_data = $(this).attr("data-id");
 
-                if($("#sub_category_id"+id_data).val() == "LAPTOP"){
+                if($("#sub_category_id"+id_data).val() == "LAPTOP" || $("#sub_category_id"+id_data).val() == "DESKTOP"){
 
                         $("#application_div").hide();
                         $("#application_others_div").hide();

@@ -1319,14 +1319,23 @@
 					$data['message']   ='No Item Found!';
 					$data['items'] = array();
 					$asset_code = $fields['asset_code'];
-					$items = DB::table('comments_good_defect_tbl')
+					$comment = DB::table('comments_good_defect_tbl')
 						->where('comments_good_defect_tbl.asset_code', $asset_code)	
+						->where('comments_good_defect_tbl.comments', '!=' ,'OTHERS')
 						->join('cms_users', 'comments_good_defect_tbl.users', '=', 'cms_users.id')
 						->select(	'comments_good_defect_tbl.*',
 									'cms_users.*'
 								)
 						->get();
-		
+					$other_comment = DB::table('comments_good_defect_tbl')
+						->where('comments_good_defect_tbl.asset_code', $asset_code)	
+						->where('comments_good_defect_tbl.comments', '=' ,'OTHERS')
+						->join('cms_users', 'comments_good_defect_tbl.users', '=', 'cms_users.id')
+						->select(DB::raw("CONCAT(comments_good_defect_tbl.comments ,'/', comments_good_defect_tbl.other_comment) AS comments, comments_good_defect_tbl.asset_code, cms_users.name, comments_good_defect_tbl.created_at as created_at")
+								)
+						->get();
+					$items = $comment->merge($other_comment);
+
 					if($items){
 							$data['id'] = $request->id;
 							$data['status'] = 1;

@@ -7,6 +7,15 @@
                     font-size:14px !important;
                     color:black !important;
             }
+            .select2-selection__rendered {
+                line-height: 31px !important;
+            }
+            .select2-container .select2-selection--single {
+                height: 35px !important;
+            }
+            .select2-selection__arrow {
+                height: 34px !important;
+            }
 
             img[data-action="zoom"] {
             cursor: pointer;

@@ -167,8 +167,8 @@
                                                                             <input type="checkbox" name="good[]" id="good{{$tableRow1}}" class="good" required data-id="{{$tableRow1}}" value="{{$rowresult->asset_code}}"/>
                                                                             <!-- for good and defect comment -->
                                                                             <input type="hidden" name="arf_number" id="arf_number" value="{{$Header->reference_number}}" />
-                                                                            <input type="hidden" name="digits_code[]" id="digits_code" value="{{$rowresult->digits_code}}" />
-                                                                            <input type="hidden" name="asset_code[]" id="asset_code" value="{{$rowresult->asset_code}}" />
+                                                                            <input type="hidden" name="digits_code[]" id="digits_code{{$tableRow1}}" value="{{$rowresult->digits_code}}" />
+                                                                            <input type="hidden" name="asset_code[]" id="asset_code{{$tableRow1}}" value="{{$rowresult->asset_code}}" />
                                                                         </td>
 
                                                                         <td style="text-align:center" height="10">
@@ -219,17 +219,21 @@
                                                                             {{$rowresult->total_unit_cost}}
                                                                         </td> -->
                                                                         <td>
-                                                                        <select required selected data-placeholder="-- Select Comments --" id="comments[]" name="comments[]" class="form-select select2" style="width:100%;" multiple="multiple">
+                                                                        <select required selected data-placeholder="-- Select Comments --" id="comments{{$tableRow1}}" data-id="{{$tableRow1}}" name="comments[]" class="form-select select2 comments" style="width:100%;" multiple="multiple">
                                                                             @foreach($good_defect_lists as $good_defect_list)
                                                                                 <option value=""></option>
                                                                                 <option value="{{ $rowresult->asset_code. '-' .$rowresult->digits_code. '-' .$good_defect_list->defect_description }}">{{ $good_defect_list->defect_description }}</option>
                                                                             @endforeach
                                                                         </select>
                                                                         </td>
-                                                                        
-    
+                                                                       
                                                                     </tr>
-    
+  
+                                                                    <tr id="others{{$tableRow1}}" style="display:none">
+                                                                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                                                                    <td><input type="text" class="form-control" placeholder="Please input other comments" name="other_comment[]"></td>                                                   
+                                                                    </tr>
+
                                                                     <?Php $cost_total = $rowresult->total_unit_cost; ?>
 
                                                                 @endforeach
@@ -474,6 +478,31 @@ $('.select2').select2({
 
     });
 
+    $('.comments').each(function(){
+        var eachData = this.value;
+         count_pick++;
+        //other comment
+        $('#comments'+count_pick).change(function(){
+            var other_id = $(this).attr("data-id");
+            var value =  this.value;
+            var allselected = [];
+            $(".comments :selected").each(function() {
+              allselected.push(this.value.toLowerCase().replace(/\s/g, ''));
+            });
+            var splitData = this.value.split('-');
+            var asset_code = splitData[0];
+            var digits_code = splitData[1];
+            var concat_asset_digits_code = asset_code.concat('-',digits_code);
+            var others = concat_asset_digits_code.concat('-', "others").toLowerCase().replace(/\s/g, '');
+        
+            if($.inArray(others,allselected) > -1){
+                $('#others'+other_id).show();
+            }else{
+                $('#others'+other_id).hide();
+            }
+
+        });
+    });
     $('#btnSubmit').click(function() {
 
         var strconfirm = confirm("Are you sure you want to pick this request?");

@@ -549,7 +549,8 @@
 			$digits_code = $fields['digits_code'];
 			$asset_code = $fields['asset_code'];
 			$comments = $fields['comments'];
-
+			$other_comment = $fields['other_comment'];
+	
 			$HeaderID 					= MoveOrder::where('id', $id)->first();
 
 			//dd($HeaderID->header_request_id);
@@ -677,7 +678,40 @@
 				$container['created_at'] = date('Y-m-d H:i:s');
 				$containerSave[] = $container;
 			}
-			CommentsGoodDefect::insert($containerSave);
+			$otherCommentContainer = [];
+			$otherCommentFinalData = [];
+			foreach((array)$asset_code as $aKey => $aVal){
+				$otherCommentContainer['asset_code'] = $aVal;
+				$otherCommentContainer['digits_code'] = $digits_code[$aKey];
+				$otherCommentContainer['other_comment'] = $other_comment[$aKey];
+				$otherCommentFinalData[] = $otherCommentContainer;
+			}
+			//search other comment in another array
+			$finalData = [];
+			foreach((array)$containerSave as $csKey => $csVal){
+				$i = array_search($csVal['asset_code'], array_column($otherCommentFinalData,'asset_code'));
+				if($i !== false){
+					$csVal['other_comment'] = $otherCommentFinalData[$i];
+					$finalData[] = $csVal;
+				}else{
+					$csVal['other_comment'] = "";
+					$finalData[] = $csVal;
+				}
+			}
+			$finalSaveData = [];
+			$finalContainer = [];
+			foreach((array)$finalData as $key => $val){
+				$finalContainer['arf_number'] = $val['arf_number'];
+				$finalContainer['digits_code'] = $val['digits_code'];
+				$finalContainer['asset_code'] = $val['asset_code'];
+				$finalContainer['comments'] = $val['comments'];
+				$finalContainer['other_comment'] = $val['other_comment']['other_comment'];
+				$finalContainer['users'] = $val['users'];
+				$finalContainer['created_at'] = $val['created_at'];
+				$finalContainerSave[] = $finalContainer;
+			}
+ 
+			CommentsGoodDefect::insert($finalContainerSave);
 
 	    }
 
