@@ -552,17 +552,15 @@
 
                     
 
-
                     $('.sub_category_id').change(function(){
 
                         var sub_category_id =  this.value;
-
-                        fruits.push(sub_category_id);
-
-                        //console.log(fruits);
-
-                        if( fruits.includes("LAPTOP") || fruits.includes("DESKTOP")){
-                        //if(sub_category_id === "LAPTOP" || sub_category_id === "DESKTOP"){
+                        var fruits = [];
+                        $(".sub_category_id :selected").each(function() {
+                            fruits.push(this.value.toLowerCase().replace(/\s/g, ''));
+                        });
+                         console.log(fruits);
+                        if( fruits.includes("laptop") || fruits.includes("desktop")){
 
                             $("#application_div").show();
                            // $("#application_others_div").show();
@@ -593,15 +591,16 @@
             
             //deleteRow
             $(document).on('click', '.removeRow', function() {
-
+               
                 var id_data = $(this).attr("data-id");
 
-                if($("#sub_category_id"+id_data).val() == "LAPTOP" || $("#sub_category_id"+id_data).val() == "DESKTOP"){
+                if($("#sub_category_id"+id_data).val().toLowerCase().replace(/\s/g, '') == "laptop" || $("#sub_category_id"+id_data).val().toLowerCase().replace(/\s/g, '') == "desktop"){
 
                         $("#application_div").hide();
+                        $("#application_div").val("");
                         $("#application_others_div").hide();
                         $("#application_others").removeAttr('required');
-
+   
                 }
 
                 if ($('#asset-items tbody tr').length != 1) { //check if not the first row then delete the other rows
@@ -895,8 +894,9 @@
                 return true;
             });
         });
-
+       
         $("#btnSubmit").click(function(event) {
+        
             var strconfirm = confirm("Are you sure you want to send this request?");
             if (strconfirm == true) {
 
@@ -939,11 +939,13 @@
                     }
                     
                 });
-
-                    if(app_count == 0 && $.inArray($(".sub_category_id").val(),['LAPTOP','DESKTOP']) > -1){
+                $(".sub_category_id :selected").each(function() {
+                    if(app_count == 0 && $.inArray($(this).val().toLowerCase().replace(/\s/g, ''),['laptop','desktop']) > -1){
                         alert("Application cannot be empty!");
                         event.preventDefault(); // cancel default behavior
                     }
+                });
+                    
                   
             }else{
 

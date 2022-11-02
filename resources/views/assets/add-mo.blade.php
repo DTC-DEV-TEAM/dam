@@ -29,7 +29,7 @@
                 padding: 20px;
                 border: 1px solid #888;
                 width: 40%;
-                height: 270px;
+                height: 290px;
             }
             
             /* The Close Button */
@@ -70,7 +70,7 @@
             <!-- Modal content -->
             <div class="modal-content">
                 <div class='callout callout-info'>
-                    <h5>SEARCH FOR <label id="item_search"></label></h5>
+                    <h3>SEARCH FOR <label id="item_search"></label></h3>
                     <span style="font-style: italic">*NOTE: Please check and match the Item Description before sending request</span>
                     <input type="hidden"  class="form-control" id="add_item_id">
                     <input type="hidden"  class="form-control" id="button_count">
