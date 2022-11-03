@@ -222,7 +222,7 @@
                                                                         <select required selected data-placeholder="-- Select Comments --" id="comments{{$tableRow1}}" data-id="{{$tableRow1}}" name="comments[]" class="form-select select2 comments" style="width:100%;" multiple="multiple">
                                                                             @foreach($good_defect_lists as $good_defect_list)
                                                                                 <option value=""></option>
-                                                                                <option value="{{ $rowresult->asset_code. '-' .$rowresult->digits_code. '-' .$good_defect_list->defect_description }}">{{ $good_defect_list->defect_description }}</option>
+                                                                                <option value="{{ $rowresult->asset_code. '|' .$rowresult->digits_code. '|' .$good_defect_list->defect_description }}">{{ $good_defect_list->defect_description }}</option>
                                                                             @endforeach
                                                                         </select>
                                                                         </td>
@@ -489,11 +489,11 @@ $('.select2').select2({
             $(".comments :selected").each(function() {
               allselected.push(this.value.toLowerCase().replace(/\s/g, ''));
             });
-            var splitData = this.value.split('-');
+            var splitData = this.value.split('|');
             var asset_code = splitData[0];
             var digits_code = splitData[1];
-            var concat_asset_digits_code = asset_code.concat('-',digits_code);
-            var others = concat_asset_digits_code.concat('-', "others").toLowerCase().replace(/\s/g, '');
+            var concat_asset_digits_code = asset_code.concat('|',digits_code);
+            var others = concat_asset_digits_code.concat('|', "others").toLowerCase().replace(/\s/g, '');
         
             if($.inArray(others,allselected) > -1){
                 $('#others'+other_id).show();

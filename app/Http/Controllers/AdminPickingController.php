@@ -671,9 +671,9 @@
 			$containerSave = [];
 			foreach((array)$comments as $key => $val){
 				$container['arf_number'] = $arf_number;
-				$container['digits_code'] = explode("-",$val)[1];
-				$container['asset_code'] = explode("-",$val)[0];
-				$container['comments'] = explode("-",$val)[2];
+				$container['digits_code'] = explode("|",$val)[1];
+				$container['asset_code'] = explode("|",$val)[0];
+				$container['comments'] = explode("|",$val)[2];
 				$container['users'] = CRUDBooster::myId();
 				$container['created_at'] = date('Y-m-d H:i:s');
 				$containerSave[] = $container;

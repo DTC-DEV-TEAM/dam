@@ -1156,7 +1156,7 @@
 			$data['items'] = array();
 			$items =  DB::table('assets_inventory_body')->get();
 			$checkRowDb = DB::table('assets_inventory_body')->select(DB::raw("CONCAT(assets_inventory_body.digits_code,'-',assets_inventory_body.serial_no) AS codes"))
-			->where('assets_inventory_body.serial_no', '!=', 'N/A')
+			->whereNotIn('assets_inventory_body.serial_no', ['N/A','NA'])
 			->get()
 			->toArray();
 			$checkRowDbColumn = array_column($checkRowDb, 'codes');
