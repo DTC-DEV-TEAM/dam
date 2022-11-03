@@ -465,9 +465,13 @@
                         $.ajax
                         ({ 
 
-                            type: 'GET',
-                            url: 'https://localhost/dam/public/admin/header_request/subcategories/' + category,
-                            data: '',
+                            type: 'POST',
+                           // url: 'https://localhost/dam/public/admin/header_request/subcategories/' + category,
+                           // data: '',
+                           url: "{{ route('asset.sub.categories') }}",
+                            data: {
+                                "id": category
+                            },
                             success: function(result) {
                                 //alert(result.length);
                             

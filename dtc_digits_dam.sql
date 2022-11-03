@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 03, 2022 at 05:03 AM
+-- Generation Time: Nov 03, 2022 at 11:33 AM
 -- Server version: 10.1.38-MariaDB
 -- PHP Version: 7.4.29
 
@@ -2426,7 +2426,7 @@ INSERT INTO `class` (`id`, `category_id`, `class_code`, `class_description`, `us
 (12, 6, 'FFS', 'STEEL RACK', NULL, 'ACTIVE', 13, NULL, '2021-11-29 11:24:42', NULL, NULL),
 (13, 5, 'OES', 'SECURITY CABLES', NULL, 'ACTIVE', 13, NULL, '2021-12-17 07:51:05', NULL, NULL),
 (14, 5, 'OPC', 'PUSH CART', NULL, 'ACTIVE', 13, 13, '2021-12-21 10:54:42', '2021-12-21 10:57:04', NULL),
-(15, 6, 'FCT', 'CCTV', NULL, 'ACTIVE', 13, NULL, '2021-12-22 05:24:24', NULL, NULL),
+(15, 5, 'FCT', 'CCTV', NULL, 'ACTIVE', 13, NULL, '2021-12-22 05:24:24', NULL, NULL),
 (16, 6, 'FSP', 'SPEAKER', NULL, 'ACTIVE', 13, NULL, '2021-12-22 05:34:52', NULL, NULL),
 (17, 5, 'OBS', 'BARCODE SCANNER', NULL, 'ACTIVE', 13, NULL, '2021-12-29 08:29:54', NULL, NULL),
 (18, 5, 'OCD', 'CASH DRAWER', NULL, 'ACTIVE', 13, NULL, '2021-12-29 09:16:34', NULL, NULL),
@@ -8015,7 +8015,11 @@ INSERT INTO `cms_logs` (`id`, `ipaddress`, `useragent`, `url`, `description`, `d
 (5386, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'asset@digits.ph login with IP Address 127.0.0.1', '', 599, '2022-11-03 02:20:53', NULL),
 (5387, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'asset@digits.ph logout', '', 599, '2022-11-03 02:22:22', NULL),
 (5388, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'it@digits.ph login with IP Address 127.0.0.1', '', 597, '2022-11-03 02:22:32', NULL),
-(5389, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'it@digits.ph logout', '', 597, '2022-11-03 02:23:21', NULL);
+(5389, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'it@digits.ph logout', '', 597, '2022-11-03 02:23:21', NULL),
+(5390, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'rq3@digits.ph login with IP Address 127.0.0.1', '', 610, '2022-11-03 04:25:51', NULL),
+(5391, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/logout', 'marvinmosico@digits.ph logout', '', 601, '2022-11-03 05:01:20', NULL),
+(5392, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'marvinmosico@digits.ph login with IP Address 127.0.0.1', '', 601, '2022-11-03 10:21:02', NULL),
+(5393, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36', 'http://127.0.0.1:8001/admin/login', 'rq3@digits.ph login with IP Address 127.0.0.1', '', 610, '2022-11-03 10:22:40', NULL);
 
 -- --------------------------------------------------------
 
@@ -11574,7 +11578,7 @@ ALTER TABLE `cms_email_templates`
 -- AUTO_INCREMENT for table `cms_logs`
 --
 ALTER TABLE `cms_logs`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5390;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5394;
 
 --
 -- AUTO_INCREMENT for table `cms_menus`
