@@ -169,6 +169,10 @@
 
 				$this->index_button[] = ["label"=>"FA Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-requisition-fa'),"color"=>"success"];
 
+				$this->index_button[] = ["label"=>"Marketing Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-requisition-marketing'),"color"=>"success"];
+				
+				$this->index_button[] = ["label"=>"Supplies Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-requisition-supplies'),"color"=>"success"];
+
 				//$this->index_button[] = ["label"=>"Return Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-return'),"color"=>"success"];
 
 				//$this->index_button[] = ["label"=>"Transfer Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-transfer'),"color"=>"success"];
@@ -526,7 +530,6 @@
 
 			$postdata['privilege_id']		 		= CRUDBooster::myPrivilegeId();
 
-
 			if(!empty($application)){
 				$postdata['application'] 				= implode(", ",$application);
 
@@ -869,8 +872,142 @@
 
 			}
 				
+		}
+
+		public function getAddRequisitionMarketing() {
+
+			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
+				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
+			}
+
+			$this->cbLoader();
+
+			$data['page_title'] = 'Create New Marketing Material Request';
 
 			
+
+			$data['conditions'] = DB::table('condition_type')->where('status', 'ACTIVE')->get();
+
+			$data['employees'] = DB::table('employees')->where('status_id', 1)->orderby('bill_to', 'asc')->get();
+
+			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
+
+			$data['stores'] = DB::table('stores')->where('status', 'ACTIVE')->get();
+
+			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
+
+			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
+
+
+			$data['employeeinfos'] = DB::table('employees')
+										 ->leftjoin('positions', 'employees.position_id', '=', 'positions.id')
+										 ->leftjoin('departments', 'employees.department_id', '=', 'departments.id')
+										 ->leftjoin('companies', 'employees.company_name', '=', 'companies.id')
+										 ->select( 'employees.*', 'positions.position_description as position_description', 'departments.department_name as department_name', 'companies.company_name as company_name')
+										 ->where('employees.id', $data['user']->employee_id)->first();
+			
+			$data['categories'] = DB::table('category')->where('id', 4)->where('category_status', 'ACTIVE')
+													   ->orderby('category_description', 'asc')
+													   ->get();
+
+			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();
+			
+			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
+			
+			if(CRUDBooster::myPrivilegeName() == "Employee"){ 
+
+				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
+
+				return $this->view("assets.add-requisition-marketing", $data);
+
+			}else if(CRUDBooster::myPrivilegeName() == "Store Ops"){ 
+
+				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
+
+
+
+				$data['stores'] = DB::table('stores')->where('id', $data['user']->store_id)->first();
+
+				return $this->view("assets.add-store-requisition-marketing", $data);
+
+			}else{
+
+				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'HR')->get();
+
+				return $this->view("assets.add-hr-requisition", $data);
+
+			}
+				
+		}
+
+		public function getAddRequisitionSupplies() {
+
+			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
+				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
+			}
+
+			$this->cbLoader();
+
+			$data['page_title'] = 'Create New Supplies Request';
+
+			
+
+			$data['conditions'] = DB::table('condition_type')->where('status', 'ACTIVE')->get();
+
+			$data['employees'] = DB::table('employees')->where('status_id', 1)->orderby('bill_to', 'asc')->get();
+
+			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
+
+			$data['stores'] = DB::table('stores')->where('status', 'ACTIVE')->get();
+
+			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
+
+			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
+
+
+			$data['employeeinfos'] = DB::table('employees')
+										 ->leftjoin('positions', 'employees.position_id', '=', 'positions.id')
+										 ->leftjoin('departments', 'employees.department_id', '=', 'departments.id')
+										 ->leftjoin('companies', 'employees.company_name', '=', 'companies.id')
+										 ->select( 'employees.*', 'positions.position_description as position_description', 'departments.department_name as department_name', 'companies.company_name as company_name')
+										 ->where('employees.id', $data['user']->employee_id)->first();
+			
+			$data['categories'] = DB::table('category')->where('id', 2)->where('category_status', 'ACTIVE')
+													   ->orderby('category_description', 'asc')
+													   ->get();
+			$data['item_description'] = DB::table('assets')->where('category_id', 2)
+			                                           //->where('category_status', 'ACTIVE')
+													   ->orderby('item_description', 'asc')
+													   ->get();
+        
+			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();
+			
+			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
+	
+			if(CRUDBooster::myPrivilegeName() == "Employee"){ 
+
+				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
+
+				return $this->view("assets.add-requisition-supplies", $data);
+
+			}else if(CRUDBooster::myPrivilegeName() == "Store Ops"){ 
+
+				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
+
+
+
+				$data['stores'] = DB::table('stores')->where('id', $data['user']->store_id)->first();
+
+				return $this->view("assets.add-store-requisition-supplies", $data);
+
+			}else{
+
+				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'HR')->get();
+
+				return $this->view("assets.add-hr-requisition", $data);
+
+			}
+				
 		}
 
 		public function getDetail($id){

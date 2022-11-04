@@ -1,7 +1,6 @@
 @extends('crudbooster::admin_template')
     @push('head')
         <style type="text/css">   
-
             .select2-selection__choice{
                     font-size:14px !important;
                     color:black !important;
@@ -15,6 +14,7 @@
             .select2-selection__arrow {
                 height: 34px !important;
             }
+
         </style>
     @endpush
 @section('content')
@@ -31,7 +31,7 @@
 
     <form action="{{ CRUDBooster::mainpath('add-save') }}" method="POST" id="AssetRequest" enctype="multipart/form-data">
         <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
-        <input type="hidden" value="5" name="request_type_id" id="request_type_id">
+        <input type="hidden" value="7" name="request_type_id" id="request_type_id">
 
         <div class='panel-body'>
 
@@ -352,9 +352,17 @@
                     var newrow =
                     '<tr>' +
 
-                        '<td >' +
-                        '  <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control itemDesc" data-id="' + tableRow + '" id="itemDesc' + tableRow + '"  name="item_description[]"  required maxlength="100">' +
-                        '</td>' +  
+                        // '<td >' +
+                        // '  <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control itemDesc" data-id="' + tableRow + '" id="itemDesc' + tableRow + '"  name="item_description[]"  required maxlength="100">' +
+                        // '</td>' +  
+                        '<td>'+
+                            '<select selected data-placeholder="- Select Item Description -" class="form-control drop'+ tableRow + '" name="item_description[]" data-id="' + tableRow + '" id="itemDesc' + tableRow + '" required style="width:100%">' +
+                            '  <option value=""></option>' +
+                            '        @foreach($item_description as $desc)'+
+                            '        <option value="{{$desc->item_description}}">{{$desc->item_description}}</option>'+
+                            '         @endforeach'+
+                            '</select>'+
+                        '</td>' +
 
                         '<td>'+
                             '<select selected data-placeholder="- Select Category -" class="form-control drop'+ tableRow + '" name="category_id[]" data-id="' + tableRow + '" id="category_id' + tableRow + '" required style="width:100%">' +
@@ -396,6 +404,8 @@
                     $('#app_id'+tableRow).attr('disabled', true);
 
                     $('.js-example-basic-multiple').select2();
+                    $('#itemDesc'+tableRow).select2({
+                    placeholder_text_single : "- Select Item Description -"});
                     $('#category_id'+tableRow).select2({
                     placeholder_text_single : "- Select Category -",
                     minimumResultsForSearch: -1});

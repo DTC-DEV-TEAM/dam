@@ -134,11 +134,14 @@
 
 				$picked =  			DB::table('statuses')->where('id', 15)->value('id');
 
+				$for_closing =  			DB::table('statuses')->where('id', 19)->value('id');
+
 				$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getRequestPurchasing/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[purchased2_by] == null"];
 				
 
 				$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailPurchasing/[id]'),'icon'=>'fa fa-eye', "showIf"=>"[mo_by] != null"];
 
+				$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::mainpath('getRequestClose/[id]'),'icon'=>'fa fa-check-circle', "showIf"=>"[status_id] == $for_closing"];
 				//$this->addaction[] = ['title'=>'Print','url'=>CRUDBooster::mainpath('getRequestPrintPickList/[id]'),'icon'=>'fa fa-print', "showIf"=>"[purchased2_by] != null && [status_id] == $processing"];
 				
 				//$this->addaction[] = ['title'=>'Print','url'=>CRUDBooster::mainpath('getRequestPrint/[id]'),'icon'=>'fa fa-print', "showIf"=>"[status_id] == $picked"];
@@ -217,7 +220,17 @@
 	        |
 	        */
 	        $this->script_js = NULL;
-
+            $this->script_js = "
+			$('.fa.fa-check-circle').click(function(){
+					var strconfirm = confirm('Are you sure you want to close this request?');
+					if (strconfirm == true) {
+						return true;	
+					}else{		
+						return false;
+						window.stop();
+					}				
+			});
+			";
 
             /*
 	        | ---------------------------------------------------------------------- 
@@ -264,10 +277,10 @@
 	        | $this->style_css = ".style{....}";
 	        |
 	        */
-	        $this->style_css = NULL;
-	        
-	        
-	        
+	        $this->style_css = ".fa.fa-check-circle{
+				color:green;
+				font-size:20px;
+			}";
 	        /*
 	        | ---------------------------------------------------------------------- 
 	        | Include css File 
@@ -486,7 +499,8 @@
 			$processing 			 		= DB::table('statuses')->where('id', 11)->value('id');
 
 			//$postdata['status_id'] 			 = $processing;
-			if($arf_header->request_type_id == 5){
+			if(in_array($arf_header->request_type_id, [5, 6, 7])){
+			//if($arf_header->request_type_id == 5){
 
 				$postdata['status_id']		 			=	 StatusMatrix::where('current_step', 3)
 																		   ->where('request_type', $arf_header->request_type_id)
@@ -588,16 +602,18 @@
 
 
 
-				if($arf_header->request_type_id == 5){
-
-					$postdata['status_id']		 	=	StatusMatrix::where('current_step', 4)
+				if(in_array($arf_header->request_type_id, [5, 6, 7])){
+                //if($arf_header->request_type_id == 5){
+					$postdata['status_id']		 	=	StatusMatrix::where('current_step', 9)
+					//$postdata['status_id']		 	=	StatusMatrix::where('current_step', 4)
 					->where('request_type', $arf_header->request_type_id)
 					//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
 					->value('status_id');
 
 				}else{
 
-					$postdata['status_id']		 	=	StatusMatrix::where('current_step', 5)
+					$postdata['status_id']		 	=	StatusMatrix::where('current_step', 10)
+					//$postdata['status_id']		 	=	StatusMatrix::where('current_step', 5)
 					->where('request_type', $arf_header->request_type_id)
 					//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
 					->value('status_id');
@@ -1148,6 +1164,19 @@
 			
 			
 			return $this->view("assets.mo-detail", $data);
+		}
+
+		public function getRequestClose($id) {
+
+			HeaderRequest::where('id',$id)
+			->update([
+				    'closing_plug'=> 1,
+					'status_id'=> 13,
+					'closed_by'=> CRUDBooster::myId(),
+					'closed_at'=> date('Y-m-d H:i:s')	
+			]);	
+			
+			CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Request has been closed successfully!"), 'info');
 		}
 
 	}

@@ -57,7 +57,9 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/header_request/sub-categories','AdminHeaderRequestController@SubCategories')->name('asset.sub.categories');
     Route::post('/employees','AdminHeaderRequestController@Employees');
     Route::post('/companies','AdminHeaderRequestController@Companies');
-    Route::get(config('crudbooster.ADMIN_PATH').'/header_request/add-requisition-fa', 'AdminHeaderRequestController@getAddRequisitionFA')->name('assets.add.requisition.fa'); 
+    Route::get(config('crudbooster.ADMIN_PATH').'/header_request/add-requisition-fa', 'AdminHeaderRequestController@getAddRequisitionFA')->name('assets.add.requisition.fa');
+    Route::get(config('crudbooster.ADMIN_PATH').'/header_request/add-requisition-marketing', 'AdminHeaderRequestController@getAddRequisitionMarketing')->name('assets.add.requisition.marketing'); 
+    Route::get(config('crudbooster.ADMIN_PATH').'/header_request/add-requisition-supplies', 'AdminHeaderRequestController@getAddRequisitionsupplies')->name('assets.add.requisition.supplies'); 
     Route::get('admin/header_request/subcategories/{id}','AdminHeaderRequestController@SubCategories');
     Route::get('admin/header_request/RemoveItem','AdminHeaderRequestController@RemoveItem');
 
@@ -73,6 +75,8 @@ Route::group(['middleware' => ['web']], function() {
     //PurchasingRequest
     Route::get('/admin/for_purchasing/getRequestPurchasing/{id}','AdminForPurchasingController@getRequestPurchasing')->name('purchasing-request');
     Route::get('/admin/for_purchasing/getRequestPrint/{id}','AdminForPurchasingController@getRequestPrint')->name('print-request');
+    Route::get('/admin/for_purchasing/getRequestClose/{id}','AdminForPurchasingController@getRequestClose')->name('purchasing-request');
+    
     //Route::get('/admin/for_purchasing/getRequestPrintPickList/{id}','AdminForPurchasingController@getRequestPrintPickList')->name('print-picklist');
     Route::get('admin/for_purchasing/ARFUpdate','AdminForPurchasingController@ARFUpdate');
     Route::get('admin/for_purchasing/PickListUpdate','AdminForPurchasingController@PickListUpdate');

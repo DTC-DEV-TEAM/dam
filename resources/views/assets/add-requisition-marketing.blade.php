@@ -31,7 +31,7 @@
 
     <form action="{{ CRUDBooster::mainpath('add-save') }}" method="POST" id="AssetRequest" enctype="multipart/form-data">
         <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
-        <input type="hidden" value="5" name="request_type_id" id="request_type_id">
+        <input type="hidden" value="6" name="request_type_id" id="request_type_id">
 
         <div class='panel-body'>
 
@@ -401,7 +401,6 @@
                     minimumResultsForSearch: -1});
                     $('#sub_category_id'+tableRow).select2({
                     placeholder_text_single : "- Select Sub Category -"});
-
                     $('#sub_category_id'+tableRow).attr('disabled', true);
 
                     $('#app_id'+tableRow).change(function(){
@@ -491,7 +490,7 @@
                                 var i;
                                 var showData = [];
 
-                                showData[0] = "<option value=''>-- Select Sub Category --</option>";
+                                showData[0] = "<option value=''></option>";
                                 
                                 for (i = 0; i < result.length; ++i) {
                                     var j = i + 1;
