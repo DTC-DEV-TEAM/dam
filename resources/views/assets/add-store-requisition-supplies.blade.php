@@ -99,6 +99,18 @@
 
             </div>
 
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label require">{{ trans('message.form-label.store_branch') }}</label>
+                         
+                        <input type="text" class="form-control"  id="store_branch" name="store_branch"  required readonly value="{{$stores->bea_mo_store_name}}"> 
+                        <input type="hidden" class="form-control"  id="store_branch_id" name="store_branch_id"  required readonly value="{{$stores->id}}"> 
+
+                    </div>
+                </div>
+            </div>
+
             <hr/>
 
             <div class="row"> 
@@ -352,21 +364,21 @@
                     var newrow =
                     '<tr>' +
 
-                        // '<td >' +
-                        // '  <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control itemDesc" data-id="' + tableRow + '" id="itemDesc' + tableRow + '"  name="item_description[]"  required maxlength="100">' +
-                        // '</td>' +  
-                        '<td>'+
-                            '<select selected data-placeholder="- Select Item Description -" class="form-control drop'+ tableRow + '" name="item_description[]" data-id="' + tableRow + '" id="itemDesc' + tableRow + '" required style="width:100%">' +
-                            '  <option value=""></option>' +
-                            '        @foreach($item_description as $desc)'+
-                            '        <option value="{{$desc->item_description}}">{{$desc->item_description}}</option>'+
-                            '         @endforeach'+
-                            '</select>'+
-                        '</td>' +
+                        '<td >' +
+                        '  <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control itemDesc" data-id="' + tableRow + '" id="itemDesc' + tableRow + '"  name="item_description[]"  required maxlength="100">' +
+                        '</td>' +  
+                        // '<td>'+
+                        //     '<select selected data-placeholder="- Select Item Description -" class="form-control drop'+ tableRow + '" name="item_description[]" data-id="' + tableRow + '" id="itemDesc' + tableRow + '" required style="width:100%">' +
+                        //     '  <option value=""></option>' +
+                        //     '        @foreach($item_description as $desc)'+
+                        //     '        <option value="{{$desc->item_description}}">{{$desc->item_description}}</option>'+
+                        //     '         @endforeach'+
+                        //     '</select>'+
+                        // '</td>' +
 
                         '<td>'+
-                            '<select selected data-placeholder="- Select Category -" class="form-control drop'+ tableRow + '" name="category_id[]" data-id="' + tableRow + '" id="category_id' + tableRow + '" required style="width:100%">' +
-                            '  <option value=""></option>' +
+                            '<select class="form-control drop'+ tableRow + '" name="category_id[]" data-id="' + tableRow + '" id="category_id' + tableRow + '" required style="width:100%">' +
+                            '  ' +
                             '        @foreach($categories as $data)'+
                             '        <option value="{{$data->category_description}}">{{$data->category_description}}</option>'+
                             '         @endforeach'+
@@ -374,10 +386,19 @@
                         '</td>' +
 
                         '<td>'+
-                            '<select selected data-placeholder="- Select Sub Category -" class="form-control" name="sub_category_id[]" data-id="' + tableRow + '" id="sub_category_id' + tableRow + '" required style="width:100%">' +
-                         
+                            '<select selected data-placeholder="- Select Sub Category -" class="form-control sub_category_id" name="sub_category_id[]" data-id="' + tableRow + '" id="sub_category_id' + tableRow + '" required style="width:100%">' +
+                            '  <option value=""></option>' +
+                            '        @foreach($sub_categories as $data)'+
+                            '        <option value="{{$data->class_description}}">{{$data->class_description}}</option>'+
+                            '         @endforeach'+
                             '</select>'+
-                        '</td>' +    
+                        '</td>' +
+
+                        // '<td>'+
+                        //     '<select selected data-placeholder="- Select Sub Category -" class="form-control" name="sub_category_id[]" data-id="' + tableRow + '" id="sub_category_id' + tableRow + '" required style="width:100%">' +
+                         
+                        //     '</select>'+
+                        // '</td>' +    
                         /*
                         '<td>'+
                             '<select class="js-example-basic-multiple" multiple="multiple" name="app_id' + tableRow + '[]" data-id="' + tableRow + '" id="app_id' + tableRow + '" required style="width:100%;">' +
@@ -404,15 +425,13 @@
                     $('#app_id'+tableRow).attr('disabled', true);
 
                     $('.js-example-basic-multiple').select2();
-                    $('#itemDesc'+tableRow).select2({
-                    placeholder_text_single : "- Select Item Description -"});
-                    $('#category_id'+tableRow).select2({
-                    placeholder_text_single : "- Select Category -",
-                    minimumResultsForSearch: -1});
+                    // $('#itemDesc'+tableRow).select2({
+                    // placeholder_text_single : "- Select Item Description -"});
+                    $('#category_id'+tableRow).select2({minimumResultsForSearch: -1});
                     $('#sub_category_id'+tableRow).select2({
                     placeholder_text_single : "- Select Sub Category -"});
 
-                    $('#sub_category_id'+tableRow).attr('disabled', true);
+                    // $('#sub_category_id'+tableRow).attr('disabled', true);
 
                     $('#app_id'+tableRow).change(function(){
 

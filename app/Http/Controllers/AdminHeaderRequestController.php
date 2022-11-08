@@ -910,6 +910,7 @@
 			$data['categories'] = DB::table('category')->where('id', 4)->where('category_status', 'ACTIVE')
 													   ->orderby('category_description', 'asc')
 													   ->get();
+			$data['sub_categories'] = DB::table('class')->where('class_status', 'ACTIVE')->where('category_id', 4)->orderby('class_description', 'asc')->get();
 
 			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();
 			
@@ -976,6 +977,8 @@
 			$data['categories'] = DB::table('category')->where('id', 2)->where('category_status', 'ACTIVE')
 													   ->orderby('category_description', 'asc')
 													   ->get();
+			$data['sub_categories'] = DB::table('class')->where('class_status', 'ACTIVE')->where('category_id', 2)->orderby('class_description', 'asc')->get();
+
 			$data['item_description'] = DB::table('assets')->where('category_id', 2)
 			                                           //->where('category_status', 'ACTIVE')
 													   ->orderby('item_description', 'asc')

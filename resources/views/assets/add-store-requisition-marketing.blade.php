@@ -105,6 +105,7 @@
                         <label class="control-label require">{{ trans('message.form-label.store_branch') }}</label>
                          
                         <input type="text" class="form-control"  id="store_branch" name="store_branch"  required readonly value="{{$stores->bea_mo_store_name}}"> 
+                        <input type="hidden" class="form-control"  id="store_branch_id" name="store_branch_id"  required readonly value="{{$stores->id}}"> 
 
                     </div>
                 </div>
@@ -368,8 +369,8 @@
                         '</td>' +  
 
                         '<td>'+
-                            '<select selected data-placeholder="- Select Category -" class="form-control drop'+ tableRow + '" name="category_id[]" data-id="' + tableRow + '" id="category_id' + tableRow + '" required style="width:100%">' +
-                            '  <option value=""></option>' +
+                            '<select class="form-control drop'+ tableRow + '" name="category_id[]" data-id="' + tableRow + '" id="category_id' + tableRow + '" required style="width:100%">' +
+                            ' ' +
                             '        @foreach($categories as $data)'+
                             '        <option value="{{$data->category_description}}">{{$data->category_description}}</option>'+
                             '         @endforeach'+
@@ -377,10 +378,18 @@
                         '</td>' +
 
                         '<td>'+
-                            '<select selected data-placeholder="- Select Sub Category -" class="form-control" name="sub_category_id[]" data-id="' + tableRow + '" id="sub_category_id' + tableRow + '" required style="width:100%">' +
-                         
+                            '<select selected data-placeholder="- Select Sub Category -" class="form-control sub_category_id" name="sub_category_id[]" data-id="' + tableRow + '" id="sub_category_id' + tableRow + '" required style="width:100%">' +
+                            '  <option value=""></option>' +
+                            '        @foreach($sub_categories as $data)'+
+                            '        <option value="{{$data->class_description}}">{{$data->class_description}}</option>'+
+                            '         @endforeach'+
                             '</select>'+
-                        '</td>' +    
+                        '</td>' +
+                        // '<td>'+
+                        //     '<select selected data-placeholder="- Select Sub Category -" class="form-control" name="sub_category_id[]" data-id="' + tableRow + '" id="sub_category_id' + tableRow + '" required style="width:100%">' +
+                         
+                        //     '</select>'+
+                        // '</td>' +    
                         /*
                         '<td>'+
                             '<select class="js-example-basic-multiple" multiple="multiple" name="app_id' + tableRow + '[]" data-id="' + tableRow + '" id="app_id' + tableRow + '" required style="width:100%;">' +
@@ -407,12 +416,10 @@
                     $('#app_id'+tableRow).attr('disabled', true);
 
                     $('.js-example-basic-multiple').select2();
-                    $('#category_id'+tableRow).select2({
-                    placeholder_text_single : "- Select Category -",
-                    minimumResultsForSearch: -1});
+                    $('#category_id'+tableRow).select2({minimumResultsForSearch: -1});
                     $('#sub_category_id'+tableRow).select2({
                     placeholder_text_single : "- Select Sub Category -"});
-                    $('#sub_category_id'+tableRow).attr('disabled', true);
+                    //$('#sub_category_id'+tableRow).attr('disabled', true);
 
                     $('#app_id'+tableRow).change(function(){
 
@@ -460,16 +467,16 @@
                         var category =  $('#category_id'+$(this).attr("data-id")).val();
                         var description = this.value;
 
-                        if(description.includes("LAPTOP") && category == "IT ASSETS"){
+                        // if(description.includes("LAPTOP") && category == "IT ASSETS"){
                         
-                            // alert(description);
+                        //     // alert(description);
 
-                            $('#app_id'+$(this).attr("data-id")).attr('disabled', false);
+                        //     $('#app_id'+$(this).attr("data-id")).attr('disabled', false);
 
-                        }else{
+                        // }else{
                         
-                            $('#app_id'+$(this).attr("data-id")).attr('disabled', true);
-                        }
+                        //     $('#app_id'+$(this).attr("data-id")).attr('disabled', true);
+                        // }
 
 
                     });
@@ -508,7 +515,7 @@
                                     showData[j] = "<option value='"+result[i].class_description+"'>"+result[i].class_description+"</option>";
                                 }
                                     
-                                $('#sub_category_id'+id_data).attr('disabled', false);
+                                //$('#sub_category_id'+id_data).attr('disabled', false);
                                 
                                 jQuery('#sub_category_id'+id_data).html(showData);        
                             
