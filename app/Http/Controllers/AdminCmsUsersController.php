@@ -188,8 +188,9 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 
 						$('#form-group-department_id').hide();	
 						$('#department_id').removeAttr('required');
-						$('#form-group-employee_id').hide();
-						$('#employee_id').removeAttr('required');
+						$('#form-group-employee_id').show();
+						$('#employee_id').attr('required', 'required');
+						//$('#employee_id').removeAttr('required');
 
 						$('#form-group-company_name_id').hide();
 						$('#company_name_id').removeAttr('required');
@@ -282,8 +283,11 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 
 						$('#form-group-department_id').hide();	
 						$('#department_id').removeAttr('required');
-						$('#form-group-employee_id').hide();
-						$('#employee_id').removeAttr('required');
+
+						$('#form-group-employee_id').show();
+						$('#employee_id').attr('required', 'required');
+						// $('#form-group-employee_id').hide();
+						// $('#employee_id').removeAttr('required');
 
 						$('#form-group-company_name_id').hide();
 						$('#company_name_id').removeAttr('required');
@@ -356,8 +360,10 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 
 					$('#form-group-department_id').hide();	
 					$('#department_id').removeAttr('required');
-					$('#form-group-employee_id').hide();
-					$('#employee_id').removeAttr('required');
+					$('#form-group-employee_id').show();
+					$('#employee_id').attr('required', 'required');
+					// $('#form-group-employee_id').hide();
+					// $('#employee_id').removeAttr('required');
 
 					$('#form-group-company_name_id').hide();
 					$('#company_name_id').removeAttr('required');
