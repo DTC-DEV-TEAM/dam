@@ -365,7 +365,8 @@
                     '<tr>' +
 
                         '<td >' +
-                        '  <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control itemDesc" data-id="' + tableRow + '" id="itemDesc' + tableRow + '"  name="item_description[]"  required maxlength="100">' +
+                        '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control itemDesc" data-id="' + tableRow + '" id="itemDesc' + tableRow + '"  name="item_description[]"  required maxlength="100" autocomplete="off">' +
+                        '<div id="suppliesList'+ tableRow +'"></div>' +
                         '</td>' +  
                         // '<td>'+
                         //     '<select selected data-placeholder="- Select Item Description -" class="form-control drop'+ tableRow + '" name="item_description[]" data-id="' + tableRow + '" id="itemDesc' + tableRow + '" required style="width:100%">' +
@@ -497,13 +498,37 @@
                     $('#AppOthers'+tableRow).hide();
                     $('#AppOthers'+tableRow).removeAttr('required');
 
+                    //get suggestion supplies when typing in item description
+                    $('#itemDesc'+tableRow).on("keyup", function() {
+                    //$('#itemDesc'+tableRow).keyup(function(){ 
+                        var query = $(this).val(); 
+                        console.log(query);
+                        if(query != ''){
+                            var _token = $('input[name="_token"]').val();
+                            $.ajax({
+                                url:"{{ route('assets.get.supplies') }}",
+                                method:"POST",
+                                data:{query:query, _token:_token},
+                                success:function(data){
+                                    $('#suppliesList'+tableRow).fadeIn();  
+                                    $('#suppliesList'+tableRow).html(data);
+                                }   
+                            });
+                        }else{
+                            $('#suppliesList'+tableRow).fadeOut();  
+                            $('#suppliesList'+tableRow).html("");
+                        }
+                    });
+
+                    $(document).on('click', 'li', function(){  
+                        $('#itemDesc'+tableRow).val($(this).text());  
+                        $('#suppliesList'+tableRow).fadeOut();  
+                    });  
+
                     $('#category_id'+tableRow).change(function(){
-
                         var category =  this.value;
-
                         var id_data = $(this).attr("data-id");
                         // $('.account'+id_data).prop("disabled", false);
-
                         $.ajax
                         ({ 
 
@@ -893,6 +918,7 @@
 
         });
 
+       
 
 
     </script>

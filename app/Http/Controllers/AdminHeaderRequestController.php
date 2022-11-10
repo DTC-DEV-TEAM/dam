@@ -1503,5 +1503,24 @@
 					exit;  
 				}
 
+				function getSupplies(Request $request){
+					$fields = Request::all();
+					$search = $fields['query'];
+					if($search){
+						$data = DB::table('assets')
+							->where('item_description', 'LIKE', "%{$search}%")
+							->where('category_id', 2)
+							->get();
+						$output = '<ul class="dropdown-menu" style="display:block; position:relative;width:100%;height:auto;">';
+						foreach($data as $row)
+						{
+							$output .= '
+							<li><a class="dropdown-item" href="#">'.$row->item_description.'</a></li>
+							';
+						}
+						$output .= '</ul>';
+						echo $output;
+					}
+				}
 
 	}
