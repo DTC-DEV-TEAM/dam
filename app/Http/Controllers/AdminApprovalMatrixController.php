@@ -57,7 +57,8 @@
 				$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE'];
 			}	
 			
-			$this->form[] = ['label'=>'Department List','name'=>'department_list','type'=>'check-box','validation'=>'required','width'=>'col-sm-5','datatable'=>'departments,department_name','datatable_where'=>"status = 'ACTIVE'"];
+			//$this->form[] = ['label'=>'Department List','name'=>'department_list','type'=>'check-box','validation'=>'required','width'=>'col-sm-5','datatable'=>'departments,department_name','datatable_where'=>"status = 'ACTIVE'"];
+			$this->form[] = ['label'=>'Users List','name'=>'user_list','type'=>'check-box','validation'=>'required','width'=>'col-sm-5','datatable'=>'cms_users,name','datatable_where'=>"status = 'ACTIVE'"];
 
 			# END FORM DO NOT REMOVE THIS LINE
 

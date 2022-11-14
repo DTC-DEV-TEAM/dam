@@ -41,6 +41,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 
 		# START FORM DO NOT REMOVE THIS LINE
 		$this->form = array();
+
 		if(CRUDBooster::isSuperadmin() || CRUDBooster::myPrivilegeName() == "Admin" || CRUDBooster::myPrivilegeName() == "HR") {
 
 		    $this->form[] = array("label"=>"First Name","name"=>"first_name",'required'=>true,'validation'=>'required|min:2', 'width'=>'col-sm-5');
@@ -60,6 +61,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 		if((CRUDBooster::isSuperadmin() || CRUDBooster::myPrivilegeName() == "Admin" || CRUDBooster::myPrivilegeName() == "HR") && (CRUDBooster::getCurrentMethod() == 'getEdit' || CRUDBooster::getCurrentMethod() == 'postEditSave')){
 		    $this->form[] = array("label"=>"Status","name"=>"status","type"=>"select","dataenum"=>"ACTIVE;INACTIVE",'required'=>true, 'width'=>'col-sm-5');
 		}
+		
 		if(CRUDBooster::myPrivilegeName() == "Admin"){
 			$this->form[] = array("label"=>"Privilege","name"=>"id_cms_privileges","type"=>"select","datatable"=>"cms_privileges,name","datatable_where"=>"name LIKE '%REQUESTOR' || name LIKE '%OIC' || name LIKE '%AP CHECKER' || name LIKE '%TREASURY'", 'width'=>'col-sm-5');				
 			// $this->form[] = array("label"=>"Channel","name"=>"channels_id","type"=>"select","datatable"=>"channels,channel_name", 'width'=>'col-sm-5');
@@ -68,25 +70,26 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 		}elseif(CRUDBooster::myPrivilegeName() == "HR"){
 			$this->form[] = array("label"=>"Privilege","name"=>"id_cms_privileges","type"=>"select","datatable"=>"cms_privileges,name","datatable_where"=>"name LIKE '%REQUESTOR' || name LIKE '%OIC' || name LIKE '%EMPLOYEE' || name LIKE '%TREASURY'", 'width'=>'col-sm-5');				
 			$this->form[] = array("label"=>"Employee Name","name"=>"employee_id","type"=>"select2","datatable"=>"employees,bill_to", 'width'=>'col-sm-5' );
-		}
-		elseif(CRUDBooster::isSuperadmin()) {
+		}elseif(CRUDBooster::isSuperadmin()) {
 
 			$this->form[] = array("label"=>"Privilege","name"=>"id_cms_privileges","type"=>"select","datatable"=>"cms_privileges,name", 'width'=>'col-sm-5');	
 
-			//$this->form[] = ['label'=>'Company Name','name'=>'company_name_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'companies,company_name','datatable_where'=>"status = 'ACTIVE'"];
+			$this->form[] = ['label'=>'Company Name','name'=>'company_name_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'companies,company_name','datatable_where'=>"status = 'ACTIVE'"];
 
 			$this->form[] = array("label"=>"Employee Name","name"=>"employee_id","type"=>"select2","datatable"=>"employees,bill_to", 'width'=>'col-sm-5' );
-
-			$this->form[] = array("label"=>"Location","name"=>"location_id","type"=>"check-box5","datatable"=>"warehouse_location_model,location", 'datatable_where'=>"id != '4'",'width'=>'col-sm-10' );
-
-			$this->form[] = array("label"=>"Stores","name"=>"store_id","type"=>"check-box","datatable"=>"stores,bea_mo_store_name", 'datatable_where'=>"status = 'ACTIVE'", 'width'=>'col-sm-10' );
-
 			
+			$this->form[] = array('label'=>'Users to Approve','name'=>'user_id','type'=>'check-box6','validation'=>'required','datatable'=>'cms_users,name','datatable_where'=>"first_name NOT LIKE '%Approver'",'width'=>'col-sm-10');
+			
+			$this->form[] = array("label"=>"Location","name"=>"location_id","type"=>"check-box5","datatable"=>"warehouse_location_model,location", 'datatable_where'=>"id != '4'");
+			
+			$this->form[] = array("label"=>"Stores","name"=>"store_id","type"=>"check-box","datatable"=>"stores,bea_mo_store_name", 'datatable_where'=>"status = 'ACTIVE'", 'width'=>'col-sm-10' );
+            
+		   
 			//$this->form[] = array("label"=>"Department","name"=>"department_id","type"=>"check-box","datatable"=>"departments,department_name", 'width'=>'col-sm-10' );
 
 		}
 
-
+		
 		# END FORM DO NOT REMOVE THIS LINE
 
 		$this->button_selected = array();
@@ -164,6 +167,8 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 				$('#form-group-location_id').hide();
 				$('#location_id').removeAttr('required');
 				
+				$('#form-group-user_id').hide();
+				$('#user_id').removeAttr('required');
 
 				$('#id_cms_privileges').change(function() {
 
@@ -183,6 +188,29 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 
 						$('#form-group-location_id').hide();
 						$('#location_id').removeAttr('required');
+
+						$('#form-group-user_id').hide();
+					    $('#user_id').removeAttr('required');
+	
+					}if($(this).val() == 3){
+
+						$('#form-group-employee_id').hide();
+						$('#employee_id').removeAttr('required');
+
+						$('#form-group-department_id').hide();
+						$('#department_id').removeAttr('required');
+
+						$('#form-group-company_name_id').hide();
+						$('#company_name_id').removeAttr('required');
+
+						$('#form-group-store_id').hide();
+						$('#store_id').removeAttr('required');
+
+						$('#form-group-location_id').hide();
+						$('#location_id').removeAttr('required');
+
+						$('#form-group-user_id').show();
+						$('#user_id').attr('required', 'required');
 	
 					}else if($(this).val() == 8){
 
@@ -202,7 +230,8 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 						$('#form-group-location_id').hide();
 						$('#location_id').removeAttr('required');
 
-
+						$('#form-group-user_id').hide();
+						$('#user_id').removeAttr('required');
 	
 					}else if($(this).val() == 5){
 
@@ -221,7 +250,8 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 						$('#form-group-location_id').show();
 						$('#location_id').attr('required', 'required');
 
-
+						$('#form-group-user_id').hide();
+						$('#user_id').removeAttr('required');
 	
 					}else{
 
@@ -238,6 +268,9 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 
 						$('#form-group-location_id').hide();
 						$('#location_id').removeAttr('required');
+
+						$('#form-group-user_id').hide();
+						$('#user_id').removeAttr('required');
 
 					}
 
@@ -412,6 +445,9 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 					$('#form-group-location_id').hide();
 					$('#location_id').removeAttr('required');
 
+					$('#form-group-user_id').hide();
+					$('#user_id').removeAttr('required');
+
 				}
 
 
@@ -470,7 +506,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 		}
 
 		$postdata['store_id'] = implode(",", $storeData);
-		
+		//dd($postdata);
 
 	}
 
