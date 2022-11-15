@@ -72,6 +72,8 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 		}elseif(CRUDBooster::myPrivilegeName() == "HR"){
 			$this->form[] = array("label"=>"Privilege","name"=>"id_cms_privileges","type"=>"select","datatable"=>"cms_privileges,name","datatable_where"=>"name LIKE '%REQUESTOR' || name LIKE '%OIC' || name LIKE '%EMPLOYEE' || name LIKE '%TREASURY'", 'width'=>'col-sm-5');				
 			$this->form[] = array("label"=>"Employee Name","name"=>"employee_id","type"=>"select2","datatable"=>"employees,bill_to", 'width'=>'col-sm-5' );
+			$this->form[] = array('label'=>'Approver','name'=>'approver_id','type'=>'check-box6','datatable'=>'cms_users,name','datatable_where'=>"id_cms_privileges = '3'",'width'=>'col-sm-10');
+			
 		}elseif(CRUDBooster::isSuperadmin()) {
 
 			$this->form[] = array("label"=>"Privilege","name"=>"id_cms_privileges","type"=>"select","datatable"=>"cms_privileges,name", 'width'=>'col-sm-5');	
