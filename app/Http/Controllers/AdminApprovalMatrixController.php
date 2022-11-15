@@ -29,7 +29,7 @@
 			$this->button_action_style = "button_icon";
 			$this->button_add = false;
 			$this->button_edit = true;
-			$this->button_delete = true;
+			$this->button_delete = false;
 			$this->button_detail = true;
 			$this->button_show = true;
 			$this->button_filter = true;
@@ -58,7 +58,7 @@
 			}	
 			
 			//$this->form[] = ['label'=>'Department List','name'=>'department_list','type'=>'check-box','validation'=>'required','width'=>'col-sm-5','datatable'=>'departments,department_name','datatable_where'=>"status = 'ACTIVE'"];
-			$this->form[] = ['label'=>'Users List','name'=>'department_list','type'=>'check-box','validation'=>'required','width'=>'col-sm-5','datatable'=>'cms_users,name','datatable_where'=>"first_name NOT LIKE '%Approver'"];
+			$this->form[] = ['label'=>'Users List','name'=>'department_list','type'=>'check-box','validation'=>'required','width'=>'col-sm-5','datatable'=>'cms_users,name','datatable_where'=>"id_cms_privileges = '2' || id_cms_privileges = '8'"];
 
 			# END FORM DO NOT REMOVE THIS LINE
 
