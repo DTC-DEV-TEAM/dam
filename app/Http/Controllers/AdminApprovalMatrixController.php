@@ -42,7 +42,7 @@
 			$this->col = [];
 			$this->col[] = ["label"=>"Privilege Name","name"=>"id_cms_privileges","join"=>"cms_privileges,name"];
 			$this->col[] = ["label"=>"Username","name"=>"cms_users_id","join"=>"cms_users,name"];		
-			$this->col[] = ["label"=>"Users List to Approve","name"=>"department_list"];
+			$this->col[] = ["label"=>"Users to Approve","name"=>"department_list"];
 			$this->col[] = ["label"=>"Status","name"=>"status"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
 			$this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];

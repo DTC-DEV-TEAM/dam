@@ -332,7 +332,7 @@
 				$user_data         = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
 				
 
-				$query->whereIn('header_request.department', $departmentlist)
+				$query->whereIn('header_request.created_by', $departmentlist)
 				//->whereIn('header_request.company_name', explode(",",$user_data->company_name_id))
 				->where('header_request.approved_by','!=', null)
 				->whereNull('header_request.deleted_at')
