@@ -8,6 +8,8 @@ use Excel;
 use CRUDbooster;
 use App\Store;
 use App\Channel;
+use App\Users;
+use App\ApprovalMatrix;
 
 class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -78,7 +80,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 
 			$this->form[] = array("label"=>"Employee Name","name"=>"employee_id","type"=>"select2","datatable"=>"employees,bill_to", 'width'=>'col-sm-5' );
 			
-			$this->form[] = array('label'=>'Users to Approve','name'=>'user_id','type'=>'check-box6','validation'=>'required','datatable'=>'cms_users,name','datatable_where'=>"first_name NOT LIKE '%Approver'",'width'=>'col-sm-10');
+			$this->form[] = array('label'=>'Approver','name'=>'approver_id','type'=>'check-box6','datatable'=>'cms_users,name','datatable_where'=>"id_cms_privileges = '3'",'width'=>'col-sm-10');
 			
 			$this->form[] = array("label"=>"Location","name"=>"location_id","type"=>"check-box5","datatable"=>"warehouse_location_model,location", 'datatable_where'=>"id != '4'");
 			
@@ -167,8 +169,8 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 				$('#form-group-location_id').hide();
 				$('#location_id').removeAttr('required');
 				
-				$('#form-group-user_id').hide();
-				$('#user_id').removeAttr('required');
+				$('#form-group-approver_id').hide();
+				$('#approver_id').removeAttr('required');
 
 				$('#id_cms_privileges').change(function() {
 
@@ -189,30 +191,32 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 						$('#form-group-location_id').hide();
 						$('#location_id').removeAttr('required');
 
-						$('#form-group-user_id').hide();
-					    $('#user_id').removeAttr('required');
+						$('#form-group-approver_id').show();
+					    $('#approver_id').attr('required', 'required');
 	
-					}if($(this).val() == 3){
+					}
+					// if($(this).val() == 3){
 
-						$('#form-group-employee_id').hide();
-						$('#employee_id').removeAttr('required');
+					// 	$('#form-group-employee_id').hide();
+					// 	$('#employee_id').removeAttr('required');
 
-						$('#form-group-department_id').hide();
-						$('#department_id').removeAttr('required');
+					// 	$('#form-group-department_id').hide();
+					// 	$('#department_id').removeAttr('required');
 
-						$('#form-group-company_name_id').hide();
-						$('#company_name_id').removeAttr('required');
+					// 	$('#form-group-company_name_id').hide();
+					// 	$('#company_name_id').removeAttr('required');
 
-						$('#form-group-store_id').hide();
-						$('#store_id').removeAttr('required');
+					// 	$('#form-group-store_id').hide();
+					// 	$('#store_id').removeAttr('required');
 
-						$('#form-group-location_id').hide();
-						$('#location_id').removeAttr('required');
+					// 	$('#form-group-location_id').hide();
+					// 	$('#location_id').removeAttr('required');
 
-						$('#form-group-user_id').show();
-						$('#user_id').attr('required', 'required');
+					// 	$('#form-group-approver_id').hide();
+					// 	$('#approver_id').removeAttr('required');
 	
-					}else if($(this).val() == 8){
+					// }
+					else if($(this).val() == 8){
 
 						$('#form-group-department_id').hide();	
 						$('#department_id').removeAttr('required');
@@ -230,8 +234,8 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 						$('#form-group-location_id').hide();
 						$('#location_id').removeAttr('required');
 
-						$('#form-group-user_id').hide();
-						$('#user_id').removeAttr('required');
+						$('#form-group-approver_id').show();
+						$('#approver_id').attr('required', 'required');
 	
 					}else if($(this).val() == 5){
 
@@ -250,8 +254,8 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 						$('#form-group-location_id').show();
 						$('#location_id').attr('required', 'required');
 
-						$('#form-group-user_id').hide();
-						$('#user_id').removeAttr('required');
+						$('#form-group-approver_id').hide();
+						$('#approver_id').removeAttr('required');
 	
 					}else{
 
@@ -269,8 +273,8 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 						$('#form-group-location_id').hide();
 						$('#location_id').removeAttr('required');
 
-						$('#form-group-user_id').hide();
-						$('#user_id').removeAttr('required');
+						$('#form-group-approver_id').hide();
+						$('#approver_id').removeAttr('required');
 
 					}
 
@@ -350,6 +354,9 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 
 						$('#form-group-location_id').show();
 						$('#location_id').attr('required', 'required');
+
+						$('#form-group-approver_id').hide();
+						$('#approver_id').removeAttr('required');
 					}
 					else{
 
@@ -366,6 +373,9 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 
 						$('#form-group-location_id').hide();
 						$('#location_id').removeAttr('required');
+
+						$('#form-group-approver_id').hide();
+						$('#approver_id').removeAttr('required');
 
 					}
 
@@ -427,7 +437,8 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 					$('#form-group-location_id').show();
 					$('#location_id').attr('required', 'required');
 
-
+					$('#form-group-approver_id').hide();
+					$('#approver_id').removeAttr('required');
 
 				}else{
 
@@ -445,8 +456,8 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 					$('#form-group-location_id').hide();
 					$('#location_id').removeAttr('required');
 
-					$('#form-group-user_id').hide();
-					$('#user_id').removeAttr('required');
+					$('#form-group-approver_id').hide();
+					$('#approver_id').removeAttr('required');
 
 				}
 
@@ -483,8 +494,6 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 	public function hook_before_add(&$postdata) {        
 	    //Your code here
 
-		
-
 		$postdata['created_by']=CRUDBooster::myId();
 
 	    if($postdata['photo'] == '' || $postdata['photo'] == NULL) {
@@ -506,9 +515,78 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 		}
 
 		$postdata['store_id'] = implode(",", $storeData);
-		//dd($postdata);
+
+		$approverData = array();
+		$approverList = json_encode($postdata['approver_id'], true);
+		$approverArray = explode(",", $approverList);
+
+		foreach ($approverArray as $key => $value) {
+			$approverData[$key] = preg_replace("/[^0-9]/","",$value);
+		}
+
+		$postdata['approver_id'] = implode(",", $approverData);
 
 	}
+
+	public function hook_after_add($id) {        
+        //Your code here
+		$details = Users::where(['created_by' => CRUDBooster::myId()])->orderBy('id','desc')->first();
+		if($details->approver_id){
+			
+			    $checkRowDb = DB::table('approval_matrices')->select(DB::raw("approval_matrices.cms_users_id AS cms_users_id"))->get()->toArray();
+				$approval_string = $details->approver_id;
+				$approverlist = array_map('intval',explode(",",$approval_string));
+				$container=[];
+				$saveDatatoApprovalMatrix = [];
+				foreach($approverlist as $key => $data){
+				   $container['id_cms_privileges'] = 3;
+				   $container['cms_users_id'] = $approverlist[$key];
+				   $container['department_list'] = $details->id;
+				   $container['status'] = 'ACTIVE';
+				   $container['created_by'] = CRUDBooster::myId();
+				   $container['created_at'] = date('Y-m-d H:i:s');
+				   $saveDatatoApprovalMatrix[] = $container;
+				}
+
+				foreach($saveDatatoApprovalMatrix as $key=> $val){
+					if(count($checkRowDb) > 0){
+						if(in_array($val['cms_users_id'],array_column($checkRowDb,'cms_users_id'))){
+							$val['updated_by'] = CRUDBooster::myId();
+							$val['updated_at'] = date("Y-m-d H:i:s");
+							$arrUpdate[]= $val;
+						}
+						else{
+							$arrInsert[]=$val;
+						}
+					}
+					else{
+						$arrInsert[]=$val;
+					}
+		
+				}
+            if($arrInsert > 0){
+				ApprovalMatrix::insert($arrInsert);
+			}
+			if($arrUpdate > 0){
+				foreach($arrUpdate as $updateKey => $updateVal) {
+					ApprovalMatrix::where(['cms_users_id' => $updateVal['cms_users_id']])
+						->update([
+								'id_cms_privileges' => $updateVal['id_cms_privileges'], 
+								'cms_users_id' => $updateVal['cms_users_id'],
+								'department_list'=>DB::raw("CONCAT(department_list,',".$updateVal['department_list']."')"),
+								'updated_by' => $updateVal['updated_by'],
+								'updated_at' => $updateVal['updated_at']
+								]);
+				}  
+			}
+		}
+
+       /* if(CRUDBooster::isSuperadmin()){
+            return redirect()->action('AdminApprovalMatricesController@getIndex')->send();
+			exit;
+        }*/
+
+    }
 
 	public function hook_before_edit(&$postdata,$id) {        
         //Your code here
@@ -557,17 +635,72 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 
     	    $postdata['updated_by']=CRUDBooster::myId();
     	    $postdata['id']=$id;
-    }
-    
-    public function hook_after_add($id) {        
-        //Your code here
-        
-       /* if(CRUDBooster::isSuperadmin()){
-            return redirect()->action('AdminApprovalMatricesController@getIndex')->send();
-			exit;
-        }*/
+
+			$approverData = array();
+			$approverList = json_encode($postdata['approver_id'], true);
+			$approverArray = explode(",", $approverList);
+
+			foreach ($approverArray as $key => $value) {
+				$approverData[$key] = preg_replace("/[^0-9]/","",$value);
+			}
+
+			$postdata['approver_id'] = implode(",", $approverData);
 
     }
+
+	public function hook_after_edit($id) {
+		$details = Users::where(['id' => $id])->orderBy('id','desc')->first();
+		if($details->approver_id){
+			
+			    $checkRowDb = DB::table('approval_matrices')->select(DB::raw("approval_matrices.cms_users_id AS cms_users_id"))->get()->toArray();
+				$approval_string = $details->approver_id;
+				$approverlist = array_map('intval',explode(",",$approval_string));
+				$container=[];
+				$saveDatatoApprovalMatrix = [];
+				foreach($approverlist as $key => $data){
+				   $container['id_cms_privileges'] = 3;
+				   $container['cms_users_id'] = $approverlist[$key];
+				   $container['department_list'] = $details->id;
+				   $container['status'] = 'ACTIVE';
+				   $container['created_by'] = CRUDBooster::myId();
+				   $container['created_at'] = date('Y-m-d H:i:s');
+				   $saveDatatoApprovalMatrix[] = $container;
+				}
+
+				foreach($saveDatatoApprovalMatrix as $key=> $val){
+					if(count($checkRowDb) > 0){
+						if(in_array($val['cms_users_id'],array_column($checkRowDb,'cms_users_id'))){
+							$val['updated_by'] = CRUDBooster::myId();
+							$val['updated_at'] = date("Y-m-d H:i:s");
+							$arrUpdate[]= $val;
+						}
+						else{
+							$arrInsert[]=$val;
+						}
+					}
+					else{
+						$arrInsert[]=$val;
+					}
+		
+				}
+            if($arrInsert > 0){
+				ApprovalMatrix::insert($arrInsert);
+			}
+			if($arrUpdate > 0){
+				foreach($arrUpdate as $updateKey => $updateVal) {
+					ApprovalMatrix::where(['cms_users_id' => $updateVal['cms_users_id']])
+						->update([
+								'id_cms_privileges' => $updateVal['id_cms_privileges'], 
+								'cms_users_id' => $updateVal['cms_users_id'],
+								'department_list'=>DB::raw("CONCAT(department_list,',".$updateVal['department_list']."')"),
+								'updated_by' => $updateVal['updated_by'],
+								'updated_at' => $updateVal['updated_at']
+								]);
+				}  
+			}
+		}
+	}
+    
 
     public function hook_after_delete($id) {
 		//Your code here
@@ -670,6 +803,11 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 	public function storeListing($ids) {
 		$stores = explode(",", $ids);
 		return Store::whereIn('id', $stores)->pluck('store_name');
+	}
+
+	public function userListing($ids) {
+		$users = explode(",", $ids);
+		return Users::whereIn('id', $users)->pluck('name');
 	}
 	
 	public function uploadUserAccountTemplate() {

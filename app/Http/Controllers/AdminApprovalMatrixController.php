@@ -42,7 +42,7 @@
 			$this->col = [];
 			$this->col[] = ["label"=>"Privilege Name","name"=>"id_cms_privileges","join"=>"cms_privileges,name"];
 			$this->col[] = ["label"=>"Username","name"=>"cms_users_id","join"=>"cms_users,name"];		
-			$this->col[] = ["label"=>"Department List","name"=>"department_list"];
+			$this->col[] = ["label"=>"Users List to Approve","name"=>"department_list"];
 			$this->col[] = ["label"=>"Status","name"=>"status"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
 			$this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
@@ -58,7 +58,7 @@
 			}	
 			
 			//$this->form[] = ['label'=>'Department List','name'=>'department_list','type'=>'check-box','validation'=>'required','width'=>'col-sm-5','datatable'=>'departments,department_name','datatable_where'=>"status = 'ACTIVE'"];
-			$this->form[] = ['label'=>'Users List','name'=>'user_list','type'=>'check-box','validation'=>'required','width'=>'col-sm-5','datatable'=>'cms_users,name','datatable_where'=>"status = 'ACTIVE'"];
+			$this->form[] = ['label'=>'Users List','name'=>'department_list','type'=>'check-box','validation'=>'required','width'=>'col-sm-5','datatable'=>'cms_users,name','datatable_where'=>"first_name NOT LIKE '%Approver'"];
 
 			# END FORM DO NOT REMOVE THIS LINE
 
@@ -138,7 +138,7 @@
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
 
-				$this->index_button[] = ["label"=>"Add Matrix","icon"=>"fa fa-circle-o","url"=>CRUDBooster::mainpath('add-matrix'),"color"=>"success"];
+				//$this->index_button[] = ["label"=>"Add Matrix","icon"=>"fa fa-circle-o","url"=>CRUDBooster::mainpath('add-matrix'),"color"=>"success"];
 
 			}
 
@@ -385,7 +385,7 @@
 
 		public function storeListing($ids) {
 			$stores = explode(",", $ids);
-			return DB::table('departments')->whereIn('id', $stores)->pluck('department_name');
+			return DB::table('cms_users')->whereIn('id', $stores)->pluck('name');
 		}
 
 

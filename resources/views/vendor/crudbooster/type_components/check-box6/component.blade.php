@@ -126,7 +126,7 @@
                 </div>
 
                 <?php
-                if($counter%20 == 3)
+                if($counter%20 == 0)
                 {
                 ?>
                     <div class="text-danger">{!! $errors->first($name)?"<i class='fa fa-info-circle'></i> ".$errors->first($name):"" !!}</div>
@@ -203,13 +203,13 @@
                     }
                 }
             } else {
-                @$value = explode(';', $value);
+                @$value = explode(',', $value);
                 $counter=0;
 
                 foreach ($selects_data as $d) {
                     $counter++;
                     $val = $d->{$datatable_field};
-                    $checked = (is_array($value) && in_array($val, $value)) ? "checked" : "";
+                    $checked = (is_array($value) && in_array($d->id, $value)) ? "checked" : "";
                     if ($val == '' || ! $d->id) continue;
 
                     if($counter%20 == 1)

@@ -300,7 +300,7 @@
 				$approval_string = implode(",",$approval_array);
 				$departmentlist = array_map('intval',explode(",",$approval_string));
 	
-				$query->whereIn('header_request.department', $departmentlist)
+				$query->whereIn('header_request.created_by', $departmentlist)
 				//->whereIn('header_request.company_name', explode(",",$user_data->company_name_id))
 				->where('header_request.status_id', $pending) 
 				->whereNull('header_request.deleted_at')
