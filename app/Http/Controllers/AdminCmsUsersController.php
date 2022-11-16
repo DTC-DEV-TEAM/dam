@@ -1,15 +1,18 @@
 <?php namespace App\Http\Controllers;
 
 use Session;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Input;
+
 use DB;
 use Excel;
-use CRUDbooster;
+use CRUDBooster;
 use App\Store;
 use App\Channel;
 use App\Users;
+use App\Employees;
 use App\ApprovalMatrix;
+use App\Imports\UserImport;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
 
 class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -84,7 +87,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 			
 			$this->form[] = array('label'=>'Approver','name'=>'approver_id','type'=>'check-box6','datatable'=>'cms_users,name','datatable_where'=>"id_cms_privileges = '3'",'width'=>'col-sm-10');
 			
-			$this->form[] = array("label"=>"Location","name"=>"location_id","type"=>"check-box5","datatable"=>"warehouse_location_model,location", 'datatable_where'=>"id != '4'");
+			//$this->form[] = array("label"=>"Location","name"=>"location_id","type"=>"check-box5","datatable"=>"warehouse_location_model,location", 'datatable_where'=>"id != '4'");
 			
 			$this->form[] = array("label"=>"Stores","name"=>"store_id","type"=>"check-box","datatable"=>"stores,bea_mo_store_name", 'datatable_where'=>"status = 'ACTIVE'", 'width'=>'col-sm-10' );
             
@@ -117,7 +120,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 					"title"=>"Upload User Accounts",
 					"label"=>"Upload User Accounts",
 					"icon"=>"fa fa-download",
-					"url"=>CRUDBooster::mainpath('useraccount-upload')];
+					"url"=>CRUDBooster::mainpath('user-account-upload')];
 			}
 		}
 
@@ -174,6 +177,12 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 				$('#form-group-approver_id').hide();
 				$('#approver_id').removeAttr('required');
 
+				$('#form-group-first_name').hide();
+				$('#first_name').removeAttr('required');
+
+				$('#form-group-last_name').hide();
+				$('#last_name').removeAttr('required');
+
 				$('#id_cms_privileges').change(function() {
 
 					if($(this).val() == 2){
@@ -195,6 +204,12 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 
 						$('#form-group-approver_id').show();
 					    $('#approver_id').attr('required', 'required');
+
+						$('#form-group-first_name').hide();
+						$('#first_name').removeAttr('required');
+
+						$('#form-group-last_name').hide();
+						$('#last_name').removeAttr('required');
 	
 					}
 					// if($(this).val() == 3){
@@ -238,6 +253,12 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 
 						$('#form-group-approver_id').show();
 						$('#approver_id').attr('required', 'required');
+
+						$('#form-group-first_name').hide();
+						$('#first_name').removeAttr('required');
+
+						$('#form-group-last_name').hide();
+						$('#last_name').removeAttr('required');
 	
 					}else if($(this).val() == 5){
 
@@ -278,6 +299,11 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 						$('#form-group-approver_id').hide();
 						$('#approver_id').removeAttr('required');
 
+						$('#form-group-first_name').show();
+					    $('#first_name').attr('required', 'required');
+
+						$('#form-group-last_name').show();
+					    $('#last_name').attr('required', 'required');
 					}
 
 				});
@@ -501,13 +527,19 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 	    if($postdata['photo'] == '' || $postdata['photo'] == NULL) {
 	    	$postdata['photo'] = 'uploads/mrs-avatar.png';
 	    }
+		$employee_details = Employees::where(['id' => $postdata['employee_id']])->orderBy('id','desc')->first();
 		$postdata['status'] = 'ACTIVE';
-		$postdata['name'] = $postdata['first_name'].' '.$postdata['last_name'];
-		$postdata['user_name'] = $postdata['last_name'].''.substr($postdata['first_name'], 0, 1);
-
-
-
-
+		
+		if($postdata['id_cms_privileges'] == 2 || $postdata['id_cms_privileges'] == 8){
+			$postdata['first_name'] = $employee_details->contact_person_fn;
+			$postdata['last_name'] = $employee_details->contact_person_ln;
+			$postdata['name'] = $postdata['first_name'].' '.$postdata['last_name'];
+			$postdata['user_name'] = $postdata['last_name'].''.substr($postdata['first_name'], 0, 1);
+		}else{
+			$postdata['name'] = $postdata['first_name'].' '.$postdata['last_name'];
+			$postdata['user_name'] = $postdata['last_name'].''.substr($postdata['first_name'], 0, 1);
+		}
+		
 		$storeData = array();
 		$storeList = json_encode($postdata['store_id'], true);
 		$storeArray = explode(",", $storeList);
@@ -813,123 +845,44 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 	}
 	
 	public function uploadUserAccountTemplate() {
-		Excel::create('user-account-upload-'.date("Ymd").'-'.date("h.i.sa"), function ($excel) {
-			$excel->sheet('useraccount', function ($sheet) {
-				$sheet->row(1, array('FIRST NAME', 'LAST NAME', 'EMAIL', 'PRIVILEGE', 'CHANNEL', 'STORES ID'));
-				$sheet->row(2, array('John', 'Doe', 'johndoe@digits.ph','Requestor','Retail','1'));
-			});
-		})->download('csv');
+		// Excel::create('user-account-upload-'.date("Ymd").'-'.date("h.i.sa"), function ($excel) {
+		// 	$excel->sheet('useraccount', function ($sheet) {
+		// 		$sheet->row(1, array('FIRST NAME', 'LAST NAME', 'EMAIL', 'PRIVILEGE', 'CHANNEL', 'STORES ID'));
+		// 		$sheet->row(2, array('John', 'Doe', 'johndoe@digits.ph','Requestor','Retail','1'));
+		// 	});
+		// })->download('csv');
+		$filename = "user-account-upload".date("Ymd")."-".date("h.i.sa"). ".csv";
+	
+			header("Content-Disposition: attachment; filename=\"$filename\"");
+			header("Content-Type: text/csv; charset=UTF-16LE");
+	
+			$out = fopen("php://output", 'w');
+			$flag = false;
+
+			if(!$flag) {
+				// display field/column names as first row
+				fputcsv($out, array('FIRST NAME', 'LAST NAME', 'EMAIL', 'PRIVILEGE','APPROVER','STORE'));
+				$flag = true;
+			}
+			
+			fputcsv($out, array('John', 'Doe', 'johndoe@digits.ph','Requestor'));
+			fclose($out);
+			
+			exit;
 	}
 
 	public function uploadUserAccount() {
-	    if(!CRUDBooster::isSuperadmin()) {    
-			CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
-		}
+	    // if(!CRUDBooster::isSuperadmin()) {    
+		// 	CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+		// }
 		$data['page_title']= 'User Account Upload';
 		return view('user-account.user_account_upload', $data)->render();
 	}
 
 	public function userAccountUpload(Request $request) {
-			$file = $request->file('import_file');
-			
-			$validator = \Validator::make(
-				[
-					'file' => $file,
-					'extension' => strtolower($file->getClientOriginalExtension()),
-				],
-				[
-					'file' => 'required',
-					'extension' => 'required|in:csv',
-				]
-			);
-
-			if ($validator->fails()) {
-				CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_user_data_failed"), 'danger');
-			}
-
-			if (Input::hasFile('import_file')) {
-				$path = Input::file('import_file')->getRealPath();
-				
-				$csv = array_map('str_getcsv', file($path));
-				$dataExcel = Excel::load($path, function($reader) {
-                })->get();
-				
-				$unMatch = [];
-				$header = array('FIRST NAME', 'LAST NAME', 'EMAIL', 'PRIVILEGE', 'CHANNEL', 'STORES ID');
-
-				for ($i=0; $i < sizeof($csv[0]); $i++) {
-					if (! in_array($csv[0][$i], $header)) {
-						$unMatch[] = $csv[0][$i];
-					}
-				}
-
-				if(!empty($unMatch)) {
-					CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_user_data_failed"), 'danger');
-				}
-				
-				$data = array();
-				// DB::beginTransaction();
-
-				// try {
-				// 	//OrderLogicMatrix::destroy();
-				// 	DB::commit();
-				// } catch (\Exception $e) {
-				// 	DB::rollback();
-				// }
-				
-				if(!empty($dataExcel) && $dataExcel->count()) {
-					$cnt_success = 0;
-					$cnt_fail = 0;
-					
-					foreach ($dataExcel as $key => $value) {
-						$check_upload = false;
-						$privilegeId = DB::table('cms_privileges')->where('name', $value->privilege)->value('id');
-						$channelId = Channel::where('channel_name', $value->channel)->value('id');
-						if($privilegeId != 1){
-    						$data = [
-    						    'first_name'    =>  $value->first_name,
-    						    'last_name' =>  $value->last_name,
-    						    'name'  =>  $value->first_name. ' '.$value->last_name,
-    						    'user_name' =>  $value->last_name.''.substr($value->first_name, 0, 1),
-    						    'channels_id'   => $channelId,
-    						    'stores_id' =>  $value->stores_id,
-    						    'photo' => 'uploads/1/2019-05/businessman.png',
-    						    'email' => $value->email,
-    						    'password' => bcrypt('qwerty'),
-    						    'id_cms_privileges' => $privilegeId,
-    							'status'    => 'ACTIVE',
-    							'created_by'    => CRUDBooster::myId(),
-    							'created_at'    => date('Y-m-d H:i:s'),
-    						];
-						}
-
-						DB::beginTransaction();
-
-						try {
-							$isItemUpload = DB::table('cms_users')->insert($data);
-							DB::commit();
-						} catch (\Exception $e) {
-							DB::rollback();
-						}
-
-						if ($isItemUpload) {
-							$check_upload = true;
-							$cnt_success++;
-                        }
-                        else{
-							$check_upload = false;
-							$cnt_fail++;
-                        }
-					}
-
-					if($check_upload){
-                        CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_upload_user_success", ['total_row'=>count($dataExcel),'success'=>$cnt_success,'fail'=>$cnt_fail]), 'success');
-                    }
-                    else{
-                        CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_upload_user_success", ['total_row'=>count($dataExcel),'success'=>$cnt_success,'fail'=>$cnt_fail]), 'success');
-                    }
-				}
-			}
-		}
+		$path_excel = $request->file('import_file')->store('temp');
+		$path = storage_path('app').'/'.$path_excel;
+		Excel::import(new UserImport, $path);	
+	}
 	
 }

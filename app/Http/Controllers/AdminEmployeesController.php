@@ -553,12 +553,12 @@
 
 			if(!$flag) {
 				// display field/column names as first row
-				fputcsv($out, array('Last Name', 'First Name', 'Company Name', 'Department', 'Sub Department','Position', 'Email Address'));
+				fputcsv($out, array('Last Name', 'First Name', 'Company Name','Position', 'Email Address'));
 				$flag = true;
 			}
 			
-			fputcsv($out, array('Doe', 'James', 'DIGITS', 'BUSINESS PROCESS GROUP DEPARTMENT', 'BPG-SYSTEM', 'ASSOCIATE SOFTWARE DEVELOPER', 'doe@digits.ph'));
-			fputcsv($out, array('Doe', 'Victor', 'DIGITS', 'BUSINESS PROCESS GROUP DEPARTMENT', 'BPG-SYSTEM', 'ASSOCIATE SOFTWARE DEVELOPER', 'doe@digits.ph'));
+			fputcsv($out, array('Doe', 'James', 'DIGITS','ASSOCIATE SOFTWARE DEVELOPER', 'doe@digits.ph'));
+			fputcsv($out, array('Doe', 'Victor', 'DIGITS','ASSOCIATE SOFTWARE DEVELOPER', 'doe@digits.ph'));
 
 			fclose($out);
 			
@@ -989,22 +989,22 @@
 						CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Error, Invalid Tempalte Header !"), 'danger');
 					}
 
-					if( $dataExcel[0][0][3] != "Department"){
+					// if( $dataExcel[0][0][3] != "Department"){
+
+					// 	CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Error, Invalid Tempalte Header !"), 'danger');
+					// }
+
+					// if( $dataExcel[0][0][4] != "Sub Department"){
+
+					// 	CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Error, Invalid Tempalte Header !"), 'danger');
+					// }
+
+					if( $dataExcel[0][0][3] != "Position"){
 
 						CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Error, Invalid Tempalte Header !"), 'danger');
 					}
 
-					if( $dataExcel[0][0][4] != "Sub Department"){
-
-						CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Error, Invalid Tempalte Header !"), 'danger');
-					}
-
-					if( $dataExcel[0][0][5] != "Position"){
-
-						CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Error, Invalid Tempalte Header !"), 'danger');
-					}
-
-					if( $dataExcel[0][0][6] != "Email Address"){
+					if( $dataExcel[0][0][4] != "Email Address"){
 
 						CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Error, Invalid Tempalte Header !"), 'danger');
 					}
@@ -1054,25 +1054,25 @@
 									$error_message = "Error, Blank Company Name !";
 								}
 
-								if( empty($dataExcel[0][$count_row][3]) ) {
+								// if( empty($dataExcel[0][$count_row][3]) ) {
 
-									$cnt_fail++;
-									$error_message = "Error, Blank Department !";
-								}
+								// 	$cnt_fail++;
+								// 	$error_message = "Error, Blank Department !";
+								// }
 
 
-								if( empty($dataExcel[0][$count_row][4]) ) {
+								// if( empty($dataExcel[0][$count_row][4]) ) {
 
-									$cnt_fail++;
-									$error_message = "Error, Blank Sub Department !";
-								}
+								// 	$cnt_fail++;
+								// 	$error_message = "Error, Blank Sub Department !";
+								// }
 
-								if( empty($dataExcel[0][$count_row][5]) ) {
+								// if( empty($dataExcel[0][$count_row][3]) ) {
 
-									$cnt_fail++;
-									$error_message = "Error, Blank Position !";
+								// 	$cnt_fail++;
+								// 	$error_message = "Error, Blank Position !";
 
-								}
+								// }
 
 					
 								$companies 				= DB::table('companies')->where(['company_name' => $dataExcel[0][$count_row][2]])->first();
@@ -1088,17 +1088,17 @@
 									$error_message = "Error, Invalid Company Name !";
 								}
 
-								if( empty($departments) ) {
+								// if( empty($departments) ) {
 
-									$cnt_fail++;
-									$error_message = "Error, Invalid Department !";
-								}
+								// 	$cnt_fail++;
+								// 	$error_message = "Error, Invalid Department !";
+								// }
 
-								if( empty($sub_departments) ) {
+								// if( empty($sub_departments) ) {
 
-									$cnt_fail++;
-									$error_message = "Error, Invalid Sub Department !";
-								}
+								// 	$cnt_fail++;
+								// 	$error_message = "Error, Invalid Sub Department !";
+								// }
 
 							}
 
@@ -1153,10 +1153,10 @@
 												'contact_person_ln'					=> strtoupper($dataExcel[0][$count_row][0]),
 												'contact_person_fn'					=> strtoupper($dataExcel[0][$count_row][1]),
 												'company_name'						=> $companies->id,
-												'department_id'						=> $departments->id,
-												'sub_department_id'					=> $sub_departments->id,
-												'position_id'						=> $dataExcel[0][$count_row][5],
-												'email_address'						=> $dataExcel[0][$count_row][6],
+												'department_id'						=> NULL,
+												'sub_department_id'					=> NULL,
+												'position_id'						=> $dataExcel[0][$count_row][3],
+												'email_address'						=> $dataExcel[0][$count_row][4],
 												'contact_person'					=> $full_name,
 												'bill_to'							=> $full_name,
 												'customer_location_name'			=> $full_name_employee,
