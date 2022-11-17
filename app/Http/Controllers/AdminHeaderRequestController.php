@@ -779,13 +779,13 @@
 			
 			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
 			
-			if(CRUDBooster::myPrivilegeName() == "Employee"){ 
+			if(CRUDBooster::myPrivilegeId() == 2 || CRUDBooster::myPrivilegeId() == 5 || CRUDBooster::myPrivilegeId() == 6){ 
 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
 
 				return $this->view("assets.add-requisition", $data);
 
-			}else if(CRUDBooster::myPrivilegeName() == "Store Ops"){ 
+			}else if(CRUDBooster::myPrivilegeName() == "Store"){ 
 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
 
@@ -849,13 +849,13 @@
 			
 			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
 			
-			if(CRUDBooster::myPrivilegeName() == "Employee"){ 
+			if(CRUDBooster::myPrivilegeId() == 2 || CRUDBooster::myPrivilegeId() == 5 || CRUDBooster::myPrivilegeId() == 6){ 
 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
 
 				return $this->view("assets.add-requisition-fa", $data);
 
-			}else if(CRUDBooster::myPrivilegeName() == "Store Ops"){ 
+			}else if(CRUDBooster::myPrivilegeName() == "Store"){ 
 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
 
@@ -916,13 +916,13 @@
 			
 			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
 			
-			if(CRUDBooster::myPrivilegeName() == "Employee"){ 
+			if(CRUDBooster::myPrivilegeId() == 2 || CRUDBooster::myPrivilegeId() == 5 || CRUDBooster::myPrivilegeId() == 6){ 
 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
 
 				return $this->view("assets.add-requisition-marketing", $data);
 
-			}else if(CRUDBooster::myPrivilegeName() == "Store Ops"){ 
+			}else if(CRUDBooster::myPrivilegeName() == "Store"){ 
 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
 
@@ -988,13 +988,13 @@
 			
 			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
 	
-			if(CRUDBooster::myPrivilegeName() == "Employee"){ 
+			if(CRUDBooster::myPrivilegeId() == 2 || CRUDBooster::myPrivilegeId() == 5 || CRUDBooster::myPrivilegeId() == 6){ 
 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
 
 				return $this->view("assets.add-requisition-supplies", $data);
 
-			}else if(CRUDBooster::myPrivilegeName() == "Store Ops"){ 
+			}else if(CRUDBooster::myPrivilegeName() == "Store"){ 
 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
 
