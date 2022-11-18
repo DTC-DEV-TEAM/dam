@@ -42,16 +42,6 @@
                         <label class="control-label require">{{ trans('message.form-label.employee_name') }}</label>
                          
                         <input type="text" class="form-control"  id="employee_name" name="employee_name"  required readonly value="{{$employeeinfos->bill_to}}"> 
-
-                        <!--<select class="form-control select2" style="width: 100%;" required name="employee_name" id="employee_name">
-                                            <option value="">-- Select Employee Name --</option>
-
-                                            @foreach($employees as $datas)    
-                                                <option  value="{{$datas->bill_to}}">{{$datas->bill_to}}</option>
-                                            @endforeach
-
-                         </select> -->
-
                     </div>
 
                 </div>
@@ -59,36 +49,19 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label require">{{ trans('message.form-label.company_name') }}</label>
-                        <input type="text" class="form-control"  id="company_name" name="company_name"  required readonly value="{{$employeeinfos->company_name}}">                                   
+                        <input type="text" class="form-control"  id="company_name" name="company_name"  required readonly value="{{$employeeinfos->company_name_id}}">                                   
                     </div>
                 </div>
 
             </div>
-
-
             <div class="row">
-
-
-
-
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label require">{{ trans('message.form-label.department') }}</label>
                         <input type="text" class="form-control"  id="department" name="department"  required readonly value="{{$employeeinfos->department_name}}">
-                        <!--
-                         <select class="form-control select2" style="width: 100%;" required name="department" id="department">
-                                            <option value="">-- Select Department --</option>
-
-                                            @foreach($departments as $datas)    
-                                                <option  value="{{$datas->department_name}}">{{$datas->department_name}}</option>
-                                            @endforeach
-
-                         </select> -->
 
                     </div>
-
                 </div>
-
 
                 <div class="col-md-6">
                     <div class="form-group">
@@ -357,8 +330,8 @@
                         '</td>' +  
 
                         '<td>'+
-                            '<select selected data-placeholder="- Select Category -" class="form-control drop'+ tableRow + '" name="category_id[]" data-id="' + tableRow + '" id="category_id' + tableRow + '" required style="width:100%">' +
-                            '  <option value=""></option>' +
+                            '<select class="form-control drop'+ tableRow + '" name="category_id[]" data-id="' + tableRow + '" id="category_id' + tableRow + '" required style="width:100%">' +
+                            ' ' +
                             '        @foreach($categories as $data)'+
                             '        <option value="{{$data->category_description}}">{{$data->category_description}}</option>'+
                             '         @endforeach'+
@@ -366,10 +339,18 @@
                         '</td>' +
 
                         '<td>'+
-                            '<select selected data-placeholder="- Select Sub Category -" class="form-control" name="sub_category_id[]" data-id="' + tableRow + '" id="sub_category_id' + tableRow + '" required style="width:100%">' +
-                         
+                            '<select selected data-placeholder="- Select Sub Category -" class="form-control sub_category_id" name="sub_category_id[]" data-id="' + tableRow + '" id="sub_category_id' + tableRow + '" required style="width:100%">' +
+                            '  <option value=""></option>' +
+                            '        @foreach($sub_categories as $data)'+
+                            '        <option value="{{$data->class_description}}">{{$data->class_description}}</option>'+
+                            '         @endforeach'+
                             '</select>'+
-                        '</td>' +    
+                        '</td>' +
+                        // '<td>'+
+                        //     '<select selected data-placeholder="- Select Sub Category -" class="form-control" name="sub_category_id[]" data-id="' + tableRow + '" id="sub_category_id' + tableRow + '" required style="width:100%">' +
+                         
+                        //     '</select>'+
+                        // '</td>' +    
                         /*
                         '<td>'+
                             '<select class="js-example-basic-multiple" multiple="multiple" name="app_id' + tableRow + '[]" data-id="' + tableRow + '" id="app_id' + tableRow + '" required style="width:100%;">' +
@@ -401,7 +382,7 @@
                     minimumResultsForSearch: -1});
                     $('#sub_category_id'+tableRow).select2({
                     placeholder_text_single : "- Select Sub Category -"});
-                    $('#sub_category_id'+tableRow).attr('disabled', true);
+                    //$('#sub_category_id'+tableRow).attr('disabled', true);
 
                     $('#app_id'+tableRow).change(function(){
 

@@ -43,15 +43,6 @@
                          
                         <input type="text" class="form-control"  id="employee_name" name="employee_name"  required readonly value="{{$employeeinfos->bill_to}}"> 
 
-                        <!--<select class="form-control select2" style="width: 100%;" required name="employee_name" id="employee_name">
-                                            <option value="">-- Select Employee Name --</option>
-
-                                            @foreach($employees as $datas)    
-                                                <option  value="{{$datas->bill_to}}">{{$datas->bill_to}}</option>
-                                            @endforeach
-
-                         </select> -->
-
                     </div>
 
                 </div>
@@ -59,36 +50,20 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label require">{{ trans('message.form-label.company_name') }}</label>
-                        <input type="text" class="form-control"  id="company_name" name="company_name"  required readonly value="{{$employeeinfos->company_name}}">                                   
+                        <input type="text" class="form-control"  id="company_name" name="company_name"  required readonly value="{{$employeeinfos->company_name_id}}">                                   
                     </div>
                 </div>
 
             </div>
 
-
             <div class="row">
-
-
-
-
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label require">{{ trans('message.form-label.department') }}</label>
                         <input type="text" class="form-control"  id="department" name="department"  required readonly value="{{$employeeinfos->department_name}}">
-                        <!--
-                         <select class="form-control select2" style="width: 100%;" required name="department" id="department">
-                                            <option value="">-- Select Department --</option>
-
-                                            @foreach($departments as $datas)    
-                                                <option  value="{{$datas->department_name}}">{{$datas->department_name}}</option>
-                                            @endforeach
-
-                         </select> -->
-
                     </div>
 
                 </div>
-
 
                 <div class="col-md-6">
                     <div class="form-group">
@@ -104,7 +79,7 @@
                     <div class="form-group">
                         <label class="control-label require">{{ trans('message.form-label.store_branch') }}</label>
                          
-                        <input type="text" class="form-control"  id="store_branch" name="store_branch"  required readonly value="{{$stores->bea_mo_store_name}}"> 
+                        <input type="text" class="form-control"  id="store_branch" name="store_branch"  required readonly value="{{$stores->store_name}}"> 
                         <input type="hidden" class="form-control"  id="store_branch_id" name="store_branch_id"  required readonly value="{{$stores->id}}"> 
 
                     </div>

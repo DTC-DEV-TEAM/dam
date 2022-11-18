@@ -55,8 +55,8 @@
 			$this->col[] = ["label"=>"Status","name"=>"status_id","join"=>"statuses,status_description"];
 			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
 			$this->col[] = ["label"=>"Request Type","name"=>"request_type_id","join"=>"requests,request_name"];
-			$this->col[] = ["label"=>"Company Name","name"=>"company_name","join"=>"companies,company_name"];
-			$this->col[] = ["label"=>"Employee Name","name"=>"employee_name","join"=>"employees,bill_to"];
+			$this->col[] = ["label"=>"Company Name","name"=>"company_name"];
+			$this->col[] = ["label"=>"Employee Name","name"=>"employee_name","join"=>"cms_users,bill_to"];
 			$this->col[] = ["label"=>"Department","name"=>"department","join"=>"departments,department_name"];
 			$this->col[] = ["label"=>"Requested By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Requested Date","name"=>"created_at"];
@@ -476,45 +476,34 @@
 			$cost_total 		= $fields['cost_total'];
 			$total 				= $fields['total'];
 			$request_type_id 	= $fields['request_type_id'];
-
 			$requestor_comments = $fields['requestor_comments'];
-
 			$application 		= $fields['application'];
 			$application_others = $fields['application_others'];
-	
-			$count_header = 	DB::table('header_request')->count();
-			$header_ref   =  	str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);			
+			$count_header       = DB::table('header_request')->count();
+			$header_ref         = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);			
 			$reference_number	= "ARF-".$header_ref;
+			$employees          = DB::table('cms_users')->where('bill_to', $employee_name)->first();
+			$pending            = DB::table('statuses')->where('id', 1)->value('id');
+			$approved           = DB::table('statuses')->where('id', 4)->value('id');
 
-
-			$employees = 	DB::table('employees')->where('bill_to', $employee_name)->first();
-
-			$pending = DB::table('statuses')->where('id', 1)->value('id');
-
-			$approved =  		DB::table('statuses')->where('id', 4)->value('id');
-
-
-			if(CRUDBooster::myPrivilegeName() == "Employee"){ 
-
+          
+			if(in_array(CRUDBooster::myPrivilegeId(), [11,12])){ 
 				//$postdata['status_id']		 			= $pending;
-
-				$postdata['status_id']		 			= StatusMatrix::where('current_step', 1)
+				$postdata['status_id']		 			= StatusMatrix::where('current_step', 2)
 																		->where('request_type', $request_type_id)
 																		//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
 																		->value('status_id');
 			}else{
-
 				$postdata['status_id']		 			= StatusMatrix::where('current_step', 1)
 																		->where('request_type', $request_type_id)
 																		//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
 																		->value('status_id');
-
-				
+	
 			}
 				
 			$postdata['reference_number']		 	= $reference_number;
 			$postdata['employee_name'] 				= $employees->id;
-			$postdata['company_name'] 				= $employees->company_name;
+			$postdata['company_name'] 				= $employees->company_name_id;
 			$postdata['position'] 					= $employees->position_id;
 			$postdata['department'] 				= $employees->department_id;
 			$postdata['store_branch'] 				= $store_branch_id;
@@ -536,8 +525,7 @@
 
 				$postdata['application_others'] 		= $application_others;
 			}
-			
-			
+
 	    }
 		
 
@@ -608,7 +596,7 @@
 
 				}
 
-				if(CRUDBooster::myPrivilegeName() == "HR"){ 
+				if(in_array(CRUDBooster::myPrivilegeId(), [4,11,12])){ 
 
 					if($category_id[$x] == "IT ASSETS"){
 
@@ -734,11 +722,7 @@
 
 	    }
 
-
-
 	    //By the way, you can still create your own method in here... :) 
-
-
 		public function getAddRequisition() {
 
 			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
@@ -746,66 +730,36 @@
 			}
 
 			$this->cbLoader();
-
 			$data['page_title'] = 'Create New IT Asset Request';
-
-			
-
 			$data['conditions'] = DB::table('condition_type')->where('status', 'ACTIVE')->get();
-
-			$data['employees'] = DB::table('employees')->where('status_id', 1)->orderby('bill_to', 'asc')->get();
-
 			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
-
 			$data['stores'] = DB::table('stores')->where('status', 'ACTIVE')->get();
-
 			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
-
 			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-
-
-			$data['employeeinfos'] = DB::table('employees')
-										 ->leftjoin('positions', 'employees.position_id', '=', 'positions.id')
-										 ->leftjoin('departments', 'employees.department_id', '=', 'departments.id')
-										 ->leftjoin('companies', 'employees.company_name', '=', 'companies.id')
-										 ->select( 'employees.*', 'positions.position_description as position_description', 'departments.department_name as department_name', 'companies.company_name as company_name')
-										 ->where('employees.id', $data['user']->employee_id)->first();
-			
+			$data['employeeinfos'] = DB::table('cms_users')
+										 ->leftjoin('positions', 'cms_users.position_id', '=', 'positions.id')
+										 ->leftjoin('departments', 'cms_users.department_id', '=', 'departments.id')
+										 ->select( 'cms_users.*', 'positions.position_description as position_description', 'departments.department_name as department_name')
+										 ->where('cms_users.id', $data['user']->id)->first();
 			$data['categories'] = DB::table('category')->where('category_status', 'ACTIVE')->where('id', 5)->orderby('category_description', 'asc')->get();
-
 			$data['sub_categories'] = DB::table('class')->where('class_status', 'ACTIVE')->where('category_id', 5)->orderby('class_description', 'asc')->get();
-
 			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();
-			
 			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
 			
-			if(CRUDBooster::myPrivilegeId() == 2 || CRUDBooster::myPrivilegeId() == 5 || CRUDBooster::myPrivilegeId() == 6){ 
-
+			if(in_array(CRUDBooster::myPrivilegeId(), [1,2,3,4,5,6,7,9,10,11,12,13])){ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
-
 				return $this->view("assets.add-requisition", $data);
 
-			}else if(CRUDBooster::myPrivilegeName() == "Store"){ 
-
+			}else if(CRUDBooster::myPrivilegeId() == 8){ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
-
-
-
-				$data['stores'] = DB::table('stores')->where('id', $data['user']->store_id)->first();
-
+				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
 				return $this->view("assets.add-store-requisition", $data);
-
 			}else{
-
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'HR')->get();
-
 				return $this->view("assets.add-hr-requisition", $data);
 
 			}
 				
-
-			
-
 		}
 
 		public function getAddRequisitionFA() {
@@ -815,62 +769,34 @@
 			}
 
 			$this->cbLoader();
-
 			$data['page_title'] = 'Create New FA Request';
-
-			
-
 			$data['conditions'] = DB::table('condition_type')->where('status', 'ACTIVE')->get();
-
-			$data['employees'] = DB::table('employees')->where('status_id', 1)->orderby('bill_to', 'asc')->get();
-
 			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
-
 			$data['stores'] = DB::table('stores')->where('status', 'ACTIVE')->get();
-
 			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
-
 			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-
-
-			$data['employeeinfos'] = DB::table('employees')
-										 ->leftjoin('positions', 'employees.position_id', '=', 'positions.id')
-										 ->leftjoin('departments', 'employees.department_id', '=', 'departments.id')
-										 ->leftjoin('companies', 'employees.company_name', '=', 'companies.id')
-										 ->select( 'employees.*', 'positions.position_description as position_description', 'departments.department_name as department_name', 'companies.company_name as company_name')
-										 ->where('employees.id', $data['user']->employee_id)->first();
-			
+			$data['employeeinfos'] = DB::table('cms_users')
+										 ->leftjoin('positions', 'cms_users.position_id', '=', 'positions.id')
+										 ->leftjoin('departments', 'cms_users.department_id', '=', 'departments.id')
+										 ->select( 'cms_users.*', 'positions.position_description as position_description', 'departments.department_name as department_name')
+										 ->where('cms_users.id', $data['user']->id)->first();
 			$data['categories'] = DB::table('category')->where('id', 1)->where('category_status', 'ACTIVE')
 													   ->orwhere('id', 6)->where('category_status', 'ACTIVE')
 													   ->orderby('category_description', 'asc')
 													   ->get();
-
 			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();
-			
 			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
-			
-			if(CRUDBooster::myPrivilegeId() == 2 || CRUDBooster::myPrivilegeId() == 5 || CRUDBooster::myPrivilegeId() == 6){ 
 
+			if(in_array(CRUDBooster::myPrivilegeId(), [1,2,3,4,5,6,7,9,10,11,12,13])){ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
-
 				return $this->view("assets.add-requisition-fa", $data);
-
-			}else if(CRUDBooster::myPrivilegeName() == "Store"){ 
-
+			}else if(CRUDBooster::myPrivilegeId() == 8){ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
-
-
-
-				$data['stores'] = DB::table('stores')->where('id', $data['user']->store_id)->first();
-
+				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
 				return $this->view("assets.add-store-requisition-fa", $data);
-
 			}else{
-
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'HR')->get();
-
 				return $this->view("assets.add-hr-requisition", $data);
-
 			}
 				
 		}
@@ -880,64 +806,36 @@
 			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
 				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
 			}
-
 			$this->cbLoader();
-
 			$data['page_title'] = 'Create New Marketing Material Request';
-
-			
-
 			$data['conditions'] = DB::table('condition_type')->where('status', 'ACTIVE')->get();
-
-			$data['employees'] = DB::table('employees')->where('status_id', 1)->orderby('bill_to', 'asc')->get();
-
 			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
-
 			$data['stores'] = DB::table('stores')->where('status', 'ACTIVE')->get();
-
 			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
-
 			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-
-
-			$data['employeeinfos'] = DB::table('employees')
-										 ->leftjoin('positions', 'employees.position_id', '=', 'positions.id')
-										 ->leftjoin('departments', 'employees.department_id', '=', 'departments.id')
-										 ->leftjoin('companies', 'employees.company_name', '=', 'companies.id')
-										 ->select( 'employees.*', 'positions.position_description as position_description', 'departments.department_name as department_name', 'companies.company_name as company_name')
-										 ->where('employees.id', $data['user']->employee_id)->first();
+			$data['employeeinfos'] = DB::table('cms_users')
+										 ->leftjoin('positions', 'cms_users.position_id', '=', 'positions.id')
+										 ->leftjoin('departments', 'cms_users.department_id', '=', 'departments.id')
+										 ->select( 'cms_users.*', 'positions.position_description as position_description', 'departments.department_name as department_name')
+										 ->where('cms_users.id', $data['user']->id)->first();
 			
 			$data['categories'] = DB::table('category')->where('id', 4)->where('category_status', 'ACTIVE')
 													   ->orderby('category_description', 'asc')
 													   ->get();
 			$data['sub_categories'] = DB::table('class')->where('class_status', 'ACTIVE')->where('category_id', 4)->orderby('class_description', 'asc')->get();
-
 			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();
-			
 			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
-			
-			if(CRUDBooster::myPrivilegeId() == 2 || CRUDBooster::myPrivilegeId() == 5 || CRUDBooster::myPrivilegeId() == 6){ 
 
+			if(in_array(CRUDBooster::myPrivilegeId(), [1,2,3,4,5,6,7,9,10,11,12,13])){ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
-
 				return $this->view("assets.add-requisition-marketing", $data);
-
-			}else if(CRUDBooster::myPrivilegeName() == "Store"){ 
-
+			}else if(CRUDBooster::myPrivilegeId() == 8){ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
-
-
-
-				$data['stores'] = DB::table('stores')->where('id', $data['user']->store_id)->first();
-
+				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
 				return $this->view("assets.add-store-requisition-marketing", $data);
-
 			}else{
-
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'HR')->get();
-
 				return $this->view("assets.add-hr-requisition", $data);
-
 			}
 				
 		}
@@ -947,67 +845,38 @@
 			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
 				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
 			}
-
 			$this->cbLoader();
-
 			$data['page_title'] = 'Create New Supplies Request';
-
-			
-
 			$data['conditions'] = DB::table('condition_type')->where('status', 'ACTIVE')->get();
-
-			$data['employees'] = DB::table('employees')->where('status_id', 1)->orderby('bill_to', 'asc')->get();
-
 			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
-
 			$data['stores'] = DB::table('stores')->where('status', 'ACTIVE')->get();
-
 			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
-
 			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-
-
-			$data['employeeinfos'] = DB::table('employees')
-										 ->leftjoin('positions', 'employees.position_id', '=', 'positions.id')
-										 ->leftjoin('departments', 'employees.department_id', '=', 'departments.id')
-										 ->leftjoin('companies', 'employees.company_name', '=', 'companies.id')
-										 ->select( 'employees.*', 'positions.position_description as position_description', 'departments.department_name as department_name', 'companies.company_name as company_name')
-										 ->where('employees.id', $data['user']->employee_id)->first();
-			
+			$data['employeeinfos'] = DB::table('cms_users')
+										 ->leftjoin('positions', 'cms_users.position_id', '=', 'positions.id')
+										 ->leftjoin('departments', 'cms_users.department_id', '=', 'departments.id')
+										 ->select( 'cms_users.*', 'positions.position_description as position_description', 'departments.department_name as department_name')
+										 ->where('cms_users.id', $data['user']->id)->first();
 			$data['categories'] = DB::table('category')->where('id', 2)->where('category_status', 'ACTIVE')
 													   ->orderby('category_description', 'asc')
 													   ->get();
 			$data['sub_categories'] = DB::table('class')->where('class_status', 'ACTIVE')->where('category_id', 2)->orderby('class_description', 'asc')->get();
-
 			$data['item_description'] = DB::table('assets')->where('category_id', 2)
 			                                           //->where('category_status', 'ACTIVE')
 													   ->orderby('item_description', 'asc')
-													   ->get();
-        
-			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();
-			
+													   ->get();  
+			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();	
 			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
-	
-			if(CRUDBooster::myPrivilegeId() == 2 || CRUDBooster::myPrivilegeId() == 5 || CRUDBooster::myPrivilegeId() == 6){ 
 
+			if(in_array(CRUDBooster::myPrivilegeId(), [1,2,3,4,5,6,7,9,10,11,12,13])){ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
-
 				return $this->view("assets.add-requisition-supplies", $data);
-
-			}else if(CRUDBooster::myPrivilegeName() == "Store"){ 
-
+			}else if(CRUDBooster::myPrivilegeId() == 8){ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
-
-
-
-				$data['stores'] = DB::table('stores')->where('id', $data['user']->store_id)->first();
-
+				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
 				return $this->view("assets.add-store-requisition-supplies", $data);
-
 			}else{
-
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'HR')->get();
-
 				return $this->view("assets.add-hr-requisition", $data);
 
 			}
@@ -1029,7 +898,7 @@
 			$data['Header'] = HeaderRequest::
 				  leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
 				->leftjoin('condition_type', 'header_request.conditions', '=', 'condition_type.id')
-				->leftjoin('employees', 'header_request.employee_name', '=', 'employees.id')
+				->leftjoin('cms_users as employees', 'header_request.employee_name', '=', 'employees.id')
 				->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
 				->leftjoin('departments', 'header_request.department', '=', 'departments.id')
 				->leftjoin('stores', 'header_request.store_branch', '=', 'stores.id')
@@ -1048,7 +917,7 @@
 						'condition_type.*',
 						'requested.name as requestedby',
 						'employees.bill_to as employee_name',
-						'companies.company_name as company_name',
+						'employees.company_name_id as company_name',
 						'departments.department_name as department',
 						'stores.bea_mo_store_name as store_branch',
 						'approved.name as approvedby',
@@ -1060,7 +929,7 @@
 						'header_request.created_at as created_at'
 						)
 				->where('header_request.id', $id)->first();
-
+				
 			$data['Body'] = BodyRequest::
 				select(
 				  'body_request.*'

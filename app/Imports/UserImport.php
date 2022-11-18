@@ -36,9 +36,13 @@ class UserImport implements ToCollection, WithHeadingRow
 				$approver_id_manager = $approver;
 				$approver_id_executive = NULL;
 			}else if($priviledgeId == 11){
-				$approver_id = $approver;
+				$approver_id = NULL;
 				$approver_id_manager = NULL;
-				$approver_id_executive = $approver;
+				$approver_id_executive = NULL;
+			}else if($priviledgeId == 12){
+				$approver_id = NULL;
+				$approver_id_manager = NULL;
+				$approver_id_executive = NULL;
 			}else{
 				$approver_id = $approver;
 				$approver_id_manager = NULL;
