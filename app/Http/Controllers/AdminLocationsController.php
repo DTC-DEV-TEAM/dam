@@ -50,7 +50,7 @@
 
 			$this->form[] = ['label'=>'Location Name','name'=>'store_status','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
 
-			$this->form[] = ['label'=>'COA','name'=>'coa_id','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
+			$this->form[] = ['label'=>'COA','name'=>'coa_id','type'=>'text','validation'=>'min:1|max:255','width'=>'col-sm-5'];
 			
 			if(CRUDBooster::getCurrentMethod() == 'getEdit' || CRUDBooster::getCurrentMethod() == 'postEditSave' || CRUDBooster::getCurrentMethod() == 'getDetail') {
 				$this->form[] = ['label'=>'Status','name'=>'store_status','type'=>'select','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE'];

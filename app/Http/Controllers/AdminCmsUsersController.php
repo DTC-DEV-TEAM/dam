@@ -49,7 +49,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 		# START FORM DO NOT REMOVE THIS LINE
 		$this->form = array();
 
-		if(CRUDBooster::isSuperadmin() || CRUDBooster::myPrivilegeName() == "Admin" || CRUDBooster::myPrivilegeName() == "HR") {
+		if(CRUDBooster::isSuperadmin() || CRUDBooster::myPrivilegeId() == 9 || CRUDBooster::myPrivilegeId() == 4) {
 			$this->form[] = array("label"=>"Email","name"=>"email",'required'=>true,'type'=>'email','validation'=>'required|email|unique:cms_users,email,'.CRUDBooster::getCurrentId(), 'width'=>'col-sm-5');		
     		$this->form[] = array("label"=>"Password","name"=>"password","type"=>"password","help"=>"Please leave empty if not changed", 'width'=>'col-sm-5');
 			$this->form[] = array("label"=>"Photo","name"=>"photo","type"=>"upload","help"=>"Recommended resolution is 200x200px",'validation'=>'image|max:1000','resize_width'=>90,'resize_height'=>90, 'width'=>'col-sm-5');
@@ -74,16 +74,16 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
     	}
 		
 		
-		if((CRUDBooster::isSuperadmin() || CRUDBooster::myPrivilegeName() == "Admin" || CRUDBooster::myPrivilegeName() == "HR") && (CRUDBooster::getCurrentMethod() == 'getEdit' || CRUDBooster::getCurrentMethod() == 'postEditSave')){
+		if((CRUDBooster::isSuperadmin() || CRUDBooster::myPrivilegeId() == 9 || CRUDBooster::myPrivilegeId() == 4) && (CRUDBooster::getCurrentMethod() == 'getEdit' || CRUDBooster::getCurrentMethod() == 'postEditSave')){
 		    $this->form[] = array("label"=>"Status","name"=>"status","type"=>"select","dataenum"=>"ACTIVE;INACTIVE",'required'=>true, 'width'=>'col-sm-5');
 		}
 		
-		if(CRUDBooster::myPrivilegeName() == "Admin"){
+		if(CRUDBooster::myPrivilegeId() == 9){
 			$this->form[] = array("label"=>"Privilege","name"=>"id_cms_privileges","type"=>"select","datatable"=>"cms_privileges,name","datatable_where"=>"name LIKE '%REQUESTOR' || name LIKE '%OIC' || name LIKE '%AP CHECKER' || name LIKE '%TREASURY'", 'width'=>'col-sm-5');				
 			// $this->form[] = array("label"=>"Channel","name"=>"channels_id","type"=>"select","datatable"=>"channels,channel_name", 'width'=>'col-sm-5');
 			// $this->form[] = array("label"=>"Store Name","name"=>"stores_id","type"=>"check-box","datatable"=>"stores,store_name", 'width'=>'col-sm-10' );
 			//$this->form[] = array("label"=>"Stores","name"=>"stores_id","type"=>"select","datatable"=>"stores,name_name", 'required'=>true,'width'=>'col-sm-5');				
-		}elseif(CRUDBooster::myPrivilegeName() == "HR"){
+		}elseif(CRUDBooster::myPrivilegeId() == 4){
 			$this->form[] = array("label"=>"Privilege","name"=>"id_cms_privileges","type"=>"select","datatable"=>"cms_privileges,name", 'datatable_where'=>"id = '2'", 'width'=>'col-sm-5');	
 			$this->form[] = array('label'=>'Approver','name'=>'approver_id','type'=>'select2','datatable'=>'cms_users,name','datatable_where'=>"id_cms_privileges = '3' || id_cms_privileges = '11' || id_cms_privileges = '12'",'width'=>'col-sm-5');
 			$this->form[] = array('label'=>'Approver','name'=>'approver_id_manager','type'=>'select2','datatable'=>'cms_users,name','datatable_where'=>"id_cms_privileges = '11' || id_cms_privileges = '12'",'width'=>'col-sm-5', 'class'=>'approver_one');
@@ -104,7 +104,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 		# END FORM DO NOT REMOVE THIS LINE
 
 		$this->button_selected = array();
-        if(CRUDBooster::isUpdate() && (CRUDBooster::isSuperadmin() || CRUDBooster::myPrivilegeName() == "Admin" || CRUDBooster::myPrivilegeName() == "HR"))
+        if(CRUDBooster::isUpdate() && (CRUDBooster::isSuperadmin() || CRUDBooster::myPrivilegeId() == 9 || CRUDBooster::myPrivilegeId() == 4))
         {
         	$this->button_selected[] = ['label'=>'Set Login Status OFFLINE ','icon'=>'fa fa-check-circle','name'=>'set_login_status_OFFLINE'];
         	$this->button_selected[] = ['label'=>'Set Status INACTIVE ','icon'=>'fa fa-check-circle','name'=>'set_status_INACTIVE'];
@@ -120,12 +120,15 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 	    $this->index_button = array();
         if(CRUDBooster::getCurrentMethod() == 'getIndex') {
 			if(CRUDBooster::isSuperadmin()){
-		        $this->index_button[] = ["label"=>"Export Lists","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('export'),"color"=>"primary"];
+		         $this->index_button[] = ["label"=>"Export Lists","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('export'),"color"=>"primary"];
 				$this->index_button[] = [
 					"title"=>"Upload User Accounts",
 					"label"=>"Upload User Accounts",
 					"icon"=>"fa fa-download",
 					"url"=>CRUDBooster::mainpath('user-account-upload')];
+			}
+			if(CRUDBooster::myPrivilegeId() == 4){
+				$this->index_button[] = ["label"=>"Export Lists","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('export'),"color"=>"primary"];
 			}
 		}
 		
