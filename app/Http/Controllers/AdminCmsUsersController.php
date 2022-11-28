@@ -74,7 +74,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
     	}
 		
 		
-		if((CRUDBooster::isSuperadmin() || CRUDBooster::myPrivilegeId() == 9 || CRUDBooster::myPrivilegeId() == 4) && (CRUDBooster::getCurrentMethod() == 'getEdit' || CRUDBooster::getCurrentMethod() == 'postEditSave')){
+		if((CRUDBooster::isSuperadmin() || CRUDBooster::myPrivilegeId() == 4) && (CRUDBooster::getCurrentMethod() == 'getEdit' || CRUDBooster::getCurrentMethod() == 'postEditSave')){
 		    $this->form[] = array("label"=>"Status","name"=>"status","type"=>"select","dataenum"=>"ACTIVE;INACTIVE",'required'=>true, 'width'=>'col-sm-5');
 		}
 		
@@ -440,7 +440,12 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 
             $postdata['name'] = $postdata['first_name'].' '.$postdata['last_name'];
     		$postdata['user_name'] = $postdata['last_name'].''.substr($postdata['first_name'], 0, 1);
-    
+			if($postdata['status']){
+				$postdata['status'] = $postdata['status'];
+			}else{
+				$postdata['status'] = 'ACTIVE';
+			}
+
 			if($postdata['id_cms_privileges'] == 3){
 				$postdata['approver_id'] = $postdata['approver_id_manager'];
 				$postdata['approver_id_manager'] = $postdata['approver_id_manager'];
