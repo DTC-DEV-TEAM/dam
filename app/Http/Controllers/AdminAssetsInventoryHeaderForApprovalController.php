@@ -928,4 +928,86 @@
 			return Excel::download(new ExportHeaderInventory, 'requested_inventory.xlsx');
 		}
 
+		//export ap for recording
+		public function getExportApRecording($id, $date) {
+			$data = AssetsInventoryBody::leftjoin('statuses', 'assets_inventory_body.statuses_id','=','statuses.id')
+					->leftjoin('cms_users', 'assets_inventory_body.created_by', '=', 'cms_users.id')
+					->leftjoin('assets', 'assets_inventory_body.item_id', '=', 'assets.id')
+					->leftjoin('assets_inventory_header', 'assets_inventory_body.header_id', '=', 'assets_inventory_header.id')
+					->select(
+						'assets_inventory_body.*',
+						'assets_inventory_body.id as aib_id',
+						'statuses.*',
+						'cms_users.*',
+						'assets_inventory_header.*',
+						'assets.item_type as itemType',
+						'assets_inventory_body.location as body_location',
+						'assets_inventory_header.location as location',
+						'assets_inventory_header.created_at as date_created'
+					)
+					->where('assets_inventory_body.header_id', $id)
+					->whereDate('assets_inventory_body.created_at', $date)
+			        ->get();
+			//dd($data);
+			$data_array [] = array("Po No",
+									"Invoice Date",
+									"Invoice No",
+									"RR Date",
+									"Asset Code",
+									"Digits Code",
+									"Serial No",
+									"Status",
+									"Location",
+									"Item Condition",
+									"Item Description",
+									"Value",
+									"Item Type",
+									"Quantity",
+									"Warranty Coverage Year",
+									"Created By",
+									"Date Created");
+			foreach($data as $data_item)
+			{
+				$data_array[] = array(
+					'PO No' => $data_item->po_no,
+					'Invoice Date' => $data_item->invoice_date,
+					'Invoice No' => $data_item->invoice_no,
+					'RR Date' => $data_item->rr_date,
+					'Asset Code' => $data_item->asset_code,
+					'Digit Code' => $data_item->digits_code,
+					'Serial No' =>$data_item->serial_no,
+					'Status' =>$data_item->status_description,
+					'Location' =>$data_item->body_location,
+					'Item Condition' =>$data_item->item_condition,
+					'Item Description' => $data_item->item_description,
+					'Value' => $data_item->value,
+					'Item Type' =>$data_item->itemType,
+					'Quantity' =>$data_item->quantity,
+					'Warranty Coverage Year' => $data_item->warranty_coverage,
+					'Created By' =>$data_item->name,
+					'Date Created' =>$data_item->date_created,
+				);
+			}
+			$this->ExportExcelForApRecording($data_array);
+		}
+
+		public function ExportExcelForApRecording($assets_data){
+			ini_set('max_execution_time', 0);
+			ini_set('memory_limit', '4000M');
+			try {
+				$spreadSheet = new Spreadsheet();
+				$spreadSheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(20);
+				$spreadSheet->getActiveSheet()->fromArray($assets_data);
+				$Excel_writer = new Xlsx($spreadSheet);
+				header('Content-Type: application/vnd.ms-excel');
+				header('Content-Disposition: attachment;filename="AssetsInventoryApRecording.xlsx"');
+				header('Cache-Control: max-age=0');
+				ob_end_clean();
+				$Excel_writer->save('php://output');
+				exit();
+			} catch (Exception $e) {
+				return;
+			}
+		}
+
 	}

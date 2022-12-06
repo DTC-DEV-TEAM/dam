@@ -619,4 +619,12 @@
 			return Excel::download(new ExportMultipleSheet, 'asset_lists.xlsx');
 		}
 
+
+		public function getInventory(Request $request){
+        $AssetsInventoryBody = AssetsInventoryBody::select('assets_inventory_body.*');
+        $per_page = $request->input('per_page');
+        return (isset($per_page)) ? $AssetsInventoryBody->paginate($per_page) :  $AssetsInventoryBody->get();
+
+        }
+
 	}
