@@ -220,6 +220,17 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 						$('#form-group-approver_id_executive').hide();
 						$('#approver_id_executive').removeAttr('required');
 
+					}else if($(this).val() == 14){
+						$('#form-group-approver_id_manager').hide();
+						$('#approver_id_manager').removeAttr('required');
+
+						$('#form-group-approver_id').hide();
+				        $('#approver_id').removeAttr('required');
+
+						$('#form-group-approver_id_executive').show();
+						$('#approver_id_executive').attr('required', 'required');
+
+	
 					}else{
 						$('#form-group-approver_id').show();
 				        $('#approver_id').attr('required', 'required');
@@ -289,6 +300,17 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 						$('#form-group-approver_id_executive').hide();
 						$('#approver_id_executive').removeAttr('required');
 
+					}else if($(this).val() == 14){
+						$('#form-group-approver_id_manager').hide();
+						$('#approver_id_manager').removeAttr('required');
+
+						$('#form-group-approver_id').hide();
+				        $('#approver_id').removeAttr('required');
+
+						$('#form-group-approver_id_executive').show();
+						$('#approver_id_executive').attr('required', 'required');
+
+	
 					}else{
 						$('#form-group-approver_id').show();
 				        $('#approver_id').attr('required', 'required');
@@ -348,6 +370,16 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 
 					$('#form-group-approver_id_executive').hide();
 					$('#approver_id_executive').removeAttr('required');
+
+				}else if($('#id_cms_privileges').val() == 14){
+					$('#form-group-approver_id_manager').hide();
+					$('#approver_id_manager').removeAttr('required');
+
+					$('#form-group-approver_id').hide();
+					$('#approver_id').removeAttr('required');
+
+					$('#form-group-approver_id_executive').show();
+					$('#approver_id_executive').attr('required', 'required');
 
 				}else{
 					$('#form-group-approver_id').show();
