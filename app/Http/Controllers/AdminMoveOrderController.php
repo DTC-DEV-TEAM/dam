@@ -475,7 +475,7 @@
 
 			if($column_index == 5){
 
-				$request_type = 			DB::table('employees')->where(['id' => $column_value])->first();
+				$request_type = 			DB::table('cms_users')->where(['id' => $column_value])->first();
 				
 				if($column_value == $request_type->id){
 
@@ -1038,11 +1038,11 @@
 			$data['Header'] = HeaderRequest::
 				  leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
 				->leftjoin('condition_type', 'header_request.conditions', '=', 'condition_type.id')
-				->leftjoin('employees', 'header_request.employee_name', '=', 'employees.id')
+				->leftjoin('cms_users as employees', 'header_request.employee_name', '=', 'cms_users.id')
 				->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
 				->leftjoin('departments', 'header_request.department', '=', 'departments.id')
 				->leftjoin('positions', 'header_request.position', '=', 'positions.id')
-				->leftjoin('stores', 'header_request.store_branch', '=', 'stores.id')
+				->leftjoin('locations', 'header_request.store_branch', '=', 'locations.id')
 				->leftjoin('cms_users as requested', 'header_request.created_by','=', 'requested.id')
 				->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
 				->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
@@ -1058,7 +1058,7 @@
 						'companies.company_name as company_name',
 						'departments.department_name as department',
 						//'positions.position_description as position',
-						'stores.bea_mo_store_name as store_branch',
+						'locations.store_name as store_branch',
 						'approved.name as approvedby',
 						'recommended.name as recommendedby',
 						'tagged.name as taggedby',
@@ -1120,11 +1120,11 @@
 			$data['Header'] = HeaderRequest::
 				  leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
 				->leftjoin('condition_type', 'header_request.conditions', '=', 'condition_type.id')
-				->leftjoin('employees', 'header_request.employee_name', '=', 'employees.id')
+				->leftjoin('cms_users as employees', 'header_request.employee_name', '=', 'cms_users.id')
 				->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
 				->leftjoin('departments', 'header_request.department', '=', 'departments.id')
 				->leftjoin('positions', 'header_request.position', '=', 'positions.id')
-				->leftjoin('stores', 'header_request.store_branch', '=', 'stores.id')
+				->leftjoin('locations', 'header_request.store_branch', '=', 'locations.id')
 				->leftjoin('cms_users as requested', 'header_request.created_by','=', 'requested.id')
 				->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
 				->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
@@ -1140,7 +1140,7 @@
 						'companies.company_name as company_name',
 						'departments.department_name as department',
 						//'positions.position_description as position',
-						'stores.bea_mo_store_name as store_branch',
+						'locations.store_name as store_branch',
 						'approved.name as approvedby',
 						'recommended.name as recommendedby',
 						'tagged.name as taggedby',
@@ -1209,11 +1209,11 @@
 			$data['Header'] = HeaderRequest::
 				  leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
 				->leftjoin('condition_type', 'header_request.conditions', '=', 'condition_type.id')
-				->leftjoin('employees', 'header_request.employee_name', '=', 'employees.id')
+				->leftjoin('cms_users as employees', 'header_request.employee_name', '=', 'cms_users.id')
 				->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
 				->leftjoin('departments', 'header_request.department', '=', 'departments.id')
 				->leftjoin('positions', 'header_request.position', '=', 'positions.id')
-				->leftjoin('stores', 'header_request.store_branch', '=', 'stores.id')
+				->leftjoin('locations', 'header_request.store_branch', '=', 'locations.id')
 				->leftjoin('cms_users as requested', 'header_request.created_by','=', 'requested.id')
 				->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
 				->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
@@ -1229,7 +1229,7 @@
 						'companies.company_name as company_name',
 						'departments.department_name as department',
 						'positions.position_description as position',
-						'stores.bea_mo_store_name as store_branch',
+						'locations.store_name as store_branch',
 						'approved.name as approvedby',
 						'recommended.name as recommendedby',
 						'processed.name as processedby',
@@ -1270,10 +1270,10 @@
 				  leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
 				->leftjoin('condition_type', 'header_request.conditions', '=', 'condition_type.id')
 				->leftjoin('employees', 'header_request.employee_name', '=', 'employees.id')
-				->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
+				->leftjoin('cms_users as employees', 'header_request.company_name', '=', 'cms_users.id')
 				->leftjoin('departments', 'header_request.department', '=', 'departments.id')
 				->leftjoin('positions', 'header_request.position', '=', 'positions.id')
-				->leftjoin('stores', 'header_request.store_branch', '=', 'stores.id')
+				->leftjoin('locations', 'header_request.store_branch', '=', 'locations.id')
 				->leftjoin('cms_users as requested', 'header_request.created_by','=', 'requested.id')
 				->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
 				->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
@@ -1289,7 +1289,7 @@
 						'companies.company_name as company_name',
 						'departments.department_name as department',
 						//'positions.position_description as position',
-						'stores.bea_mo_store_name as store_branch',
+						'locations.store_name as store_branch',
 						'approved.name as approvedby',
 						'recommended.name as recommendedby',
 						'tagged.name as taggedby',
@@ -1382,11 +1382,11 @@
 			$data['Header'] = HeaderRequest::
 								leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
 								->leftjoin('condition_type', 'header_request.conditions', '=', 'condition_type.id')
-								->leftjoin('employees', 'header_request.employee_name', '=', 'employees.id')
+								->leftjoin('cms_users as employees', 'header_request.employee_name', '=', 'cms_users.id')
 								->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
 								->leftjoin('departments', 'header_request.department', '=', 'departments.id')
 								->leftjoin('positions', 'header_request.position', '=', 'positions.id')
-								->leftjoin('stores', 'header_request.store_branch', '=', 'stores.id')
+								->leftjoin('locations', 'header_request.store_branch', '=', 'locations.id')
 								->leftjoin('cms_users as requested', 'header_request.created_by','=', 'requested.id')
 								->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
 								->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
@@ -1402,7 +1402,7 @@
 										'companies.company_name as company_name',
 										'departments.department_name as department',
 										//'positions.position_description as position',
-										'stores.bea_mo_store_name as store_branch',
+										'locations.store_name as store_branch',
 										'approved.name as approvedby',
 										'recommended.name as recommendedby',
 										'tagged.name as taggedby',
@@ -1674,10 +1674,10 @@
 			$data['Header'] = HeaderRequest::
 				  leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
 				->leftjoin('condition_type', 'header_request.conditions', '=', 'condition_type.id')
-				->leftjoin('employees', 'header_request.employee_name', '=', 'employees.id')
+				->leftjoin('cms_users as employees', 'header_request.employee_name', '=', 'cms_users.id')
 				->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
 				->leftjoin('departments', 'header_request.department', '=', 'departments.id')
-				->leftjoin('stores', 'header_request.store_branch', '=', 'stores.id')
+				->leftjoin('locations', 'header_request.store_branch', '=', 'locations.id')
 				->leftjoin('cms_users as requested', 'header_request.created_by','=', 'requested.id')
 				->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
 				->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
@@ -1692,7 +1692,7 @@
 						'employees.bill_to as employee_name',
 						'companies.company_name as company_name',
 						'departments.department_name as department',
-						'stores.bea_mo_store_name as store_branch',
+						'locations.store_name as store_branch',
 						'approved.name as approvedby',
 						'recommended.name as recommendedby',
 						'processed.name as processedby',
@@ -1752,7 +1752,7 @@
 											->value('status_id');
 				}
 
-				$employee_name = DB::table('employees')->where('id', $arf_header->employee_name)->first();
+				$employee_name = DB::table('cms_users')->where('id', $arf_header->employee_name)->first();
 
 				for($x=0; $x < count((array)$mo_id); $x++){
 
@@ -1813,8 +1813,14 @@
 				
 				$infos['assign_to'] = $employee_name->bill_to;
 				$infos['reference_number'] = $arf_header->reference_number;
-				$infos['systemlink'] = "<a href='https://dam-test.digitstrading.ph/public/admin/receiving_asset/getADFStatus/$arf_header->id'>I have read and agree to the terms of use, and have received this item.</a>";
-				//$infos['systemlink'] = "<a href='https://localhost/dam/public/admin/receiving_asset/getADFStatus/$arf_header->id'>I have read and agree to the terms of use, and have received this item.</a>";
+				if(app()->environment('production')) {
+					$infos['systemlink'] = "<a href='https://dam.digitstrading.ph/public/admin/receiving_asset/getADFStatus/$arf_header->id'>I have read and agree to the terms of use, and have received this item.</a>";
+				}else if(app()->environment('staging')){
+					$infos['systemlink'] = "<a href='https://dam-test.digitstrading.ph/public/admin/receiving_asset/getADFStatus/$arf_header->id'>I have read and agree to the terms of use, and have received this item.</a>";
+				}else{
+					$infos['systemlink'] = "<a href='https://localhost/dam/public/admin/receiving_asset/getADFStatus/$arf_header->id'>I have read and agree to the terms of use, and have received this item.</a>";
+				}
+			
 				$infos['mo_reference_number'] = '<p>'. implode("<br>", $mo_reference_number) .'</p>';
 				$infos['asset_code'] = '<p>'. implode("<br>", $asset_code) .'</p>';
 				$infos['digits_code'] = '<p>'. implode("<br>", $digits_code) .'</p>';
@@ -1822,9 +1828,7 @@
 				$infos['item_category'] = '<p>'. implode("<br>", $item_category) .'</p>';
 				$infos['serial_no'] = '<p>'. implode("<br>", $serial_no) .'</p>';
 				
-
-				CRUDBooster::sendEmail(['to'=>'rickyalnin201995@gmail.com','data'=>$infos,'template'=>'assets_confirmation','attachments'=>$files]);
-				
+				//CRUDBooster::sendEmail(['to'=>$employee_name->email,'data'=>$infos,'template'=>'assets_confirmation','attachments'=>$files]);
 				CRUDBooster::sendEmail(['to'=>'marvinmosico@digits.ph','data'=>$infos,'template'=>'assets_confirmation','attachments'=>$files]);
 
 				if($arf_header->print_by_form == null){
