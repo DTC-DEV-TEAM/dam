@@ -120,9 +120,9 @@
 	        | 
 	        */
 	        $this->addaction = array();
-			if(CRUDBooster::myPrivilegeName() == "Asset Custodian"){ 
+			if(CRUDBooster::myPrivilegeId() == 6){ 
 			    $this->addaction[] = ['url'=>CRUDBooster::mainpath('detail-view/[id]'),'icon'=>'fa fa-eye','color'=>'default'];
-			}else if(CRUDBooster::myPrivilegeName() == "IT" OR CRUDBooster::myPrivilegeName() == "Admin" OR CRUDBooster::myPrivilegeName() == "Super Administrator" ){
+			}else if(CRUDBooster::myPrivilegeId() == 5 || CRUDBooster::myPrivilegeId() == 9 || CRUDBooster::isSuperadmin()){
 				$for_approval = DB::table('statuses')->where('id', 20)->value('id');
 				$approved = DB::table('statuses')->where('id', 22)->value('id');
 				$reject = DB::table('statuses')->where('id', 21)->value('id');
@@ -168,7 +168,7 @@
 	        $this->index_button = array();
             if(CRUDBooster::getCurrentMethod() == 'getIndex'){
 				$this->index_button[] = ["label"=>"Export","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('export'),"color"=>"primary"];
-				if(CRUDBooster::myPrivilegeName() == "Asset Custodian" OR CRUDBooster::myPrivilegeName() == "Super Administrator"){ 
+				if(CRUDBooster::myPrivilegeId() == 6 || CRUDBooster::isSuperadmin()){ 
 				    $this->index_button[] = ["label"=>"Add Inventory","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-inventory'),"color"=>"success"];
 				}
 			}
@@ -204,7 +204,7 @@
 	        */
 	        $this->script_js = NULL;
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
-				if(CRUDBooster::myPrivilegeName() == "Asset Custodian"){ 
+				if(CRUDBooster::myPrivilegeId() == 6){ 
 					$this->script_js = "
 					$(document).ready(function() {
 					$('h1').contents().filter(function(){
@@ -314,11 +314,11 @@
 			$it_warehouse  =    DB::table('warehouse_location_model')->where('id', 3)->value('id');
 			$admin_threef  =    DB::table('warehouse_location_model')->where('id', 1)->value('id');
 			$admin_gf  =  		DB::table('warehouse_location_model')->where('id', 2)->value('id');
-			if(CRUDBooster::myPrivilegeName() == "IT"){ 
+			if(CRUDBooster::myPrivilegeId() == 5){ 
 				$query->where('assets_inventory_header_for_approval.location', $it_warehouse)
 					  ->orderBy('assets_inventory_header_for_approval.id', 'DESC');
 
-			}else if(CRUDBooster::myPrivilegeName() == "Admin"){ 
+			}else if(CRUDBooster::myPrivilegeId() == 9){ 
 				$query->whereIn('assets_inventory_header_for_approval.location', [$admin_threef, $admin_gf])
 					  ->orderBy('assets_inventory_header_for_approval.id', 'DESC');
 
@@ -460,7 +460,7 @@
 	    public function hook_before_edit(&$postdata,$id) {        
 	        $this->cbLoader();
 			if(!CRUDBooster::isUpdate() && $this->global_privilege==FALSE) {  
-				if(!CRUDBooster::myPrivilegeName() === "Asset Custodian") {    
+				if(!CRUDBooster::myPrivilegeId() == 6) {    
 					CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
 				}
 			}
@@ -635,7 +635,7 @@
 		public function getapprovedProcess(Request $request){
 			$this->cbLoader();
 			if(!CRUDBooster::isUpdate() && $this->global_privilege==FALSE) {  
-				if(!CRUDBooster::myPrivilegeName() === "Asset Custodian") {    
+				if(!CRUDBooster::myPrivilegeId() == 6) {    
 					CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
 				}
 			}
@@ -818,7 +818,7 @@
 		public function getrejectedProcess(Request $request){
 			$this->cbLoader();
 			if(!CRUDBooster::isUpdate() && $this->global_privilege==FALSE) {  
-				if(!CRUDBooster::myPrivilegeName() === "Asset Custodian") {    
+				if(!CRUDBooster::myPrivilegeId() == 6) {    
 					CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
 				}
 			}

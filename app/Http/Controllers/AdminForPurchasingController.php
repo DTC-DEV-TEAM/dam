@@ -136,7 +136,7 @@
 
 				$for_closing =  			DB::table('statuses')->where('id', 19)->value('id');
 				if(CRUDBooster::myPrivilegeId() == 14){
-					$this->addaction[] = ['title'=>'View','url'=>CRUDBooster::mainpath('getRequestPurchasing/[id]'),'icon'=>'fa fa-eye' , "showIf"=>"[purchased2_by] == null"];
+					$this->addaction[] = ['title'=>'View','url'=>CRUDBooster::mainpath('getRequestPurchasingManagerView/[id]'),'icon'=>'fa fa-eye'];
 				}else{
 					$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getRequestPurchasing/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[purchased2_by] == null"];
 					$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailPurchasing/[id]'),'icon'=>'fa fa-eye', "showIf"=>"[mo_by] != null"];
@@ -342,6 +342,11 @@
 
 				$query->orderBy('header_request.status_id', 'asc')->orderBy('header_request.id', 'DESC');
 			
+			}else if(CRUDBooster::myPrivilegeId() == 14){ 
+				$query->whereNull('header_request.deleted_at')
+					  ->orderBy('header_request.status_id', 'DESC')
+					  ->orderBy('header_request.id', 'DESC');
+
 			}else{
 
 				$query->where(function($sub_query){
@@ -779,6 +784,68 @@
 			$data['recommendations'] = DB::table('recommendations')->where('status', 'ACTIVE')->get();
 
 			return $this->view("assets.purchasing-request", $data);
+		}
+
+		public function getRequestPurchasingManagerView($id){
+			
+
+			$this->cbLoader();
+			if(!CRUDBooster::isUpdate() && $this->global_privilege==FALSE) {    
+				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+			}  
+
+
+			$data = array();
+
+			$data['page_title'] = 'List of Request';
+
+			$data['Header'] = HeaderRequest::
+				  leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
+				->leftjoin('condition_type', 'header_request.conditions', '=', 'condition_type.id')
+				->leftjoin('cms_users as employees', 'header_request.employee_name', '=', 'employees.id')
+				->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
+				->leftjoin('departments', 'header_request.department', '=', 'departments.id')
+				->leftjoin('positions', 'header_request.position', '=', 'positions.id')
+				->leftjoin('locations', 'header_request.store_branch', '=', 'locations.id')
+				->leftjoin('cms_users as requested', 'header_request.created_by','=', 'requested.id')
+				->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
+				->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
+				->select(
+						'header_request.*',
+						'header_request.id as requestid',
+						'header_request.created_at as created',
+						'request_type.*',
+						'condition_type.*',
+						'requested.name as requestedby',
+						'employees.bill_to as employee_name',
+						'employees.company_name_id as company_name',
+						'departments.department_name as department',
+						//'positions.position_description as position',
+						'locations.store_name as store_branch',
+						'approved.name as approvedby',
+						'recommended.name as recommendedby',
+						'header_request.created_at as created_at'
+						)
+				->where('header_request.id', $id)->first();
+
+			$data['Body'] = BodyRequest::
+				select(
+				  'body_request.*'
+				)
+				->where('body_request.header_request_id', $id)
+				->whereNull('deleted_at')
+				->get();
+
+			$data['BodyReco'] = DB::table('recommendation_request')
+				->select(
+				  'recommendation_request.*'
+				)
+				->where('recommendation_request.header_request_id', $id)
+				->get();				
+
+			$data['recommendations'] = DB::table('recommendations')->where('status', 'ACTIVE')->get();
+
+			return $this->view("assets.purchasing-manager-view", $data);
 		}
 
 		public function getRequestPrint($id){
