@@ -728,7 +728,21 @@
 				)
 				->where('assets_inventory_body_for_approval.header_id', $id)
 				->get();
+
 			/* process to generate chronological sequential numbers asset code */
+			//segregate fixed assets to get category id
+			$FixAssetsArr = [];
+			$FaCatId = DB::table('category')->find(1);
+			foreach ($body as $fkey => $fvalue) {
+				if (strtolower($value['item_category']) == strtolower($FaCatId->category_description)) {
+					$FixAssetsArr[] = $fvalue;
+					unset($body[$fkey]);
+				}
+				foreach($FixAssetsArr as $valFa){
+					$getFaAssets = $valFa['item_category'];
+				}
+			}
+
             //segregate it assets to get category id
 			$ItAssetsArr = [];
 			$itCatId = DB::table('category')->find(5);
@@ -743,19 +757,7 @@
 				}
 			}
 		
-			//segregate fixed assets to get category id
-			$FixAssetsArr = [];
-			$FaCatId = DB::table('category')->find(1);
-			foreach ($body as $fkey => $fvalue) {
-				if (strtolower($value['item_category']) == strtolower($FaCatId->category_description)) {
-					$FixAssetsArr[] = $fvalue;
-					unset($body[$fkey]);
-				}
-				foreach($FixAssetsArr as $valFa){
-					$getFaAssets = $valFa['item_category'];
-				}
-			}
-
+			
 			//put asset code per based on  item category IT ASSETS
 			$finalItAssetsArr = [];
 			$DatabaseCounterIt = DB::table('assets_inventory_body')->where('item_category',$getItAssets)->count();
