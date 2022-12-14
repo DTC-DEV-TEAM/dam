@@ -13,10 +13,12 @@ class TruncateController extends \crocodicstudio\crudbooster\controllers\CBContr
         if(!CRUDBooster::isSuperadmin()) {    
             CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"),'danger');
         }
-        // DB::table('header_request')->truncate();
-        // DB::table('body_request')->truncate();
-        // DB::table('mo_body_request')->truncate();
-        // return "Truncated Successfully";
+        DB::table('assets_header_images')->truncate();
+        DB::table('assets_inventory_body')->truncate();
+        DB::table('assets_inventory_body_for_approval')->truncate();
+        DB::table('assets_inventory_header')->truncate();
+        DB::table('assets_inventory_header_for_approval')->truncate();
+        return "Truncated Successfully";
 
         if(app()->environment('production')) {
             return "Production";

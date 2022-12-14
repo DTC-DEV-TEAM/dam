@@ -611,16 +611,16 @@
 
 				if(in_array($arf_header->request_type_id, [5, 6, 7])){
                 //if($arf_header->request_type_id == 5){
-					$postdata['status_id']		 	=	StatusMatrix::where('current_step', 9)
-					//$postdata['status_id']		 	=	StatusMatrix::where('current_step', 4)
+					//$postdata['status_id']		 	=	StatusMatrix::where('current_step', 9)
+					$postdata['status_id']		 	=	StatusMatrix::where('current_step', 4)
 					->where('request_type', $arf_header->request_type_id)
 					//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
 					->value('status_id');
 
 				}else{
 
-					$postdata['status_id']		 	=	StatusMatrix::where('current_step', 10)
-					//$postdata['status_id']		 	=	StatusMatrix::where('current_step', 5)
+					//$postdata['status_id']		 	=	StatusMatrix::where('current_step', 10)
+					$postdata['status_id']		 	=	StatusMatrix::where('current_step', 5)
 					->where('request_type', $arf_header->request_type_id)
 					//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
 					->value('status_id');

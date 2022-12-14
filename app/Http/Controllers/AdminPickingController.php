@@ -329,10 +329,9 @@
 
 			$user_info = 		DB::table('cms_users')->where(['id' => CRUDBooster::myId()])->get();
 
-
 			$approval_array = array();
 			foreach($user_info as $matrix){
-				array_push($approval_array, $matrix->location_id);
+				array_push($approval_array, $matrix->location_to_pick);
 			}
 			$approval_string = implode(",",$approval_array);
 			$locationList = array_map('intval',explode(",",$approval_string));
@@ -358,9 +357,9 @@
 			$list_string = implode(",",$id_array);
 
 			$MOList = array_map('intval',explode(",",$list_string));
-
+          
 	        //Your code here
-	        if(CRUDBooster::myPrivilegeName() == "IT"){ 
+	        if(CRUDBooster::myPrivilegeId() == 5){ 
 
 				$for_picking =  	DB::table('statuses')->where('id', 15)->value('id');
 
@@ -698,7 +697,7 @@
 					$finalData[] = $csVal;
 				}
 			}
-			$finalSaveData = [];
+			$finalContainerSave = [];
 			$finalContainer = [];
 			foreach((array)$finalData as $key => $val){
 				$finalContainer['arf_number'] = $val['arf_number'];
@@ -781,7 +780,7 @@
 
 			$approval_array = array();
 			foreach($user_info as $matrix){
-				array_push($approval_array, $matrix->location_id);
+				array_push($approval_array, $matrix->location_to_pick);
 			}
 			$approval_string = implode(",",$approval_array);
 			$locationList = array_map('intval',explode(",",$approval_string));
@@ -789,7 +788,7 @@
 			$data['Header'] = HeaderRequest::
 				  leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
 				->leftjoin('condition_type', 'header_request.conditions', '=', 'condition_type.id')
-				->leftjoin('cms_users as employees', 'header_request.employee_name', '=', 'cms_users.id')
+				->leftjoin('cms_users as employees', 'header_request.employee_name', '=', 'employees.id')
 				->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
 				->leftjoin('departments', 'header_request.department', '=', 'departments.id')
 				->leftjoin('locations', 'header_request.store_branch', '=', 'locations.id')
@@ -804,7 +803,7 @@
 						'condition_type.*',
 						'requested.name as requestedby',
 						'employees.bill_to as employee_name',
-						'companies.company_name as company_name',
+						'employees.company_name_id as company_name',
 						'departments.department_name as department',
 						'locations.store_name as store_branch',
 						'approved.name as approvedby',
