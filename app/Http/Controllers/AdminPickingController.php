@@ -359,27 +359,25 @@
 			$MOList = array_map('intval',explode(",",$list_string));
           
 	        //Your code here
-	        if(CRUDBooster::myPrivilegeId() == 5){ 
+	        // if(CRUDBooster::myPrivilegeId() == 5){ 
 
-				$for_picking =  	DB::table('statuses')->where('id', 15)->value('id');
+			// 	$for_picking =  	DB::table('statuses')->where('id', 15)->value('id');
 
-				$query->where('mo_body_request.status_id', $for_picking)
-					  ->where('mo_body_request.to_reco', 1)
-					  ->where('mo_body_request.to_pick', 0)
-					  ->orderBy('mo_body_request.id', 'ASC');
+			// 	$query->where('mo_body_request.status_id', $for_picking)
+			// 		  ->where('mo_body_request.to_reco', 1)
+			// 		  ->where('mo_body_request.to_pick', 0)
+			// 		  ->orderBy('mo_body_request.id', 'ASC');
 
-			}else if(CRUDBooster::myPrivilegeName() == "Asset Custodian"){ 
+			// }else if(CRUDBooster::myPrivilegeId() == 6){ 
 
-				$for_picking =  	DB::table('statuses')->where('id', 15)->value('id');
+			// 	$for_picking =  	DB::table('statuses')->where('id', 15)->value('id');
 
+			// 	$query->where('mo_body_request.status_id', $for_picking)
+			// 		->where('mo_body_request.to_reco', 0)
+			// 		->where('mo_body_request.to_pick', 0)
+			// 		->orderBy('mo_body_request.id', 'ASC');
 
-				$query->where('mo_body_request.status_id', $for_picking)
-				->where('mo_body_request.to_reco', 0)
-				->where('mo_body_request.to_pick', 0)
-				->orderBy('mo_body_request.id', 'ASC');
-
-			}else{
-
+			// }else{
 				
 				$for_picking =  	DB::table('statuses')->where('id', 15)->value('id');
 
@@ -387,7 +385,7 @@
 					  ->where('mo_body_request.to_pick', 0)
 				      ->orderBy('mo_body_request.id', 'ASC');
 
-			}
+			//}
 
 			$query->whereIn('mo_body_request.id', $MOList);
 	    }

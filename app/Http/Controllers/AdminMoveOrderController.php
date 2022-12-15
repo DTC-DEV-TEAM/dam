@@ -578,8 +578,8 @@
 			$count_header1  	= $count_header + 1;
 
 			//dd(count((array)$digits_code));
-
-			if($arf_header->request_type_id == 5){
+			if(in_array($arf_header->request_type_id, [5, 6, 7])){
+			//if($arf_header->request_type_id == 5){
 				$for_printing = 				StatusMatrix::where('current_step', 5)
 												->where('request_type', $arf_header->request_type_id)
 												->value('status_id');
@@ -590,7 +590,7 @@
 			}
 
 		
-
+            //dd($body_request_id, $body_request_id);
 			for($x=0; $x < count((array)$item_description); $x++) {
 
 
@@ -626,10 +626,21 @@
 					}else{
 
 						if(count((array)$digits_code) != $body_request){
-							
-							$count_header++;
-							$header_ref   =  		str_pad($count_header, 7, '0', STR_PAD_LEFT);			
-							$reference_number	= 	"MO-".$header_ref.$ref_inventory;
+
+							if($body_request_id[$x] == "" || $body_request_id[$x] == null){
+
+								$count_header++;
+								$header_ref   =  		str_pad($count_header, 7, '0', STR_PAD_LEFT);			
+								$reference_number	= 	"MO-".$header_ref.$ref_inventory;
+
+							}else{
+								$header_ref   =  		str_pad($count_header1, 7, '0', STR_PAD_LEFT);			
+								$reference_number	= 	"MO-".$header_ref.$ref_inventory;
+
+							}
+							// $count_header++;
+							// $header_ref   =  		str_pad($count_header, 7, '0', STR_PAD_LEFT);			
+							// $reference_number	= 	"MO-".$header_ref.$ref_inventory;
 
 							//$reference_number	= 	"MO-".$header_ref;
 						}else{
@@ -680,7 +691,6 @@
 				$dataLines1[$x]['location_id'] 			= $inventory_info->location;
 				$dataLines1[$x]['created_by'] 			= CRUDBooster::myId();
 				$dataLines1[$x]['created_at'] 			= date('Y-m-d H:i:s');
-
 
 				array_push($locationArray, $inventory_info->location);
 
@@ -809,8 +819,9 @@
 
 			
 			$arf_header 		= HeaderRequest::where(['id' => $mo_request->header_request_id])->first();
-
-			if($arf_header->request_type_id == 5){
+			
+			if(in_array($arf_header->request_type_id, [5, 6, 7])){
+			//if($arf_header->request_type_id == 5){
 				$for_printing = 				StatusMatrix::where('current_step', 5)
 												->where('request_type', $arf_header->request_type_id)
 												->value('status_id');
@@ -1325,7 +1336,8 @@
 			$arf_header = 			HeaderRequest::where(['id' => $requestid])->first();
 
 			//$for_picking =  		DB::table('statuses')->where('id', 15)->value('id');
-			if($arf_header->request_type_id == 5){
+			if(in_array($arf_header->request_type_id, [5, 6, 7])){
+			//if($arf_header->request_type_id == 5){
 				$for_picking = 			StatusMatrix::where('current_step', 6)
 										->where('request_type', $arf_header->request_type_id)
 										->value('status_id');
@@ -1741,8 +1753,9 @@
 				$inventory_id = 		$data['inventory_id'];
 	
 				$arf_header = 			HeaderRequest::where(['id' => $requestid])->first();
-			
-				if($arf_header->request_type_id == 5){
+
+				if(in_array($arf_header->request_type_id, [5, 6, 7])){
+				//if($arf_header->request_type_id == 5){
 					$for_receiving = 		StatusMatrix::where('current_step', 8)
 											->where('request_type', $arf_header->request_type_id)
 											->value('status_id');

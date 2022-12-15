@@ -139,7 +139,7 @@
 					$this->addaction[] = ['title'=>'View','url'=>CRUDBooster::mainpath('getRequestPurchasingManagerView/[id]'),'icon'=>'fa fa-eye'];
 				}else{
 					$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getRequestPurchasing/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[purchased2_by] == null"];
-					$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailPurchasing/[id]'),'icon'=>'fa fa-eye', "showIf"=>"[mo_by] != null"];
+					$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailPurchasing/[id]'),'icon'=>'fa fa-eye'];
 					$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::mainpath('getRequestClose/[id]'),'icon'=>'fa fa-check-circle', "showIf"=>"[status_id] == $for_closing"];
 					
 				}

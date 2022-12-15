@@ -18,14 +18,14 @@
 			$this->limit = "20";
 			$this->orderby = "id,desc";
 			$this->global_privilege = false;
-			$this->button_table_action = false;
+			$this->button_table_action = true;
 			$this->button_bulk_action = false;
 			$this->button_action_style = "button_icon";
 			$this->button_add = false;
 			$this->button_edit = false;
 			$this->button_delete = false;
-			$this->button_detail = false;
-			$this->button_show = false;
+			$this->button_detail = true;
+			$this->button_show = true;
 			$this->button_filter = false;
 			$this->button_import = false;
 			$this->button_export = false;
@@ -35,8 +35,8 @@
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
 			
-			$this->col[] = ["label"=>"Reference Number","name"=>"mo_reference_number"];
 			$this->col[] = ["label"=>"Arf Number","name"=>"header_request_id","join"=>"header_request,reference_number"];
+			$this->col[] = ["label"=>"Reference Number","name"=>"mo_reference_number"];
 			$this->col[] = ["label"=>"Digits Code","name"=>"digits_code"];
 			$this->col[] = ["label"=>"Asset Code","name"=>"asset_code"];
 			$this->col[] = ["label"=>"Item Description","name"=>"item_description"];
@@ -301,7 +301,7 @@
 
 			$query->where('header_request.created_by', CRUDBooster::myId())
 				  ->whereIn('mo_body_request.status_id', [$closed, $for_closing]); 
-    
+
 	    }
 
 	    /*
@@ -387,9 +387,90 @@
 
 	    }
 
+		public function getDetail($id){
+			
+			$this->cbLoader();
+            if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
+                CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+            }
 
+			$header_id = DB::table('mo_body_request')->where('id', $id)->first();
+			$data = array();
 
-	    //By the way, you can still create your own method in here... :) 
+			$data['page_title'] = 'View Request';
+
+			$data['Header'] = HeaderRequest::
+				  leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
+				->leftjoin('condition_type', 'header_request.conditions', '=', 'condition_type.id')
+				->leftjoin('cms_users as employees', 'header_request.employee_name', '=', 'employees.id')
+				->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
+				->leftjoin('departments', 'header_request.department', '=', 'departments.id')
+				->leftjoin('locations', 'header_request.store_branch', '=', 'locations.id')
+				->leftjoin('cms_users as requested', 'header_request.created_by','=', 'requested.id')
+				->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
+				->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
+				->leftjoin('cms_users as processed', 'header_request.purchased2_by','=', 'processed.id')
+				->leftjoin('cms_users as picked', 'header_request.picked_by','=', 'picked.id')
+				->leftjoin('cms_users as received', 'header_request.received_by','=', 'received.id')
+				->leftjoin('cms_users as closed', 'header_request.closed_by','=', 'closed.id')
+				->select(
+						'header_request.*',
+						'header_request.id as requestid',
+						'header_request.created_at as created',
+						'request_type.*',
+						'condition_type.*',
+						'requested.name as requestedby',
+						'employees.bill_to as employee_name',
+						'employees.company_name_id as company_name',
+						'departments.department_name as department',
+						'locations.store_name as store_branch',
+						'approved.name as approvedby',
+						'recommended.name as recommendedby',
+						'picked.name as pickedby',
+						'received.name as receivedby',
+						'processed.name as processedby',
+						'closed.name as closedby',
+						'header_request.created_at as created_at'
+						)
+				->where('header_request.id', $header_id->header_request_id)->first();
+				
+			$data['Body'] = BodyRequest::
+				select(
+				  'body_request.*'
+				)
+				->where('body_request.header_request_id', $header_id->header_request_id)
+				->get();
+
+			$data['Body1'] = BodyRequest::
+				select(
+				  'body_request.*'
+				)
+				->where('body_request.header_request_id', $header_id->header_request_id)
+				->wherenotnull('body_request.digits_code')
+				->orderby('body_request.id', 'desc')
+				->get();
+
+			$data['MoveOrder'] = MoveOrder::
+				select(
+				  'mo_body_request.*',
+				  'statuses.status_description as status_description'
+				)
+				->where('mo_body_request.header_request_id', $header_id->header_request_id)
+				->leftjoin('statuses', 'mo_body_request.status_id', '=', 'statuses.id')
+				->orderby('mo_body_request.id', 'desc')
+				->get();
+
+			$data['BodyReco'] = DB::table('recommendation_request')
+				->select(
+				  'recommendation_request.*'
+				)
+				->where('recommendation_request.header_request_id', $header_id->header_request_id)
+				->get();				
+
+			$data['recommendations'] = DB::table('recommendations')->where('status', 'ACTIVE')->get();	
+					
+			return $this->view("assets.detail", $data);
+		}
 
 
 	}
