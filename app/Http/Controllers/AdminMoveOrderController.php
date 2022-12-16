@@ -558,8 +558,7 @@
 			$unit_cost 							= $fields['add_unit_cost'];
 			$total_unit_cost 					= $fields['add_total_unit_cost'];
 			$body_request_id 					= $fields['body_request_id'];
-			$item_id 							= $fields['item_id'];
-			$inventory_id 						= $fields['inventory_id'];
+			
 			$quantity_total 					= $fields['quantity_total'];
 			$total 								= $fields['total'];
 
@@ -568,9 +567,14 @@
 			//$postdata['quantity_total']		 	= $quantity_total;
 			//$postdata['total']		 			= $total;
 
-			
 			$arf_header 		= HeaderRequest::where(['id' => $Header_id])->first();
-
+			if(in_array($arf_header->request_type_id, [1, 5])){
+			    $inventory_id 						= $fields['inventory_id'];
+				$item_id 							= $fields['item_id'];
+			}else{
+				$inventory_id 						= NULL;
+				$item_id 							= $fields['inventory_id'];
+			}
 			$body_request 		= BodyRequest::where(['header_request_id' => $Header_id])->count();
 
 			$count_header 		= MoveOrder::count();
@@ -693,8 +697,7 @@
 				$dataLines1[$x]['created_at'] 			= date('Y-m-d H:i:s');
 
 				array_push($locationArray, $inventory_info->location);
-
-
+			
 				BodyRequest::where('id',$body_request_id[$x])
 				->update([
 					'mo_plug'=> 		1,
@@ -1076,7 +1079,7 @@
 						'header_request.created_at as created_at'
 						)
 				->where('header_request.id', $id)->first();
-
+        
 			$data['Body'] = BodyRequest::
 				select(
 				  'body_request.*'
@@ -1441,7 +1444,7 @@
 					<div class="col-md-4">
 
 							<input type="hidden" value="'. $data['Header']->requestid .'" name="header_request_id" id="header_request_id">		
-
+							
 							<p>'. $data['Header']->reference_number .'</p>
 					</div>
 					<label class="control-label col-md-2">Requested Date:</label>
@@ -1531,7 +1534,7 @@
 							<input type="hidden"  class="form-control"  name="add_item_id[]" id="add_item_id'.$tableRow.'"  required  value='.$rowresult->id.'">                                                                               
 							<input type="hidden"  class="form-control"  name="item_description[]" id="item_description'.$tableRow.'"  required  value="'.$rowresult->item_description.'">
 							<input type="hidden"  class="form-control"  name="remove_btn[]" id="remove_btn'.$tableRow.'"  required  value="'.$tableRow.'">
-							
+							<input type="hidden"  class="form-control"  name="remove_btn[]" id="category"  required  value="'.$data['Header']->request_type_id.'">
 							<button type="button"  data-id="'.$tableRow.'"  class="btn btn-info btnsearch" id="searchrow'.$tableRow.'" name="searchrow" disabled><i class="glyphicon glyphicon-search"></i></button>
 						</td>
 
@@ -1631,15 +1634,25 @@
 				<script type="text/javascript">
 
 					var modal = document.getElementById("myModal");
+					var modal2 = document.getElementById("myModal2");
 
 					$(".btnsearch").click(function() {
-						document.querySelector("body").style.overflow = "hidden";
-						modal.style.display = "block";
+						if($("#category").val() == 1 || $("#category").val() == 5){
+							document.querySelector("body").style.overflow = "hidden";
+							modal.style.display = "block";
+						}else {
+							document.querySelector("body").style.overflow = "hidden";
+							modal2.style.display = "block";
+						}
 					});
 
 					$("#searchclose").click(function() {
 						document.querySelector("body").style.overflow = "visible";
 						modal.style.display = "none";
+					});
+					$("#searchclose2").click(function() {
+						document.querySelector("body").style.overflow = "visible";
+						modal2.style.display = "none";
 					});
 
 					$(".btnsearch").click(function(event) {

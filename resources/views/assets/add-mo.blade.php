@@ -65,7 +65,8 @@
         <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
         <input type="hidden" value="1" name="request_type_id" id="request_type_id">
         <input type="hidden" name="freebies_val" id="freebies_val" value="0">
-        <!-- Modal -->
+
+        <!-- Modal 1-->
         <div id="myModal" class="modal" style="padding: auto">
             <!-- Modal content -->
             <div class="modal-content">
@@ -80,8 +81,8 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label class="control-label">{{ trans('message.form-label.add_item1') }}</label>
-                            <input class="form-control auto" style="width:100%;" placeholder="Search Item" id="search">
-                            <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" id="ui-id-2" style="display: none; top: 60px; left: 15px; width: 570px;">
+                               <input class="form-control auto" style="width:100%;" placeholder="Search Item" id="search">
+                                 <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" id="ui-id-2" style="display: none; top: 60px; left: 15px; width: 570px;">
                                 <li>Loading...</li>
                             </ul>
                         </div>
@@ -89,6 +90,34 @@
                 </div> 
                 <br>
                 <button type="button"  class="btn btn-info pull-right btnsearch" id="searchclose" >Close</button>
+            </div>               
+        </div>
+        <!-- Modal -->
+
+        <!-- Modal 2-->
+        <div id="myModal2" class="modal" style="padding: auto">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div class='callout callout-info'>
+                    <h3>SEARCH FOR <label id="item_search"></label></h3>
+                    <span style="font-style: italic">*NOTE: Please check and match the Item Description before sending request</span>
+                    <input type="hidden"  class="form-control" id="add_item_id">
+                    <input type="hidden"  class="form-control" id="button_count">
+                    <input type="hidden"  class="form-control" id="button_remove">
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label">{{ trans('message.form-label.add_item1') }}</label>
+                               <input class="form-control auto" style="width:100%;" placeholder="Search Item Master" id="searchItemMaster">
+                                 <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" id="ui-id-2" style="display: none; top: 60px; left: 15px; width: 570px;">
+                                <li>Loading...</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div> 
+                <br>
+                <button type="button"  class="btn btn-info pull-right btnsearch" id="searchclose2" >Close</button>
             </div>               
         </div>
         <!-- Modal -->
@@ -196,17 +225,26 @@
     var token = $("#token").val();
 
     var modal = document.getElementById("myModal");
+    var modal2 = document.getElementById("myModal2");
 
     $('.btnsearch').click(function() {
-        document.querySelector("body").style.overflow = 'hidden';
-        modal.style.display = "block";
+        if($("#category").val() == 1 || $("#category").val() == 5){
+            document.querySelector("body").style.overflow = 'hidden';
+            modal.style.display = "block";
+        }else{
+            document.querySelector("body").style.overflow = 'hidden';
+            modal2.style.display = "block";
+        }
     });
 
     $('#searchclose').click(function() {
         document.querySelector("body").style.overflow = 'visible';
         modal.style.display = "none";
     });
-   
+    $('#searchclose2').click(function() {
+        document.querySelector("body").style.overflow = 'visible';
+        modal2.style.display = "none";
+    });
 
     function preventBack() {
         window.history.forward();
@@ -343,7 +381,7 @@
 
                 });
 
-
+              
                 $('.itemDesc').each(function() {
 
                     description = $(this).val();
@@ -364,27 +402,27 @@
 
                 });
 
+                if($("#category").val() == 1 || $("#category").val() == 5){
+                    $('.cost_item').each(function() {
 
-                $('.cost_item').each(function() {
+                        description = $(this).val();
 
-                    description = $(this).val();
+                        if (description == null) {
 
-                    if (description == null) {
+                            error++;
 
-                        error++;
+                            alert("Item Cost cannot be empty!");
+                            event.preventDefault(); // cancel default behavior
+                        } else if (description == "") {
 
-                        alert("Item Cost cannot be empty!");
-                        event.preventDefault(); // cancel default behavior
-                    } else if (description == "") {
+                            error++;
 
-                        error++;
+                            alert("Item Cost cannot be empty!");
+                            event.preventDefault(); // cancel default behavior
+                        }
 
-                        alert("Item Cost cannot be empty!");
-                        event.preventDefault(); // cancel default behavior
-                    }
-
-                });
-
+                    });
+                }
 
                 if(error == 0){
                     $(this).attr('disabled','disabled');
@@ -437,7 +475,7 @@
 
     });
 
-
+    //for IT and FA Request
     $(document).ready(function(){
             
             $(function(){
@@ -496,6 +534,245 @@
                 select: function (event, ui) {
 
                         modal.style.display = "none";
+
+                        document.querySelector("body").style.overflow = 'visible';
+
+                        $("#add-Row").attr('disabled', false);
+
+                        var e = ui.item;
+
+                        if (e.id) {
+
+                                //$("#btnUpdate").attr('disabled', true);
+                                var remove_count = $("#button_remove").val();
+
+                                var add_id = $("#add_item_id").val();
+                         
+                                $("#searchrow"+ $("#button_count").val()).attr('disabled', true);
+
+                            // if (!in_array(e.id, stack)) {
+                                if (!stack.includes(e.id)) {
+            
+                                    stack.push(e.id);           
+                                    
+                                        var serials = "";
+
+                                        if(e.serial_no == null || e.serial_no == ""){
+                                            serials = "";
+                                        }else{
+                                            serials = e.serial_no;
+                                        }
+                                        
+                                            var new_row = '<tr class="nr" id="rowid' + e.id + '">' +
+                                                    
+                                                    '<td><input class="form-control text-center" type="text" name="add_digits_code[]" readonly value="' + e.digits_code + '"></td>' +
+                                                    '<td><input class="form-control text-center" type="text" name="add_asset_code[]" readonly value="' + e.asset_code + '"></td>' +
+                                                    '<td><input class="form-control" type="text" name="add_item_description[]" readonly value="' + e.value + '"></td>' +
+                                                    '<td><input class="form-control" type="text" name="add_serial_no[]" readonly value="' + serials + '"></td>' +
+                                                    
+
+                                                    '<td><input class="form-control text-center quantity_item" type="number" name="add_quantity[]" id="quantity' + e.id  + '" data-id="' + e.id  + '"  value="1" min="0" max="9999999999" step="any" onKeyPress="if(this.value.length==10) return false;" oninput="validity.valid||(value=0);" readonly="readonly"></td>' +
+                                
+                                                    '<td><input class="form-control text-center cost_item" type="number" name="add_unit_cost[]" id="unit_cost' + e.id  + '"   data-id="' + e.id  + '"  value="' + e.item_cost + '" min="0" max="9999999999" step="any" onKeyPress="if(this.value.length==10) return false;" oninput="validity.valid||(value=0);"></td>' +
+                                                    
+                                                    '<td><input class="form-control text-center total_cost_item" type="number" name="add_total_unit_cost[]"  id="total_unit_cost' + e.id  + '"   value="' + e.item_cost + '" readonly="readonly" step="0.01" required maxlength="100"></td>' +
+
+                                                    '<td class="text-center"><button id="' +e.id + '" data-id="' + e.id  + '" onclick="reply_click1(this.id)" class="btn btn-xs btn-danger delete_item" style="width:60px;height:30px;font-size: 11px;text-align: center;">REMOVE</button></td>' +
+                                                    
+                                                    '<input type="hidden" name="body_request_id[]" readonly value="' + add_id + '">' +
+
+                                                    '<input type="hidden" name="inventory_id[]" readonly value="' +e.id + '">' +
+                                                    
+                                                    '<input type="hidden" name="item_id[]" readonly value="' +e.item_id + '">' +
+
+                                                    '<input type="hidden" name="remove_disable[]" id="remove_disable' + e.id  + '" readonly value="' + remove_count + '">' +
+
+                                                    '</tr>';
+
+                                    $(new_row).insertAfter($('table tr.dynamicRows:last'));
+                
+                                    //blank++;
+
+                                    //$("#total").val(calculateTotalValue2());
+                                    $("#total").val(calculateTotalValue2());
+                                    $("#quantity_total").val(calculateTotalQuantity());
+
+                                    $(this).val('');
+                                    $('#val_item').html('');
+                                    return false;
+                                
+                                }else{
+
+
+                                    if(e.serial_no == null || e.serial_no == ""){
+
+                                        $('#quantity' + e.id).val(function (i, oldval) {
+                                            return ++oldval;
+                                        });
+
+                                       
+                                        var q = parseInt($('#quantity' +e.id).val());
+                                        var r = parseFloat($("#unit_cost" + e.id).val());
+
+                                        var price = calculatePrice(q, r).toFixed(2); 
+
+                                        $("#total_unit_cost" + e.id).val(price);
+
+                                      
+
+                                        //var subTotalQuantity = calculateTotalQuantity();
+                                        //$("#totalQuantity").val(subTotalQuantity);
+
+                                        $("#total").val(calculateTotalValue2());
+                                        $("#quantity_total").val(calculateTotalQuantity());
+
+                                        $(this).val('');
+                                        $('#val_item').html('');
+                                        return false;
+                                    }else{
+
+                                        alert("Only 1 quantity is allowed in serialized items!");
+
+                                        $("#searchrow"+ $("#button_count").val()).attr('disabled', false);
+
+                                        $(this).val('');
+                                        $('#val_item').html('');
+                                        return false;
+
+                                    }
+
+                                }
+                                
+
+                        }
+
+                       
+                },
+              
+                minLength: 1,
+                autoFocus: true
+                });
+
+
+            });
+
+            var AddRow = 1;
+
+            $("#add-Row").click(function() {
+
+                /*var description = "";
+                var count_fail = 0;
+
+                $('.itemDesc').each(function() {
+                    description = $(this).val();
+                    if (description == null) {
+
+                        alert("Please fill Item Description !");
+                        count_fail++;
+
+                    } else if (description == "") {
+
+                        alert("Please fill Item Description !");
+                        count_fail++;
+
+                    }else{
+                        count_fail = 0;
+                    }
+                });
+                
+                tableRow++;*/
+
+                //if(count_fail == 0){
+
+                    var newrow =
+                    '<tr>' +
+                    '<td><input class="form-control text-center itemDcode" type="text" name="add_digits_code[]" required max="99999999"></td>' +
+                    '<td><input class="form-control text-center" type="text" name="add_asset_code[]" ></td>' +
+                    '<td><input class="form-control itemDesc" type="text" name="add_item_description[]" required onkeyup="this.value = this.value.toUpperCase();"></td>' +
+                    '<td><input class="form-control" type="text" name="add_serial_no[]"  ></td>' +
+                    '<td><input class="form-control text-center quantity_item" type="number" name="add_quantity[]" id="quantity' + AddRow  + '" data-id="' + AddRow  + '"  value="1" min="0" max="9999999999" step="any" onKeyPress="if(this.value.length==10) return false;" oninput="validity.valid||(value=0);" readonly="readonly"></td>' +
+                    '<td><input class="form-control text-center cost_item" type="number" name="add_unit_cost[]" id="unit_cost' + AddRow  + '"   data-id="' + AddRow  + '"  value="0" min="0" max="9999999999" step="any" onKeyPress="if(this.value.length==10) return false;" oninput="validity.valid||(value=0);" required></td>' +
+                    '<td><input class="form-control text-center total_cost_item" type="number" name="add_total_unit_cost[]"  id="total_unit_cost' + AddRow  + '" readonly="readonly" value="0" step="0.01" required maxlength="100"></td>' +
+                    '<td class="text-center"><button id="' + AddRow + '" data-id="' + AddRow  + '" onclick="reply_click1(this.id)" class="btn btn-xs btn-danger delete_item" style="width:60px;height:30px;font-size: 11px;text-align: center;">REMOVE</button></td>' +
+                    
+                    '<input type="hidden" name="body_request_id[]" readonly value="">' +
+                    '<input type="hidden" name="inventory_id[]" readonly >' +              
+                    '<input type="hidden" name="item_id[]" readonly >' +
+
+                    '<input type="hidden" name="remove_disable[]" id="remove_disable' + AddRow  + '" readonly >' +
+                    
+                    '</tr>';
+                    $(newrow).insertAfter($('table tr.dynamicRows:last'));
+
+                    $("#freebies_val").val("1");
+                    
+
+                    //$('#sub_category_id'+tableRow).attr('disabled', true);
+
+                //}
+
+            });
+    });
+
+    //for SUPPLIES and MARKETING Request
+    $(document).ready(function(){
+            
+            $(function(){
+
+                $("#searchItemMaster").autocomplete({
+                  
+                    source: function (request, response) {
+                    $.ajax({
+                        url: "{{ route('asset.item.supplies.marketing.tagging') }}",
+                        dataType: "json",
+                        type: "POST",
+                        data: {
+                            "_token": token,
+                            "search": request.term
+                        },
+                        
+                        success: function (data) {
+                            var rowCount = $('#asset-items tr').length;
+                            //myStr = data.sample; 
+
+                            if (data.status_no == 1) {
+
+                                $("#val_item").html();
+                                var data = data.items;
+                                $('#ui-id-2').css('display', 'none');
+
+                                response($.map(data, function (item) {
+                                    return {
+                                        id:                         item.id,
+                                        asset_code:                 item.asset_code,
+                                        digits_code:                item.digits_code,
+                                        serial_no:                  item.serial_no,
+                                        value:                      item.item_description,
+                                        item_cost:                  item.value,
+                                        quantity:                   item.quantity,
+                                        item_id:                    item.item_id
+                                    }
+
+                                }));
+
+                            } else {
+
+                                $('.ui-menu-item').remove();
+                                $('.addedLi').remove();
+                                $("#ui-id-2").append($("<li class='addedLi'>").text(data.message));
+                                var searchVal = $("#search").val();
+                                if (searchVal.length > 0) {
+                                    $("#ui-id-2").css('display', 'block');
+                                } else {
+                                    $("#ui-id-2").css('display', 'none');
+                                }
+                            }
+                        }
+                    })
+                },
+                select: function (event, ui) {
+
+                        modal2.style.display = "none";
 
                         document.querySelector("body").style.overflow = 'visible';
 

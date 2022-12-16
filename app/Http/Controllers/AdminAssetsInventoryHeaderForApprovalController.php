@@ -119,16 +119,19 @@
 	        | @showIf 	   = If condition when action show. Use field alias. e.g : [id] == 1
 	        | 
 	        */
-	        $this->addaction = array();
-			if(CRUDBooster::myPrivilegeId() == 6){ 
-			    $this->addaction[] = ['url'=>CRUDBooster::mainpath('detail-view/[id]'),'icon'=>'fa fa-eye','color'=>'default'];
-			}else if(CRUDBooster::myPrivilegeId() == 5 || CRUDBooster::myPrivilegeId() == 9 || CRUDBooster::isSuperadmin()){
-				$for_approval = DB::table('statuses')->where('id', 20)->value('id');
-				$approved = DB::table('statuses')->where('id', 22)->value('id');
-				$reject = DB::table('statuses')->where('id', 21)->value('id');
+	        $this->addaction = array(); 
+			$for_approval = DB::table('statuses')->where('id', 20)->value('id');
+			$reject = DB::table('statuses')->where('id', 21)->value('id');
+			$recieved = DB::table('statuses')->where('id', 22)->value('id');
+			if(CRUDBooster::myPrivilegeId() == 6){
+				$this->addaction[] = ['url'=>CRUDBooster::mainpath('detail/[id]'),'icon'=>'fa fa-pencil','color'=>'default', "showIf"=>"[header_approval_status] == $for_approval && [location] == 1"];
+				$this->addaction[] = ['url'=>CRUDBooster::mainpath('detail/[id]'),'icon'=>'fa fa-pencil','color'=>'default', "showIf"=>"[header_approval_status] == $for_approval && [location] == 2"];
+				//$this->addaction[] = ['url'=>CRUDBooster::mainpath('detail/[id]'),'icon'=>'fa fa-eye','color'=>'default', "showIf"=>"[header_approval_status] == $for_approval && [location] == 3"];
+				$this->addaction[] = ['url'=>CRUDBooster::mainpath('detail-view/[id]'),'icon'=>'fa fa-eye','color'=>'default', "showIf"=>"[header_approval_status] == $recieved or [header_approval_status] == $reject or [location] == 3"];
+			}
+			else if(CRUDBooster::myPrivilegeId() == 5 || CRUDBooster::myPrivilegeId() == 9 || CRUDBooster::isSuperadmin()){
 				$this->addaction[] = ['url'=>CRUDBooster::mainpath('detail/[id]'),'icon'=>'fa fa-pencil','color'=>'default', "showIf"=>"[header_approval_status] == $for_approval"];
-				$this->addaction[] = ['url'=>CRUDBooster::mainpath('detail-view/[id]'),'icon'=>'fa fa-eye','color'=>'default', "showIf"=>"[header_approval_status] == $approved or [header_approval_status] == $reject"];
-			
+				$this->addaction[] = ['url'=>CRUDBooster::mainpath('detail-view/[id]'),'icon'=>'fa fa-eye','color'=>'default', "showIf"=>"[header_approval_status] == $recieved or [header_approval_status] == $reject"];
 			}
 	        /* 
 	        | ---------------------------------------------------------------------- 

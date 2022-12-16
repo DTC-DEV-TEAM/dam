@@ -83,6 +83,7 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('admin/for_purchasing/ARFUpdate','AdminForPurchasingController@ARFUpdate');
     Route::get('admin/for_purchasing/PickListUpdate','AdminForPurchasingController@PickListUpdate');
     Route::post(config('crudbooster.ADMIN_PATH').'/for_purchasing/item-search','AdminForPurchasingController@itemSearch')->name('asset.item.tagging');
+    Route::post(config('crudbooster.ADMIN_PATH').'/for_purchasing/item-search-supplies-marketing','AdminForPurchasingController@itemSearchSuppliesMarketing')->name('asset.item.supplies.marketing.tagging');
     Route::get('/admin/for_purchasing/getDetailPurchasing/{id}','AdminForPurchasingController@getDetailPurchasing')->name('purchasing-detail');
     
     //MORequest
