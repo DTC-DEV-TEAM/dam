@@ -96,6 +96,8 @@
                                                        
                                                         <input type="hidden" value="{{$rowresult->inventory_id}}" name="inventory_id[]">
 
+                                                        <input type="hidden" value="{{$rowresult->item_id}}" name="item_id[]">
+
                                                         {{$rowresult->digits_code}}
 
                                                     </td>

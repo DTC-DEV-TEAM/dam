@@ -554,8 +554,8 @@
 
 			$arf_header 				= HeaderRequest::where(['id' => $HeaderID->header_request_id])->first();
 
-
-			if($arf_header->request_type_id == 5){
+			if(in_array($arf_header->request_type_id, [5, 6, 7])){
+			//if($arf_header->request_type_id == 5){
 				$for_receiving 				= StatusMatrix::where('current_step', 7)
 												->where('request_type', $arf_header->request_type_id)
 												//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())

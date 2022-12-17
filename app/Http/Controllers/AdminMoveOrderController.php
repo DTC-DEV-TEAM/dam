@@ -686,13 +686,19 @@
 
 				}
 
+				$array_location = [1,2];
+				if(in_array($arf_header->request_type_id, [1, 5])){
+					$location 						= $inventory_info->location;
+				}else{
+					$location 						= implode(",",$array_location);
+				}
 
 				$dataLines1[$x]['serial_no'] 			= $serial_no[$x];
 				$dataLines1[$x]['quantity'] 			= $quantity[$x];
 				$dataLines1[$x]['unit_cost'] 			= $unit_cost[$x];
 				$dataLines1[$x]['total_unit_cost'] 		= $total_unit_cost[$x];
 				$dataLines1[$x]['to_reco'] 				= $arf_header->to_reco;
-				$dataLines1[$x]['location_id'] 			= $inventory_info->location;
+				$dataLines1[$x]['location_id'] 			= $location;
 				$dataLines1[$x]['created_by'] 			= CRUDBooster::myId();
 				$dataLines1[$x]['created_at'] 			= date('Y-m-d H:i:s');
 
@@ -701,7 +707,7 @@
 				BodyRequest::where('id',$body_request_id[$x])
 				->update([
 					'mo_plug'=> 		1,
-					'location_id'=> 	$inventory_info->location,
+					'location_id'=> 	$location,
 					'to_mo'=> 	0
 				]);	
 
@@ -726,6 +732,11 @@
 			}
 
 
+			if(in_array($arf_header->request_type_id, [1, 5])){
+				$headLocation 						= implode(",", $locationArray);
+			}else{
+				$headLocation 						= $location;
+			}
 
 			if($arf_header->print_by == null){	
 				
@@ -736,7 +747,7 @@
 					'status_id'=> 	$for_printing,
 					'quantity_total'=> 	$quantity_total,
 					'total'=> 	$total,
-					'location_id'=> implode(",", $locationArray),
+					'location_id'=> $headLocation,
 					'to_mo'=> 	0
 				]);
 
@@ -1283,7 +1294,7 @@
 			$data['Header'] = HeaderRequest::
 				  leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
 				->leftjoin('condition_type', 'header_request.conditions', '=', 'condition_type.id')
-				->leftjoin('cms_users as employees', 'header_request.company_name', '=', 'employees.id')
+				->leftjoin('cms_users as employees', 'header_request.employee_name', '=', 'employees.id')
 				->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
 				->leftjoin('departments', 'header_request.department', '=', 'departments.id')
 				->leftjoin('positions', 'header_request.position', '=', 'positions.id')
@@ -1322,7 +1333,6 @@
 				->leftjoin('statuses', 'mo_body_request.status_id', '=', 'statuses.id')
 				->orderby('mo_body_request.id', 'desc')
 				->get();	
-
 			return $this->view("assets.mo-new-detail", $data);
 
 		}
@@ -1715,7 +1725,7 @@
 						'condition_type.*',
 						'requested.name as requestedby',
 						'employees.bill_to as employee_name',
-						'companies.company_name as company_name',
+						'employees.company_name_id as company_name',
 						'departments.department_name as department',
 						'locations.store_name as store_branch',
 						'approved.name as approvedby',
@@ -1764,9 +1774,11 @@
 				$mo_id = 				$data['mo_id']; 
 	
 				$inventory_id = 		$data['inventory_id'];
+
+				$item_id = 		        $data['item_id'];
 	
 				$arf_header = 			HeaderRequest::where(['id' => $requestid])->first();
-
+				
 				if(in_array($arf_header->request_type_id, [5, 6, 7])){
 				//if($arf_header->request_type_id == 5){
 					$for_receiving = 		StatusMatrix::where('current_step', 8)
@@ -1800,18 +1812,22 @@
 					*/
 
 					array_push($itemID, $mo_id[$x]);
-
-
-					$email_info = 	DB::table('assets_inventory_body')->where('id', $inventory_id[$x])->first();
-
-					$mo_info = 		MoveOrder::where('inventory_id', $email_info->id)->first();
+                    
+					if(in_array($arf_header->request_type_id, [1, 5])){
+						$email_info = 	DB::table('assets_inventory_body')->where('id', $inventory_id[$x])->first();
+						$mo_info = 		MoveOrder::where('inventory_id', $email_info->id)->first();
+					}else{
+						$email_info = 	DB::table('assets')->where('id', $item_id[$x])->first();
+						$mo_info = 		MoveOrder::where('item_id', $email_info->id)->first();
+					}
+					$category_id = 			DB::table('category')->where('id',	$email_info->category_id)->value('category_description');
 
 					array_push($mo_reference_number, $mo_info->mo_reference_number);
 					array_push($asset_code, $email_info->asset_code);
 					array_push($digits_code, $email_info->digits_code);
 					array_push($item_description, $email_info->item_description);
-					array_push($item_category, $email_info->item_category);
-					array_push($serial_no, $email_info->serial_no);
+					array_push($item_category, $email_info->item_category ? $email_info->item_category : $category_id);
+					array_push($serial_no, $email_info->serial_no ? $email_info->serial_no : "");
 
 						/*$full_date = 	"<b> Reference Number: </b> ".$mo_info->mo_reference_number."<br>".
 										"<b> Assign Code:</b> ".$email_info->asset_code."<br>".

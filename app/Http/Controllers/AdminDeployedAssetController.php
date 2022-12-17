@@ -469,7 +469,7 @@
 
 			$data['recommendations'] = DB::table('recommendations')->where('status', 'ACTIVE')->get();	
 					
-			return $this->view("assets.detail", $data);
+			return $this->view("assets.deployed_details", $data);
 		}
 
 

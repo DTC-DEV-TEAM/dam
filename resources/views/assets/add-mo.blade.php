@@ -20,6 +20,7 @@
                 overflow: auto; /* Enable scroll if needed */
                 background-color: rgb(0,0,0); /* Fallback color */
                 background-color: rgba(0,0,0,0.4); /* Black w/ opacity */ 
+                
             }
             
             /* Modal Content */
@@ -29,7 +30,7 @@
                 padding: 20px;
                 border: 1px solid #888;
                 width: 40%;
-                height: 290px;
+                height: auto;
             }
             
             /* The Close Button */
@@ -38,6 +39,7 @@
                 float: right;
                 font-size: 28px;
                 font-weight: bold;
+                margin-top:0;
             }
             
             .close:hover,
@@ -86,10 +88,10 @@
                                 <li>Loading...</li>
                             </ul>
                         </div>
+                        <button type="button"  class="btn btn-info pull-right btnsearch" id="searchclose" >Close</button>
                     </div>
                 </div> 
-                <br>
-                <button type="button"  class="btn btn-info pull-right btnsearch" id="searchclose" >Close</button>
+              
             </div>               
         </div>
         <!-- Modal -->
@@ -114,10 +116,10 @@
                                 <li>Loading...</li>
                             </ul>
                         </div>
+                        <button type="button"  class="btn btn-info pull-right btnsearch" id="searchclose2" >Close</button>
                     </div>
                 </div> 
-                <br>
-                <button type="button"  class="btn btn-info pull-right btnsearch" id="searchclose2" >Close</button>
+            
             </div>               
         </div>
         <!-- Modal -->
@@ -259,9 +261,10 @@
     $(".btnsearch").click(function(event) {
        
        var searchID = $(this).attr("data-id");
+       var searchID2 = $(this).attr("data-id");
        
        //alert($("#item_description"+searchID).val());
-
+ 
        $("#item_search").text($("#item_description"+searchID).val());
 
        $("#add_item_id").val($("#add_item_id"+searchID).val());
