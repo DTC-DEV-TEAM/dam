@@ -1384,10 +1384,12 @@
 						foreach($data as $row)
 						{
 							$output .= '
-							<li><a class="dropdown-item" href="#">'.$row->item_description.'</a></li>
+							<li><a class="dropdown-item" href="#">'.$row->item_description. " - " .$row->digits_code.'</a></li>
 							';
+		
 						}
 						$output .= '</ul>';
+						
 						echo $output;
 					}
 				}

@@ -199,12 +199,13 @@
                                                     <tbody id="bodyTable">
                                                         <tr class="tbl_header_color dynamicRows">
                                                             <th width="35%" class="text-center">*{{ trans('message.table.item_description') }}</th>
+                                                            <th width="20%" class="text-center">Digits Code</th>
                                                             <th width="20%" class="text-center">{{ trans('message.table.category_id_text') }}</th>      
 
                                                             <th width="20%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
 
                                                             <!-- <th width="20%" class="text-center">{{ trans('message.table.application_id_text') }}</th> -->
-                                                            <th width="7%" class="text-center">*{{ trans('message.table.quantity_text') }}</th> 
+                                                            <th width="10%" class="text-center">*{{ trans('message.table.quantity_text') }}</th> 
                                                            <!-- <th width="8%" class="text-center">{{ trans('message.table.image') }}</th>  -->
                                                             <th width="5%" class="text-center">{{ trans('message.table.action') }}</th>
                                                         </tr>
@@ -235,11 +236,11 @@
 
                                                         <tr id="tr-table1" class="bottom">
             
-                                                            <td colspan="3">
+                                                            <td colspan="4">
                                                                 <input type="button" id="add-Row" name="add-Row" class="btn btn-info add" value='Add Item' />
                                                             </td>
                                                             <td align="left" colspan="1">
-                                                                <input type='number' name="quantity_total" class="form-control text-center" id="quantity_total" readonly>
+                                                                <input type='text' name="quantity_total" class="form-control text-center" id="quantity_total" readonly>
                                                             </td>
                                                         </tr>
                                                     </tfoot>
@@ -280,9 +281,8 @@
 
 
 @endsection
-
-
 @push('bottom')
+      
     <script type="text/javascript">
 
         function preventBack() {
@@ -293,7 +293,11 @@
         };
         setTimeout("preventBack()", 0);
 
-        var tableRow = 1;
+        var tableRow = <?php echo json_encode($tableRow); ?>;
+    
+        var tableRow1 = tableRow;
+
+        tableRow1++;
 
         $(document).ready(function() {
 
@@ -328,8 +332,11 @@
                     '<tr>' +
 
                          '<td >' +
-                            '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control itemDesc" data-id="' + tableRow + '" id="itemDesc' + tableRow + '"  name="item_description[]"  required maxlength="100" autocomplete="off">' +
-                            '<div id="suppliesList'+ tableRow +'"></div>' +
+                            '<input type="text" class="form-control" id="itemDesc'+ tableRow +'" data-id="'+ tableRow +'"   name="item_description[]"  required maxlength="100">' +
+                            '<ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" data-id="'+ tableRow +'" id="ui-id-2'+ tableRow +'" style="display: none; top: 60px; left: 15px; width: 100%;">' +
+                            '<li>Loading...</li>' +
+                            '</ul>' +
+                            //'<div id="suppliesList'+ tableRow +'"></div>' +
                         '</td>' +  
                         // '<td>'+
                         //     '<select selected data-placeholder="- Select Item Description -" class="form-control drop'+ tableRow + '" name="item_description[]" data-id="' + tableRow + '" id="itemDesc' + tableRow + '" required style="width:100%">' +
@@ -339,7 +346,9 @@
                         //     '         @endforeach'+
                         //     '</select>'+
                         // '</td>' +
-
+                        '<td>' + 
+                            '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control digits_code" data-id="'+ tableRow +'" id="digits_code'+ tableRow +'"  name="reco_digits_code[]"   maxlength="100" readonly>' +
+                        '</td>' +
                         '<td>'+
                             '<select class="form-control drop'+ tableRow + '" name="category_id[]" data-id="' + tableRow + '" id="category_id' + tableRow + '" required style="width:100%">' +
                             '  ' +
@@ -369,7 +378,7 @@
                         '</td>'+
                         */      
                         
-                        '<td><input class="form-control text-center quantity_item" type="number" required name="quantity[]" id="quantity' + tableRow + '" data-id="' + tableRow  + '"  value="1" min="0" max="9999999999" step="any" onKeyPress="if(this.value.length==4) return false;" oninput="validity.valid||(value=0);"></td>' +
+                        '<td><input class="form-control text-center quantity_item" type="text" required name="quantity[]" id="quantity' + tableRow + '" data-id="' + tableRow  + '"  value="1" min="0" max="9999999999" step="any" onKeyPress="if(this.value.length==4) return false;" oninput="validity.valid||(value=0);"></td>' +
                         
                         /*'<td><input type="file" name="image[]" id="image' + tableRow + '" accept="image/*"></td>' + */
                         
@@ -434,32 +443,123 @@
                     });
 
                      //get suggestion supplies when typing in item description
-                     $('#itemDesc'+tableRow).on("keyup", function() {
-                    //$('#itemDesc'+tableRow).keyup(function(){ 
-                        var query = $(this).val(); 
-                        console.log(query);
-                        if(query != ''){
-                            var _token = $('input[name="_token"]').val();
-                            $.ajax({
-                                url:"{{ route('assets.get.supplies') }}",
-                                method:"POST",
-                                data:{query:query, _token:_token},
-                                success:function(data){
-                                    $('#suppliesList'+tableRow).fadeIn();  
-                                    $('#suppliesList'+tableRow).html(data);
-                                }   
-                            });
-                        }else{
-                            $('#suppliesList'+tableRow).fadeOut();  
-                            $('#suppliesList'+tableRow).html("");
-                        }
-                    });
+                    //  $('#itemDesc'+tableRow).on("keyup", function() {
+                    // //$('#itemDesc'+tableRow).keyup(function(){ 
+                    //     var query = $(this).val(); 
+                    //     console.log(query);
+                    //     if(query != ''){
+                    //         var _token = $('input[name="_token"]').val();
+                    //         $.ajax({
+                    //             url:"{{ route('assets.get.supplies') }}",
+                    //             method:"POST",
+                    //             data:{query:query, _token:_token},
+                    //             success:function(data){
+                    //                 console.log();
+                    //                 $('#suppliesList'+tableRow).fadeIn();  
+                    //                 $('#suppliesList'+tableRow).html(data);
+                    //             }   
+                    //         });
+                    //     }else{
+                    //         $('#suppliesList'+tableRow).fadeOut();  
+                    //         $('#suppliesList'+tableRow).html("");
+                    //     }
+                    // });
 
-                    $(document).on('click', 'li', function(){  
-                        $('#itemDesc'+tableRow).val($(this).text());  
-                        $('#suppliesList'+tableRow).fadeOut();  
-                    });  
+                    var stack = [];
+                    var token = $("#token").val();
+                    var searchcount = <?php echo json_encode($tableRow); ?>;
 
+                    let countrow = 1;
+
+                        $(function(){
+
+                                countrow++;
+                                
+                                //$('#search'+countrow).attr('disabled', true);
+
+                                $('#itemDesc'+tableRow).autocomplete({
+                                    source: function (request, response) {
+                                    $.ajax({
+                                        url: "{{ route('it.item.search') }}",
+                                        dataType: "json",
+                                        type: "POST",
+                                        data: {
+                                            "_token": token,
+                                            "search": request.term
+                                        },
+                                        success: function (data) {
+                                            //var rowCount = $('#asset-items tr').length;
+                                            //myStr = data.sample;   
+                                            if (data.status_no == 1) {
+
+                                                $("#val_item").html();
+                                                var data = data.items;
+                                                $('#ui-id-2'+tableRow).css('display', 'none');
+
+                                                response($.map(data, function (item) {
+                                                    return {
+                                                        id:                         item.id,
+                                                        asset_code:                 item.asset_code,
+                                                        digits_code:                item.digits_code,
+                                                        asset_tag:                  item.asset_tag,
+                                                        serial_no:                  item.serial_no,
+                                                        value:                      item.item_description,
+                                                        category_description:       item.category_description,
+                                                        item_cost:                  item.item_cost,
+                                                    
+                                                    }
+
+                                                }));
+
+                                            } else {
+
+                                                $('.ui-menu-item').remove();
+                                                $('.addedLi').remove();
+                                                $("#ui-id-2"+tableRow).append($("<li class='addedLi'>").text(data.message));
+                                                var searchVal = $('#itemDesc'+tableRow).val();
+                                                if (searchVal.length > 0) {
+                                                    $("#ui-id-2"+tableRow).css('display', 'block');
+                                                } else {
+                                                    $("#ui-id-2"+tableRow).css('display', 'none');
+                                                }
+                                            }
+                                        }
+                                    })
+                                    },
+                                    select: function (event, ui) {
+                                        var e = ui.item;
+
+                                        if (e.id) {
+                                          
+                                            $("#digits_code"+$(this).attr("data-id")).val(e.digits_code);
+                                            $('#itemDesc'+$(this).attr("data-id")).val(e.value);
+                                            $('#val_item').html('');
+                                            return false;
+                
+                                        }
+                                    },
+
+                                    minLength: 1,
+                                    autoFocus: true
+                                    });
+
+                        });
+
+                    // $(document).on('click', 'li', function(){  
+                    //     $item = $(this).text().split("-");
+                    //     $('#itemDesc'+tableRow).val($item[0]);  
+                    //     $('#suppliesList'+tableRow).fadeOut();  
+                    // });  
+
+                    //  //get suggestion supplies then paste digits code
+                    //  $('#itemDesc'+tableRow).change(function() {
+                    // //$('#itemDesc'+tableRow).keyup(function(){ 
+                    //     var query = $(this).val(); 
+                    //     console.log(query);
+                        
+                    // });
+
+                  
                     $(document).on('keyup', '#itemDesc'+tableRow, function(ev) {
 
                         var category =  $('#category_id'+$(this).attr("data-id")).val();
