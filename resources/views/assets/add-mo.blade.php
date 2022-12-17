@@ -101,7 +101,7 @@
             <!-- Modal content -->
             <div class="modal-content">
                 <div class='callout callout-info'>
-                    <h3>SEARCH FOR <label id="item_search"></label></h3>
+                    <h3>SEARCH ITEM <label id="item_search"></label></h3>
                     <span style="font-style: italic">*NOTE: Please check and match the Item Description before sending request</span>
                     <input type="hidden"  class="form-control" id="add_item_id">
                     <input type="hidden"  class="form-control" id="button_count">
@@ -111,7 +111,7 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label class="control-label">{{ trans('message.form-label.add_item1') }}</label>
-                               <input class="form-control auto" style="width:100%;" placeholder="Search Item Master" id="searchItemMaster">
+                               <input class="form-control auto" style="width:100%;" placeholder="Search Item" id="searchItemMaster">
                                  <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" id="ui-id-2" style="display: none; top: 60px; left: 15px; width: 570px;">
                                 <li>Loading...</li>
                             </ul>

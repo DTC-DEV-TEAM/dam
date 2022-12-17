@@ -123,7 +123,7 @@ return [
         'received_by'  =>  'Received By',  
         'received_at'  =>  'Received Date',
 
-        'add_item1'  =>  'Please indicate Asset Code or Digits Code',
+        'add_item1'  =>  'Please indicate Asset Code, Digits Code or Item Description',
 
 
         'closed_by'  =>  'Closed By',  
