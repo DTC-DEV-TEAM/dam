@@ -135,13 +135,17 @@
 				$picked =  			DB::table('statuses')->where('id', 15)->value('id');
 
 				$for_closing =  			DB::table('statuses')->where('id', 19)->value('id');
+				$id = '[id]';
 				if(CRUDBooster::myPrivilegeId() == 14){
 					$this->addaction[] = ['title'=>'View','url'=>CRUDBooster::mainpath('getRequestPurchasingManagerView/[id]'),'icon'=>'fa fa-eye'];
 				}else{
 					$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getRequestPurchasing/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[purchased2_by] == null"];
 					$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailPurchasing/[id]'),'icon'=>'fa fa-eye'];
-					$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::mainpath('getRequestClose/[id]'),'icon'=>'fa fa-check-circle', "showIf"=>"[status_id] == $for_closing"];
+					//option 2
+					//$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::adminpath('[id]'),'icon'=>'fa fa-check-circle', "showIf"=>"[status_id] == $for_closing"];
 					
+					//option 3
+					$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getRequestPurchasingForMoSo/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[status_id] == $for_closing"];
 				}
 				
 				//$this->addaction[] = ['title'=>'Print','url'=>CRUDBooster::mainpath('getRequestPrintPickList/[id]'),'icon'=>'fa fa-print', "showIf"=>"[purchased2_by] != null && [status_id] == $processing"];
@@ -223,15 +227,84 @@
 	        */
 	        $this->script_js = NULL;
             $this->script_js = "
-			$('.fa.fa-check-circle').click(function(){
-					var strconfirm = confirm('Are you sure you want to close this request?');
-					if (strconfirm == true) {
-						return true;	
-					}else{		
-						return false;
-						window.stop();
-					}				
-			});
+			$(document).ready(function() {
+				$('a[title=\"Close Request\"]').removeAttr('onclick');
+				// $('.fa.fa-check-circle').click(function(event){
+				// 	event.preventDefault();	
+				// 	$(\"#myModal\").modal('show');	
+				// });
+				$('a[title=\"Close Request\"]').attr('id', 'request_tag');
+
+				$('a[title=\"Close Request\"]').click(function(e){
+					e.preventDefault();
+					var id = $(this).attr('href').split('/').pop();
+					$(\"#request_id\").val(id);	
+					$(\"#myModal\").modal('show');	
+				});
+
+				$('#submit').click(function(event) {
+					event.preventDefault();
+					if($('#mo_num').val() === ''){
+						swal({
+							type: 'error',
+							title: 'MO No required!',
+							icon: 'error',
+							customClass: 'swal-wide'
+						});
+						event.preventDefault();
+				    }else if($('#so_num').val() === ''){
+						swal({
+							type: 'error',
+							title: 'SO No required!',
+							icon: 'error',
+							customClass: 'swal-wide'
+						});
+						event.preventDefault();
+				    }else {
+						swal({
+							title: 'Are you sure?',
+							type: 'warning',
+							showCancelButton: true,
+							confirmButtonColor: '#41B314',
+							cancelButtonColor: '#F9354C',
+							confirmButtonText: 'Yes, close it!',
+							}, function () {
+									var mo_num = $('#mo_num').val();
+									var so_num = $('#so_num').val();
+									var id = $('#request_id').val();
+									$.ajax({
+										type: 'POST',
+										url: '".route('purchasing-request-close')."',
+										dataType: 'json',
+										data: {
+											'_token': $(\"#token\").val(),
+											'header_request_id': id,
+											'mo' : mo_num,
+											'so' : so_num,
+										},
+										success: function(response) {
+											if (response.status == \"success\") {
+												swal({
+													type: response.status,
+													title: response.message,
+												});
+												location.reload();
+												} else if (response.status == \"error\") {
+												swal({
+													type: response.status,
+													title: response.message,
+												});
+												}
+										},
+										error: function(e) {
+											console.log(e);
+										}
+									});
+							});
+					}
+					
+				});
+		    });
 			";
 
             /*
@@ -243,7 +316,42 @@
 	        |
 	        */
 	        $this->pre_index_html = null;
-	        
+	        $this->pre_index_html = "
+
+			   <!-- Modal HTML -->
+			   <div id=\"myModal\" class=\"modal fade\" tabindex=\"-1\">
+				   <div class=\"modal-dialog\">
+					   <div class=\"modal-content\">
+						   <div class=\"modal-header\">
+						   <button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button>
+							   <h4 class=\"modal-title\"><strong>Input MO/SO</strong></h4>
+							  
+						   </div>
+						   <div class=\"modal-body\">
+						      <div class='row'>
+							  <input type=\"hidden\" name=\"request_id\" id=\"request_id\">
+								<input type=\"hidden\" value='".csrf_token()."' name=\"_token\" id=\"token\">
+								<div class='col-md-12'>
+								 <input type\"text\" class=\"form-control\" name=\"mo_num\"  id=\"mo_num\" placeholder=\"Please input MO\">
+								</div>
+								<br>
+								<br>
+								<div class='col-md-12'>
+								 <input type\"text\" class=\"form-control\" name=\"so_num\" id=\"so_num\" placeholder=\"Please input SO\">
+								</div>		
+							  </div>
+						   </div>
+						   <div class=\"modal-footer\">
+							   <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Cancel</button>
+							   <button type='button' id=\"submit\" class=\"btn btn-primary btn-sm\">
+                                <i class=\"fa fa-save\"></i> Save
+                                </button>
+						   </div>
+					   </div>
+				   </div>
+			   </div>
+			
+			";
 	        
 	        
 	        /*
@@ -279,10 +387,17 @@
 	        | $this->style_css = ".style{....}";
 	        |
 	        */
-	        $this->style_css = ".fa.fa-check-circle{
+	        $this->style_css = "
+			.fa.fa-check-circle{
 				color:green;
 				font-size:20px;
-			}";
+			}
+			.modal-content  {
+				-webkit-border-radius: 5px !important;
+				-moz-border-radius: 5px !important;
+				border-radius: 5px !important; 
+			}
+			";
 	        /*
 	        | ---------------------------------------------------------------------- 
 	        | Include css File 
@@ -441,8 +556,28 @@
 	    |
 	    */
 	    public function hook_before_add(&$postdata) {        
-	        //Your code here
+			$fields = Request::all();
+			$ids = $fields['ids'];
+			$header_id = $fields['header_id'];
+			$mo_num = $fields['mo_num'];
+			$so_num = $fields['so_num'];
 
+			HeaderRequest::where('id',$header_id)
+			->update([
+				    'closing_plug'=> 1,
+					'status_id'=> 13,
+					'closed_by'=> CRUDBooster::myId(),
+					'closed_at'=> date('Y-m-d H:i:s'),
+
+			]);	
+			for ($i = 0; $i < count($ids); $i++) {
+				BodyRequest::where(['id' => $ids[$i]])
+					->update([
+							'mo_num' => $mo_num[$i], 
+							'so_num' => $so_num[$i], 
+							]);
+			}  
+            CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Request has been closed successfully!"), 'info');
 	    }
 
 	    /* 
@@ -601,22 +736,44 @@
 			}
 			*/
 
-			if($action == 1){
+            // //First Option same proccess
+			// if($action == 1){
+			// 	$postdata['purchased2_by'] 		= CRUDBooster::myId();
+			// 	$postdata['purchased2_at'] 		= date('Y-m-d H:i:s');
+			// 	if(in_array($arf_header->request_type_id, [5, 6, 7])){
+            //     //if($arf_header->request_type_id == 5){
+			// 		//$postdata['status_id']		 	=	StatusMatrix::where('current_step', 9)
+			// 		$postdata['status_id']		 	=	StatusMatrix::where('current_step', 4)
+			// 		->where('request_type', $arf_header->request_type_id)
+			// 		//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
+			// 		->value('status_id');
+			// 	}else{
 
+			// 		//$postdata['status_id']		 	=	StatusMatrix::where('current_step', 10)
+			// 		$postdata['status_id']		 	=	StatusMatrix::where('current_step', 5)
+			// 		->where('request_type', $arf_header->request_type_id)
+			// 		//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
+			// 		->value('status_id');
+			// 	}
+			// }
+
+			 //Second Option and 3rd Option
+			 if($action == 1){
 				$postdata['purchased2_by'] 		= CRUDBooster::myId();
 				$postdata['purchased2_at'] 		= date('Y-m-d H:i:s');
-
-
-
-
-				if(in_array($arf_header->request_type_id, [5, 6, 7])){
-                //if($arf_header->request_type_id == 5){
+				
+                if($arf_header->request_type_id == 5){
 					//$postdata['status_id']		 	=	StatusMatrix::where('current_step', 9)
 					$postdata['status_id']		 	=	StatusMatrix::where('current_step', 4)
 					->where('request_type', $arf_header->request_type_id)
 					//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
 					->value('status_id');
-
+				}else if(in_array($arf_header->request_type_id, [6, 7])){
+					$postdata['status_id']		 	=	StatusMatrix::where('current_step', 9)
+					//$postdata['status_id']		 	=	StatusMatrix::where('current_step', 4)
+					->where('request_type', $arf_header->request_type_id)
+					//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
+					->value('status_id');
 				}else{
 
 					//$postdata['status_id']		 	=	StatusMatrix::where('current_step', 10)
@@ -624,11 +781,8 @@
 					->where('request_type', $arf_header->request_type_id)
 					//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
 					->value('status_id');
-
 				}
-
 			}
-
 	    }
 
 	    /* 
@@ -725,8 +879,6 @@
 
 	    //By the way, you can still create your own method in here... :) 
 		public function getRequestPurchasing($id){
-			
-
 			$this->cbLoader();
 			if(!CRUDBooster::isUpdate() && $this->global_privilege==FALSE) {    
 				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
@@ -784,6 +936,65 @@
 			$data['recommendations'] = DB::table('recommendations')->where('status', 'ACTIVE')->get();
 
 			return $this->view("assets.purchasing-request", $data);
+		}
+
+		public function getRequestPurchasingForMoSo($id){
+			$this->cbLoader();
+			if(!CRUDBooster::isUpdate() && $this->global_privilege==FALSE) {    
+				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+			}  
+
+			$data = array();
+
+			$data['page_title'] = 'Closing Request';
+
+			$data['Header'] = HeaderRequest::
+				  leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
+				->leftjoin('condition_type', 'header_request.conditions', '=', 'condition_type.id')
+				->leftjoin('cms_users as employees', 'header_request.employee_name', '=', 'employees.id')
+				->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
+				->leftjoin('departments', 'header_request.department', '=', 'departments.id')
+				->leftjoin('positions', 'header_request.position', '=', 'positions.id')
+				->leftjoin('locations', 'header_request.store_branch', '=', 'locations.id')
+				->leftjoin('cms_users as requested', 'header_request.created_by','=', 'requested.id')
+				->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
+				->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
+				->select(
+						'header_request.*',
+						'header_request.id as requestid',
+						'header_request.created_at as created',
+						'request_type.*',
+						'condition_type.*',
+						'requested.name as requestedby',
+						'employees.bill_to as employee_name',
+						'employees.company_name_id as company_name',
+						'departments.department_name as department',
+						//'positions.position_description as position',
+						'locations.store_name as store_branch',
+						'approved.name as approvedby',
+						'recommended.name as recommendedby',
+						'header_request.created_at as created_at'
+						)
+				->where('header_request.id', $id)->first();
+
+			$data['Body'] = BodyRequest::
+				select(
+				  'body_request.*'
+				)
+				->where('body_request.header_request_id', $id)
+				->whereNull('deleted_at')
+				->get();
+
+			$data['BodyReco'] = DB::table('recommendation_request')
+				->select(
+				  'recommendation_request.*'
+				)
+				->where('recommendation_request.header_request_id', $id)
+				->get();				
+
+			$data['recommendations'] = DB::table('recommendations')->where('status', 'ACTIVE')->get();
+
+			return $this->view("assets.purchasing-request-per-line-closing", $data);
 		}
 
 		public function getRequestPurchasingManagerView($id){
@@ -1295,17 +1506,25 @@
 			return $this->view("assets.mo-detail", $data);
 		}
 
-		public function getRequestClose($id) {
+		public function getRequestClose(Request $request) {
 
+			$fields = Request::all();
+			$id = $fields['header_request_id'];
+			$mo = $fields['mo'];
+			$so = $fields['so'];
+ 
 			HeaderRequest::where('id',$id)
 			->update([
 				    'closing_plug'=> 1,
 					'status_id'=> 13,
 					'closed_by'=> CRUDBooster::myId(),
-					'closed_at'=> date('Y-m-d H:i:s')	
+					'closed_at'=> date('Y-m-d H:i:s'),
+					'mo_num' => $mo,
+					'so_num' => $so	
 			]);	
-			
-			CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Request has been closed successfully!"), 'info');
+			$message = ['status'=>'success', 'message'=>'Request has been closed successfully!'];
+			echo json_encode($message);
+			//CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Request has been closed successfully!"), 'info');
 		}
 
 	}

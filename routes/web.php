@@ -77,8 +77,8 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('/admin/for_purchasing/getRequestPurchasing/{id}','AdminForPurchasingController@getRequestPurchasing')->name('purchasing-request');
     Route::get('/admin/for_purchasing/getRequestPurchasingManagerView/{id}','AdminForPurchasingController@getRequestPurchasingManagerView')->name('purchasing-request-manager-view');
     Route::get('/admin/for_purchasing/getRequestPrint/{id}','AdminForPurchasingController@getRequestPrint')->name('print-request');
-    Route::get('/admin/for_purchasing/getRequestClose/{id}','AdminForPurchasingController@getRequestClose')->name('purchasing-request');
-    
+    Route::post(config('crudbooster.ADMIN_PATH').'/getRequestClose','AdminForPurchasingController@getRequestClose')->name('purchasing-request-close');
+     Route::get('/admin/for_purchasing/getRequestPurchasingForMoSo/{id}','AdminForPurchasingController@getRequestPurchasingForMoSo')->name('purchasing-request-per-line-close');
     //Route::get('/admin/for_purchasing/getRequestPrintPickList/{id}','AdminForPurchasingController@getRequestPrintPickList')->name('print-picklist');
     Route::get('admin/for_purchasing/ARFUpdate','AdminForPurchasingController@ARFUpdate');
     Route::get('admin/for_purchasing/PickListUpdate','AdminForPurchasingController@PickListUpdate');

@@ -259,10 +259,9 @@
     $( "#quote_date, #po_date" ).datepicker( { format: 'yyyy-mm-dd', endDate: new Date() } );
 
     $(".btnsearch").click(function(event) {
-       
-       var searchID = $(this).attr("data-id");
-       var searchID2 = $(this).attr("data-id");
-       
+         
+        var searchID = $(this).attr("data-id");
+      
        //alert($("#item_description"+searchID).val());
  
        $("#item_search").text($("#item_description"+searchID).val());
@@ -747,9 +746,9 @@
                                 response($.map(data, function (item) {
                                     return {
                                         id:                         item.id,
-                                        asset_code:                 item.asset_code,
+                                        asset_code:                 "",
                                         digits_code:                item.digits_code,
-                                        serial_no:                  item.serial_no,
+                                        serial_no:                  "",
                                         value:                      item.item_description,
                                         item_cost:                  item.value,
                                         quantity:                   item.quantity,
@@ -763,7 +762,7 @@
                                 $('.ui-menu-item').remove();
                                 $('.addedLi').remove();
                                 $("#ui-id-2").append($("<li class='addedLi'>").text(data.message));
-                                var searchVal = $("#search").val();
+                                var searchVal = $("#searchItemMaster").val();
                                 if (searchVal.length > 0) {
                                     $("#ui-id-2").css('display', 'block');
                                 } else {

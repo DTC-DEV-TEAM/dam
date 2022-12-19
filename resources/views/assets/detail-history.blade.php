@@ -413,6 +413,22 @@
                 @endif
 
             @endif
+            
+            <!-- OPTION 2 and # -->
+            @if(in_array($Header->request_type_id, [6,7]))
+            <div class="row">                           
+                <label class="control-label col-md-2">MO:</label>
+                <div class="col-md-8">
+                        <p>{{$Header->mo_num}}</p>
+                </div>
+            </div>
+            <div class="row">                           
+                <label class="control-label col-md-2">SO:</label>
+                <div class="col-md-8">
+                        <p>{{$Header->so_num}}</p>
+                </div>
+            </div>
+            @endif
  
             @if( $Header->pickedby != null )
                 <hr/>
