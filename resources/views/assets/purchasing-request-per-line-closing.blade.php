@@ -102,45 +102,7 @@
                 </div>
 
             </div>
-            <!--
-            <div class="row">
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label class="control-label require">*{{ trans('message.form-label.dr_number') }}</label>
-                        <input type="text" class="form-control"  id="dr_number" name="dr_number"  required value="{{$Header->dr_number}}">                                   
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label class="control-label require">*{{ trans('message.form-label.employee_dr_date') }}</label>
-                        <div class="input-group date">
-                            <div class="input-group-addon"><i class="fa fa-calendar"></i></div>
-                            <input type='input' name='employee_dr_date' id="employee_dr_date" value="{{$Header->employee_dr_date}}" onkeydown="return false" required  autocomplete="off"  class='form-control' placeholder="yyyy-mm-dd" />     
-                          </div>
-                    </div>
-
-                </div>
-
-            </div>
-         
-            <div class="row">
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label class="control-label require">{{ trans('message.form-label.quote_date') }}</label>
-                        <div class="input-group date">
-                            <div class="input-group-addon"><i class="fa fa-calendar"></i></div>
-                            <input type='input' name='quote_date' id="quote_date" value="{{$Header->quote_date}}" onkeydown="return false"   autocomplete="off"  class='form-control' placeholder="yyyy-mm-dd" />     
-                          </div>
-                    </div>
-
-                </div>
-
-            </div>
-        -->
-
+ 
             <hr/>
 
             <div class="row">                           
@@ -312,8 +274,7 @@
                                                                 <th width="15%" class="text-center">{{ trans('message.table.item_description') }}</th>
                                                                 <th width="9%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
                                                                 <th width="10%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
-                                                                <th width="10%" class="text-center">MO No</th> 
-                                                                <th width="10%" class="text-center">SO No</th> 
+                                                                <th width="10%" class="text-center">MO/SO No</th> 
                                                                 <th width="5%" class="text-center">{{ trans('message.table.quantity_text') }}</th> 
 
                                                                 @if($Header->recommendedby != null || $Header->recommendedby != "")
@@ -353,11 +314,9 @@
                                                                                 
                                                                             </td>
                                                                             <td style="text-align:center" height="10">
-                                                                              <input type="text"  class="form-control"  name="mo_num[]" id="mo_num"  required>
+                                                                              <input type="text"  class="form-control"  name="mo_so_num[]" id="mo_so_num" placeholder="Please put N/A if not applicable"  required>
                                                                             </td>
-                                                                            <td style="text-align:center" height="10">
-                                                                              <input type="text"  class="form-control"  name="so_num[]" id="so_num"  required>
-                                                                            </td>
+                                                                          
                                                                             <td style="text-align:center" height="10">
                                                                                     {{$rowresult->quantity}}
                                                                             </td>
@@ -425,7 +384,7 @@
 
                                                             <tr id="tr-table1" class="bottom">
                 
-                                                                <td colspan="5">
+                                                                <td colspan="4">
                                                                     <!-- <input type="button" id="add-Row" name="add-Row" class="btn btn-info add" value='Add Item' /> -->
                                                                 </td> 
                                                                 <td align="center" colspan="1">
@@ -519,36 +478,36 @@
 
     $("#btnSubmit").click(function(event) {
        event.preventDefault();
-       if($('#mo_num').val() === ''){
+        //Each Warranty Coverage Validation
+        var w = $("input[name^='mo_so_num']").length;
+        var mo_so_num = $("input[name^='mo_so_num']");
+        for(i=0;i<w;i++){
+            if(mo_so_num.eq(i).val() === ""){
             swal({
-                type: 'error',
-                title: 'MO No required!',
-                icon: 'error',
-                customClass: 'swal-wide'
-            });
-            event.preventDefault();
-       }else if($('#so_num').val() === ''){
-            swal({
-                type: 'error',
-                title: 'SO No required!',
-                icon: 'error',
-                customClass: 'swal-wide'
-            });
-            event.preventDefault();
-       }else {
-        swal({
-            title: "Are you sure?",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#41B314",
-            cancelButtonColor: "#F9354C",
-            confirmButtonText: "Yes, close it!",
-            width: 450,
-            height: 200
-            }, function () {
-                $("#myform").submit();                      
-        });
-       }
+                    type: 'error',
+                    title: 'MO/SO required!',
+                    icon: 'error',
+                    customClass: 'swal-wide'
+                });
+                event.preventDefault();
+                return false;
+            }else{
+                swal({
+                    title: "Are you sure?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#41B314",
+                    cancelButtonColor: "#F9354C",
+                    confirmButtonText: "Yes, close it!",
+                    width: 450,
+                    height: 200
+                    }, function () {
+                        $("#myform").submit();                      
+                });
+            }
+        
+        }
+       
     });
 </script>
 @endpush

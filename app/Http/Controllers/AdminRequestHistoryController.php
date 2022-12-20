@@ -330,21 +330,16 @@
 				$usersmentlist = array_map('intval',explode(",",$approval_string));
 
 				$user_data         = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-				
-
 				$query->whereIn('header_request.created_by', $usersmentlist)
 				//->whereIn('header_request.company_name', explode(",",$user_data->company_name_id))
 				->where('header_request.approved_by','!=', null)
 				->whereNull('header_request.deleted_at')
 				->orderBy('header_request.id', 'ASC');
 
-			}else if(CRUDBooster::myPrivilegeName() == "IT"){ 
+			}else if(CRUDBooster::myPrivilegeId() == 5){ 
 
 				//$approved =  		DB::table('statuses')->where('id', 4)->value('id');
-
 				$user_data         = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-				
-
 				//$query->whereIn('header_request.department', explode(",",$user_data->department_id))
 				$query->
 				//whereIn('header_request.company_name', explode(",",$user_data->company_name_id))
@@ -353,13 +348,13 @@
 				->whereNull('header_request.deleted_at')
 				->orderBy('header_request.id', 'ASC');
 
-			}else if(CRUDBooster::myPrivilegeName() == "Asset Custodian"){ 
+			}else if(CRUDBooster::myPrivilegeId() == 6){ 
 
 				$query->whereNotNull('header_request.purchased2_by')->whereNull('header_request.deleted_at')->orderBy('header_request.status_id', 'asc')->orderBy('header_request.id', 'DESC');
 
-			}else if(CRUDBooster::myPrivilegeName() == "AP Checker"){ 
+			}else if(CRUDBooster::myPrivilegeId() == 7){ 
 
-				$query->whereNotNull('header_request.closed_by')->whereNull('header_request.deleted_at')->orderBy('header_request.status_id', 'asc')->orderBy('header_request.id', 'DESC');
+				$query->whereNotNull('header_request.closed_by')->where('header_request.closed_by', CRUDBooster::myId())->whereNull('header_request.deleted_at')->orderBy('header_request.status_id', 'asc')->orderBy('header_request.id', 'DESC');
 
 			}
 	            
@@ -590,7 +585,7 @@
 				->get();				
 
 			$data['recommendations'] = DB::table('recommendations')->where('status', 'ACTIVE')->get();		
-
+			
 			return $this->view("assets.detail-history", $data);
 		}
 

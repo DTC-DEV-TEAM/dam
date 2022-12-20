@@ -300,7 +300,8 @@
 			$for_closing =  	DB::table('statuses')->where('id', 19)->value('id');
 
 			$query->where('header_request.created_by', CRUDBooster::myId())
-				  ->whereIn('mo_body_request.status_id', [$closed, $for_closing]); 
+				  ->whereIn('mo_body_request.status_id', [$closed, $for_closing])
+				  ->whereNotIn('header_request.request_type_id', [6,7]); 
 
 	    }
 

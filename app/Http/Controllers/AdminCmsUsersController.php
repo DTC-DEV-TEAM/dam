@@ -148,7 +148,6 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 		$this->script_js = NULL;
 		$this->script_js = "
 		$(document).ready(function() {
-	
 			$('form').submit(function(){
  
                     $('.btn.btn-success').attr('disabled', true);
@@ -165,7 +164,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 			let x = $(location).attr('pathname').split('/');
 			let add_action = x.includes('add');
 			let edit_action = x.includes('edit');
-
+            
 
 			if (add_action){
 				$('#form-group-approver_id_manager').hide();

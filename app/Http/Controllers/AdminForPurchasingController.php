@@ -135,7 +135,7 @@
 				$picked =  			DB::table('statuses')->where('id', 15)->value('id');
 
 				$for_closing =  			DB::table('statuses')->where('id', 19)->value('id');
-				$id = '[id]';
+
 				if(CRUDBooster::myPrivilegeId() == 14){
 					$this->addaction[] = ['title'=>'View','url'=>CRUDBooster::mainpath('getRequestPurchasingManagerView/[id]'),'icon'=>'fa fa-eye'];
 				}else{
@@ -244,18 +244,10 @@
 
 				$('#submit').click(function(event) {
 					event.preventDefault();
-					if($('#mo_num').val() === ''){
+					if($('#mo_so_num').val() === ''){
 						swal({
 							type: 'error',
-							title: 'MO No required!',
-							icon: 'error',
-							customClass: 'swal-wide'
-						});
-						event.preventDefault();
-				    }else if($('#so_num').val() === ''){
-						swal({
-							type: 'error',
-							title: 'SO No required!',
+							title: 'MO/SO No required!',
 							icon: 'error',
 							customClass: 'swal-wide'
 						});
@@ -269,8 +261,7 @@
 							cancelButtonColor: '#F9354C',
 							confirmButtonText: 'Yes, close it!',
 							}, function () {
-									var mo_num = $('#mo_num').val();
-									var so_num = $('#so_num').val();
+									var mo_so_num = $('#mo_so_num').val();
 									var id = $('#request_id').val();
 									$.ajax({
 										type: 'POST',
@@ -279,8 +270,7 @@
 										data: {
 											'_token': $(\"#token\").val(),
 											'header_request_id': id,
-											'mo' : mo_num,
-											'so' : so_num,
+											'mo_so_num' : mo_so_num
 										},
 										success: function(response) {
 											if (response.status == \"success\") {
@@ -332,13 +322,9 @@
 							  <input type=\"hidden\" name=\"request_id\" id=\"request_id\">
 								<input type=\"hidden\" value='".csrf_token()."' name=\"_token\" id=\"token\">
 								<div class='col-md-12'>
-								 <input type\"text\" class=\"form-control\" name=\"mo_num\"  id=\"mo_num\" placeholder=\"Please input MO\">
+								 <input type\"text\" class=\"form-control\" name=\"mo_so_num\"  id=\"mo_so_num\" placeholder=\"Please input MO/SO\">
 								</div>
-								<br>
-								<br>
-								<div class='col-md-12'>
-								 <input type\"text\" class=\"form-control\" name=\"so_num\" id=\"so_num\" placeholder=\"Please input SO\">
-								</div>		
+								<br>	
 							  </div>
 						   </div>
 						   <div class=\"modal-footer\">
@@ -559,8 +545,7 @@
 			$fields = Request::all();
 			$ids = $fields['ids'];
 			$header_id = $fields['header_id'];
-			$mo_num = $fields['mo_num'];
-			$so_num = $fields['so_num'];
+			$mo_so_num = $fields['mo_so_num'];
 
 			HeaderRequest::where('id',$header_id)
 			->update([
@@ -573,8 +558,7 @@
 			for ($i = 0; $i < count($ids); $i++) {
 				BodyRequest::where(['id' => $ids[$i]])
 					->update([
-							'mo_num' => $mo_num[$i], 
-							'so_num' => $so_num[$i], 
+							'mo_so_num' => $mo_so_num[$i]
 							]);
 			}  
             CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Request has been closed successfully!"), 'info');
@@ -736,41 +720,14 @@
 			}
 			*/
 
-            // //First Option same proccess
-			// if($action == 1){
-			// 	$postdata['purchased2_by'] 		= CRUDBooster::myId();
-			// 	$postdata['purchased2_at'] 		= date('Y-m-d H:i:s');
-			// 	if(in_array($arf_header->request_type_id, [5, 6, 7])){
-            //     //if($arf_header->request_type_id == 5){
-			// 		//$postdata['status_id']		 	=	StatusMatrix::where('current_step', 9)
-			// 		$postdata['status_id']		 	=	StatusMatrix::where('current_step', 4)
-			// 		->where('request_type', $arf_header->request_type_id)
-			// 		//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
-			// 		->value('status_id');
-			// 	}else{
-
-			// 		//$postdata['status_id']		 	=	StatusMatrix::where('current_step', 10)
-			// 		$postdata['status_id']		 	=	StatusMatrix::where('current_step', 5)
-			// 		->where('request_type', $arf_header->request_type_id)
-			// 		//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
-			// 		->value('status_id');
-			// 	}
-			// }
-
-			 //Second Option and 3rd Option
-			 if($action == 1){
+            //First Option same proccess
+			if($action == 1){
 				$postdata['purchased2_by'] 		= CRUDBooster::myId();
 				$postdata['purchased2_at'] 		= date('Y-m-d H:i:s');
-				
-                if($arf_header->request_type_id == 5){
+				if(in_array($arf_header->request_type_id, [5, 6, 7])){
+                //if($arf_header->request_type_id == 5){
 					//$postdata['status_id']		 	=	StatusMatrix::where('current_step', 9)
 					$postdata['status_id']		 	=	StatusMatrix::where('current_step', 4)
-					->where('request_type', $arf_header->request_type_id)
-					//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
-					->value('status_id');
-				}else if(in_array($arf_header->request_type_id, [6, 7])){
-					$postdata['status_id']		 	=	StatusMatrix::where('current_step', 9)
-					//$postdata['status_id']		 	=	StatusMatrix::where('current_step', 4)
 					->where('request_type', $arf_header->request_type_id)
 					//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
 					->value('status_id');
@@ -783,6 +740,33 @@
 					->value('status_id');
 				}
 			}
+
+			 //Second Option and 3rd Option
+			//  if($action == 1){
+			// 	$postdata['purchased2_by'] 		= CRUDBooster::myId();
+			// 	$postdata['purchased2_at'] 		= date('Y-m-d H:i:s');
+				
+            //     if($arf_header->request_type_id == 5){
+			// 		//$postdata['status_id']		 	=	StatusMatrix::where('current_step', 9)
+			// 		$postdata['status_id']		 	=	StatusMatrix::where('current_step', 4)
+			// 		->where('request_type', $arf_header->request_type_id)
+			// 		//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
+			// 		->value('status_id');
+			// 	}else if(in_array($arf_header->request_type_id, [6, 7])){
+			// 		$postdata['status_id']		 	=	StatusMatrix::where('current_step', 9)
+			// 		//$postdata['status_id']		 	=	StatusMatrix::where('current_step', 4)
+			// 		->where('request_type', $arf_header->request_type_id)
+			// 		//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
+			// 		->value('status_id');
+			// 	}else{
+
+			// 		//$postdata['status_id']		 	=	StatusMatrix::where('current_step', 10)
+			// 		$postdata['status_id']		 	=	StatusMatrix::where('current_step', 5)
+			// 		->where('request_type', $arf_header->request_type_id)
+			// 		//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
+			// 		->value('status_id');
+			// 	}
+			// }
 	    }
 
 	    /* 
@@ -1510,8 +1494,7 @@
 
 			$fields = Request::all();
 			$id = $fields['header_request_id'];
-			$mo = $fields['mo'];
-			$so = $fields['so'];
+			$mo_so = $fields['mo_so_num'];
  
 			HeaderRequest::where('id',$id)
 			->update([
@@ -1519,8 +1502,7 @@
 					'status_id'=> 13,
 					'closed_by'=> CRUDBooster::myId(),
 					'closed_at'=> date('Y-m-d H:i:s'),
-					'mo_num' => $mo,
-					'so_num' => $so	
+					'mo_so_num' => $mo_so,
 			]);	
 			$message = ['status'=>'success', 'message'=>'Request has been closed successfully!'];
 			echo json_encode($message);
