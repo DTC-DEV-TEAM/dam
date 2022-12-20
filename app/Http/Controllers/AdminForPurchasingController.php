@@ -34,7 +34,7 @@
 			$this->button_table_action = true;
 			$this->button_bulk_action = true;
 			$this->button_action_style = "button_icon";
-			$this->button_add = true;
+			$this->button_add = false;
 			$this->button_edit = false;
 			$this->button_delete = true;
 			$this->button_detail = false;
@@ -62,6 +62,7 @@
 			$this->col[] = ["label"=>"Processed By","name"=>"purchased2_by","join"=>"cms_users,name", "visible"=>false];
 
 			$this->col[] = ["label"=>"MO By","name"=>"mo_by","visible"=>false];
+			$this->col[] = ["label"=>"MO SO NO","name"=>"mo_so_num","visible"=>false];
 			
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
@@ -142,10 +143,10 @@
 					$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getRequestPurchasing/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[purchased2_by] == null"];
 					$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailPurchasing/[id]'),'icon'=>'fa fa-eye'];
 					//option 2
-					//$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::adminpath('[id]'),'icon'=>'fa fa-check-circle', "showIf"=>"[status_id] == $for_closing"];
+					$this->addaction[] = ['title'=>'Add MO/SO','url'=>CRUDBooster::adminpath('[id]'),'icon'=>'fa fa-plus-circle', "showIf"=>"[status_id] == $for_closing && [mo_so_num] == null"];
 					
 					//option 3
-					$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getRequestPurchasingForMoSo/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[status_id] == $for_closing"];
+					$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::mainpath('getRequestPurchasingForMoSo/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[status_id] == $for_closing && [mo_so_num] != null"];
 				}
 				
 				//$this->addaction[] = ['title'=>'Print','url'=>CRUDBooster::mainpath('getRequestPrintPickList/[id]'),'icon'=>'fa fa-print', "showIf"=>"[purchased2_by] != null && [status_id] == $processing"];
@@ -228,14 +229,14 @@
 	        $this->script_js = NULL;
             $this->script_js = "
 			$(document).ready(function() {
-				$('a[title=\"Close Request\"]').removeAttr('onclick');
+				$('a[title=\"Add MO/SO\"]').removeAttr('onclick');
 				// $('.fa.fa-check-circle').click(function(event){
 				// 	event.preventDefault();	
 				// 	$(\"#myModal\").modal('show');	
 				// });
-				$('a[title=\"Close Request\"]').attr('id', 'request_tag');
+				$('a[title=\"Add MO/SO\"]').attr('id', 'request_tag');
 
-				$('a[title=\"Close Request\"]').click(function(e){
+				$('a[title=\"Add MO/SO\"]').click(function(e){
 					e.preventDefault();
 					var id = $(this).attr('href').split('/').pop();
 					$(\"#request_id\").val(id);	
@@ -259,7 +260,7 @@
 							showCancelButton: true,
 							confirmButtonColor: '#41B314',
 							cancelButtonColor: '#F9354C',
-							confirmButtonText: 'Yes, close it!',
+							confirmButtonText: 'Yes, proceed!',
 							}, function () {
 									var mo_so_num = $('#mo_so_num').val();
 									var id = $('#request_id').val();
@@ -374,9 +375,10 @@
 	        |
 	        */
 	        $this->style_css = "
-			.fa.fa-check-circle{
+			.fa.fa-plus-circle{
 				color:green;
-				font-size:20px;
+				font-size:18px;
+				margin-top: 3px;
 			}
 			.modal-content  {
 				-webkit-border-radius: 5px !important;
@@ -546,7 +548,8 @@
 			$ids = $fields['ids'];
 			$header_id = $fields['header_id'];
 			$mo_so_num = $fields['mo_so_num'];
-
+			$serve_qty = $fields['reserve_qty'];
+    
 			HeaderRequest::where('id',$header_id)
 			->update([
 				    'closing_plug'=> 1,
@@ -558,7 +561,8 @@
 			for ($i = 0; $i < count($ids); $i++) {
 				BodyRequest::where(['id' => $ids[$i]])
 					->update([
-							'mo_so_num' => $mo_so_num[$i]
+							'mo_so_num' => $mo_so_num[$i],
+							'serve_qty' => $serve_qty[$i]
 							]);
 			}  
             CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Request has been closed successfully!"), 'info');
@@ -721,40 +725,13 @@
 			*/
 
             //First Option same proccess
-			if($action == 1){
-				$postdata['purchased2_by'] 		= CRUDBooster::myId();
-				$postdata['purchased2_at'] 		= date('Y-m-d H:i:s');
-				if(in_array($arf_header->request_type_id, [5, 6, 7])){
-                //if($arf_header->request_type_id == 5){
-					//$postdata['status_id']		 	=	StatusMatrix::where('current_step', 9)
-					$postdata['status_id']		 	=	StatusMatrix::where('current_step', 4)
-					->where('request_type', $arf_header->request_type_id)
-					//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
-					->value('status_id');
-				}else{
-
-					//$postdata['status_id']		 	=	StatusMatrix::where('current_step', 10)
-					$postdata['status_id']		 	=	StatusMatrix::where('current_step', 5)
-					->where('request_type', $arf_header->request_type_id)
-					//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
-					->value('status_id');
-				}
-			}
-
-			 //Second Option and 3rd Option
-			//  if($action == 1){
+			// if($action == 1){
 			// 	$postdata['purchased2_by'] 		= CRUDBooster::myId();
 			// 	$postdata['purchased2_at'] 		= date('Y-m-d H:i:s');
-				
-            //     if($arf_header->request_type_id == 5){
+			// 	if(in_array($arf_header->request_type_id, [5, 6, 7])){
+            //     //if($arf_header->request_type_id == 5){
 			// 		//$postdata['status_id']		 	=	StatusMatrix::where('current_step', 9)
 			// 		$postdata['status_id']		 	=	StatusMatrix::where('current_step', 4)
-			// 		->where('request_type', $arf_header->request_type_id)
-			// 		//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
-			// 		->value('status_id');
-			// 	}else if(in_array($arf_header->request_type_id, [6, 7])){
-			// 		$postdata['status_id']		 	=	StatusMatrix::where('current_step', 9)
-			// 		//$postdata['status_id']		 	=	StatusMatrix::where('current_step', 4)
 			// 		->where('request_type', $arf_header->request_type_id)
 			// 		//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
 			// 		->value('status_id');
@@ -767,6 +744,33 @@
 			// 		->value('status_id');
 			// 	}
 			// }
+
+			 //Second Option and 3rd Option
+			 if($action == 1){
+				$postdata['purchased2_by'] 		= CRUDBooster::myId();
+				$postdata['purchased2_at'] 		= date('Y-m-d H:i:s');
+				
+                if($arf_header->request_type_id == 5){
+					//$postdata['status_id']		 	=	StatusMatrix::where('current_step', 9)
+					$postdata['status_id']		 	=	StatusMatrix::where('current_step', 4)
+					->where('request_type', $arf_header->request_type_id)
+					//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
+					->value('status_id');
+				}else if(in_array($arf_header->request_type_id, [6, 7])){
+					$postdata['status_id']		 	=	StatusMatrix::where('current_step', 9)
+					//$postdata['status_id']		 	=	StatusMatrix::where('current_step', 4)
+					->where('request_type', $arf_header->request_type_id)
+					//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
+					->value('status_id');
+				}else{
+
+					//$postdata['status_id']		 	=	StatusMatrix::where('current_step', 10)
+					$postdata['status_id']		 	=	StatusMatrix::where('current_step', 5)
+					->where('request_type', $arf_header->request_type_id)
+					//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
+					->value('status_id');
+				}
+			}
 	    }
 
 	    /* 
@@ -975,9 +979,9 @@
 				)
 				->where('recommendation_request.header_request_id', $id)
 				->get();				
-
+            
 			$data['recommendations'] = DB::table('recommendations')->where('status', 'ACTIVE')->get();
-
+           
 			return $this->view("assets.purchasing-request-per-line-closing", $data);
 		}
 
@@ -1498,13 +1502,13 @@
  
 			HeaderRequest::where('id',$id)
 			->update([
-				    'closing_plug'=> 1,
-					'status_id'=> 13,
-					'closed_by'=> CRUDBooster::myId(),
-					'closed_at'=> date('Y-m-d H:i:s'),
 					'mo_so_num' => $mo_so,
 			]);	
-			$message = ['status'=>'success', 'message'=>'Request has been closed successfully!'];
+			BodyRequest::where(['header_request_id' => $id])
+					->update([
+							'mo_so_num' => $mo_so
+							]);
+			$message = ['status'=>'success', 'message'=>'Successfully Saved!'];
 			echo json_encode($message);
 			//CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Request has been closed successfully!"), 'info');
 		}

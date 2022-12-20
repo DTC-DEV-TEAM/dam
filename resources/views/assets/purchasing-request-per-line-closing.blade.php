@@ -1,5 +1,23 @@
 @extends('crudbooster::admin_template')
+@push('head')
+    <style type="text/css">   
+    .mo_so_num {
+    border-top-style: hidden;
+    border-right-style: hidden;
+    border-left-style: hidden;
+    border-bottom-style: hidden;
+    background-color: #eee;
+    }
 
+    .no-outline:focus {
+    outline: none;
+    }
+    input.mo_so_num:read-only {
+        background-color: #fff;
+    }
+
+   </style>
+@endpush
 @section('content')
 
 @if(g('return_url'))
@@ -63,7 +81,7 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <label class="control-label require">{{ trans('message.form-label.po_number') }}</label>
-                        <input type="text" class="form-control"  id="po_number" name="po_number"   value="{{$Header->po_number}}" >      
+                        <input type="text" class="form-control"  id="po_number" name="po_number"   value="{{$Header->po_number}}" readonly>      
          
                         <p style="font: italic bold 12px/30px arial, arial;">Type N/A if not applicable</p>                         
                     </div>
@@ -78,7 +96,7 @@
                         <div class="input-group date">
                             <div class="input-group-addon"><i class="fa fa-calendar"></i></div>
                             <!-- <input type='input' name='po_date' id="po_date" value="{{$Header->po_date}}"  onkeydown="return false"   autocomplete="off"  class='form-control' placeholder="yyyy-mm-dd" />    -->
-                            <input type="text" class="form-control date" name="po_date" id="po_date" value="{{$Header->po_date}}" >
+                            <input type="text" class="form-control date" name="po_date" id="po_date" value="{{$Header->po_date}}" readonly>
                         </div>
                         <p style="font: italic bold 12px/30px arial, arial;">Type N/A if not applicable</p> 
                     </div>
@@ -93,7 +111,7 @@
                             
                             <!-- <input type='input' name='quote_date' id="quote_date" value="{{$Header->quote_date}}" onkeydown="return false"   autocomplete="off"  class='form-control' placeholder="yyyy-mm-dd" /> --> 
                             
-                            <input type="text" class="form-control date" name="quote_date" id="quote_date" value="{{$Header->quote_date}}" >
+                            <input type="text" class="form-control date" name="quote_date" id="quote_date" value="{{$Header->quote_date}}" readonly>
 
                           </div>
                           <p style="font: italic bold 12px/30px arial, arial;">Type N/A if not applicable</p> 
@@ -276,7 +294,7 @@
                                                                 <th width="10%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
                                                                 <th width="10%" class="text-center">MO/SO No</th> 
                                                                 <th width="5%" class="text-center">{{ trans('message.table.quantity_text') }}</th> 
-
+                                                                <th width="5%" class="text-center">Serve Qty</th> 
                                                                 @if($Header->recommendedby != null || $Header->recommendedby != "")
                                                                     <th width="13%" class="text-center">{{ trans('message.table.recommendation_text') }}</th> 
                                                                     <th width="14%" class="text-center">{{ trans('message.table.reco_digits_code_text_mo') }}</th> 
@@ -314,13 +332,18 @@
                                                                                 
                                                                             </td>
                                                                             <td style="text-align:center" height="10">
-                                                                              <input type="text"  class="form-control"  name="mo_so_num[]" id="mo_so_num" placeholder="Please put N/A if not applicable"  required>
+                                                                              <input type="text"  class="form-control mo_so_num"  name="mo_so_num[]" id="mo_so_num{{$tableRow}}" value="{{$rowresult->mo_so_num}}" readonly>
+                                                                              <input type="hidden"  class="form-control"  name="default_val[]" id="default_val{{$tableRow}}" value="{{$rowresult->mo_so_num}}" readonly>
                                                                             </td>
-                                                                          
+
+                                                
                                                                             <td style="text-align:center" height="10">
                                                                                     {{$rowresult->quantity}}
                                                                             </td>
 
+                                                                            <td style="text-align:center" height="10">
+                                                                              <input type="text"  class="form-control reserve_qty"  name="reserve_qty[]" id="reserve_qty{{$tableRow}}" value="{{$rowresult->quantity}}" data-id="{{$tableRow}}">
+                                                                            </td>
                                                                            
 
                                                                             @if($Header->recommendedby != null || $Header->recommendedby != "")
@@ -423,20 +446,7 @@
                 </div>
             @endif
 
-
-
-
             <hr />
-
-            <hr/>
-            <div class="row">  
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <label>{{ trans('message.table.note') }}:</label>
-                        <textarea placeholder="{{ trans('message.table.note') }} ..." rows="3" class="form-control" name="ac_comments">{{$Header->ac_comments}}</textarea>
-                    </div>
-                </div>
-            </div>
 
         </div>
 
@@ -476,6 +486,13 @@
     };
     setTimeout("preventBack()", 0);
 
+    var tableRow = <?php echo json_encode($tableRow); ?>;
+    
+    var tableRow1 = tableRow;
+
+    tableRow1++;
+
+
     $("#btnSubmit").click(function(event) {
        event.preventDefault();
         //Each Warranty Coverage Validation
@@ -507,7 +524,33 @@
             }
         
         }
-       
+
+    });
+    var count_pick = 0;
+    //reserve quantity
+     //fill current and redeem field on amount change
+     var searchcount = <?php echo json_encode($tableRow); ?>;
+
+        let countrow = 1;
+
+        $(function(){
+
+        for (let i = 0; i < searchcount; i++) {
+            countrow++;
+        $('#reserve_qty'+countrow).on("keyup", function() {
+            var other_id = $(this).attr("data-id");
+            var value =  this.value;
+            var text = "Out of Stock";
+            var orig_val = $("#default_val"+$(this).attr("data-id")).val();
+            if(value <= 0){
+                $("#mo_so_num"+$(this).attr("data-id")).val(text);
+                //$("#mo_so_num"+countrow).val(text).trigger('change');
+            }else{
+                $("#mo_so_num"+$(this).attr("data-id")).val(orig_val);
+            }
+
+        });
+        }
     });
 </script>
 @endpush

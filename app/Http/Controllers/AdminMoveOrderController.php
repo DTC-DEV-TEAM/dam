@@ -1057,14 +1057,14 @@
 			//$cancelled  = 		DB::table('statuses')->where('id', 8)->value('id');
 
 			//Option 1
-			$data['AssetRequest'] = HeaderRequest::whereNotNull('purchased2_by')->where('mo_plug', 0)
-												   ->orwhere('to_mo', 1)
-												   ->get();
-			//Option 2
 			// $data['AssetRequest'] = HeaderRequest::whereNotNull('purchased2_by')->where('mo_plug', 0)
-			//                                        ->whereNotIn('request_type_id' , [6,7])
 			// 									   ->orwhere('to_mo', 1)
 			// 									   ->get();
+			//Option 2
+			$data['AssetRequest'] = HeaderRequest::whereNotNull('purchased2_by')->where('mo_plug', 0)
+			                                       ->whereNotIn('request_type_id' , [6,7])
+												   ->orwhere('to_mo', 1)
+												   ->get();
 
 			$data['Header'] = HeaderRequest::
 				  leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')

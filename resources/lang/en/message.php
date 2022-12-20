@@ -161,7 +161,7 @@ return [
 
         'category_id_text'  =>  'Category',  
         'particulars_text'  =>  'Description',
-        'quantity_text'  =>  'Qty',
+        'quantity_text'  =>  'Request Qty',
         'line_value_text'  =>  'Value',
         'total_value_text'  =>  'Total Value',
         'total_value_order_text'  =>  'Total:',

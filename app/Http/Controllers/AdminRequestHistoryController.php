@@ -585,7 +585,7 @@
 				->get();				
 
 			$data['recommendations'] = DB::table('recommendations')->where('status', 'ACTIVE')->get();		
-			
+		
 			return $this->view("assets.detail-history", $data);
 		}
 
