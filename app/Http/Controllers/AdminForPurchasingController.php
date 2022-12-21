@@ -279,7 +279,8 @@
 													type: response.status,
 													title: response.message,
 												});
-												location.reload();
+
+												window.location.replace(response.redirect_url);
 												} else if (response.status == \"error\") {
 												swal({
 													type: response.status,
@@ -947,6 +948,10 @@
 				->leftjoin('cms_users as requested', 'header_request.created_by','=', 'requested.id')
 				->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
 				->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
+				->leftjoin('cms_users as processed', 'header_request.purchased2_by','=', 'processed.id')
+				->leftjoin('cms_users as picked', 'header_request.picked_by','=', 'picked.id')
+				->leftjoin('cms_users as received', 'header_request.received_by','=', 'received.id')
+				->leftjoin('cms_users as closed', 'header_request.closed_by','=', 'closed.id')
 				->select(
 						'header_request.*',
 						'header_request.id as requestid',
@@ -961,6 +966,10 @@
 						'locations.store_name as store_branch',
 						'approved.name as approvedby',
 						'recommended.name as recommendedby',
+						'picked.name as pickedby',
+						'received.name as receivedby',
+						'processed.name as processedby',
+						'closed.name as closedby',
 						'header_request.created_at as created_at'
 						)
 				->where('header_request.id', $id)->first();
@@ -1508,7 +1517,7 @@
 					->update([
 							'mo_so_num' => $mo_so
 							]);
-			$message = ['status'=>'success', 'message'=>'Successfully Saved!'];
+			$message = ['status'=>'success', 'message'=>'Successfully Saved!','redirect_url'=>CRUDBooster::mainpath('request-purchasing-for-mo-so/'.$id)];
 			echo json_encode($message);
 			//CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Request has been closed successfully!"), 'info');
 		}

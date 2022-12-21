@@ -115,6 +115,10 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('/admin/users/user-account-upload','AdminCmsUsersController@UploadUserAccount');
     Route::post('/admin/users/upload-users','AdminCmsUsersController@userAccountUpload')->name('upload-users');
     Route::get('/admin/users/upload-user-account-template','AdminCmsUsersController@uploadUserAccountTemplate');
+
+    //Item Master
+    Route::get('/admin/assets/item-master-upload','AdminAssetsController@UploadItemMaster');
+    Route::post('/admin/assets/upload-item-master','AdminCmsUsersController@itemMasterUpload')->name('upload-item-master');
     Route::get('/admin/db-truncate','TruncateController@dbtruncate');
     Route::get('/admin/clear-view', function() {
         Artisan::call('view:clear');

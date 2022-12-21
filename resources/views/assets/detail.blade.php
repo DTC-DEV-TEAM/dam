@@ -154,15 +154,26 @@
                                                 <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
                                                 <th width="9%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
                                                 <th width="15%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
-                                                <th width="5%" class="text-center">{{ trans('message.table.quantity_text') }}</th> 
+                                                @if(in_array($Header->request_type_id, [6,7]))
+                                                 @if($Header->mo_so_num != null)
+                                                  <th width="10%" class="text-center">MO/SO</th> 
+                                                 @endif 
+                                                @endif 
+                                                <th width="10%" class="text-center">{{ trans('message.table.quantity_text') }}</th> 
+                                                @if(in_array($Header->request_type_id, [6,7]))       
+                                                    @if($Header->mo_so_num != null)                   
+                                                    <th width="10%" class="text-center">Serve Quantity</th> 
+                                                    @endif
+                                                @endif 
                                                 @if($Header->recommendedby != null || $Header->recommendedby != "")
                                                     <th width="13%" class="text-center">{{ trans('message.table.recommendation_text') }}</th> 
                                                     <th width="14%" class="text-center">{{ trans('message.table.reco_digits_code_text') }}</th> 
                                                     <th width="24%" class="text-center">{{ trans('message.table.reco_item_description_text') }}</th>
                                                 @endif 
-                                               
+
+                                               @if($Header->closed_by == null)
                                                     <th width="5%" class="text-center">{{ trans('message.table.action') }}</th>
-                                             
+                                               @endif 
                                             </tr>
                                             <tr id="tr-table">
                                                 <?php   $tableRow = 1; ?>
@@ -184,10 +195,24 @@
                                                                                 <td style="text-align:center" height="10">
                                                                                         {{$rowresult->sub_category_id}}
                                                                                 </td>
+                                                                                @if(in_array($Header->request_type_id, [6,7]))
+                                                                                 @if($Header->mo_so_num != null) 
+                                                                                    <td style="text-align:center" height="10">
+                                                                                            {{$rowresult->mo_so_num}}
+                                                                                    </td>
+                                                                                 @endif
+                                                                                @endif
                                                                                 <td style="text-align:center" height="10">
                                                                                         {{$rowresult->quantity}}
                                                                                         <input type='hidden' name="quantity" class="form-control text-center quantity_item" id="quantity" readonly value="{{$rowresult->quantity}}">
                                                                                 </td>
+                                                                                @if(in_array($Header->request_type_id, [6,7]))
+                                                                                    @if($Header->mo_so_num != null) 
+                                                                                    <td style="text-align:center" height="10">
+                                                                                        {{$rowresult->serve_qty}}
+                                                                                    </td>
+                                                                                    @endif
+                                                                                @endif
                                                                                 @if($Header->recommendedby != null || $Header->recommendedby != "")                                                                               
                                                                                     <td style="text-align:center" height="10">
                                                                                         {{$rowresult->recommendation}}
@@ -199,9 +224,11 @@
                                                                                         {{$rowresult->reco_item_description}}
                                                                                     </td>
                                                                                 @endif
+                                                                                @if($Header->closed_by == null)
                                                                                     <td style="text-align:center" height="10">
                                                                                         <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow" disabled><i class="glyphicon glyphicon-remove"></i></button>
-                                                                                    </td>                 
+                                                                                    </td>   
+                                                                                @endif              
                                                                             </tr>
                                                                         @else
                                                                             <tr>
@@ -216,10 +243,24 @@
                                                                                 <td style="text-align:center" height="10">
                                                                                         {{$rowresult->sub_category_id}}
                                                                                 </td>
+                                                                                @if(in_array($Header->request_type_id, [6,7]))
+                                                                                    @if($Header->mo_so_num != null) 
+                                                                                    <td style="text-align:center" height="10">
+                                                                                            {{$rowresult->mo_so_num}}
+                                                                                    </td>
+                                                                                    @endif
+                                                                                @endif
                                                                                 <td style="text-align:center" height="10">
                                                                                         {{$rowresult->quantity}}
                                                                                         <input type='hidden' name="quantity" class="form-control text-center quantity_item" id="quantity" readonly value="{{$rowresult->quantity}}">
                                                                                 </td>
+                                                                                @if(in_array($Header->request_type_id, [6,7]))
+                                                                                    @if($Header->mo_so_num != null) 
+                                                                                    <td style="text-align:center" height="10">
+                                                                                        {{$rowresult->serve_qty}}
+                                                                                    </td>
+                                                                                    @endif
+                                                                                @endif
                                                                                 @if($Header->recommendedby != null || $Header->recommendedby != "")                                                                               
                                                                                     <td style="text-align:center" height="10">
                                                                                         {{$rowresult->recommendation}}
@@ -236,9 +277,11 @@
                                                                                             <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow"><i class="glyphicon glyphicon-remove"></i></button>
                                                                                         </td>
                                                                                     @else
+                                                                                    @if($Header->closed_by == null)
                                                                                         <td style="text-align:center" height="10">
                                                                                             <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow" disabled><i class="glyphicon glyphicon-remove"></i></button>
                                                                                         </td>
+                                                                                    @endif
                                                                                 @endif
 
                                                                                 

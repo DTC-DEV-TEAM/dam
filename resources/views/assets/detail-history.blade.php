@@ -151,15 +151,15 @@
                                     <table class="table table-bordered" id="asset-items1">
                                         <tbody id="bodyTable">
                                             <tr class="tbl_header_color dynamicRows">
-                                                <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
+                                                <th width="15%" class="text-center">{{ trans('message.table.item_description') }}</th>
                                                 <th width="9%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
-                                                <th width="15%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th>
+                                                <th width="10%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th>
                                                 @if(in_array($Header->request_type_id, [6,7]))
-                                                <th width="5%" class="text-center">MO/SO</th> 
+                                                <th width="10%" class="text-center">MO/SO</th> 
                                                 @endif 
-                                                <th width="5%" class="text-center">{{ trans('message.table.quantity_text') }}</th> 
+                                                <th width="10%" class="text-center">{{ trans('message.table.quantity_text') }}</th> 
                                                 @if(in_array($Header->request_type_id, [6,7]))                          
-                                                <th width="5%" class="text-center">Serve Quantity</th> 
+                                                <th width="10%" class="text-center">Serve Quantity</th> 
                                                 @endif 
                                                 @if($Header->recommendedby != null || $Header->recommendedby != "")
                                                     <th width="13%" class="text-center">{{ trans('message.table.recommendation_text') }}</th> 

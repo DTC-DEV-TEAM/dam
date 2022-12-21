@@ -358,7 +358,7 @@
 
 				$query->whereNull('header_request.deleted_at')
 					  ->where('header_request.status_id', '!=' , $released)
-					  ->orderBy('header_request.status_id', 'DESC')
+					  ->orderBy('header_request.status_id', 'ASC')
 					  ->orderBy('header_request.id', 'DESC');
 
 			}else{
@@ -381,7 +381,7 @@
 				});
 
 				$query->orderBy('header_request.status_id', 'asc')->orderBy('header_request.id', 'DESC');
-
+				//$query->orderByRaw('FIELD( header_request.status_id, "For Approval")');
 			}
 	            
 	    }

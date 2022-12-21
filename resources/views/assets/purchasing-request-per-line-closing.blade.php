@@ -7,6 +7,7 @@
     border-left-style: hidden;
     border-bottom-style: hidden;
     background-color: #eee;
+    
     }
 
     .no-outline:focus {
@@ -14,8 +15,9 @@
     }
     input.mo_so_num:read-only {
         background-color: #fff;
+        text-align: center; 
     }
-
+ 
    </style>
 @endpush
 @section('content')
@@ -320,15 +322,16 @@
                                                                                    <!-- <input type="hidden"  class="form-control"  name="item_id[]" id="item_id{{$tableRow}}"  required  value="{{$rowresult->id}}"> -->
                                                                                 
                                                                                    <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}">
-                                                                                   
-                                                                                    {{$rowresult->item_description}}
+                                                                                   <input type="text"  class="form-control mo_so_num" value="{{$rowresult->item_description}}" readonly>
+                                                                                    <!-- {{$rowresult->item_description}} -->
                                                                             </td>
                                                                             <td style="text-align:center" height="10">
-                                                                                    {{$rowresult->category_id}}
+                                                                            <input type="text"  class="form-control mo_so_num" value="{{$rowresult->category_id}}" readonly>
+                                                                                    <!-- {{$rowresult->category_id}} -->
                                                                             </td>
                                                                             <td style="text-align:center" height="10">
-
-                                                                                {{$rowresult->sub_category_id}}
+                                                                            <input type="text"  class="form-control mo_so_num" value="{{$rowresult->sub_category_id}}" readonly>
+                                                                                <!-- {{$rowresult->sub_category_id}} -->
                                                                                 
                                                                             </td>
                                                                             <td style="text-align:center" height="10">
@@ -338,7 +341,8 @@
 
                                                 
                                                                             <td style="text-align:center" height="10">
-                                                                                    {{$rowresult->quantity}}
+                                                                            <input type="text"  class="form-control mo_so_num" value="{{$rowresult->quantity}}" readonly>
+                                                                                    <!-- {{$rowresult->quantity}} -->
                                                                             </td>
 
                                                                             <td style="text-align:center" height="10">
@@ -427,6 +431,52 @@
                                 </div>
                 </div>
             </div>
+
+            @if( $Header->processedby != null )
+                <hr/>
+                <div class="row">  
+                    @if($Header->po_number != null)
+                        <label class="control-label col-md-2">{{ trans('message.form-label.po_number') }}:</label>
+                        <div class="col-md-4">
+                                <p>{{$Header->po_number}}</p>
+                        </div>
+                    @endif
+                    @if($Header->po_date != null)
+                        <label class="control-label col-md-2">{{ trans('message.form-label.po_date') }}:</label>
+                        <div class="col-md-4">
+                                <p>{{$Header->po_date}}</p>
+                        </div>
+                    @endif
+                </div>
+                <div class="row">   
+                    @if($Header->quote_date != null)
+                        <label class="control-label col-md-2">{{ trans('message.form-label.quote_date') }}:</label>
+                        <div class="col-md-4">
+                                <p>{{$Header->quote_date}}</p>
+                        </div>
+                    @endif
+                </div>
+                <div class="row">                           
+                    <label class="control-label col-md-2">{{ trans('message.form-label.processed_by') }}:</label>
+                    <div class="col-md-4">
+                            <p>{{$Header->processedby}}</p>
+                    </div>
+                    <label class="control-label col-md-2">{{ trans('message.form-label.processed_date') }}:</label>
+                    <div class="col-md-4">
+                            <p>{{$Header->purchased2_at}}</p>
+                    </div>
+                </div>
+
+                @if($Header->ac_comments != null)
+                    <div class="row">                           
+                        <label class="control-label col-md-2">{{ trans('message.table.ac_comments') }}:</label>
+                        <div class="col-md-8">
+                                <p>{{$Header->ac_comments}}</p>
+                        </div>
+                    </div>
+                @endif
+
+            @endif
 
             @if($Header->application != null || $Header->application != "")
                 <div class="row">
@@ -540,7 +590,7 @@
         $('#reserve_qty'+countrow).on("keyup", function() {
             var other_id = $(this).attr("data-id");
             var value =  this.value;
-            var text = "Out of Stock";
+            var text = "OUT OF STOCK";
             var orig_val = $("#default_val"+$(this).attr("data-id")).val();
             if(value <= 0){
                 $("#mo_so_num"+$(this).attr("data-id")).val(text);
