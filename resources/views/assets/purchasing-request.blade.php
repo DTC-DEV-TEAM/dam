@@ -522,12 +522,7 @@
                 </div>
             @endif
 
-
-
-
             <hr />
-
-            <hr/>
             <div class="row">  
                 <div class="col-md-12">
                     <div class="form-group">
@@ -598,9 +593,6 @@
         </div>
 
     </form>
-
-
-
 
 
 </div>

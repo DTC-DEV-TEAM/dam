@@ -341,12 +341,13 @@
 
                                                 
                                                                             <td style="text-align:center" height="10">
-                                                                            <input type="text"  class="form-control mo_so_num" value="{{$rowresult->quantity}}" readonly>
+                                                                            <input type="text"  class="form-control mo_so_num" name="quantity{{$tableRow}}" value="{{$rowresult->quantity}}" id="quantity{{$tableRow}}" readonly>
                                                                                     <!-- {{$rowresult->quantity}} -->
                                                                             </td>
 
                                                                             <td style="text-align:center" height="10">
                                                                               <input type="text"  class="form-control reserve_qty"  name="reserve_qty[]" id="reserve_qty{{$tableRow}}" value="{{$rowresult->quantity}}" data-id="{{$tableRow}}">
+                                                                              <div id="display_error{{$tableRow}}" style="text-align:left"></div>
                                                                             </td>
                                                                            
 
@@ -561,6 +562,7 @@
             }else{
                 swal({
                     title: "Are you sure?",
+                    text: "You won't be able to revert this!",
                     type: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#41B314",
@@ -592,11 +594,22 @@
             var value =  this.value;
             var text = "OUT OF STOCK";
             var orig_val = $("#default_val"+$(this).attr("data-id")).val();
+            var quantity = parseFloat($("#quantity"+$(this).attr("data-id")).val());
+            var reserve_qty = parseFloat($("#reserve_qty"+$(this).attr("data-id")).val());
+        
             if(value <= 0){
                 $("#mo_so_num"+$(this).attr("data-id")).val(text);
                 //$("#mo_so_num"+countrow).val(text).trigger('change');
             }else{
                 $("#mo_so_num"+$(this).attr("data-id")).val(orig_val);
+            }
+
+            if(value > quantity){
+                $('#btnSubmit').attr('disabled','disabled');
+                $('#display_error'+$(this).attr("data-id")).html("<span id='notif' class='label label-danger'> Serve Quantity Exceed!</span>")
+            }else{
+                $('#btnSubmit').removeAttr('disabled');
+                $('#display_error'+$(this).attr("data-id")).html('')
             }
 
         });
