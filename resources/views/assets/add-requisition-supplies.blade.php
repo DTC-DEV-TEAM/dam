@@ -347,7 +347,7 @@
                         //     '</select>'+
                         // '</td>' +
                         '<td>' + 
-                            '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control digits_code" data-id="'+ tableRow +'" id="digits_code'+ tableRow +'"  name="reco_digits_code[]"   maxlength="100" readonly>' +
+                            '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control digits_code" data-id="'+ tableRow +'" id="digits_code'+ tableRow +'"  name="supplies_digits_code[]"   maxlength="100" readonly>' +
                         '</td>' +
                         '<td>'+
                             '<select class="form-control drop'+ tableRow + '" name="category_id[]" data-id="' + tableRow + '" id="category_id' + tableRow + '" required style="width:100%">' +
@@ -378,7 +378,7 @@
                         '</td>'+
                         */      
                         
-                        '<td><input class="form-control text-center quantity_item" type="text" required name="quantity[]" id="quantity' + tableRow + '" data-id="' + tableRow  + '"  value="1" min="0" max="9999999999" step="any" onKeyPress="if(this.value.length==4) return false;" oninput="validity.valid||(value=0);"></td>' +
+                        '<td><input class="form-control text-center quantity_item" type="text" required name="quantity[]" id="quantity' + tableRow + '" data-id="' + tableRow  + '"  value="1" max="9999999999" step="any" onKeyPress="if(this.value.length==4) return false;" oninput="validity.valid;"></td>' +
                         
                         /*'<td><input type="file" name="image[]" id="image' + tableRow + '" accept="image/*"></td>' + */
                         
@@ -926,60 +926,148 @@
         });
 
         $("#btnSubmit").click(function(event) {
+            // var strconfirm = confirm("Are you sure you want to send this request?");
+            // if (strconfirm == true) {
+            //     var countRow = $('#asset-items tfoot tr').length;
+            //     // var value = $('.vvalue').val();
+            //     if (countRow == 1) {
 
-            var strconfirm = confirm("Are you sure you want to send this request?");
-            if (strconfirm == true) {
+            //         alert("Please add an item!");
+            //         event.preventDefault(); // cancel default behavior
+            //     }
+            //     var qty = 0;
+            //     $('.quantity_item').each(function() {
+            //         var reg = /^0/gi;
+            //         qty = $(this).val();
+            //         if (qty == 0) {
+            //             alert("Quantity cannot be empty or zero!");
+            //             event.preventDefault(); // cancel default behavior
+            //         } else if (qty < 0) {
+            //             alert("Negative Value is not allowed!");
+            //             event.preventDefault(); // cancel default behavior
+            //         }else if(qty.match(reg)){
+            //             alert("Invalid Quantity Value!");
+            //             event.preventDefault(); // cancel default behavior
+            //         }
 
-                var countRow = $('#asset-items tfoot tr').length;
+            //     });
+            //     var description = "test";
+            //     $('.itemDesc').each(function() {
+            //         description = $(this).val();
+            //         if (description == null) {
+            //             alert("Item Description cannot be empty!");
+            //             event.preventDefault(); // cancel default behavior
+            //         } else if (description == "") {
+            //             alert("Item Description cannot be empty!");
+            //             event.preventDefault(); // cancel default behavior
+            //         }   
+            //     });
+            // }else{
+            //     return false;
+            //     window.stop();
+
+            // }
+            event.preventDefault();
+            var countRow = $('#asset-items tfoot tr').length;
                 // var value = $('.vvalue').val();
-
-                if (countRow == 1) {
-
-                    alert("Please add an item!");
+                if(! $(".purpose").is(':checked')){
+                    swal({
+                        type: 'error',
+                        title: 'Purpose Required!',
+                        icon: 'error'
+                    }); 
                     event.preventDefault(); // cancel default behavior
+                    return false;
+                }else if (countRow == 1) {
+                    swal({
+                        type: 'error',
+                        title: 'Please add an item!',
+                        icon: 'error'
+                    }); 
+                    event.preventDefault(); // cancel default behavior
+                    return false;
+                }else{ 
+                    var item = $("input[name^='item_description']").length;
+                    var item_value = $("input[name^='item_description']");
+                    for(i=0;i<item;i++){
+                        if(item_value.eq(i).val() == 0 || item_value.eq(i).val() == null){
+                            swal({  
+                                    type: 'error',
+                                    title: 'Item Description cannot be empty!',
+                                    icon: 'error',
+                                    customClass: 'swal-wide'
+                                });
+                                event.preventDefault();
+                                return false;
+                        } 
+                
+                    } 
 
-                }
+                    var sub_cat = $(".sub_category_id option").length;
+                    var sub_cat_value = $('.sub_category_id').find(":selected");
+                    for(i=0;i<sub_cat;i++){
+                        if(sub_cat_value.eq(i).val() == ""){
+                            swal({  
+                                    type: 'error',
+                                    title: 'Sub Category cannot be empty!',
+                                    icon: 'error',
+                                    customClass: 'swal-wide'
+                                });
+                                event.preventDefault();
+                                return false;
+                        } 
+                
+                    } 
 
-                var qty = 0;
-
-                $('.quantity_item').each(function() {
-
-                    qty = $(this).val();
-                    if (qty == 0) {
-                        alert("Quantity cannot be empty or zero!");
-                        event.preventDefault(); // cancel default behavior
-                    } else if (qty < 0) {
-                        alert("Negative Value is not allowed!");
-                        event.preventDefault(); // cancel default behavior
-                    }
-
-                });
-
-                var description = "test";
-
-                $('.itemDesc').each(function() {
-
-                    description = $(this).val();
-                    if (description == null) {
-                        alert("Item Description cannot be empty!");
-                        event.preventDefault(); // cancel default behavior
-                    } else if (description == "") {
-                        alert("Item Description cannot be empty!");
-                        event.preventDefault(); // cancel default behavior
-                    }
+                    //quantity validation
+                    var v = $("input[name^='quantity']").length;
+                    var value = $("input[name^='quantity']");
+                    var reg = /^0/gi;
+                        for(i=0;i<v;i++){
+                            if(value.eq(i).val() == 0){
+                                swal({  
+                                        type: 'error',
+                                        title: 'Quantity cannot be empty or zero!',
+                                        icon: 'error',
+                                        customClass: 'swal-wide'
+                                    });
+                                    event.preventDefault();
+                                    return false;
+                            }else if(value < 0){
+                                swal({
+                                    type: 'error',
+                                    title: 'Negative Value is not allowed!',
+                                    icon: 'error'
+                                }); 
+                                event.preventDefault(); // cancel default behavior
+                                return false;
+                            }else if(value.eq(i).val().match(reg)){
+                                swal({
+                                    type: 'error',
+                                    title: 'Invalid Quantity Value!',
+                                    icon: 'error'
+                                }); 
+                                event.preventDefault(); // cancel default behavior
+                                return false;     
+                            }  
                     
-                });
-
-            }else{
-
-                return false;
-                window.stop();
-
-            }
-
+                        } 
+                                          
+                        swal({
+                            title: "Are you sure?",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#41B314",
+                            cancelButtonColor: "#F9354C",
+                            confirmButtonText: "Yes, send it!",
+                            width: 450,
+                            height: 200
+                            }, function () {
+                                $("#AssetRequest").submit();                   
+                        });
+                    
+                }     
         });
-
-
 
     </script>
 @endpush

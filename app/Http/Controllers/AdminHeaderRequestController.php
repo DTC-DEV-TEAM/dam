@@ -463,7 +463,7 @@
 			$cont = (new static)->apiContext;
 
 			$dataLines = array();
-
+			$digits_code 		= $fields['supplies_digits_code'];
 			$employee_name 		= $fields['employee_name'];
 			$company_name 		= $fields['company_name'];
 			$position 			= $fields['position'];
@@ -486,7 +486,6 @@
 			$pending            = DB::table('statuses')->where('id', 1)->value('id');
 			$approved           = DB::table('statuses')->where('id', 4)->value('id');
 
-          
 			if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14])){ 
 				//$postdata['status_id']		 			= $pending;
 				$postdata['status_id']		 			= StatusMatrix::where('current_step', 2)
@@ -556,7 +555,7 @@
 			$total_unit_cost 	= $fields['total_unit_cost'];
 			$item_id 			= $fields['item_id'];
 			*/
-
+			$digits_code 		= $fields['supplies_digits_code'] ? $fields['supplies_digits_code'] : null;
 			$item_description 	= $fields['item_description'];
 			$category_id 		= $fields['category_id'];
 
@@ -571,7 +570,7 @@
 			
 			$app_count = 2;
 
-
+         
 			for($x=0; $x < count((array)$item_description); $x++) {
 
 				$apps_array = array();
@@ -610,6 +609,7 @@
 
 
 				$dataLines[$x]['header_request_id'] = $arf_header->id;
+				$dataLines[$x]['digits_code'] 	    = $digits_code[$x];
 				$dataLines[$x]['item_description'] 	= $item_description[$x];
 				$dataLines[$x]['category_id'] 		= $category_id[$x];
 				$dataLines[$x]['sub_category_id'] 	= $sub_category_id[$x];

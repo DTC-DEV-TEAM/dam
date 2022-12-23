@@ -772,6 +772,14 @@
 					->value('status_id');
 				}
 			}
+			for($x=0; $x < count((array)$ids); $x++) {
+
+				BodyRequest::where('id',$ids[$x])
+				->update([
+					'line_status_id'       => 		$postdata['status_id'],
+				]);	
+
+			}
 	    }
 
 	    /* 
