@@ -973,8 +973,9 @@
                 if(! $(".purpose").is(':checked')){
                     swal({
                         type: 'error',
-                        title: 'Purpose Required!',
-                        icon: 'error'
+                        title: 'Please choose Purpose!',
+                        icon: 'error',
+                        confirmButtonColor: "#367fa9",
                     }); 
                     event.preventDefault(); // cancel default behavior
                     return false;
@@ -982,7 +983,8 @@
                     swal({
                         type: 'error',
                         title: 'Please add an item!',
-                        icon: 'error'
+                        icon: 'error',
+                        confirmButtonColor: "#367fa9",
                     }); 
                     event.preventDefault(); // cancel default behavior
                     return false;
@@ -995,7 +997,7 @@
                                     type: 'error',
                                     title: 'Item Description cannot be empty!',
                                     icon: 'error',
-                                    customClass: 'swal-wide'
+                                    confirmButtonColor: "#367fa9",
                                 });
                                 event.preventDefault();
                                 return false;
@@ -1009,9 +1011,9 @@
                         if(sub_cat_value.eq(i).val() == ""){
                             swal({  
                                     type: 'error',
-                                    title: 'Sub Category cannot be empty!',
+                                    title: 'Please select Sub Category!',
                                     icon: 'error',
-                                    customClass: 'swal-wide'
+                                    confirmButtonColor: "#367fa9",
                                 });
                                 event.preventDefault();
                                 return false;
@@ -1029,15 +1031,16 @@
                                         type: 'error',
                                         title: 'Quantity cannot be empty or zero!',
                                         icon: 'error',
-                                        customClass: 'swal-wide'
+                                        confirmButtonColor: "#367fa9",
                                     });
                                     event.preventDefault();
                                     return false;
-                            }else if(value < 0){
+                            }else if(value.eq(i).val() < 0){
                                 swal({
                                     type: 'error',
                                     title: 'Negative Value is not allowed!',
-                                    icon: 'error'
+                                    icon: 'error',
+                                    confirmButtonColor: "#367fa9",
                                 }); 
                                 event.preventDefault(); // cancel default behavior
                                 return false;
@@ -1045,7 +1048,8 @@
                                 swal({
                                     type: 'error',
                                     title: 'Invalid Quantity Value!',
-                                    icon: 'error'
+                                    icon: 'error',
+                                    confirmButtonColor: "#367fa9",
                                 }); 
                                 event.preventDefault(); // cancel default behavior
                                 return false;     

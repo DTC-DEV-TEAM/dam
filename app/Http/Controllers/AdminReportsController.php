@@ -385,18 +385,20 @@
 			
 			//Create your own query 
 			$data = [];
-			$data['page_title'] = 'Request Status Reports';
+			$data['page_title'] = 'Request Assets Status Reports';
 
 			$result_one = BodyRequest::arrayone();
 			$result_two = MoveOrder::arraytwo();
             $suppliesMarketing = [];
 			$suppliesMarketingCon = [];
+			
 			foreach($result_one as $smVal){
 				$suppliesMarketingCon['id'] = $smVal['requestid'];
 				$suppliesMarketingCon['reference_number'] = $smVal['reference_number'];
 				$suppliesMarketingCon['requested_by'] = $smVal['requestedby'];
 				$suppliesMarketingCon['department'] = $smVal['department'] ? $smVal['department'] : $smVal['store_branch'];
 				$suppliesMarketingCon['store_branch'] = $smVal['store_branch'] ? $smVal['store_branch'] : $smVal['department'];
+				$bodyStatus = $smVal['body_statuses_description'] ? $smVal['body_statuses_description'] : $smVal['status_description'];
 				if(in_array($smVal['request_type_id'], [6,7])){
 					$suppliesMarketingCon['status'] = $smVal['status_description'];
 					$suppliesMarketingCon['description'] = $smVal['body_description'];
@@ -407,7 +409,7 @@
 					$suppliesMarketingCon['mo_item_description'] = $smVal['body_description'];
 					$suppliesMarketingCon['mo_qty_serve_qty'] = $smVal['serve_qty'];
 				}else{
-					$suppliesMarketingCon['status'] = isset($smVal['mo_reference_number']) ? $smVal['mo_statuses_description'] : $smVal['body_statuses_description'];
+					$suppliesMarketingCon['status'] = isset($smVal['mo_reference_number']) ? $smVal['mo_statuses_description'] : $bodyStatus;
 					$suppliesMarketingCon['description'] = $smVal['body_description'];
 					$suppliesMarketingCon['request_quantity'] = $smVal['body_quantity'];
 					$suppliesMarketingCon['request_type'] = $smVal['body_category_id'];

@@ -175,7 +175,6 @@
                                                 <tr>
                                                     @foreach($Body as $rowresult)
                                                         <?php   $tableRow++; ?>
-                                                        @if( $rowresult->digits_code == null || $rowresult->digits_code == "" )
                                                         
                                                                         @if($rowresult->deleted_at != null || $rowresult->deleted_at != "")
                                                                             <tr style="background-color: #d9534f; color: white;">
@@ -261,7 +260,7 @@
                                                                                 
                                                                             </tr>
                                                                         @endif
-                                                        @endif
+
                                                     @endforeach     
                                                     
                                                     <input type='hidden' name="quantity_total" class="form-control text-center" id="quantity_total" readonly value="{{$Header->quantity_total}}">

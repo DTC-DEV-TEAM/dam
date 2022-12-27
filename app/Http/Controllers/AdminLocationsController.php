@@ -24,7 +24,7 @@
 			$this->button_bulk_action = true;
 			$this->button_action_style = "button_icon";
 			$this->button_add = true;
-			$this->button_edit = false;
+			$this->button_edit = true;
 			$this->button_delete = true;
 			$this->button_detail = true;
 			$this->button_show = true;
@@ -48,7 +48,7 @@
 			$this->form = [];
 			//$this->form[] = ['label'=>'Location Name','name'=>'location_name','type'=>'textarea','validation'=>'required|string|min:5|max:5000','width'=>'col-sm-5'];
 
-			$this->form[] = ['label'=>'Location Name','name'=>'store_status','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
+			$this->form[] = ['label'=>'Location Name','name'=>'store_name','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
 
 			$this->form[] = ['label'=>'COA','name'=>'coa_id','type'=>'text','validation'=>'min:1|max:255','width'=>'col-sm-5'];
 			
@@ -289,6 +289,7 @@
 	    */
 	    public function hook_before_add(&$postdata) {        
 	        //Your code here
+			$postdata['store_status']="ACTIVE";
 			$postdata['created_by']=CRUDBooster::myId();
 	    }
 

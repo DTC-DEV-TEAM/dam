@@ -17,7 +17,7 @@
 
 <div class='panel panel-default'>
     <div class='panel-heading'>
-    Request Reports
+    Request Assets Reports
     </div>
 
         <div class='panel-body' style="overflow-x: scroll">
@@ -77,7 +77,7 @@
                 @foreach($finalData as $val)
                     <tr>
                     <td style="text-align:center">   
-                     <a class='btn btn-primary btn-xs' href='{{CRUDBooster::mainpath("detail/".$val["id"])."?return_url=".urlencode(Request::fullUrl())}}'><i class='fa fa-eye'></i></a>                                         
+                     <a class='btn btn-primary btn-xs' href='{{CRUDBooster::adminpath("request_history/detail/".$val["id"])."?return_url=".urlencode(Request::fullUrl())}}'><i class='fa fa-eye'></i></a>                                         
                     </td> 
                     @if($val['status'] == "FOR APPROVAL")
                     <td style="text-align:center">
@@ -86,6 +86,10 @@
                     @elseif($val['status'] == "CLOSED")
                     <td style="text-align:center">
                      <label class="label label-success" style="align:center">{{$val['status']}}</label>
+                    </td>
+                    @elseif($val['status'] == "CANCELLED" || $val['status'] == "REJECTED")
+                    <td style="text-align:center">
+                     <label class="label label-danger" style="align:center">{{$val['status']}}</label>
                     </td>
                     @else
                     <td style="text-align:center">
@@ -147,7 +151,7 @@
                 buttons: [
                     {
                         extend: "excel",
-                        title: "Request Report",
+                        title: "Request Assets Report",
                         exportOptions: {
                         columns: ":not(.not-export-column)",
                         columns: ":gt(0)",

@@ -963,8 +963,7 @@
 				->where('recommendation_request.header_request_id', $id)
 				->get();				
 
-			$data['recommendations'] = DB::table('recommendations')->where('status', 'ACTIVE')->get();	
-					
+			$data['recommendations'] = DB::table('recommendations')->where('status', 'ACTIVE')->get();		
 			return $this->view("assets.detail", $data);
 		}
 

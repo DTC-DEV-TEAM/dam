@@ -160,6 +160,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 			});
 			$('#department_id').select2();
 			$('#sub_department_id').select2();
+			$('#id_cms_privileges').select2();
 
 			let x = $(location).attr('pathname').split('/');
 			let add_action = x.includes('add');
