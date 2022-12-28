@@ -69,7 +69,9 @@
                         <th width="auto">MO Item Code</th>
                         <th width="auto">MO Item Description</th>
                         <th width="auto">MO QTY/Serve QTY</th>
+                        <th width="auto">Requested Date</th>
                         <th width="auto">Transacted By</th>
+                        <th width="auto">Transacted Date</th>
                
                     </tr>
                 </thead>
@@ -107,7 +109,9 @@
                     <td>{{$val['mo_item_code']}}</td>  
                     <td>{{$val['mo_item_description']}}</td>  
                     <td>{{$val['mo_qty_serve_qty']}}</td>  
+                    <td>{{$val['requested_date']}}</td> 
                     <td>{{$val['transacted_by']}}</td>  
+                    <td>{{$val['transacted_date']}}</td>  
                     </tr>
                 @endforeach
                 </tbody>

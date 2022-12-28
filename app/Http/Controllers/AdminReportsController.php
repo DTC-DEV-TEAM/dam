@@ -418,7 +418,9 @@
 					$suppliesMarketingCon['mo_item_description'] = $smVal['item_description'];
 					$suppliesMarketingCon['mo_qty_serve_qty'] = $smVal['quantity'];
 				}
+				$suppliesMarketingCon['requested_date'] = $smVal['created_at'];
 				$suppliesMarketingCon['transacted_by'] = $smVal['taggedby'];
+				$suppliesMarketingCon['transacted_date'] = $smVal['transacted_date'];
 				$suppliesMarketing[] = $suppliesMarketingCon;
 			}
 		

@@ -43,6 +43,7 @@ class BodyRequest extends Model
                  'approved.name as approvedby',
                  'recommended.name as recommendedby',
                  'tagged.name as taggedby',
+                 'header_request.purchased2_at as transacted_date',
                  'header_request.created_at as created_at',
                  'statuses.status_description as status_description',
                  'body_request.item_description as body_description',

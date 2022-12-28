@@ -85,7 +85,7 @@
                             <label class="control-label">{{ trans('message.form-label.add_item1') }}</label>
                                <input class="form-control auto" style="width:100%;" placeholder="Search Item" id="search">
                                  <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" id="ui-id-2" style="display: none; top: 60px; left: 15px; width: 570px;">
-                                <li>Loading...</li>
+                                <li>No Item Found...</li>
                             </ul>
                         </div>
                         <button type="button"  class="btn btn-info pull-right btnsearch" id="searchclose" >Close</button>
@@ -228,7 +228,12 @@
 
     var modal = document.getElementById("myModal");
     var modal2 = document.getElementById("myModal2");
-
+    $(document).keydown(function(event) { 
+    if (event.keyCode == 27) { 
+        modal.style.display = "none";
+        modal2.style.display = "none";
+    }
+    });
     $('.btnsearch').click(function() {
         if($("#category").val() == 1 || $("#category").val() == 5){
             document.querySelector("body").style.overflow = 'hidden';
@@ -509,7 +514,7 @@
 
                                 $('.ui-menu-item').remove();
                                 $('.addedLi').remove();
-                                $("#ui-id-2").append($("<li class='addedLi'>").text(data.message));
+                                $("#ui-id-2").append($("<li class='addedLi'>").text(""));
                                 var searchVal = $("#search").val();
                                 if (searchVal.length > 0) {
                                     $("#ui-id-2").css('display', 'block');
