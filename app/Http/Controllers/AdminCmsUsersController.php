@@ -33,6 +33,9 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 		$this->button_action_style	= 'button_icon';	
 		$this->button_import		= FALSE;	
 		$this->button_export		= FALSE;	
+		if(CRUDBooster::myPrivilegeId() == 4){ 
+			$this->button_edit = false;
+		}
 		# END CONFIGURATION DO NOT REMOVE THIS LINE
 	
 		# START COLUMNS DO NOT REMOVE THIS LINE
@@ -145,7 +148,6 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 
 			";
 
-		$this->script_js = NULL;
 		$this->script_js = "
 		$(document).ready(function() {
 			$('form').submit(function(){
