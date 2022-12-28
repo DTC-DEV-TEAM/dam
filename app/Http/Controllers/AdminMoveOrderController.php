@@ -1631,14 +1631,7 @@
 											</tr>
 										</tbody>
 										<tfoot>
-											<tr id="tr-table1" class="bottom">
-												<td colspan="4">
-													
-												</td> 
-												<td align="center" colspan="1">
-													<label>'.$total.'</label>
-												</td>
-											</tr>
+											
 										</tfoot>
 									</table>
 								</div>
