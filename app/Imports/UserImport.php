@@ -13,6 +13,7 @@ use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use DB;
+use CRUDBooster;
 class UserImport implements ToCollection, SkipsEmptyRows, WithHeadingRow, WithValidation
 {
     /**

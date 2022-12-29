@@ -13,7 +13,8 @@ use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use DB;
-class ItemMasterImport implements ToCollection, SkipsEmptyRows, WithHeadingRow, WithValidation
+use CRUDBooster;
+class ItemMasterImport implements ToCollection, WithHeadingRow
 {
     /**
      * @param array $row
@@ -23,38 +24,26 @@ class ItemMasterImport implements ToCollection, SkipsEmptyRows, WithHeadingRow, 
     public function collection(Collection $rows)
     {
         foreach ($rows->toArray() as $row){
-            
+        
             Assets::updateOrcreate([
-                'digits' => $row['digits'] 
+                'digits_code' => $row['digits_code'] 
             ],
             [
-           
+                'digits_code' => $row['digits_code'],
+                'item_description' => $row['item_description'],
+                'brand_id' => $row['brand_id'],
+                'category_id' => $row['category_id'],  
+                'class_id' => $row['class_id'],
+                'vendor_id' => $row['vendor_id'],
+                'created_by' => CRUDBooster::myId(),
+                'created_at' => date('Y-m-d H:i:s'),
+                'asset_tag' => "",
+                'quantity' => 0,
+                'add_quantity' => 0,
+                'total_quantity' => 0,
+                'status_id' => 0,
+
             ]);
         }
-    }
-
-    public function prepareForValidation($data, $index)
-    {
-
-        // $data['privilege_not_exist']['check'] = false;
-        // $check = CmsPrivileges::where(DB::raw('LOWER(name)'),'=',strtolower($data['privilege']))->get()->count();
-        // if($check === 1){
-        //     $data['privilege_not_exist']['check'] = true;
-        // }
-
-        // return $data;
-    }
-
-    public function rules(): array
-    { 
-    //     return [
-    //         '*.privilege_not_exist' => function($attribute, $value, $onFailure) {
-    //             if ($value['check'] === false) {
-    //                 $onFailure('Invalid Privilege. Please refer to the ff. (Employee, Store, IT, HR, Approver, Asset Custodian, Accounting, Manager, Executive, Admin, Warehouse Picker)');
-    //             }
-    //         },
-    //         '*.privilege' => 'required',
-    //         //'*.approver' => 'required',
-    //    ];
     }
 }

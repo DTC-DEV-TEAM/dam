@@ -118,7 +118,7 @@ Route::group(['middleware' => ['web']], function() {
 
     //Item Master
     Route::get('/admin/assets/item-master-upload','AdminAssetsController@UploadItemMaster');
-    Route::post('/admin/assets/upload-item-master','AdminCmsUsersController@itemMasterUpload')->name('upload-item-master');
+    Route::post('/admin/assets/upload-item-master','AdminAssetsController@itemMasterUpload')->name('upload-item-master');
     Route::get('/admin/db-truncate','TruncateController@dbtruncate');
     Route::get('/admin/clear-view', function() {
         Artisan::call('view:clear');

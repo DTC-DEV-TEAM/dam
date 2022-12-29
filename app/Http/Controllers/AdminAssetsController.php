@@ -7,11 +7,13 @@
 
 	use App\Assets;
 	use App\Statuses;
-
+	use Excel;
 	use Illuminate\Http\Request;
 	use Illuminate\Support\Facades\Input;
 	use Illuminate\Support\Facades\Log;
 	use Illuminate\Support\Facades\Redirect;
+	use Maatwebsite\Excel\HeadingRowImport;
+	use App\Imports\ItemMasterImport;
 
 	class AdminAssetsController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -710,37 +712,8 @@
 		public function itemMasterUpload(Request $request) {
 			$path_excel = $request->file('import_file')->store('temp');
 			$path = storage_path('app').'/'.$path_excel;
-			$headings = array_filter((new HeadingRowImport)->toArray($path)[0][0]);
-	
-			// if (count($headings) !== 9) {
-			// 	CRUDBooster::redirect(CRUDBooster::adminpath('users'), 'Template column not match, please refer to downloaded template.', 'danger');
-			// } else {
-			// 	$is_diff = array_diff([ "email", "privilege", "first_name","last_name",
-			// 	"department", "sub_department", "position", "approver", "location"], $headings);
-	
-			// 	if (count($is_diff) > 0) {
-			// 		CRUDBooster::redirect(CRUDBooster::adminpath('users'), 'Invalid Column Field, please refer to downloaded template.', 'danger');
-			// 	} else {
-			// 		try {
-						Excel::import(new ItemMasterImport, $path);	
-						CRUDBooster::redirect(CRUDBooster::adminpath('assets'), 'Import Successfully!', 'success');
-					// } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
-					// 	$failures = $e->failures();
-						
-					// 	$error = [];
-					// 	foreach ($failures as $failure) {
-					// 		$line = $failure->row();
-					// 		foreach ($failure->errors() as $err) {
-					// 			$error[] = $err . " on line: " . $line; 
-					// 		}
-					// 	}
-						
-					// 	$errors = collect($error)->unique()->toArray();
-				
-					// }
-					CRUDBooster::redirect(CRUDBooster::adminpath('users'), $errors[0], 'danger');
-			   //}
-			//}
+			Excel::import(new ItemMasterImport, $path);	
+			CRUDBooster::redirect(CRUDBooster::adminpath('assets'), trans("Upload Successfully!"), 'success');
 		}
 	
 
