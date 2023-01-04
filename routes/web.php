@@ -120,6 +120,11 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('/admin/assets/item-master-upload','AdminAssetsController@UploadItemMaster');
     Route::post('/admin/assets/upload-item-master','AdminAssetsController@itemMasterUpload')->name('upload-item-master');
     Route::get('/admin/db-truncate','TruncateController@dbtruncate');
+
+    //Asset Return and Transfer
+    Route::get(config('crudbooster.ADMIN_PATH').'/return_transfer_assets/return-assets', 'AdminReturnTransferAssetsController@getReturnAssets')->name('assets.return.assets'); 
+    Route::post(config('crudbooster.ADMIN_PATH').'/selectedReturnHeader','AdminReturnTransferAssetsController@selectedReturnHeader')->name('order.selected.header');
+    Route::post(config('crudbooster.ADMIN_PATH').'/recommendation/save-return-assets','AdminReturnTransferAssetsController@saveReturnAssets')->name('assets.save.return.assets');
     Route::get('/admin/clear-view', function() {
         Artisan::call('view:clear');
         return "View cache is cleared!";
