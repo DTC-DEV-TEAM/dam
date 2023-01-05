@@ -4,16 +4,17 @@
 	use Request;
 	use DB;
 	use CRUDBooster;
-	use App\Users;
-	use App\MoveOrder;
 	use App\Models\ReturnTransferAssets;
 	use App\Models\ReturnTransferAssetsHeader;
-	class AdminReturnApprovalController extends \crocodicstudio\crudbooster\controllers\CBController {
+	use App\GoodDefectLists;
+	use App\MoveOrder;
+	use App\CommentsGoodDefect;
+	class AdminReturnPickingController extends \crocodicstudio\crudbooster\controllers\CBController {
 
 	    public function cbInit() {
 
 			# START CONFIGURATION DO NOT REMOVE THIS LINE
-			$this->title_field = "id";
+			$this->title_field = "requestor_name";
 			$this->limit = "20";
 			$this->orderby = "id,desc";
 			$this->global_privilege = false;
@@ -40,28 +41,24 @@
 			$this->col[] = ["label"=>"Requested Date","name"=>"requested_date"];
 			$this->col[] = ["label"=>"Transacted By","name"=>"transacted_by"];
 			$this->col[] = ["label"=>"Transacted Date","name"=>"transacted_date"];
-		
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
-			$this->form = [];
+		$this->form = [];
+		$this->form[] = ["label"=>"Status","name"=>"status","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+		$this->form[] = ["label"=>"Requestor Name","name"=>"requestor_name","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+		$this->form[] = ["label"=>"Request Type Id","name"=>"request_type_id","type"=>"select2","required"=>TRUE,"validation"=>"required|min:1|max:255","datatable"=>"request_type,id"];
+		$this->form[] = ["label"=>"Request Type","name"=>"request_type","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+		$this->form[] = ["label"=>"Requested By","name"=>"requested_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+		$this->form[] = ["label"=>"Requested Date","name"=>"requested_date","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
+		$this->form[] = ["label"=>"Transacted By","name"=>"transacted_by","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+		$this->form[] = ["label"=>"Transacted Date","name"=>"transacted_date","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+		$this->form[] = ["label"=>"Approved By","name"=>"approved_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+		$this->form[] = ["label"=>"Approved Date","name"=>"approved_date","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
+		$this->form[] = ["label"=>"Approver Comments","name"=>"approver_comments","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+		$this->form[] = ["label"=>"Rejected Date","name"=>"rejected_date","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
 
-			# END FORM DO NOT REMOVE THIS LINE
-
-			# OLD START FORM
-			//$this->form = [];
-			//$this->form[] = ["label"=>"Status","name"=>"status","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Reference No","name"=>"reference_no","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Asset Code","name"=>"asset_code","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Digits Code","name"=>"digits_code","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Description","name"=>"description","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Asset Type","name"=>"asset_type","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Transacted By","name"=>"transacted_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Transacted Date","name"=>"transacted_date","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
-			//$this->form[] = ["label"=>"Location To Pick","name"=>"location_to_pick","type"=>"textarea","required"=>TRUE,"validation"=>"required|string|min:5|max:5000"];
-			//$this->form[] = ["label"=>"Requested By","name"=>"requested_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Requested Date","name"=>"requested_date","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
-			# OLD END FORM
+			# END FORM DO NOT REMOVE THIS LINE     
 
 			/* 
 	        | ---------------------------------------------------------------------- 
@@ -92,12 +89,11 @@
 	        $this->addaction = array();
 			if(CRUDBooster::isUpdate()) {
 				
-				$pending           = DB::table('statuses')->where('id', 1)->value('id');
+				$forturnover           = DB::table('statuses')->where('id', 24)->value('id');
 
-				$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getRequestApprovalReturn/[id]'),'icon'=>'fa fa-pencil', "showIf"=>"[status] == $pending"];
+				$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getRequestPickingReturn/[id]'),'icon'=>'fa fa-pencil', "showIf"=>"[status] == $forturnover"];
 				//$this->addaction[] = ['title'=>'Edit','url'=>CRUDBooster::mainpath('getRequestEdit/[id]'),'icon'=>'fa fa-pencil', "showIf"=>"[status_id] == $Rejected"]; //, "showIf"=>"[status_level1] == $inwarranty"
 			}
-
 
 	        /* 
 	        | ---------------------------------------------------------------------- 
@@ -254,31 +250,47 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-			if(CRUDBooster::isSuperadmin()){
+	        $forturnover  =      DB::table('statuses')->where('id', 24)->value('id');
 
-				$pending           = DB::table('statuses')->where('id', 1)->value('id');
+			$user_info = 		DB::table('cms_users')->where(['id' => CRUDBooster::myId()])->get();
 
-				$query->orderBy('return_transfer_assets_header.status', 'DESC')->where('return_transfer_assets_header.status', $pending)->orderBy('return_transfer_assets_header.id', 'DESC');
-			
+			$approval_array = array();
+			foreach($user_info as $matrix){
+				array_push($approval_array, $matrix->location_to_pick);
+			}
+			$approval_string = implode(",",$approval_array);
+			$locationList = array_map('intval',explode(",",$approval_string));
+
+
+			$List = ReturnTransferAssetsHeader::whereIn('return_transfer_assets_header.location_to_pick', $locationList)->where('return_transfer_assets_header.status', $forturnover)->orderby('return_transfer_assets_header.id', 'asc')->get();
+
+			$list_array = array();
+
+			$id_array = array();
+
+		 
+	        //Your code here
+	        if(CRUDBooster::myPrivilegeId() == 5){ 
+
+				$forturnover =  	DB::table('statuses')->where('id', 24)->value('id');
+
+				$query->where('return_transfer_assets_header.status', $forturnover)
+					  ->where('return_transfer_assets_header.location_to_pick', $locationList)
+					  ->orderBy('return_transfer_assets_header.id', 'ASC');
+
+			}else if(CRUDBooster::myPrivilegeId() == 6){ 
+
+				$forturnover =  	DB::table('statuses')->where('id', 24)->value('id');
+
+				$query->where('return_transfer_assets_header.status', $forturnover)
+					  ->whereNull('return_transfer_assets_header.location_to_pick')
+					  ->orderBy('return_transfer_assets_header.id', 'ASC');
+
 			}else{
-
-				$pending           = DB::table('statuses')->where('id', 1)->value('id');
-
-				//$user_data         = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-
-				$approvalMatrix = Users::where('cms_users.approver_id', CRUDBooster::myId())->get();
-			
-				$approval_array = array();
-				foreach($approvalMatrix as $matrix){
-				    array_push($approval_array, $matrix->id);
-				}
-				$approval_string = implode(",",$approval_array);
-				$userslist = array_map('intval',explode(",",$approval_string));
-	
-				$query->whereIn('return_transfer_assets_header.requested_by', $userslist)
-				//->whereIn('return_transfer_assets_header.company_name', explode(",",$user_data->company_name_id))
-				->where('return_transfer_assets_header.status', $pending) 
-				->orderBy('return_transfer_assets_header.id', 'DESC');
+				
+				$forturnover =  	DB::table('statuses')->where('id', 24)->value('id');
+				$query->where('return_transfer_assets_header.status_id', $forturnover)
+				      ->orderBy('return_transfer_assets_header.id', 'ASC');
 
 			}
 	            
@@ -291,10 +303,10 @@
 	    |
 	    */    
 	    public function hook_row_index($column_index,&$column_value) {	        
-	    	$pending  =  		DB::table('statuses')->where('id', 1)->value('status_description');
+	    	$forturnover  =      DB::table('statuses')->where('id', 24)->value('status_description');
 			if($column_index == 2){
-				if($column_value == $pending){
-					$column_value = '<span class="label label-warning">'.$pending.'</span>';
+				if($column_value == $forturnover){
+					$column_value = '<span class="label label-info">'.$forturnover.'</span>';
 				}
 			}
 	    }
@@ -332,33 +344,133 @@
 	    | 
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
-	         //Your code here
-			$fields = Request::all();
-			$dataLines = array();
-			$approval_action 		= $fields['approval_action'];
-			$approver_comments 		= $fields['approver_comments'];
-			$approved =  		DB::table('statuses')->where('id', 4)->value('id');
-			$rejected =  		DB::table('statuses')->where('id', 5)->value('id');
-			$forturnover =  		DB::table('statuses')->where('id', 24)->value('id');
+	        $fields = Request::all();
 
-			if($approval_action  == 1){
-				$postdata['status']		 	    = $forturnover;
-				$postdata['approved_by'] 		= CRUDBooster::myId();
-				$postdata['approved_date'] 		= date('Y-m-d H:i:s');
-				ReturnTransferAssets::where('return_header_id',$id)
-				->update([
-					    'status' => $forturnover
-				]);	
-			}else{
-				$postdata['status'] 			= $rejected;
-				$postdata['approver_comments'] 	= $approver_comments;
-				$postdata['approved_by'] 		= CRUDBooster::myId();
-				$postdata['rejected_date'] 		= date('Y-m-d H:i:s');
-				ReturnTransferAssets::where('return_header_id',$id)
-				->update([
-					    'status' => $rejected
-				]);	
+			$item_id 					= $fields['item_id'];
+
+			//$pick_value 				= $fields['pick_value'];
+
+			$good_text 					= $fields['good_text'];
+
+			$defective_text 			= $fields['defective_text'];
+ 
+			//good and defect value
+			$arf_number = $fields['arf_number'];
+			$digits_code = $fields['digits_code'];
+			$asset_code = $fields['asset_code'];
+			$comments = $fields['comments'];
+			$other_comment = $fields['other_comment'];
+
+			$HeaderID 					= ReturnTransferAssets::where('id', $id)->first();
+
+			//dd($HeaderID->header_request_id);
+
+			$arf_header 				= ReturnTransferAssetsHeader::where(['id' => $id])->first();
+			$inventory_id 	= 	MoveOrder::whereIn('asset_code',$asset_code)->get();
+			$finalinventory_id = [];
+			foreach($inventory_id as $invData){
+				array_push($finalinventory_id, $invData['inventory_id']);
 			}
+		
+			for($x=0; $x < count((array)$item_id); $x++) {
+
+				//if($item_id[$x] == 1){
+				if($defective_text[$x] == 1){
+					$to_close  = 		DB::table('statuses')->where('id',25)->value('id');
+					$mo_info 	= 		MoveOrder::where('asset_code',$asset_code[$x])->first();
+					ReturnTransferAssets::where('return_header_id',$id)
+					->update([
+							'status' => $to_close,
+					]);	
+					
+					ReturnTransferAssetsHeader::where('id', $id)
+					->update([
+						'status'=> 	   $to_close,
+						'transacted_by' => CRUDBooster::myId(),
+						'transacted_date' => date('Y-m-d H:i:s')
+					]);	
+					
+					DB::table('assets_inventory_body')->where('id', $mo_info->inventory_id)
+					->update([
+						'statuses_id'=> 			23,
+						'item_condition'=> 			"Defective"
+						
+					]);
+
+
+				}else{
+					$to_close  = 		DB::table('statuses')->where('id',25)->value('id');
+					ReturnTransferAssets::where('return_header_id',$id)
+					->update([
+							'status' => $to_close
+					]);	
+
+					ReturnTransferAssetsHeader::where('id', $id)
+					->update([
+						'status'=> 	   $to_close,
+						'transacted_by' => CRUDBooster::myId(),
+						'transacted_date' => date('Y-m-d H:i:s')
+					]);	
+
+					DB::table('assets_inventory_body')->where('id', $finalinventory_id[$x])
+					->update([
+						'statuses_id'=> 			6,
+						'deployed_to'=> 			NULL,
+						'location'=> 				3
+					]);
+					DB::table('assets_inventory_body')->where('id', $finalinventory_id[$x])->increment('quantity');
+
+				}
+
+			}
+
+
+			//save defect and good comments
+			$container = [];
+			$containerSave = [];
+			foreach((array)$comments as $key => $val){
+				$container['arf_number'] = $arf_number ? $arf_number : NULL;
+				$container['digits_code'] = explode("|",$val)[1];
+				$container['asset_code'] = explode("|",$val)[0];
+				$container['comments'] = explode("|",$val)[2];
+				$container['users'] = CRUDBooster::myId();
+				$container['created_at'] = date('Y-m-d H:i:s');
+				$containerSave[] = $container;
+			}
+			$otherCommentContainer = [];
+			$otherCommentFinalData = [];
+			foreach((array)$asset_code as $aKey => $aVal){
+				$otherCommentContainer['asset_code'] = $aVal;
+				$otherCommentContainer['digits_code'] = $digits_code[$aKey];
+				$otherCommentContainer['other_comment'] = $other_comment[$aKey];
+				$otherCommentFinalData[] = $otherCommentContainer;
+			}
+			//search other comment in another array
+			$finalData = [];
+			foreach((array)$containerSave as $csKey => $csVal){
+				$i = array_search($csVal['asset_code'], array_column($otherCommentFinalData,'asset_code'));
+				if($i !== false){
+					$csVal['other_comment'] = $otherCommentFinalData[$i];
+					$finalData[] = $csVal;
+				}else{
+					$csVal['other_comment'] = "";
+					$finalData[] = $csVal;
+				}
+			}
+			$finalContainerSave = [];
+			$finalContainer = [];
+			foreach((array)$finalData as $key => $val){
+				$finalContainer['arf_number'] = $val['arf_number'];
+				$finalContainer['digits_code'] = $val['digits_code'];
+				$finalContainer['asset_code'] = $val['asset_code'];
+				$finalContainer['comments'] = $val['comments'];
+				$finalContainer['other_comment'] = $val['other_comment']['other_comment'];
+				$finalContainer['users'] = $val['users'];
+				$finalContainer['created_at'] = $val['created_at'];
+				$finalContainerSave[] = $finalContainer;
+			}
+ 
+			CommentsGoodDefect::insert($finalContainerSave);
 
 	    }
 
@@ -398,7 +510,7 @@
 
 	    }
 
-		public function getRequestApprovalReturn($id){
+		public function getRequestPickingReturn($id){
 			
 
 			$this->cbLoader();
@@ -409,7 +521,7 @@
 
 			$data = array();
 
-			$data['page_title'] = 'Approve Return Request';
+			$data['page_title'] = 'Pick/Recieve Return Request';
 
 			$data['Header'] = ReturnTransferAssetsHeader::leftjoin('cms_users as employees', 'return_transfer_assets_header.requestor_name', '=', 'employees.id')
 				->leftjoin('requests', 'return_transfer_assets_header.request_type_id', '=', 'requests.id')
@@ -436,9 +548,9 @@
 						)
 						->where('return_transfer_assets.return_header_id', $id)->get();	
 			// dd($data['return_body']);
-			return $this->view("assets.approval-request-return", $data);
+			$data['good_defect_lists'] = GoodDefectLists::all();
+			return $this->view("assets.return-picking-request", $data);
 		}
-
 
 
 	}

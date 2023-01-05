@@ -16,6 +16,7 @@
 	use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 	use PhpOffice\PhpSpreadsheet\IOFactory;
 	use Carbon\Carbon;
+	use App\Imports\InventoryUpload;
 	
 	class AdminAssetsInventoryBodyController extends \crocodicstudio\crudbooster\controllers\CBController {
 		private static $apiContext;
@@ -157,7 +158,14 @@
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
 			    $this->index_button[] = ["label"=>"Export Data","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('asset-lists-export'),"color"=>"primary"];
-			// 	$this->index_button[] = ["label"=>"Add Inventory","icon"=>"fa fa-files-o","url"=>CRUDBooster::adminPath('assets_inventory_header/add-inventory'),"color"=>"success"];
+				if(CRUDBooster::isSuperadmin()){
+				$this->index_button[] = [
+					"title"=>"Upload Inventory",
+					"label"=>"Upload Inventory",
+					"icon"=>"fa fa-download",
+					"url"=>CRUDBooster::mainpath('inventory-upload')];
+				}
+				// 	$this->index_button[] = ["label"=>"Add Inventory","icon"=>"fa fa-files-o","url"=>CRUDBooster::adminPath('assets_inventory_header/add-inventory'),"color"=>"success"];
 			// 	//$this->index_button[] = ["label"=>"Return Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-return'),"color"=>"success"];
 
 			// 	//$this->index_button[] = ["label"=>"Transfer Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-transfer'),"color"=>"success"];
@@ -385,7 +393,7 @@
 			//save defect and good comments
 			$container = [];
 			$containerSave = [];
-			foreach($comments as $key => $val){
+			foreach((array)$comments as $key => $val){
 				$container['arf_number'] = NULL;
 				$container['digits_code'] = $digits_code;
 				$container['asset_code'] = $asset_code;
@@ -626,5 +634,21 @@
         return (isset($per_page)) ? $AssetsInventoryBody->paginate($per_page) :  $AssetsInventoryBody->get();
 
         }
+
+		public function uploadInventory() {
+			$data['page_title']= 'Inventory Upload';
+			return view('import.inventory-import', $data)->render();
+		}
+
+		public function inventoryUpload(Request $request) {
+			$data = Request::all();	
+			$file = $data['import_file'];
+			$path_excel = $file->store('temp');
+			$path = storage_path('app').'/'.$path_excel;
+			Excel::import(new InventoryUpload, $path);	
+			CRUDBooster::redirect(CRUDBooster::adminpath('assets_inventory_body'), trans("Upload Successfully!"), 'success');
+		}
+
+		
 
 	}

@@ -107,8 +107,7 @@
         <div class='panel-footer'>
             <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
            
-            <button class="btn btn-danger pull-right" type="button" id="btnReject" style="margin-left: 5px;"><i class="fa fa-thumbs-down" ></i> Reject</button>
-            <button class="btn btn-success pull-right" type="button" id="btnApprove"><i class="fa fa-thumbs-up" ></i> Approve</button>
+            <button class="btn btn-success pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('message.form.closing') }}</button>
         </div>
 
     </form>
@@ -129,7 +128,7 @@
     };
     setTimeout("preventBack()", 0);
 
-    $('#btnApprove').click(function(event) {
+    $('#btnSubmit').click(function(event) {
         event.preventDefault();
         swal({
             title: "Are you sure?",
@@ -137,34 +136,14 @@
             showCancelButton: true,
             confirmButtonColor: "#41B314",
             cancelButtonColor: "#F9354C",
-            confirmButtonText: "Yes, approve it!",
+            confirmButtonText: "Yes, close it!",
             width: 450,
             height: 200
             }, function () {
                 $(this).attr('disabled','disabled');
-                $('#approval_action').val('1');
-                $("#myform").submit();                   
+                $('#myform').submit();                                                  
         });
-    });
 
-    $('#btnReject').click(function(event) {
-        event.preventDefault();
-        swal({
-            title: "Are you sure?",
-            type: "warning",
-            text: "You won't be able to revert this!",
-            showCancelButton: true,
-            confirmButtonColor: "#41B314",
-            cancelButtonColor: "#F9354C",
-            confirmButtonText: "Yes, reject it!",
-            width: 450,
-            height: 200
-            }, function () {
-                $(this).attr('disabled','disabled');
-                $('#approval_action').val('0');
-                $("#myform").submit();                   
-        });
-        
     });
 
 

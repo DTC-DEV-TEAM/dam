@@ -14,6 +14,7 @@
 	use Illuminate\Support\Facades\Redirect;
 	use Maatwebsite\Excel\HeadingRowImport;
 	use App\Imports\ItemMasterImport;
+	//use App\Imports\InventoryUpload;
 
 	class AdminAssetsController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -716,5 +717,11 @@
 			CRUDBooster::redirect(CRUDBooster::adminpath('assets'), trans("Upload Successfully!"), 'success');
 		}
 	
+		// public function inventoryUpload(Request $request) {
+		// 	$path_excel = $request->file('import_file')->store('temp');
+		// 	$path = storage_path('app').'/'.$path_excel;
+		// 	Excel::import(new InventoryUpload, $path);	
+		// 	CRUDBooster::redirect(CRUDBooster::adminpath('assets_inventory_body'), trans("Upload Successfully!"), 'success');
+		// }
 
 	}
