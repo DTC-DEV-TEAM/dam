@@ -289,7 +289,7 @@
 			}else{
 				
 				$forturnover =  	DB::table('statuses')->where('id', 24)->value('id');
-				$query->where('return_transfer_assets_header.status_id', $forturnover)
+				$query->where('return_transfer_assets_header.status', $forturnover)
 				      ->orderBy('return_transfer_assets_header.id', 'ASC');
 
 			}
