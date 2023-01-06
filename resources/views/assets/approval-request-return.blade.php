@@ -46,17 +46,15 @@
                         <p>{{$Header->position}}</p>
                 </div>
 
+                @if($Header->store_branch != null || $Header->store_branch != "")
+                <label class="control-label col-md-2">{{ trans('message.form-label.store_branch') }}:</label>
+                    <div class="col-md-4">
+                            <p>{{$Header->store_branch}}</p>
+                    </div>
+                @endif
             </div>
 
             <hr/>
-
-            <div class="row">                           
-                <label class="control-label col-md-2">{{ trans('message.form-label.purpose') }}:</label>
-                <div class="col-md-4">
-                        <p>{{$Header->request_description}}</p>
-                </div>
-        
-            </div>
         
             <div class="box-header text-center">
                 <h3 class="box-title"><b>{{ trans('message.form-label.asset_items') }}</b></h3>

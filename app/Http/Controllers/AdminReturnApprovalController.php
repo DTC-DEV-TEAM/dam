@@ -18,7 +18,7 @@
 			$this->orderby = "id,desc";
 			$this->global_privilege = false;
 			$this->button_table_action = true;
-			$this->button_bulk_action = true;
+			$this->button_bulk_action = false;
 			$this->button_action_style = "button_icon";
 			$this->button_add = false;
 			$this->button_edit = false;
@@ -292,7 +292,7 @@
 	    */    
 	    public function hook_row_index($column_index,&$column_value) {	        
 	    	$pending  =  		DB::table('statuses')->where('id', 1)->value('status_description');
-			if($column_index == 2){
+			if($column_index == 1){
 				if($column_value == $pending){
 					$column_value = '<span class="label label-warning">'.$pending.'</span>';
 				}
@@ -410,10 +410,11 @@
 			$data = array();
 
 			$data['page_title'] = 'Approve Return Request';
-
+			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
 			$data['Header'] = ReturnTransferAssetsHeader::leftjoin('cms_users as employees', 'return_transfer_assets_header.requestor_name', '=', 'employees.id')
 				->leftjoin('requests', 'return_transfer_assets_header.request_type_id', '=', 'requests.id')
 				->leftjoin('departments', 'employees.department_id', '=', 'departments.id')
+				->leftjoin('locations', 'return_transfer_assets_header.store_branch', '=', 'locations.id')
 				->select(
 						'return_transfer_assets_header.*',
 						'return_transfer_assets_header.id as requestid',
@@ -422,6 +423,7 @@
 						'employees.company_name_id as company',
 						'employees.position_id as position',
 						'departments.department_name as department_name',
+						'locations.store_name as store_branch'
 						)
 				->where('return_transfer_assets_header.id', $id)->first();
            
@@ -435,7 +437,7 @@
 						'statuses.*',
 						)
 						->where('return_transfer_assets.return_header_id', $id)->get();	
-			// dd($data['return_body']);
+			$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
 			return $this->view("assets.approval-request-return", $data);
 		}
 

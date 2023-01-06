@@ -27,6 +27,9 @@ class AssetsInventoryBody extends Model
         'created_by',
         'deployed_to_id',
         'location',
+        'request_type_id_inventory',
+        'item_category',
+        'item_id'
     ];
 
     public function assetsinventoryheader()

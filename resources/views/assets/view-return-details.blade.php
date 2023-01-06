@@ -11,10 +11,6 @@
         Request Form
     </div>
 
-    <form method='post' id="myform" action='{{CRUDBooster::mainpath('edit-save/'.$Header->requestid)}}'>
-        <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
-        <input type="hidden" value="" name="approval_action" id="approval_action">
-
         <div class='panel-body'>
 
             <div class="row">                           
@@ -45,6 +41,7 @@
                 <div class="col-md-4">
                         <p>{{$Header->position}}</p>
                 </div>
+
                 @if($Header->store_branch != null || $Header->store_branch != "")
                 <label class="control-label col-md-2">{{ trans('message.form-label.store_branch') }}:</label>
                     <div class="col-md-4">
@@ -52,6 +49,8 @@
                     </div>
                 @endif
             </div>
+
+           
 
             <hr/>
         
@@ -85,50 +84,63 @@
                 </tbody>
                 
             </table> 
+
+            <hr/>
+            @if($Header->approvedby != null || $Header->approvedby != "")
+            <div class="row">                           
+                <label class="control-label col-md-2">{{ trans('message.form-label.approved_by') }}:</label>
+                <div class="col-md-4">
+                        <p>{{$Header->approvedby}}</p>
+                </div>
+                <label class="control-label col-md-2">{{ trans('message.form-label.approved_at') }}:</label>
+                <div class="col-md-4">
+                        <p>{{$Header->approved_date}}</p>
+                </div>
+            </div>
+            @endif
+            @if($Header->approver_comments != null || $Header->approver_comments != "")
+                <div class="row">                           
+                    <label class="control-label col-md-2">{{ trans('message.table.approver_comments') }}:</label>
+                    <div class="col-md-10">
+                            <p>{{$Header->approver_comments}}</p>
+                    </div>
+                </div>
+            @endif 
+            <hr>
+            @if( $Header->receivedby != null )
+                <div class="row">                           
+                    <label class="control-label col-md-2">Transacted By:</label>
+                    <div class="col-md-4">
+                            <p>{{$Header->receivedby}}</p>
+                    </div>
+                    <label class="control-label col-md-2">Transacted Date:</label>
+                    <div class="col-md-4">
+                            <p>{{$Header->transacted_date}}</p>
+                    </div>
+                </div>
+            @endif
+            <hr>
+            @if( $Header->closedby != null )
+                <div class="row">                           
+                    <label class="control-label col-md-2">{{ trans('message.form-label.closed_by') }}:</label>
+                    <div class="col-md-4">
+                            <p>{{$Header->closedby}}</p>
+                    </div>
+                    <label class="control-label col-md-2">{{ trans('message.form-label.closed_at') }}:</label>
+                    <div class="col-md-4">
+                            <p>{{$Header->close_at}}</p>
+                    </div>
+                </div>
+            @endif
+            
+            </div>
         </div>
-
-
-        <div class='panel-footer'>
-            <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
-           
-            <button class="btn btn-success pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('message.form.closing') }}</button>
-        </div>
-
-    </form>
-
-
 
 </div>
 
 @endsection
 @push('bottom')
 <script type="text/javascript">
-
-    function preventBack() {
-        window.history.forward();
-    }
-     window.onunload = function() {
-        null;
-    };
-    setTimeout("preventBack()", 0);
-
-    $('#btnSubmit').click(function(event) {
-        event.preventDefault();
-        swal({
-            title: "Are you sure?",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#41B314",
-            cancelButtonColor: "#F9354C",
-            confirmButtonText: "Yes, close it!",
-            width: 450,
-            height: 200
-            }, function () {
-                $(this).attr('disabled','disabled');
-                $('#myform').submit();                                                  
-        });
-
-    });
 
 
 </script>
