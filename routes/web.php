@@ -121,14 +121,17 @@ Route::group(['middleware' => ['web']], function() {
     Route::post('/admin/assets/upload-item-master','AdminAssetsController@itemMasterUpload')->name('upload-item-master');
     Route::get('/admin/db-truncate','TruncateController@dbtruncate');
 
-    //Asset Return and Transfer
+    //Asset Return 
     Route::get(config('crudbooster.ADMIN_PATH').'/return_transfer_assets/return-assets', 'AdminReturnTransferAssetsHeaderController@getReturnAssets')->name('assets.return.assets'); 
     Route::post(config('crudbooster.ADMIN_PATH').'/selectedReturnHeader','AdminReturnTransferAssetsHeaderController@selectedReturnHeader')->name('order.selected.header');
-    Route::post(config('crudbooster.ADMIN_PATH').'/recommendation/save-return-assets','AdminReturnTransferAssetsHeaderController@saveReturnAssets')->name('assets.save.return.assets');
+    Route::post(config('crudbooster.ADMIN_PATH').'/return_assets/save-return-assets','AdminReturnTransferAssetsHeaderController@saveReturnAssets')->name('assets.save.return.assets');
     Route::get('admin/return_transfer_assets_header/getRequestCancelReturn/{id}','AdminReturnTransferAssetsHeaderController@getRequestCancelReturn')->name('getRequestCancelReturn');
     Route::get('/admin/return_approval/getRequestApprovalReturn/{id}','AdminReturnApprovalController@getRequestApprovalReturn')->name('approval-request-return');
     Route::get('/admin/return_close/getRequestClosingReturn/{id}','AdminReturnCloseController@getRequestClosingReturn')->name('return-closing-request');
     Route::get('/admin/return_picking/getRequestPickingReturn/{id}','AdminReturnPickingController@getRequestPickingReturn')->name('return-picking-request');
+    //Transfer Assets
+    Route::get(config('crudbooster.ADMIN_PATH').'/return_transfer_assets/transfer-assets', 'AdminReturnTransferAssetsHeaderController@getTransferAssets')->name('assets.transfer.assets'); 
+    Route::post(config('crudbooster.ADMIN_PATH').'/transfer_assets/save-transfer-assets','AdminReturnTransferAssetsHeaderController@saveTransferAssets')->name('assets.save.transfer.assets');
     //inventory upload
     Route::get('/admin/assets_inventory_body/inventory-upload','AdminAssetsInventoryBodyController@uploadInventory');
     Route::post('/admin/assets_inventory_body/upload-inventory','AdminAssetsInventoryBodyController@inventoryUpload')->name('upload-inventory');
