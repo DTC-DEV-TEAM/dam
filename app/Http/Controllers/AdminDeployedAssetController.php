@@ -299,10 +299,12 @@
 	        $closed =  	DB::table('statuses')->where('id', 13)->value('id');
 			$for_closing =  	DB::table('statuses')->where('id', 19)->value('id');
 
-			$query->where('header_request.created_by', CRUDBooster::myId())
+			$query->where('mo_body_request.request_created_by', CRUDBooster::myId())
+			      //->orWhere('mo_body_request.created_by', CRUDBooster::myId())
 				  ->whereIn('mo_body_request.status_id', [$closed, $for_closing])
 				  ->whereNull('mo_body_request.return_flag')
-				  ->whereNotIn('header_request.request_type_id', [6,7]); 
+				  //->whereNotIn('header_request.request_type_id', [6,7])
+				  ; 
 
 	    }
 

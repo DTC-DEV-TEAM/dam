@@ -8,7 +8,20 @@ class MoveOrder extends Model
 {
     //
     protected $table = 'mo_body_request';
-
+    protected $fillable = [
+        'status_id', 
+        'inventory_id', 
+        'request_created_by', 
+        'request_type_id_mo', 
+        'digits_code', 
+        'asset_code', 
+        'item_description', 
+        'category_id', 
+        'serial_no',   
+        'quantity',  
+        'unit_cost',    
+        'item_id'
+    ];
     public function scopeArraytwo($query)
     {
         return $query->leftjoin('header_request', 'mo_body_request.header_request_id', '=', 'header_request.id')
