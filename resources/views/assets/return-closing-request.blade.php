@@ -85,6 +85,53 @@
                 </tbody>
                 
             </table> 
+            <hr/>
+            @if($Header->approvedby != null || $Header->approvedby != "")
+            <div class="row">                           
+                <label class="control-label col-md-2">{{ trans('message.form-label.approved_by') }}:</label>
+                <div class="col-md-4">
+                        <p>{{$Header->approvedby}}</p>
+                </div>
+                <label class="control-label col-md-2">{{ trans('message.form-label.approved_at') }}:</label>
+                <div class="col-md-4">
+                        <p>{{$Header->approved_date}}</p>
+                </div>
+            </div>
+            @endif
+            @if($Header->approver_comments != null || $Header->approver_comments != "")
+                <div class="row">                           
+                    <label class="control-label col-md-2">{{ trans('message.table.approver_comments') }}:</label>
+                    <div class="col-md-10">
+                            <p>{{$Header->approver_comments}}</p>
+                    </div>
+                </div>
+            @endif 
+            <hr>
+
+            @if( $Header->receivedby != null )
+                <div class="row">   
+                    @if($Header->transfer_to == null)                        
+                        <label class="control-label col-md-2">Transacted By:</label>
+                        <div class="col-md-4">
+                                <p>{{$Header->receivedby}}</p>
+                        </div>
+                        <label class="control-label col-md-2">Transacted Date:</label>
+                        <div class="col-md-4">
+                                <p>{{$Header->transacted_date}}</p>
+                        </div>
+                    @else
+                        <label class="control-label col-md-2">Transferred To:</label>
+                        <div class="col-md-4">
+                                <p>{{$Header->receivedby}}</p>
+                        </div>
+                        <label class="control-label col-md-2">Transferred Date:</label>
+                        <div class="col-md-4">
+                                <p>{{$Header->transacted_date}}</p>
+                        </div>
+                    @endif
+                </div>
+            @endif
+    
         </div>
 
 

@@ -12,8 +12,14 @@ use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Illuminate\Support\Facades\Storage;
 use App\MoveOrder;
-class InventoryUpload implements ToCollection, WithHeadingRow
+use App\Assets;
+use App\Users;
+class InventoryUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, WithValidation
 {
+    public function __construct() {
+        $this->digits_code = Assets::get();
+    }
+
     /**
     * @param Collection $collection
     */
@@ -26,12 +32,12 @@ class InventoryUpload implements ToCollection, WithHeadingRow
             $name_id           = DB::table('cms_users')->where('id','!=',1)->where(DB::raw('LOWER(name)'),strtolower($row['employee_name']))->value('id');
             $item_id 	        = DB::table('assets')->where(['digits_code' => $row['digits_code']])->first();
         
-            if(strtolower($row['status']) == "working" && empty($row['deployed_to'])){
+            if(strtolower($row['status']) == "working" && empty($row['employee_name'])){
 				$statuses = 6;
                 $item_condition = "Good";
                 $deployed = NULL;
                 $quantity = $row['qty'];
-			}else if(strtolower($row['status']) == "defective" && empty($row['deployed_to'])) {
+			}else if(strtolower($row['status']) == "defective" && empty($row['employee_name'])) {
                 $statuses = 23;
                 $item_condition = "Defective";
                 $deployed = NULL;
@@ -39,22 +45,34 @@ class InventoryUpload implements ToCollection, WithHeadingRow
             }else{
                 $statuses = 3;
                 $item_condition = "Good";
-                $deployed = $row['deployed_to'];
-                $quantity = 0;
+                $deployed = $row['employee_name'];
+                $quantity = 0;           
+            }
+
+            if(empty($row['employee_name']) && $item_id->category_id == 5){
+                $location = 3;
+            }else if (empty($row['employee_name']) && $item_id->category_id == 1){
+                $location = 2;
+            }else{
+                $location = 4;
             }
             
             if($item_id->category_id == 5){
                 $asset_code = "A1".str_pad ($DatabaseCounterIt + 1, 6, '0', STR_PAD_LEFT);
                 $DatabaseCounterIt++; // or any rule you want.	
-                $location = 3;
                 $request_type_id_inventory = 1;
                 $item_category = "IT ASSETS";
             }else{
                 $asset_code = "A2".str_pad ($DatabaseCounterFixAsset + 1, 6, '0', STR_PAD_LEFT);
 				$DatabaseCounterFixAsset++; // or any rule you want.	
-                $location = 2;
                 $request_type_id_inventory = 5;
                 $item_category = "FIXED ASSETS";
+            }
+
+            if(!empty($row['serial_number'])){
+                $serial_no = $row['serial_number'];
+            }else{
+                $serial_no = "N/A";
             }
          
            
@@ -71,7 +89,7 @@ class InventoryUpload implements ToCollection, WithHeadingRow
                 'item_description'               => $item_id->item_description,
                 'value'                          => $row['value'],
                 'quantity'                       => $quantity,
-                'serial_no'                      => $row['serial_number'],
+                'serial_no'                      => $serial_no,
                 'warranty_coverage'              => $row['warranty_coverage'],
                 'item_condition'                 => $item_condition,
                 'created_by'		             => CRUDBooster::myId(),
@@ -124,58 +142,60 @@ class InventoryUpload implements ToCollection, WithHeadingRow
         }
     }
 
-    // public function prepareForValidation($data, $index)
-    // {
-    //     $data['check_reward']['check'] = false;
-    //     $currentDate = date('Y-m-d');
-    //     $getPoints = LoyaltyCenter::where('type', '=' ,'creation of account')
-    //     ->whereDate('start','<=',$currentDate)
-    //     ->whereDate('duration','>=',$currentDate)
-    //     ->get()->count();
-    //     if($getPoints === 1){
-    //         $data['check_reward']['check'] = true;
-    //     }
+    public function prepareForValidation($data, $index)
+    {
+        //DIGITS CODE
+        $data['employee_exist']['check'] = false;
+        $checkRowDb = DB::table('cms_users')->select(DB::raw("LOWER(name) AS names"))->get()->toArray();
+        $checkRowDbColumn = array_column($checkRowDb, 'names');
+    
+        if(!empty($data['employee_name'])){
+            if(in_array(strtolower($data['employee_name']), $checkRowDbColumn)){
+                $data['employee_exist']['check'] = true;
+            }
+        }else{
+            $data['employee_exist']['check'] = true;
+        }
+        //DIGITS CODE AND SERIAL NO
+        $data['digits_code_serial_exist']['check'] = false;
+        $checkRowDbDigitsCode = DB::table('assets_inventory_body')->select(DB::raw("CONCAT(assets_inventory_body.digits_code,'-',LOWER(assets_inventory_body.serial_no)) AS codes"))->where('serial_no','!=','N/A')->get()->toArray();
         
-    //     $data['check_unique'] = ['email' => $data['email']];
-        
+        $checkRowDbColumnDigitsCode = array_column($checkRowDbDigitsCode, 'codes');
+        if(!empty($data['serial_number'])){
+            if(in_array($data['digits_code']."-".strtolower($data['serial_number']), $checkRowDbColumnDigitsCode)){
+                $data['digits_code_serial_exist']['check'] = true;
+            }else{
+                $data['digits_code_serial_exist']['check'] = false;
+            }
+        }
 
-    //     return $data;
-    // }
+        return $data;
+    }
 
-    // public function rules(): array
-    // {
-    //     return [
-    //         '*.email' => 'required|distinct',
-    //         '*.check_unique' => function($attribute, $value, $onFailure) {
-    //             $exist = Customer::get()
-    //                 ->where('email', '=', $value['email'])
-    //                 ->first();
-    //             if (isset($exist)) {
-    //                 $onFailure('Email: '.$value['email'].' already exist.');
-    //             }
-    //         },
-    //         '*.check_reward' => function($attribute, $value, $onFailure) {
-    //             if ($value['check'] === false) {
-    //                 $onFailure('No Active Rewards for Account Creation!');
-    //             }
-    //         },
-    //         '*.first_name' => 'required',
-    //         '*.last_name' => 'required',
-    //         '*.city' => 'required',
-    //         '*.birthday' => 'required',
-    //         '*.contact' => 'regex:/^[0-9]{10}+$/',
-    //     ];
-    // }
+    public function rules(): array
+    {
+        $digits_code = $this->digits_code->pluck('digits_code')->all();
+        return [
+            '*.employee_exist' => function($attribute, $value, $onFailure) {
+                if ($value['check'] === false) {
+                    $onFailure('Employee Name not exist in Users List!');
+                }
+            },
+            '*.digits_code_serial_exist' => function($attribute, $value, $onFailure) {
+                if ($value['check'] === true) {
+                    $onFailure('Digits Code and Serial No Exist!');
+                }
+            },
+            '*.digits_code' => ['required', Rule::in($digits_code)],
+        ];
+    }
 
-    // public function customValidationMessages()
-    // {
-    //     return [
-    //         '*.email.required' => 'Email is required!',
-    //         '*.first_name.required' => 'First Name is required!',
-    //         '*.last_name.required' => 'Last Name is required!',
-    //         '*.city.required' => 'City is required!',
-    //         '*.birthday.required' => 'Birthday is required!',
-    //         '*.contact.regex' => 'Contact Number Invalid Format!',
-    //     ];
-    // }
+    public function customValidationMessages()
+    {
+        return [
+            '*.digits_code.in' => 'Digits Code :input not exist in Item Master.',
+            '*.digits_code.required' => 'Digits Code Required!',
+            '*.employee_name.employee_exist' => 'Employee Name :input not exist in Users list.',
+        ];
+    }
 }

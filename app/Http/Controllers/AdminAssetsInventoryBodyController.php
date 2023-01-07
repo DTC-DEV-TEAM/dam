@@ -645,8 +645,25 @@
 			$file = $data['import_file'];
 			$path_excel = $file->store('temp');
 			$path = storage_path('app').'/'.$path_excel;
-			Excel::import(new InventoryUpload, $path);	
-			CRUDBooster::redirect(CRUDBooster::adminpath('assets_inventory_body'), trans("Upload Successfully!"), 'success');
+
+			try {
+				Excel::import(new InventoryUpload, $path);	
+			    CRUDBooster::redirect(CRUDBooster::adminpath('assets_inventory_body'), trans("Upload Successfully!"), 'success');
+			} catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+				$failures = $e->failures();
+				
+				$error = [];
+				foreach ($failures as $failure) {
+					$line = $failure->row();
+					foreach ($failure->errors() as $err) {
+						$error[] = $err . " on line: " . $line; 
+					}
+				}
+				
+				$errors = collect($error)->unique()->toArray();
+		
+			}
+			CRUDBooster::redirect(CRUDBooster::adminpath('assets_inventory_body'), $errors[0], 'danger');
 		}
 
 		

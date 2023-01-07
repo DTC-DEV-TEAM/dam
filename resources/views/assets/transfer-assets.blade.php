@@ -35,8 +35,8 @@
         <input type="hidden" value="1" name="request_type_id" id="request_type_id">
          
            <div class="form-group" style="padding:10px">
-                <label class="require control-label" style="font-style: italic">Please Select Users:</label>
-                <select class="users" data-placeholder="** Please a Asset Request"  style="width: 50%;" name="users_id" id="users_id">
+                <label class="require control-label" style="font-style: italic">Transfer to:</label>
+                <select class="users" data-placeholder="** Select Transfer to **"  style="width: 50%;" name="users_id" id="users_id">
                     <option value=""></option>
                     @foreach($users as $value)
                         <option value="{{$value->id}}">{{$value->name}}</option>
@@ -133,10 +133,18 @@ var table;
 
         var check = $('input:checkbox:checked').length;
         event.preventDefault();
-        if (check == 0) {
+        if($('#users_id').val() == "") {
             swal({
                 type: 'error',
-                title: 'Please select asset to return!',
+                title: 'Please select Transfer to!',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            }); 
+            event.preventDefault(); // cancel default behavior
+        }else if (check == 0) {
+            swal({
+                type: 'error',
+                title: 'Please select assets to transfer!',
                 icon: 'error',
                 confirmButtonColor: "#367fa9",
             }); 

@@ -36,7 +36,7 @@
 			$this->col[] = ["label"=>"Return Type","name"=>"request_type_id","join"=>"requests,request_name"];
 			$this->col[] = ["label"=>"Type of Request","name"=>"request_type"];
 			$this->col[] = ["label"=>"Requested Date","name"=>"requested_date"];
-			$this->col[] = ["label"=>"Transacted By","name"=>"transacted_by"];
+			$this->col[] = ["label"=>"Transacted By","name"=>"transacted_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Transacted Date","name"=>"transacted_date"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
@@ -254,28 +254,8 @@
 	    public function hook_query_index(&$query) {
 	        $toClose  = 	DB::table('statuses')->where('id', 25)->value('id');
 
-			$List = ReturnTransferAssetsHeader::orderby('return_transfer_assets_header.id', 'asc')->where('return_transfer_assets_header.status', $toClose)->get();
-
-			$list_array = array();
-
-			$id_array = array();
-
-			foreach($List as $matrix){
-
-				if(! in_array($matrix->mo_reference_number,$list_array)) {
-
-					array_push($list_array, $matrix->mo_reference_number);
-					array_push($id_array, $matrix->id);
-				}
-					
-
-			}
-
-			$list_string = implode(",",$id_array);
-
-			$MOList = array_map('intval',explode(",",$list_string));	
-
-			$query->whereIn('return_transfer_assets_header.id', $MOList)
+     
+			$query->where('return_transfer_assets_header.status', $toClose)
 				  ->orderBy('return_transfer_assets_header.id', 'asc');
 	            
 	    }
@@ -392,11 +372,14 @@
 
 			$data = array();
 
-			$data['page_title'] = 'Close Return Request';
+			$data['page_title'] = 'Close Return/Transfer Request';
 
 			$data['Header'] = ReturnTransferAssetsHeader::leftjoin('cms_users as employees', 'return_transfer_assets_header.requestor_name', '=', 'employees.id')
 				->leftjoin('requests', 'return_transfer_assets_header.request_type_id', '=', 'requests.id')
 				->leftjoin('departments', 'employees.department_id', '=', 'departments.id')
+				->leftjoin('cms_users as approved', 'return_transfer_assets_header.approved_by','=', 'approved.id')
+				->leftjoin('cms_users as received', 'return_transfer_assets_header.transacted_by','=', 'received.id')
+				->leftjoin('cms_users as closed', 'return_transfer_assets_header.close_by','=', 'closed.id')
 				->leftjoin('locations', 'return_transfer_assets_header.store_branch', '=', 'locations.id')
 				->select(
 						'return_transfer_assets_header.*',
@@ -406,6 +389,10 @@
 						'employees.company_name_id as company',
 						'employees.position_id as position',
 						'departments.department_name as department_name',
+						'locations.store_name as store_branch',
+						'approved.name as approvedby',
+						'received.name as receivedby',
+						'closed.name as closedby',
 						'locations.store_name as store_branch'
 						)
 				->where('return_transfer_assets_header.id', $id)->first();

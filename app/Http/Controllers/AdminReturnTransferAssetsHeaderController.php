@@ -560,7 +560,7 @@
 				->whereIn('mo_body_request.status_id', [$closed, $for_closing])
 				->whereNull('mo_body_request.return_flag')
 				->get();
-			$data['users'] = Users::all();
+			$data['users'] = Users::where('id_cms_privileges','!=',1)->get();
 			return $this->view("assets.transfer-assets", $data);
 		}
 
@@ -569,7 +569,7 @@
 			$rid = $request['request_type_id'];
 			$request_type_id = array_unique($rid);
 			$location = $request['location_id'];
-
+            
 			$getData = MoveOrder::leftjoin('header_request', 'mo_body_request.header_request_id', '=', 'header_request.id')
 			->leftjoin('requests', 'header_request.request_type_id', '=', 'requests.id')
 			->select(
@@ -638,6 +638,7 @@
 			foreach($getData as $rKey => $rData){		
 				$container['status'] = 1;
 				$container['return_header_id'] = $rData['return_header'];
+				$container['mo_id'] = $rData['mo_id'];
 				if($rData['request_type_id'] == 1){
 					$container['reference_no'] = "1".str_pad($count_header + 1, 6, '0', STR_PAD_LEFT)."ITAR";
 					$count_header++;
@@ -711,11 +712,12 @@
 			foreach($getData as $rKey => $rData){		
 				$container['status'] = 1;
 				$container['return_header_id'] = $header_id;
+				$container['mo_id'] = $rData['mo_id'];
 				if($rData['request_type_id'] == 1){
-					$container['reference_no'] = "1".str_pad($count_header + 1, 6, '0', STR_PAD_LEFT)."ITAR";
+					$container['reference_no'] = "1".str_pad($count_header + 1, 6, '0', STR_PAD_LEFT)."IAT";
 					$count_header++;
 				}else{
-					$container['reference_no'] = "1".str_pad($count_header + 1, 6, '0', STR_PAD_LEFT)."FAR";
+					$container['reference_no'] = "1".str_pad($count_header + 1, 6, '0', STR_PAD_LEFT)."FAT";
 					$count_header++;
 				}
 				$container['location_to_pick'] = 5;
