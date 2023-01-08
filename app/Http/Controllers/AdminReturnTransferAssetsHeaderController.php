@@ -462,7 +462,7 @@
 
 			$closed =  	DB::table('statuses')->where('id', 13)->value('id');
 			$for_closing =  	DB::table('statuses')->where('id', 19)->value('id');
-
+			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
 			$data['mo_body'] = MoveOrder::leftjoin('header_request', 'mo_body_request.header_request_id', '=', 'header_request.id')
 				->leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
 				->leftjoin('requests', 'header_request.request_type_id', '=', 'requests.id')
@@ -502,6 +502,11 @@
 				->whereIn('mo_body_request.status_id', [$closed, $for_closing])
 				->whereNull('mo_body_request.return_flag')
 				->get();
+			if(CRUDBooster::myPrivilegeId() == 8){ 
+				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
+			}else{
+				$data['stores'] = NULL;
+			}	
 			return $this->view("assets.return-assets", $data);
 		}
 
@@ -520,7 +525,7 @@
 
 			$closed =  	DB::table('statuses')->where('id', 13)->value('id');
 			$for_closing =  	DB::table('statuses')->where('id', 19)->value('id');
-
+			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
 			$data['mo_body'] = MoveOrder::leftjoin('header_request', 'mo_body_request.header_request_id', '=', 'header_request.id')
 				->leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
 				->leftjoin('requests', 'header_request.request_type_id', '=', 'requests.id')
@@ -560,6 +565,11 @@
 				->whereIn('mo_body_request.status_id', [$closed, $for_closing])
 				->whereNull('mo_body_request.return_flag')
 				->get();
+			if(CRUDBooster::myPrivilegeId() == 8){ 
+				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
+			}else{
+				$data['stores'] = NULL;
+			}	
 			$data['users'] = Users::where('id_cms_privileges','!=',1)->get();
 			return $this->view("assets.transfer-assets", $data);
 		}
@@ -569,7 +579,7 @@
 			$rid = $request['request_type_id'];
 			$request_type_id = array_unique($rid);
 			$location = $request['location_id'];
-            
+   
 			$getData = MoveOrder::leftjoin('header_request', 'mo_body_request.header_request_id', '=', 'header_request.id')
 			->leftjoin('requests', 'header_request.request_type_id', '=', 'requests.id')
 			->select(
@@ -651,7 +661,7 @@
 				$container['asset_code'] =  $rData['asset_code'];
 				$container['digits_code'] = $rData['digits_code'];
 				$container['description'] = $rData['item_description'];
-				$container['asset_type'] = $rData['request_name'];
+				$container['asset_type'] = $rData['category_id'];
 				$container['requested_by'] = CRUDBooster::myId(); 
 				$container['requested_date'] = date('Y-m-d H:i:s');
 				$containerSave[] = $container;
@@ -724,7 +734,7 @@
 				$container['asset_code'] =  $rData['asset_code'];
 				$container['digits_code'] = $rData['digits_code'];
 				$container['description'] = $rData['item_description'];
-				$container['asset_type'] = $rData['request_name'];
+				$container['asset_type'] = $rData['category_id'];
 				$container['requested_by'] = CRUDBooster::myId(); 
 				$container['requested_date'] = date('Y-m-d H:i:s');
 				$container['transfer_to'] = $user_id;

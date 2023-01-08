@@ -702,6 +702,7 @@
 				$dataLines1[$x]['created_by'] 			= CRUDBooster::myId();
 				$dataLines1[$x]['created_at'] 			= date('Y-m-d H:i:s');
 				$dataLines1[$x]['request_created_by']   = $arf_header->created_by;
+				$dataLines1[$x]['request_type_id_mo']   = $arf_header->request_type_id;
 
 				array_push($locationArray, $inventory_info->location);
 			

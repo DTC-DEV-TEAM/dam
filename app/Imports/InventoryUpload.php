@@ -29,15 +29,17 @@ class InventoryUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
         $DatabaseCounterIt = DB::table('assets_inventory_body')->where('item_category', $it_cat)->count();
         $DatabaseCounterFixAsset = DB::table('assets_inventory_body')->where('item_category',$fa_cat)->count();
         foreach ($rows->toArray() as $row) {
-            $name_id           = DB::table('cms_users')->where('id','!=',1)->where(DB::raw('LOWER(name)'),strtolower($row['employee_name']))->value('id');
-            $item_id 	        = DB::table('assets')->where(['digits_code' => $row['digits_code']])->first();
+            $name_id     = DB::table('cms_users')->where('id','!=',1)->where(DB::raw('LOWER(TRIM(email))'),strtolower(trim($row['email'])))->value('id');
+            $name     = DB::table('cms_users')->where('id','!=',1)->where(DB::raw('LOWER(TRIM(email))'),strtolower(trim($row['email'])))->value('name');
+            $item_id 	 = DB::table('assets')->where(['digits_code' => $row['digits_code']])->first();
+            $location_id 	 = DB::table('warehouse_location_model')->where(DB::raw('LOWER(TRIM(location))'),strtolower(trim($row['location'])))->first();
         
-            if(strtolower($row['status']) == "working" && empty($row['employee_name'])){
+            if(strtolower($row['status']) == "working" && empty($row['email'])){
 				$statuses = 6;
                 $item_condition = "Good";
                 $deployed = NULL;
                 $quantity = $row['qty'];
-			}else if(strtolower($row['status']) == "defective" && empty($row['employee_name'])) {
+			}else if(strtolower($row['status']) == "defective" && empty($row['email'])) {
                 $statuses = 23;
                 $item_condition = "Defective";
                 $deployed = NULL;
@@ -45,14 +47,12 @@ class InventoryUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
             }else{
                 $statuses = 3;
                 $item_condition = "Good";
-                $deployed = $row['employee_name'];
+                $deployed = $name;
                 $quantity = 0;           
             }
 
-            if(empty($row['employee_name']) && $item_id->category_id == 5){
-                $location = 3;
-            }else if (empty($row['employee_name']) && $item_id->category_id == 1){
-                $location = 2;
+            if(empty($row['email'])){
+                $location = $location_id->id;
             }else{
                 $location = 4;
             }
@@ -146,11 +146,11 @@ class InventoryUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
     {
         //DIGITS CODE
         $data['employee_exist']['check'] = false;
-        $checkRowDb = DB::table('cms_users')->select(DB::raw("LOWER(name) AS names"))->get()->toArray();
-        $checkRowDbColumn = array_column($checkRowDb, 'names');
+        $checkRowDb = DB::table('cms_users')->select(DB::raw("LOWER(TRIM(email)) AS emails"))->get()->toArray();
+        $checkRowDbColumn = array_column($checkRowDb, 'emails');
     
-        if(!empty($data['employee_name'])){
-            if(in_array(strtolower($data['employee_name']), $checkRowDbColumn)){
+        if(!empty($data['email'])){
+            if(in_array(strtolower(trim($data['email'])), $checkRowDbColumn)){
                 $data['employee_exist']['check'] = true;
             }
         }else{
@@ -178,7 +178,7 @@ class InventoryUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
         return [
             '*.employee_exist' => function($attribute, $value, $onFailure) {
                 if ($value['check'] === false) {
-                    $onFailure('Employee Name not exist in Users List!');
+                    $onFailure('Employee Email not exist in Users List!');
                 }
             },
             '*.digits_code_serial_exist' => function($attribute, $value, $onFailure) {

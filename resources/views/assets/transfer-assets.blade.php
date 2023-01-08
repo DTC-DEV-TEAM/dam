@@ -70,7 +70,7 @@
                             <td style="text-align:center">
                               <input type="checkbox" name="mo_id[]" id="mo_id{{$tableRow1}}" class="id" required data-id="{{$tableRow1}}" value="{{$res->mo_id}}"/>
                               <input type="hidden" name="request_type_id[]" id="request_type_id{{$tableRow1}}" class="id" required data-id="{{$tableRow1}}" value="{{$res->request_type_id}}"/>
-                              <input type="hidden" name="location_id" id="location_id{{$tableRow1}}" class="id" required data-id="{{$tableRow1}}" value="{{$res->location_id}}"/>
+                              <input type="hidden" name="location_id" id="location_id{{$tableRow1}}" class="id" required data-id="{{$tableRow1}}" value="{{$stores->id}}"/>
                             </td>
                             <td>{{$res->reference_number}}</td>
                             <td>{{$res->mo_reference_number}}</td>
