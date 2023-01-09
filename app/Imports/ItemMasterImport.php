@@ -31,6 +31,7 @@ class ItemMasterImport implements ToCollection, WithHeadingRow
             [
                 'digits_code' => $row['digits_code'],
                 'item_description' => $row['item_description'],
+                'item_cost' => $row['item_cost'],
                 'brand_id' => $row['brand_id'],
                 'category_id' => $row['category_id'],  
                 'class_id' => $row['class_id'],
