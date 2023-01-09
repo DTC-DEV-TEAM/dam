@@ -11,7 +11,7 @@
         Detail Form
     </div>
 
-    <form method='post' id="myform" action='{{CRUDBooster::mainpath('edit-save/'.$Header->requestid)}}'>
+
         <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
         <input type="hidden" value="0" name="action" id="action">
 
@@ -476,7 +476,7 @@
 
         </div>
 
-    </form>
+    
 
 
 

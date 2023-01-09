@@ -24,7 +24,7 @@
 			$this->button_add = false;
 			$this->button_edit = false;
 			$this->button_delete = false;
-			$this->button_detail = true;
+			$this->button_detail = false;
 			$this->button_show = true;
 			$this->button_filter = false;
 			$this->button_import = false;
@@ -42,7 +42,7 @@
 			$this->col[] = ["label"=>"Item Description","name"=>"item_description"];
 			$this->col[] = ["label"=>"Requested Date","name"=>"header_request_id","join"=>"header_request,created_at"];
 			$this->col[] = ["label"=>"Received Date","name"=>"header_request_id","join"=>"header_request,received_at"];
-			
+			$this->col[] = ["label"=>"MO Number","name"=>"mo_reference_number","visible"=>false];
 			
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
@@ -139,7 +139,10 @@
 	        | 
 	        */
 	        $this->addaction = array();
-
+			
+			$this->addaction[] = ['title'=>'View','url'=>CRUDBooster::mainpath('detail/[id]'),'icon'=>'fa fa-eye', "showIf"=>"[mo_reference_number] != null"];
+			$this->addaction[] = ['title'=>'View','url'=>CRUDBooster::mainpath('detail-mo-only/[id]'),'icon'=>'fa fa-eye', "showIf"=>"[mo_reference_number] == null"];
+			
 
 	        /* 
 	        | ---------------------------------------------------------------------- 
@@ -474,6 +477,33 @@
 			$data['recommendations'] = DB::table('recommendations')->where('status', 'ACTIVE')->get();	
 					
 			return $this->view("assets.deployed_details", $data);
+		}
+
+		public function getDetailMoOnly($id){
+			
+			$this->cbLoader();
+            if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
+                CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+            }
+
+			//$header_id = DB::table('mo_body_request')->where('id', $id)->first();
+			$data = array();
+
+			$data['page_title'] = 'View Request';
+
+			$data['MoveOrder'] = MoveOrder::
+				select(
+				  'mo_body_request.*',
+				  'statuses.status_description as status_description'
+				)
+				->where('mo_body_request.id', $id)
+				->leftjoin('statuses', 'mo_body_request.status_id', '=', 'statuses.id')
+				->orderby('mo_body_request.id', 'desc')
+				->get();
+
+			
+					
+			return $this->view("assets.deployed_details_mo_only", $data);
 		}
 
 
