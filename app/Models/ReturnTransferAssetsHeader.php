@@ -11,6 +11,7 @@ class ReturnTransferAssetsHeader extends Model
     protected $fillable = [
         'status', 
         'requestor_name', 
+        'reference_no', 
         'request_type_id',
         'request_type',
         'requested_by',

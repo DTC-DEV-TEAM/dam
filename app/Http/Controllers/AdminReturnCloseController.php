@@ -372,7 +372,7 @@
 
 			$data = array();
 
-			$data['page_title'] = 'Close Return/Transfer Request';
+			$data['page_title'] = 'Close Return/Transfer Asset';
 
 			$data['Header'] = ReturnTransferAssetsHeader::leftjoin('cms_users as employees', 'return_transfer_assets_header.requestor_name', '=', 'employees.id')
 				->leftjoin('requests', 'return_transfer_assets_header.request_type_id', '=', 'requests.id')

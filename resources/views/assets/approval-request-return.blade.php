@@ -14,6 +14,7 @@
     <form method='post' id="myform" action='{{CRUDBooster::mainpath('edit-save/'.$Header->requestid)}}'>
         <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
         <input type="hidden" value="" name="approval_action" id="approval_action">
+        <input type="hidden" name="header_id" id="header_id" value="{{$Header->id}}">
 
         <div class='panel-body'>
 
@@ -74,6 +75,7 @@
                 <tbody>
                     @foreach($return_body as $rowresult)
                         <tr>
+                            <input type="hidden" value="{{$rowresult->mo_id}}" name="mo_id[]">
                             <td style="text-align:center" height="10">{{$rowresult->reference_no}}</td>
                             <td style="text-align:center" height="10">{{$rowresult->asset_code}}</td>
                             <td style="text-align:center" height="10">{{$rowresult->digits_code}}</td>
