@@ -406,7 +406,7 @@
 				
 					DB::table('assets_inventory_body')->where('id', $mo_info->inventory_id)
 					->update([
-						'statuses_id'        => 3,
+						'statuses_id'        => 23,
 						'deployed_to'        => $employee_name->bill_to,
 						'deployed_to_id'     => NULL    
 					]);
