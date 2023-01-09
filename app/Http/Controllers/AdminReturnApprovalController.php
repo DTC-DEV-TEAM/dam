@@ -334,21 +334,47 @@
 	    public function hook_before_edit(&$postdata,$id) {        
 	         //Your code here
 			$fields = Request::all();
+			$header_id 					= $fields['header_id'];
+			$mo_id 					= $fields['mo_id'];
 			$dataLines = array();
 			$approval_action 		= $fields['approval_action'];
 			$approver_comments 		= $fields['approver_comments'];
 			$approved =  		DB::table('statuses')->where('id', 4)->value('id');
 			$rejected =  		DB::table('statuses')->where('id', 5)->value('id');
 			$forturnover =  		DB::table('statuses')->where('id', 24)->value('id');
+			$forReturn =  		DB::table('statuses')->where('id', 26)->value('id');
+			$forTransfer =  		DB::table('statuses')->where('id', 27)->value('id');
+
+			$header 	= 	ReturnTransferAssetsHeader::where('id',$header_id)->first();
+			$inventory_id 	= 	MoveOrder::whereIn('id',$mo_id)->get();
+			$finalinventory_id = [];
+			foreach($inventory_id as $invData){
+				array_push($finalinventory_id, $invData['inventory_id']);
+			}
 
 			if($approval_action  == 1){
-				$postdata['status']		 	    = $forturnover;
-				$postdata['approved_by'] 		= CRUDBooster::myId();
-				$postdata['approved_date'] 		= date('Y-m-d H:i:s');
-				ReturnTransferAssets::where('return_header_id',$id)
-				->update([
-					    'status' => $forturnover
-				]);	
+				for($x=0; $x < count((array)$mo_id); $x++) {
+	
+					$postdata['status']		 	    = $forturnover;
+					$postdata['approved_by'] 		= CRUDBooster::myId();
+					$postdata['approved_date'] 		= date('Y-m-d H:i:s');
+					ReturnTransferAssets::where('return_header_id',$id)
+					->update([
+							'status' => $forturnover
+					]);	
+					if(in_array($header->request_type_id, [1,5])){
+						DB::table('assets_inventory_body')->where('id', $finalinventory_id[$x])
+						->update([
+							'statuses_id'=> 			$forReturn,
+						]);
+					}else{
+						DB::table('assets_inventory_body')->where('id', $finalinventory_id[$x])
+						->update([
+							'statuses_id'=> 			$forTransfer,
+						]);
+					}
+					
+			    }
 			}else{
 				$postdata['status'] 			= $rejected;
 				$postdata['approver_comments'] 	= $approver_comments;
@@ -409,7 +435,7 @@
 
 			$data = array();
 
-			$data['page_title'] = 'Approve Return Request';
+			$data['page_title'] = 'Approve Return/Transfer Request';
 			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
 			$data['Header'] = ReturnTransferAssetsHeader::leftjoin('cms_users as employees', 'return_transfer_assets_header.requestor_name', '=', 'employees.id')
 				->leftjoin('requests', 'return_transfer_assets_header.request_type_id', '=', 'requests.id')

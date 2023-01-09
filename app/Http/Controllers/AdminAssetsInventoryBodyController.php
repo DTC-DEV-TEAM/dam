@@ -312,7 +312,8 @@
 			$reserved  =  		DB::table('statuses')->where('id', 2)->value('status_description');
 			$deployed  =  		DB::table('statuses')->where('id', 3)->value('status_description');
 			$defective  =  		DB::table('statuses')->where('id', 23)->value('status_description');
-
+			$forReturn =  		DB::table('statuses')->where('id', 26)->value('status_description');
+			$forTransfer =  		DB::table('statuses')->where('id', 27)->value('status_description');
 			if($column_index == 4){
 				if($column_value == $for_approval){
 					$column_value = '<span class="label label-success">'.$for_approval.'</span>';
@@ -324,6 +325,10 @@
 					$column_value = '<span class="label label-danger">'.$deployed.'</span>';
 				}else if($column_value == $defective){
 					$column_value = '<span class="label label-danger">'.$defective.'</span>';
+				}else if($column_value == $forReturn){
+					$column_value = '<span class="label label-info">'.$forReturn.'</span>';
+				}else if($column_value == $forTransfer){
+					$column_value = '<span class="label label-info">'.$forTransfer.'</span>';
 				}
 			}
 

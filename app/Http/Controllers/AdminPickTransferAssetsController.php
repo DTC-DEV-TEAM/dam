@@ -390,6 +390,7 @@
 				//if($item_id[$x] == 1){
 				if($defective_text[$x] == 1){
 					$to_close  = 		DB::table('statuses')->where('id',25)->value('id');
+					$deployed  = 		DB::table('statuses')->where('id',3)->value('id');
 					$mo_info 	= 		MoveOrder::where('id',$mo_id[$x])->first();
 					ReturnTransferAssets::where('return_header_id',$id)
 					->update([
@@ -405,6 +406,7 @@
 				
 					DB::table('assets_inventory_body')->where('id', $mo_info->inventory_id)
 					->update([
+						'statuses_id'        => 3,
 						'deployed_to'        => $employee_name->bill_to,
 						'deployed_to_id'     => NULL    
 					]);
@@ -441,6 +443,7 @@
 					
 					DB::table('assets_inventory_body')->where('id', $finalinventory_id[$x])
 					->update([
+						'statuses_id'        => 3,
 						'deployed_to'        => $employee_name->bill_to,
 						'deployed_to_id'     => NULL
 					]);
@@ -510,7 +513,7 @@
 
 			$data = array();
 
-			$data['page_title'] = 'Pick/Recieve Transfer Request';
+			$data['page_title'] = 'Asset Return Receiving';
 
 			$data['Header'] = ReturnTransferAssetsHeader::leftjoin('cms_users as employees', 'return_transfer_assets_header.requestor_name', '=', 'employees.id')
 				->leftjoin('requests', 'return_transfer_assets_header.request_type_id', '=', 'requests.id')
