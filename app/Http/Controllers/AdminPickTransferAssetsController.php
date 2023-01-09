@@ -35,6 +35,7 @@
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
 			$this->col[] = ["label"=>"Status","name"=>"status","join"=>"statuses,status_description"];
+			$this->col[] = ["label"=>"Reference No","name"=>"reference_no"];
 			$this->col[] = ["label"=>"Name","name"=>"requestor_name","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Return Type","name"=>"request_type_id","join"=>"requests,request_name"];
 			$this->col[] = ["label"=>"Type of Request","name"=>"request_type"];
@@ -406,8 +407,9 @@
 				
 					DB::table('assets_inventory_body')->where('id', $mo_info->inventory_id)
 					->update([
-						'statuses_id'        => 3,
+						'statuses_id'        => 23,
 						'deployed_to'        => $employee_name->bill_to,
+						'item_condition'     => "Defective",
 						'deployed_to_id'     => NULL    
 					]);
 			
