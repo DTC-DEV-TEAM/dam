@@ -86,17 +86,14 @@
             <table  class='table table-striped table-bordered'>
                 <thead>
                     <tr>
-                        <th width="5%" class="text-center">Good</th> 
-                        <th width="5%" class="text-center">Defective</th>
+                        <th class="text-center">Good</th> 
+                        <th class="text-center">Defective</th>
                         <th width="10%" class="text-center">Reference No</th>
                         <th width="10%" class="text-center">Asset Code</th>
                         <th width="10%" class="text-center">Digits Code</th>
                         <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
-                        <th width="10%" class="text-center">Asset Type</th>                                                         
-                        <th width="10%">Comments</th>
-                        @if(CRUDBooster::myPrivilegeId() == 6)
-                        <th width="10%">Location</th>
-                        @endif
+                        <th width="25%" class="text-center">Asset Type</th>                                                         
+                        <th>Comments</th>
                     </tr>
                     <?php   $tableRow1 = 0; ?>
                     <?Php   $item_count = 0; ?>
@@ -131,17 +128,7 @@
                                         <option value="{{ $rowresult->asset_code. '|' .$rowresult->digits_code. '|' .$good_defect_list->defect_description }}">{{ $good_defect_list->defect_description }}</option>
                                     @endforeach
                                 </select>
-                            </td>   
-                            @if(CRUDBooster::myPrivilegeId() == 6)
-                            <td>
-                                <select required selected data-placeholder="-- Select Location --" id="location{{$tableRow1}}" data-id="{{$tableRow1}}" name="location" class="form-select location" style="width:100%;">
-                                    @foreach($warehouse_location as $locations)
-                                        <option value=""></option>
-                                        <option value="{{ $locations->id}}">{{ $locations->location }}</option>
-                                    @endforeach
-                                </select>
-                            </td>   
-                            @endif     
+                            </td>          
                         </tr>
                         <tr id="others{{$tableRow1}}" style="display:none">
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
@@ -174,8 +161,6 @@
  $('.select2').select2({
     placeholder_text_single : "-- Select --",
     multiple: true});
-    $('.location').select2({
-    placeholder_text_single : "-- Select --"});
     var searchfield = $(this).find('.select2-search--inline');
     var selection = $(this).find('.select2-selection__rendered');
     $(this).find('.select2-search__field').html("");

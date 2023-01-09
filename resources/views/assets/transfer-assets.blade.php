@@ -33,9 +33,20 @@
     <form action="{{ CRUDBooster::mainpath('add-save') }}" method="POST" id="AssetReturnRequest" enctype="multipart/form-data">
         <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
         <input type="hidden" value="1" name="request_type_id" id="request_type_id">
-
+         
+           <div class="form-group" style="padding:10px">
+                <label class="require control-label" style="font-style: italic">Transfer to:</label>
+                <select class="users" data-placeholder="** Select Transfer to **"  style="width: 50%;" name="users_id" id="users_id">
+                    <option value=""></option>
+                    @foreach($users as $value)
+                        <option value="{{$value->id}}">{{$value->name}}</option>
+                    @endforeach
+                </select>
+            </div>
+      
+            
         <div class="box-body">
-            <div class="table-responsive">           
+            <div class="table-responsive"> 
                 <table id='table_dashboard' class="table table-hover table-striped table-bordered">
                     <thead>
                         <tr class="active">
@@ -59,7 +70,7 @@
                             <td style="text-align:center">
                               <input type="checkbox" name="mo_id[]" id="mo_id{{$tableRow1}}" class="id" required data-id="{{$tableRow1}}" value="{{$res->mo_id}}"/>
                               <input type="hidden" name="request_type_id[]" id="request_type_id{{$tableRow1}}" class="id" required data-id="{{$tableRow1}}" value="{{$res->request_type_id}}"/>
-                              <input type="hidden" name="location_id[]" id="location_id{{$tableRow1}}" class="id" required data-id="{{$tableRow1}}" value="{{$stores->id}}"/>
+                              <input type="hidden" name="location_id" id="location_id{{$tableRow1}}" class="id" required data-id="{{$tableRow1}}" value="{{$stores->id}}"/>
                             </td>
                             <td>{{$res->reference_number}}</td>
                             <td>{{$res->mo_reference_number}}</td>
@@ -100,6 +111,8 @@ var table;
     window.onunload = function() {
         null;
     };
+    $('.users').select2({
+    placeholder_text_single : "-- Select --"});
     setTimeout("preventBack()", 0);
     var tableRow = <?php echo json_encode($tableRow); ?>;
     var tableRow1 = tableRow;
@@ -110,21 +123,28 @@ var table;
     });
     $("#btnSubmit").click(function(event) {
         var Ids = [];
-        var request_type_id = [];
-        var location_id = [];
+        var request_type_id;
+        var location_id;
         $.each($("input[name='mo_id[]']:checked"), function(){
             Ids.push($(this).val());
-            request_type_id.push($("#request_type_id"+$(this).attr("data-id")).val());
-            location_id.push($("#location_id"+$(this).attr("data-id")).val());
+            request_type_id = $("#request_type_id"+$(this).attr("data-id")).val();
+            location_id = $("#location_id"+$(this).attr("data-id")).val();
         });
 
         var check = $('input:checkbox:checked').length;
-        console.log(check);
         event.preventDefault();
-        if (check == 0) {
+        if($('#users_id').val() == "") {
             swal({
                 type: 'error',
-                title: 'Please select asset to return!',
+                title: 'Please select Transfer to!',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            }); 
+            event.preventDefault(); // cancel default behavior
+        }else if (check == 0) {
+            swal({
+                type: 'error',
+                title: 'Please select assets to transfer!',
                 icon: 'error',
                 confirmButtonColor: "#367fa9",
             }); 
@@ -141,14 +161,15 @@ var table;
                 height: 200
                 }, function () {
                     $.ajax({
-                        url: "{{ route('assets.save.return.assets') }}",
+                        url: "{{ route('assets.save.transfer.assets') }}",
                         type: "POST",
                         dataType: 'json',
                         data: {
                             //"_token": token,
                             "Ids": Ids,
                             "request_type_id": request_type_id,
-                            "location_id": location_id
+                            "location_id": location_id,
+                            "users_id" : $('#users_id').val(),
                         },
                         success: function (data) {
                             if (data.status == "success") {

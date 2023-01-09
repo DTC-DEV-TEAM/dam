@@ -9,6 +9,7 @@
 	use App\Models\ReturnTransferAssets;
 	use App\Models\ReturnTransferAssetsHeader;
 	use App\MoveOrder;
+	use App\Users;
 	class AdminReturnTransferAssetsHeaderController extends \crocodicstudio\crudbooster\controllers\CBController {
 
 	    public function cbInit() {
@@ -132,6 +133,7 @@
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
 				$this->index_button[] = ["label"=>"Return Assets","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('return-assets'),"color"=>"success"];
+				$this->index_button[] = ["label"=>"Transfer Assets","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('transfer-assets'),"color"=>"success"];
 			}
 
 
@@ -460,7 +462,7 @@
 
 			$closed =  	DB::table('statuses')->where('id', 13)->value('id');
 			$for_closing =  	DB::table('statuses')->where('id', 19)->value('id');
-
+			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
 			$data['mo_body'] = MoveOrder::leftjoin('header_request', 'mo_body_request.header_request_id', '=', 'header_request.id')
 				->leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
 				->leftjoin('requests', 'header_request.request_type_id', '=', 'requests.id')
@@ -500,7 +502,76 @@
 				->whereIn('mo_body_request.status_id', [$closed, $for_closing])
 				->whereNull('mo_body_request.return_flag')
 				->get();
+			if(CRUDBooster::myPrivilegeId() == 8){ 
+				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
+			}else{
+				$data['stores'] = NULL;
+			}	
 			return $this->view("assets.return-assets", $data);
+		}
+
+		//TRANSFER AREA
+		public function getTransferAssets(){
+			
+			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
+				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
+			}
+
+			$this->cbLoader();
+
+			$data = array();
+
+			$data['page_title'] = 'Transfer Request';
+
+			$closed =  	DB::table('statuses')->where('id', 13)->value('id');
+			$for_closing =  	DB::table('statuses')->where('id', 19)->value('id');
+			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
+			$data['mo_body'] = MoveOrder::leftjoin('header_request', 'mo_body_request.header_request_id', '=', 'header_request.id')
+				->leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
+				->leftjoin('requests', 'header_request.request_type_id', '=', 'requests.id')
+				->leftjoin('condition_type', 'header_request.conditions', '=', 'condition_type.id')
+				->leftjoin('cms_users as employees', 'header_request.employee_name', '=', 'employees.id')
+				->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
+				->leftjoin('departments', 'header_request.department', '=', 'departments.id')
+				->leftjoin('positions', 'header_request.position', '=', 'positions.id')
+				->leftjoin('locations', 'header_request.store_branch', '=', 'locations.id')
+				->leftjoin('cms_users as requested', 'header_request.created_by','=', 'requested.id')
+				->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
+				->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
+				->leftjoin('cms_users as tagged', 'header_request.purchased2_by','=', 'tagged.id')
+			
+				->select(
+						'header_request.*',
+						'mo_body_request.*',
+						'mo_body_request.id as mo_id',
+						'header_request.id as requestid',
+						'header_request.created_at as created',
+						'request_type.*',
+						'condition_type.*',
+						'requested.name as requestedby',
+						'employees.bill_to as employee_name',
+						'employees.company_name_id as company_name',
+						'departments.department_name as department',
+						'mo_body_request.category_id as asset_type',
+						'locations.store_name as store_branch',
+						'locations.id as location_id',
+						'approved.name as approvedby',
+						'recommended.name as recommendedby',
+						'tagged.name as taggedby',
+						'header_request.created_at as created_at',
+						DB::raw('IF(header_request.request_type_id IS NULL, mo_body_request.request_type_id_mo, header_request.request_type_id) as request_type_id')
+						)
+				->where('mo_body_request.request_created_by', CRUDBooster::myId())
+				->whereIn('mo_body_request.status_id', [$closed, $for_closing])
+				->whereNull('mo_body_request.return_flag')
+				->get();
+			if(CRUDBooster::myPrivilegeId() == 8){ 
+				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
+			}else{
+				$data['stores'] = NULL;
+			}	
+			$data['users'] = Users::where('id_cms_privileges','!=',1)->get();
+			return $this->view("assets.transfer-assets", $data);
 		}
 
 		public function saveReturnAssets(Request $request){
@@ -508,7 +579,7 @@
 			$rid = $request['request_type_id'];
 			$request_type_id = array_unique($rid);
 			$location = $request['location_id'];
-
+   
 			$getData = MoveOrder::leftjoin('header_request', 'mo_body_request.header_request_id', '=', 'header_request.id')
 			->leftjoin('requests', 'header_request.request_type_id', '=', 'requests.id')
 			->select(
@@ -577,6 +648,7 @@
 			foreach($getData as $rKey => $rData){		
 				$container['status'] = 1;
 				$container['return_header_id'] = $rData['return_header'];
+				$container['mo_id'] = $rData['mo_id'];
 				if($rData['request_type_id'] == 1){
 					$container['reference_no'] = "1".str_pad($count_header + 1, 6, '0', STR_PAD_LEFT)."ITAR";
 					$count_header++;
@@ -589,9 +661,83 @@
 				$container['asset_code'] =  $rData['asset_code'];
 				$container['digits_code'] = $rData['digits_code'];
 				$container['description'] = $rData['item_description'];
-				$container['asset_type'] = $rData['request_name'];
+				$container['asset_type'] = $rData['category_id'];
 				$container['requested_by'] = CRUDBooster::myId(); 
 				$container['requested_date'] = date('Y-m-d H:i:s');
+				$containerSave[] = $container;
+			}
+			ReturnTransferAssets::insert($containerSave);
+
+			for ($i = 0; $i < count($moId); $i++) {
+				MoveOrder::where(['id' => $moId[$i]])
+				   ->update([
+						   'return_flag' => 1,
+				           ]);
+			}
+
+			$message = ['status'=>'success', 'message' => 'Send Successfully!','redirect_url'=>CRUDBooster::mainpath()];
+			echo json_encode($message);
+		}
+
+		public function saveTransferAssets(Request $request){
+			$moId = $request['Ids'];
+			$rid = $request['request_type_id'];
+			$request_type_id = $rid;
+			$location = $request['location_id'];
+			$user_id = $request['users_id'];
+            //dd($request->all());
+			$getData = MoveOrder::leftjoin('header_request', 'mo_body_request.header_request_id', '=', 'header_request.id')
+			->leftjoin('requests', 'header_request.request_type_id', '=', 'requests.id')
+			->select(
+				'header_request.*',
+				'mo_body_request.*',
+				'mo_body_request.id as mo_id',
+				'requests.*',
+				DB::raw('IF(header_request.request_type_id IS NULL, mo_body_request.request_type_id_mo, header_request.request_type_id) as request_type_id')
+				)
+			->whereIn('mo_body_request.id', $moId)
+			->get();
+
+			// Header Area
+			$id = ReturnTransferAssetsHeader::Create(
+                [
+                    'status' => 1, 
+                    'requestor_name' => CRUDBooster::myId(), 
+                    'request_type_id' => 8,
+                    'request_type' => "TRANSFER",
+                    'requested_by' => CRUDBooster::myId(),
+                    'requested_date' => date('Y-m-d H:i:s'),
+                    'location_to_pick' => 5,
+                    'store_branch' => $location,
+                    'transfer_to' => $user_id,
+                ]
+            );   
+		
+		    $header_id = $id->id;
+
+			// Body Area
+			$container = [];
+			$containerSave = [];
+			$count_header       = DB::table('return_transfer_assets')->count();
+			foreach($getData as $rKey => $rData){		
+				$container['status'] = 1;
+				$container['return_header_id'] = $header_id;
+				$container['mo_id'] = $rData['mo_id'];
+				if($rData['request_type_id'] == 1){
+					$container['reference_no'] = "1".str_pad($count_header + 1, 6, '0', STR_PAD_LEFT)."IAT";
+					$count_header++;
+				}else{
+					$container['reference_no'] = "1".str_pad($count_header + 1, 6, '0', STR_PAD_LEFT)."FAT";
+					$count_header++;
+				}
+				$container['location_to_pick'] = 5;
+				$container['asset_code'] =  $rData['asset_code'];
+				$container['digits_code'] = $rData['digits_code'];
+				$container['description'] = $rData['item_description'];
+				$container['asset_type'] = $rData['category_id'];
+				$container['requested_by'] = CRUDBooster::myId(); 
+				$container['requested_date'] = date('Y-m-d H:i:s');
+				$container['transfer_to'] = $user_id;
 				$containerSave[] = $container;
 			}
 			ReturnTransferAssets::insert($containerSave);

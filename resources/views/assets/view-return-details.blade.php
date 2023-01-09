@@ -109,14 +109,25 @@
             <hr>
             @if( $Header->receivedby != null )
                 <div class="row">                           
-                    <label class="control-label col-md-2">Transacted By:</label>
-                    <div class="col-md-4">
-                            <p>{{$Header->receivedby}}</p>
-                    </div>
-                    <label class="control-label col-md-2">Transacted Date:</label>
-                    <div class="col-md-4">
-                            <p>{{$Header->transacted_date}}</p>
-                    </div>
+                    @if($Header->transfer_to == null)                        
+                        <label class="control-label col-md-2">Transacted By:</label>
+                        <div class="col-md-4">
+                                <p>{{$Header->receivedby}}</p>
+                        </div>
+                        <label class="control-label col-md-2">Transacted Date:</label>
+                        <div class="col-md-4">
+                                <p>{{$Header->transacted_date}}</p>
+                        </div>
+                    @else
+                        <label class="control-label col-md-2">Transferred To:</label>
+                        <div class="col-md-4">
+                                <p>{{$Header->receivedby}}</p>
+                        </div>
+                        <label class="control-label col-md-2">Transferred Date:</label>
+                        <div class="col-md-4">
+                                <p>{{$Header->transacted_date}}</p>
+                        </div>
+                    @endif
                 </div>
             @endif
             <hr>

@@ -347,7 +347,7 @@
 			
 			$cancelled  = 		DB::table('statuses')->where('id', 8)->value('id');
 
-			$List = MoveOrder::whereNull('closed_at')->orderby('mo_body_request.status_id', 'asc')->orderby('mo_body_request.id', 'asc')->get();
+			$List = MoveOrder::whereNull('closed_at')->whereNotNull('mo_reference_number')->orderby('mo_body_request.status_id', 'asc')->orderby('mo_body_request.id', 'asc')->get();
 
 			$list_array = array();
 
@@ -702,6 +702,7 @@
 				$dataLines1[$x]['created_by'] 			= CRUDBooster::myId();
 				$dataLines1[$x]['created_at'] 			= date('Y-m-d H:i:s');
 				$dataLines1[$x]['request_created_by']   = $arf_header->created_by;
+				$dataLines1[$x]['request_type_id_mo']   = $arf_header->request_type_id;
 
 				array_push($locationArray, $inventory_info->location);
 			
@@ -822,7 +823,7 @@
 	    public function hook_after_add($id) {        
 	        //Your code here
 
-			MoveOrder::wherenull('mo_reference_number')->delete();
+			MoveOrder::wherenull('status_id')->delete();
 
 			//$fields 	= Request::all();
 
