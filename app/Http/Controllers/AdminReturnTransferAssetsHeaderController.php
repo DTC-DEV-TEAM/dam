@@ -712,7 +712,7 @@
 
 			// Header Area
 			$count_header       = DB::table('return_transfer_assets_header')->count();
-			$reference_no = "1".str_pad($count_header + 1, 8, '0', STR_PAD_LEFT)."AT";
+			$reference_no = "1".str_pad($count_header + 1, 7, '0', STR_PAD_LEFT)."AT";
 
 			$id = ReturnTransferAssetsHeader::Create(
                 [
