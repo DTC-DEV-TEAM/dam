@@ -10,6 +10,7 @@ class MoveOrder extends Model
     protected $table = 'mo_body_request';
     protected $fillable = [
         'status_id', 
+        'mo_reference_number', 
         'inventory_id', 
         'request_created_by', 
         'request_type_id_mo', 

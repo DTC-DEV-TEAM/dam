@@ -241,14 +241,14 @@
                 </div>
         </div> 
         @if ($Header->location == 3)
-            @if(CRUDBooster::myPrivilegeName() == "IT" || CRUDBooster::myPrivilegeName() == "Admin" || CRUDBooster::myPrivilegeName() == "Super Administrator")
+            @if(CRUDBooster::myPrivilegeId() == 5 || CRUDBooster::myPrivilegeId() == 9 || CRUDBooster::myPrivilegeName() == "Super Administrator")
                 @if($Header->header_approval_status == 20)
                 <button class="btn btn-danger pull-right" value="approvercancel" type="button" id="btnReject" style="margin-left: 5px; margin-right:30px"><i class="fa fa-thumbs-down" ></i> Cancel</button>
                 <button class="btn btn-success pull-right" value="approved" type="button" id="btnApprove" style="margin-left: 5px;"><i class="fa fa-thumbs-up" ></i> Receive</button>
                 @endif 
             @endif            
         @else
-            @if(CRUDBooster::myPrivilegeName() == "IT" || CRUDBooster::myPrivilegeName() == "Asset Custodian" || CRUDBooster::myPrivilegeName() == "Super Administrator")
+            @if(CRUDBooster::myPrivilegeId() == 5 || CRUDBooster::myPrivilegeId() == 9 || CRUDBooster::myPrivilegeName() == "Super Administrator")
                 @if($Header->header_approval_status == 20)
                 <button class="btn btn-danger pull-right" value="approvercancel" type="button" id="btnReject" style="margin-left: 5px; margin-right:30px"><i class="fa fa-thumbs-down" ></i> Cancel</button>
                 <button class="btn btn-success pull-right" value="approved" type="button" id="btnApprove" style="margin-left: 5px;"><i class="fa fa-thumbs-up" ></i> Receive</button>

@@ -90,10 +90,10 @@
 			if(CRUDBooster::isUpdate()) {
 
 				$pending           = DB::table('statuses')->where('id', 1)->value('id');
-				$released  = 		DB::table('statuses')->where('id', 12)->value('id');
+				$forTurnOver  = 		DB::table('statuses')->where('id', 24)->value('id');
 
 				$this->addaction[] = ['title'=>'Cancel Request','url'=>CRUDBooster::mainpath('getRequestCancelReturn/[id]'),'icon'=>'fa fa-times', "showIf"=>"[status] == $pending"];
-			
+				$this->addaction[] = ['title'=>'Print','url'=>CRUDBooster::mainpath('getRequestPrintTF/[id]'),'icon'=>'fa fa-print', "showIf"=>"[status] == $forTurnOver"];
 				//$this->addaction[] = ['title'=>'Receive Asset','url'=>CRUDBooster::mainpath('getRequestReceive/[id]'),'icon'=>'fa fa-check', "showIf"=>"[status_id] == $released"];
 			}
 
@@ -277,8 +277,6 @@
 	    public function hook_query_index(&$query) {
 			if(CRUDBooster::isSuperadmin()){
 
-				$released  = 		DB::table('statuses')->where('id', 12)->value('id');
-
 				$query->whereNull('return_transfer_assets_header.archived')
 					  ->orderBy('return_transfer_assets_header.status', 'ASC')
 					  ->orderBy('return_transfer_assets_header.id', 'DESC');
@@ -290,8 +288,6 @@
 				$query->where(function($sub_query){
 
 					$user = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-
-					$released  = 		DB::table('statuses')->where('id', 12)->value('id');
 
 					$sub_query->where('return_transfer_assets_header.requested_by', CRUDBooster::myId())
 							  ->whereNull('return_transfer_assets_header.archived'); 
@@ -658,7 +654,7 @@
 			// Body Area
 			$container = [];
 			$containerSave = [];
-	
+	       
 			foreach($getData as $rKey => $rData){		
 				$container['status'] = 1;
 				$container['return_header_id'] = $rData['return_header'];
@@ -788,5 +784,50 @@
 				]);	
 
 			CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Request has been cancelled successfully!"), 'info');
+		}
+
+		public function getRequestPrintTF($id){
+			
+		
+			$this->cbLoader();
+			if(!CRUDBooster::isUpdate() && $this->global_privilege==FALSE) {    
+				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+			}  
+
+			$data['page_title'] = 'Print Return/Transfer Request';
+			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
+			$data['Header'] = ReturnTransferAssetsHeader::leftjoin('cms_users as employees', 'return_transfer_assets_header.requestor_name', '=', 'employees.id')
+			->leftjoin('requests', 'return_transfer_assets_header.request_type_id', '=', 'requests.id')
+			->leftjoin('departments', 'employees.department_id', '=', 'departments.id')
+			->leftjoin('cms_users as approved', 'return_transfer_assets_header.approved_by','=', 'approved.id')
+			->leftjoin('cms_users as received', 'return_transfer_assets_header.transacted_by','=', 'received.id')
+			->leftjoin('cms_users as closed', 'return_transfer_assets_header.close_by','=', 'closed.id')
+			->leftjoin('locations', 'return_transfer_assets_header.store_branch', '=', 'locations.id')
+			->select(
+					'return_transfer_assets_header.*',
+					'return_transfer_assets_header.id as requestid',
+					'requests.request_name as request_name',
+					'employees.name as employee_name',
+					'employees.company_name_id as company',
+					'employees.position_id as position',
+					'departments.department_name as department_name',
+					'approved.name as approvedby',
+					'received.name as receivedby',
+					'closed.name as closedby',
+					'locations.store_name as store_branch'
+					)
+			->where('return_transfer_assets_header.id', $id)->first();
+	   
+			$data['return_body'] = ReturnTransferAssets::
+					leftjoin('statuses', 'return_transfer_assets.status', '=', 'statuses.id')
+				
+				->select(
+					'return_transfer_assets.*',
+					'statuses.*',
+					)
+					->where('return_transfer_assets.return_header_id', $id)->get();	
+			$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
+			
+			return $this->view("assets.print-request-trf", $data);
 		}
 	}

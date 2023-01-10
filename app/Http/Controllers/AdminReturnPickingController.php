@@ -281,7 +281,7 @@
 					  ->whereNull('return_transfer_assets_header.transfer_to')
 					  ->orderBy('return_transfer_assets_header.id', 'ASC');
 
-			}else if(CRUDBooster::myPrivilegeId() == 6){ 
+			}else if(CRUDBooster::myPrivilegeId() == 9){ 
 
 				$forturnover =  	DB::table('statuses')->where('id', 24)->value('id');
 				$query->where('return_transfer_assets_header.status', $forturnover)
@@ -550,7 +550,7 @@
 
 			$data = array();
 
-			$data['page_title'] = 'Pick/Recieve Return Request';
+			$data['page_title'] = 'Asset Return Receiving';
 
 			$data['Header'] = ReturnTransferAssetsHeader::leftjoin('cms_users as employees', 'return_transfer_assets_header.requestor_name', '=', 'employees.id')
 				->leftjoin('requests', 'return_transfer_assets_header.request_type_id', '=', 'requests.id')
