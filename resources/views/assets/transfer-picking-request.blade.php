@@ -322,7 +322,7 @@
                 showCancelButton: true,
                 confirmButtonColor: "#41B314",
                 cancelButtonColor: "#F9354C",
-                confirmButtonText: "Yes, pick it!",
+                confirmButtonText: "Yes, receive it!",
                 width: 450,
                 height: 200
                 }, function () {

@@ -162,12 +162,9 @@ var table;
                                     type: data.status,
                                     title: data.message,
                                 });
-                            }
-                            location.reload();
-                        },
-                        error: function (data) {
-                            console.log('Error:', data);
+                            };
                         }
+                        
                     });                                                
             });
         }

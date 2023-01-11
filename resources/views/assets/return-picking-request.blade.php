@@ -132,7 +132,7 @@
                                     @endforeach
                                 </select>
                             </td>   
-                            @if(CRUDBooster::myPrivilegeId() == 6)
+                            <!-- @if(CRUDBooster::myPrivilegeId() == 9)
                             <td>
                                 <select required selected data-placeholder="-- Select Location --" id="location{{$tableRow1}}" data-id="{{$tableRow1}}" name="location" class="form-select location" style="width:100%;">
                                     @foreach($warehouse_location as $locations)
@@ -141,7 +141,7 @@
                                     @endforeach
                                 </select>
                             </td>   
-                            @endif     
+                            @endif      -->
                         </tr>
                         <tr id="others{{$tableRow1}}" style="display:none">
                         <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
@@ -337,7 +337,7 @@
                 showCancelButton: true,
                 confirmButtonColor: "#41B314",
                 cancelButtonColor: "#F9354C",
-                confirmButtonText: "Yes, pick it!",
+                confirmButtonText: "Yes, receive it!",
                 width: 450,
                 height: 200
                 }, function () {

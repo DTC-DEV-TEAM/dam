@@ -6,6 +6,7 @@
 	use CRUDBooster;
 	use App\BodyRequest;
 	use App\MoveOrder;
+	use App\Models\ReturnTransferAssets;
 
 	class AdminReportsController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -388,16 +389,17 @@
 			$data['page_title'] = 'Request Assets Status Reports';
 
 			$result_one = BodyRequest::arrayone();
-			$result_two = MoveOrder::arraytwo();
+			$result_two = ReturnTransferAssets::arraytwo();
             $suppliesMarketing = [];
 			$suppliesMarketingCon = [];
-			
+	
 			foreach($result_one as $smVal){
 				$suppliesMarketingCon['id'] = $smVal['requestid'];
 				$suppliesMarketingCon['reference_number'] = $smVal['reference_number'];
 				$suppliesMarketingCon['requested_by'] = $smVal['requestedby'];
 				$suppliesMarketingCon['department'] = $smVal['department'] ? $smVal['department'] : $smVal['store_branch'];
 				$suppliesMarketingCon['store_branch'] = $smVal['store_branch'] ? $smVal['store_branch'] : $smVal['department'];
+				$suppliesMarketingCon['transaction_type'] = "REQUEST";
 				$bodyStatus = $smVal['body_statuses_description'] ? $smVal['body_statuses_description'] : $smVal['status_description'];
 				if(in_array($smVal['request_type_id'], [6,7])){
 					$suppliesMarketingCon['status'] = $smVal['status_description'];
@@ -423,8 +425,31 @@
 				$suppliesMarketingCon['transacted_date'] = $smVal['transacted_date'];
 				$suppliesMarketing[] = $suppliesMarketingCon;
 			}
-		
-			$data['finalData'] = $suppliesMarketing;
+
+			$returnTransfer = [];
+			$returnTransferCon = [];
+			foreach($result_two as $rtVal){
+				$returnTransferCon['id'] = $rtVal['requestid'];
+				$returnTransferCon['reference_number'] = $rtVal['reference_no'];
+				$returnTransferCon['requested_by'] = $rtVal['employee_name'];
+				$returnTransferCon['department'] = $rtVal['department_name'] ? $rtVal['department_name'] : $rtVal['store_branch'];
+				$returnTransferCon['store_branch'] = $rtVal['store_branch'] ? $rtVal['store_branch'] : $rtVal['department_name'];
+				$returnTransferCon['status'] = $rtVal['status_description'];
+				$returnTransferCon['description'] = $rtVal['description'];
+				$returnTransferCon['request_quantity'] = $rtVal['quantity'];
+				$returnTransferCon['transaction_type'] = $rtVal['request_type'];
+				$returnTransferCon['request_type'] = $rtVal['request_name'];
+				$returnTransferCon['mo_reference'] = $rtVal['reference_no'];
+				$returnTransferCon['mo_item_code'] = $rtVal['digits_code'];
+				$returnTransferCon['mo_item_description'] = $rtVal['description'];
+				$returnTransferCon['mo_qty_serve_qty'] = $rtVal['quantity'];
+				$returnTransferCon['requested_date'] = $rtVal['requested_date'];
+				$returnTransferCon['transacted_by'] = $rtVal['receivedby'];
+				$returnTransferCon['transacted_date'] = $rtVal['transacted_date'];
+				$returnTransfer[] = $returnTransferCon;
+			}
+			//dd($returnTransfer);
+			$data['finalData'] = array_merge($suppliesMarketing, $returnTransfer);
 			//Create a view. Please use `view` method instead of view method from laravel.
 			return $this->view('assets.purchasing-reports',$data);
 		}

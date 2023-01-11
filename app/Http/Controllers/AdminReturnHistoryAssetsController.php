@@ -285,7 +285,7 @@
 				->whereNull('return_transfer_assets_header.archived')
 				->orderBy('return_transfer_assets_header.id', 'ASC');
 
-			}else if(CRUDBooster::myPrivilegeId() == 6){ 
+			}else if(CRUDBooster::myPrivilegeId() == 9){ 
 
 				//$approved =  		DB::table('statuses')->where('id', 4)->value('id');
 				$user_data         = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();

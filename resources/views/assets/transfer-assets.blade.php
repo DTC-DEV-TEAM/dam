@@ -184,10 +184,6 @@ var table;
                                     title: data.message,
                                 });
                             }
-                            location.reload();
-                        },
-                        error: function (data) {
-                            console.log('Error:', data);
                         }
                     });                                                
             });

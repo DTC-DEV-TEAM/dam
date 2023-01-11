@@ -21,10 +21,17 @@
                     <table width="100%" style="font-size: 13px;">
 
                         <tr>
+                        @if($Header->request_type == "RETURN")
                             <td colspan="4">
-                                <h4 align="center" ><strong>Asset Deployment Form</strong></h4> 
+                                <h4 align="center" ><strong>Asset Return Form</strong></h4> 
                             </td>
+                        @else
+                            <td colspan="4">
+                                <h4 align="center" ><strong>Asset Transfer Form</strong></h4> 
+                            </td>
+                        @endif
                         </tr>
+
                         <tr>
                             <td width="20%"><label><strong>Reference_no:<strong></label></td>
                             <td width="40%"><p>{{$Header->reference_no}}</p></td>
@@ -36,11 +43,11 @@
                             <td width="20%"><label><strong>Employee Name:<strong></label></td>
                             <td width="40%"><p>{{$Header->employee_name}}</p></td>
                             <td width="10%"><label><strong>Company:<strong></label></td>
-                            <td><p>{{$Header->company_name}}</p></td>
+                            <td><p>{{$Header->company}}</p></td>
                         </tr>
                         <tr>
                             <td width="20%"><label><strong>Department:<strong></label></td>
-                            <td width="40%"><p>{{$Header->department}}</p></td>
+                            <td width="40%"><p>{{$Header->department_name}}</p></td>
                             <td width="10%"><label><strong>Position:<strong></label></td>
                             <td><p>{{$Header->position}}</p></td>
                         </tr>
@@ -59,7 +66,7 @@
 
                         <tr>
                                 <td width="20%"><label><strong>Purpose:<strong></label></td>
-                                <td width="40%"><p>{{$Header->request_description}}</p></td>
+                                <td width="40%"><p>{{$Header->request_type}}</p></td>
                         </tr>
 
                         <tr>
@@ -101,7 +108,7 @@
                                                         {{$rowresult->digits_code}}
 
                                                     </td>
-                                                    <td height="10">{{$rowresult->item_description}}</td>
+                                                    <td height="10">{{$rowresult->description}}</td>
                                                     <td height="10">{{$rowresult->serial_no}}</td>
                                                     <td height="10">{{$rowresult->quantity}}</td>
                                                     <td height="10">{{$rowresult->unit_cost}}</td>
@@ -143,39 +150,21 @@
                             </td>
                             <td width="40%"><p>{{$Header->approvedby}}</p></td>
                             <td width="20%"><label><strong>Approved Date:<strong></label></td>
-                            <td><p>{{$Header->approved_at}}</p></td>
+                            <td><p>{{$Header->approved_date}}</p></td>
                         </tr>
 
-                        @if($Header->recommendedby != null || $Header->recommendedby != "")
-                            <tr>
-                                <td width="20%">
-                                    <label><strong>Recommended By:<strong></label>
-                                </td>
-                                <td width="40%"><p>{{$Header->recommendedby}}</p></td>
-                                <td width="20%"><label><strong>Recommended Date:<strong></label></td>
-                                <td><p>{{$Header->recommended_at}}</p></td>
-                            </tr>
+                        <tr>
+                        @if($Header->request_type == "TRANSFER")
+                            <td width="20%">
+                                <label><strong>Transferred To:<strong></label>
+                            </td>
+                            <td width="40%"><p>{{$Header->transferTo}}</p></td>
+                            <td width="20%"><label><strong>Transferred Date:<strong></label></td>
+                            <td><p>{{$Header->approved_date}}</p></td>
+
                         @endif
-
-                        <tr>
-                            <td width="20%">
-                                <label><strong>Processed By:<strong></label>
-                            </td>
-                            <td width="40%"><p>{{$Header->processedby}}</p></td>
-                            <td width="20%"><label><strong>Processed Date:<strong></label></td>
-                            <td><p>{{$Header->purchased2_at}}</p></td>
                         </tr>
 
-                        <tr>
-                            <td width="20%">
-                                <label><strong>Picked By:<strong></label>
-                            </td>
-                            <td width="40%"><p>{{$Header->pickedby}}</p></td>
-                            <td width="20%"><label><strong>Picked Date:<strong></label></td>
-                            <td><p>{{$Header->picked_at}}</p></td>
-                        </tr>
-
-            
                         <tr>
                             <td colspan="4"><hr/></td>
                         </tr>
@@ -188,9 +177,8 @@
 
                         <tr>
                             <td colspan="4">
-                                <p>
-                                    I, <strong>{{$Header->requestedby}}</strong> hereby confirm the acceptance of the asset as discussed above. I agree to abide all the governing policies and procedures regarding 
-                                    the Company’s assets. I further agree to assume all the accountabilities attached to the possession of such asset
+                                <p style="font-style:italic">
+                                    I, <strong>{{$Header->requestedby}}</strong> will ensure that this form is signed by the receiver and received in system before turnover of company assets
                                 </p>
                             </td>
                         </tr>
@@ -216,6 +204,26 @@
                             <td>
                             
                                 <p>{{$Header->created_at}}</p>
+                            </td>
+
+                        </tr>
+                        <tr>
+                        
+                            <td width="20%">
+                            
+                                <label><strong>Received By:<strong></label>
+                            </td>
+                            <td width="40%">
+                            
+                                
+                            </td>
+                            <td width="20%">
+                            
+                                <label><strong>Received Date:<strong></label>
+                            </td>
+                            <td>
+                            
+                          
                             </td>
 
                         </tr>
@@ -256,23 +264,23 @@
             generator.close();
         }   
 
-        $("#printARF").on('click',function(){
-        //var strconfirm = confirm("Are you sure you want to approve this pull-out request?");
-            var data = $('#myform').serialize();
-                $.ajax({
-                        type: 'GET',
-                        url: '{{ url('admin/move_order/ADFUpdate') }}',
-                        data: data,
-                        success: function( response ){
-                            console.log( response );              
+        // $("#printARF").on('click',function(){
+        // //var strconfirm = confirm("Are you sure you want to approve this pull-out request?");
+        //     var data = $('#myform').serialize();
+        //         $.ajax({
+        //                 type: 'GET',
+        //                 url: '{{ url('admin/move_order/ADFUpdate') }}',
+        //                 data: data,
+        //                 success: function( response ){
+        //                     console.log( response );              
                         
-                        },
-                        error: function( e ) {
-                            console.log(e);
-                        }
-                  });
-                  return false;
-        });
+        //                 },
+        //                 error: function( e ) {
+        //                     console.log(e);
+        //                 }
+        //           });
+        //           return false;
+        // });
 
     </script>
 @endpush

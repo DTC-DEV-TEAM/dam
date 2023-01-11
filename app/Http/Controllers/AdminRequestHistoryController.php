@@ -356,6 +356,10 @@
 
 				$query->whereNotNull('header_request.closed_by')->where('header_request.closed_by', CRUDBooster::myId())->whereNull('header_request.deleted_at')->orderBy('header_request.status_id', 'asc')->orderBy('header_request.id', 'DESC');
 
+			}else if(CRUDBooster::myPrivilegeId() == 9){ 
+
+				$query->whereNotNull('header_request.purchased2_by')->where('header_request.picked_by', CRUDBooster::myId())->whereNull('header_request.deleted_at')->orderBy('header_request.status_id', 'asc')->orderBy('header_request.id', 'DESC');
+
 			}
 	            
 	    }
