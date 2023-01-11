@@ -126,9 +126,9 @@
 			if(CRUDBooster::myPrivilegeId() == 6){
 				// $this->addaction[] = ['url'=>CRUDBooster::mainpath('detail/[id]'),'icon'=>'fa fa-pencil','color'=>'default', "showIf"=>"[header_approval_status] == $for_approval && [location] == 1"];
 				// $this->addaction[] = ['url'=>CRUDBooster::mainpath('detail/[id]'),'icon'=>'fa fa-pencil','color'=>'default', "showIf"=>"[header_approval_status] == $for_approval && [location] == 2"];
-				//$this->addaction[] = ['url'=>CRUDBooster::mainpath('detail/[id]'),'icon'=>'fa fa-eye','color'=>'default', "showIf"=>"[header_approval_status] == $for_approval && [location] == 3"];
+				$this->addaction[] = ['url'=>CRUDBooster::mainpath('detail-view-print/[id]'),'icon'=>'fa fa-eye','color'=>'default', "showIf"=>"[header_approval_status] == $recieved"];
 				//$this->addaction[] = ['url'=>CRUDBooster::mainpath('detail-view/[id]'),'icon'=>'fa fa-eye','color'=>'default', "showIf"=>"[header_approval_status] == $recieved or [header_approval_status] == $reject or [location] == 3"];
-				$this->addaction[] = ['url'=>CRUDBooster::mainpath('detail-view/[id]'),'icon'=>'fa fa-eye','color'=>'default'];
+				$this->addaction[] = ['url'=>CRUDBooster::mainpath('detail-view/[id]'),'icon'=>'fa fa-eye','color'=>'default', "showIf"=>"[header_approval_status] == $for_approval"];
 			}
 			else if(CRUDBooster::myPrivilegeId() == 5 || CRUDBooster::myPrivilegeId() == 9 || CRUDBooster::isSuperadmin()){
 				$this->addaction[] = ['url'=>CRUDBooster::mainpath('detail/[id]'),'icon'=>'fa fa-pencil','color'=>'default', "showIf"=>"[header_approval_status] == $for_approval"];
@@ -529,7 +529,7 @@
 
 			$data['page_title'] = 'Add Inventory';
 
-			$data['warehouse_location'] = WarehouseLocationModel::all();
+			$data['warehouse_location'] = WarehouseLocationModel::where('id','!=',4)->get();;
 
 			return $this->view("assets.add-inventory", $data);
 
@@ -581,7 +581,7 @@
 				)
 				->where('assets_inventory_body_for_approval.header_id', $id)
 				->get();
-				$data['warehouse_location'] = WarehouseLocationModel::all();
+				$data['warehouse_location'] = WarehouseLocationModel::where('id','!=',4)->get();
 				return $this->view("assets.edit-inventory-list-for-approval", $data);
 		}
 
@@ -632,8 +632,56 @@
 				)
 				->where('assets_inventory_body_for_approval.header_id', $id)
 				->get();
-				$data['warehouse_location'] = WarehouseLocationModel::all();
+				$data['warehouse_location'] = WarehouseLocationModel::where('id','!=',4)->get();
 				return $this->view("assets.inventory_list_for_approval", $data);
+		}
+
+		public function getDetailViewPrint($id){
+			$this->cbLoader();
+            if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
+                CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+            }
+
+			$data = [];
+			$data['page_title'] = 'View Asset Movement History Inventory Details';
+            //header details
+			$data['Header'] = AssetsInventoryHeader::leftjoin('assets_header_images', 'assets_inventory_header.id', '=', 'assets_header_images.header_id')
+				->leftjoin('cms_users', 'assets_inventory_header.created_by', '=', 'cms_users.id')
+				->select(
+					'assets_inventory_header.*',
+					'assets_inventory_header.id as header_id',
+					'cms_users.*',
+					'assets_inventory_header.created_at as date_created'
+					)
+			    ->where('assets_inventory_header.id', $id)
+			    ->first();
+
+			$data['header_images'] = AssetsHeaderImages::select(
+				  'assets_header_images.*'
+				)
+				->where('assets_header_images.header_id', $id)
+				->get();
+	        //Body details
+			$data['Body'] = AssetsInventoryBody::leftjoin('statuses', 'assets_inventory_body.statuses_id','=','statuses.id')
+			    ->leftjoin('assets_inventory_header', 'assets_inventory_body.header_id', '=', 'assets_inventory_header.id')
+			    ->leftjoin('assets', 'assets_inventory_body.item_id', '=', 'assets.id')
+				->leftjoin('cms_users as cms_users_updated_by', 'assets_inventory_body.updated_by', '=', 'cms_users_updated_by.id')
+				->leftjoin('warehouse_location_model', 'assets_inventory_body.location', '=', 'warehouse_location_model.id')
+				->select(
+				  'assets_inventory_body.*',
+				  'assets_inventory_body.id as aib_id',
+				  'statuses.*',
+				  'assets_inventory_header.location as location',
+				  'warehouse_location_model.location as body_location',
+				  'assets.item_type as itemType',
+				  'assets.image as itemImage',
+				  'assets_inventory_body.updated_at as date_updated',
+				  'cms_users_updated_by.name as updated_by'
+				)
+				->where('assets_inventory_body.header_id', $id)
+				->get();
+
+				return $this->view("assets.inventory_list", $data);
 		}
 
 		public function getapprovedProcess(Request $request){

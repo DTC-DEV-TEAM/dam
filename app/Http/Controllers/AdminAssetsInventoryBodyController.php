@@ -314,6 +314,7 @@
 			$defective  =  		DB::table('statuses')->where('id', 23)->value('status_description');
 			$forReturn =  		DB::table('statuses')->where('id', 26)->value('status_description');
 			$forTransfer =  		DB::table('statuses')->where('id', 27)->value('status_description');
+			$notAvailabe =  		DB::table('statuses')->where('id', 28)->value('status_description');
 			if($column_index == 4){
 				if($column_value == $for_approval){
 					$column_value = '<span class="label label-success">'.$for_approval.'</span>';
@@ -329,6 +330,8 @@
 					$column_value = '<span class="label label-info">'.$forReturn.'</span>';
 				}else if($column_value == $forTransfer){
 					$column_value = '<span class="label label-info">'.$forTransfer.'</span>';
+				}else if($column_value == $notAvailabe){
+					$column_value = '<span class="label label-danger">'.$notAvailabe.'</span>';
 				}
 			}
 
@@ -381,17 +384,21 @@
 			$item_condition =  $fields['item_condition'];
 			$comments =  $fields['comments'];
 			$other_comment =  $fields['other_comment'];
-		
-			if($item_condition === "Good"){
+			$quantity =  $fields['quantity'];
+			$statuses_id =  $fields['statuses_id'];
+			if($item_condition === "Good" && $quantity != 0){
                $status = 6;
+			}else if($quantity == 0){
+               $status = 28;
 			}else{
 				$status = 23;
 			}
-			//dd($item_condition);
+	
 			DB::table('assets_inventory_body')->where('id', $id)
 			->update([
 				'item_condition' => $item_condition,
 				'statuses_id' => $status,
+				'quantity' => $quantity,
 				'updated_by' => CRUDBooster::myId()
 			]);
 

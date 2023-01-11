@@ -9,6 +9,7 @@
 	use App\ApprovalMatrix;
 	use App\StatusMatrix;
 	use App\MoveOrder;
+	use App\Models\InAssets;
 	//use Illuminate\Http\Request;
 	//use Illuminate\Support\Facades\Input;
 	use Illuminate\Support\Facades\Log;
@@ -494,6 +495,46 @@
 												->value('status_id');
 			}
 
+			// $inAssets 	= MoveOrder::whereIn('id',$item_id)->get();
+
+			// $mo_reference = [];
+			// $request_type_id_mo = [];
+			// $digits_code = [];
+            // $asset_code = [];
+            // $item_description = [];
+			// $serial_no = [];
+			// $quantity = [];
+			// $unit_cost = [];
+			// foreach($inAssets as $invData){
+			// 	array_push($mo_reference, $invData['mo_reference_number']);
+			// 	array_push($request_type_id_mo, $invData['request_type_id_mo']);
+			// 	array_push($digits_code, $invData['digits_code']);
+            //     array_push($asset_code, $invData['asset_code']);
+            //     array_push($item_description, $invData['item_description']);
+			// 	array_push($serial_no, $invData['serial_no']);
+			// 	array_push($quantity, $invData['quantity']);
+			// 	array_push($unit_cost, $invData['unit_cost']);
+			// }
+
+			// //put in in assets deployed
+			// for($x=0; $x < count((array)$item_id); $x++) {
+			// 	InAssets::create([
+			// 		'arf_number'          => $arf_header->reference_no,
+			// 		'mo_ref_number'       => $mo_reference[$x],
+			// 		'requestor_name'      => $employee_name->bill_to,
+			// 		'transfer_to'         => NULL,
+			// 		'transaction_type'    => $request_type_id_mo[$x],
+			// 		'request_type'        => "REQUEST",
+			// 		'asset_code'          => $asset_code[$x],
+			// 		'digits_code'         => $item_description[$x],
+			// 		'item_description'    => $category[$x],
+			// 		'serial_no'           => $serial_no[$x],
+			// 		'quantity'            => $quantity[$x],
+			// 		'amount'              => $unit_cost[$x],
+			// 		'date_received'       => date('Y-m-d H:i:s'),
+			// 	]);
+		    // }
+            // dd($inAssets);
 			$employee_name = DB::table('cms_users')->where('id', $arf_header->employee_name)->first();
 				for($x=0; $x < count((array)$item_id); $x++) {
 					if(in_array($arf_header->request_type_id, [1, 5])){
@@ -542,6 +583,7 @@
 				}
 			}
 
+			
 			/*$arf_header = 		HeaderRequest::where(['id' => $id])->first();
 
 			if($arf_header->request_type_id == 5){
