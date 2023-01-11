@@ -49,8 +49,20 @@
                     </div>
                 @endif
             </div>
-
-           
+            <hr>
+            <div class="row">
+                @if($Header->transfer_to != null)    
+                    <label class="control-label col-md-2">Purpose:</label>
+                    <div class="col-md-4">
+                            <p>{{$Header->request_type}}</p>
+                    </div>                    
+                    @else
+                    <label class="control-label col-md-2">Purpose:</label>
+                    <div class="col-md-4">
+                            <p>{{$Header->request_type}}</p>
+                    </div>
+                @endif
+            </div>
 
             <hr/>
         

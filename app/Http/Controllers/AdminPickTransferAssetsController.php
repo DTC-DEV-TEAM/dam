@@ -524,6 +524,7 @@
 				->leftjoin('requests', 'return_transfer_assets_header.request_type_id', '=', 'requests.id')
 				->leftjoin('departments', 'employees.department_id', '=', 'departments.id')
 				->leftjoin('locations', 'return_transfer_assets_header.store_branch', '=', 'locations.id')
+				->leftjoin('cms_users as transfer_to', 'return_transfer_assets_header.transfer_to','=', 'transfer_to.id')
 				->select(
 						'return_transfer_assets_header.*',
 						'return_transfer_assets_header.id as requestid',
@@ -532,7 +533,8 @@
 						'employees.company_name_id as company',
 						'employees.position_id as position',
 						'departments.department_name as department_name',
-						'locations.store_name as store_branch'
+						'locations.store_name as store_branch',
+						'transfer_to.name as transfer_to',
 						)
 				->where('return_transfer_assets_header.id', $id)->first();
            
@@ -570,6 +572,7 @@
 			->leftjoin('cms_users as received', 'return_transfer_assets_header.transacted_by','=', 'received.id')
 			->leftjoin('cms_users as closed', 'return_transfer_assets_header.close_by','=', 'closed.id')
 			->leftjoin('locations', 'return_transfer_assets_header.store_branch', '=', 'locations.id')
+			->leftjoin('cms_users as transfer_to', 'return_transfer_assets_header.transfer_to','=', 'transfer_to.id')
 			->select(
 					'return_transfer_assets_header.*',
 					'return_transfer_assets_header.id as requestid',
@@ -581,7 +584,8 @@
 					'approved.name as approvedby',
 					'received.name as receivedby',
 					'closed.name as closedby',
-					'locations.store_name as store_branch'
+					'locations.store_name as store_branch',
+					'transfer_to.name as transfer_to',
 					)
 			->where('return_transfer_assets_header.id', $id)->first();
 	   

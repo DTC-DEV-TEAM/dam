@@ -67,6 +67,12 @@
                         <tr>
                                 <td width="20%"><label><strong>Purpose:<strong></label></td>
                                 <td width="40%"><p>{{$Header->request_type}}</p></td>
+                                @if($Header->request_type == "TRANSFER")
+                                <td width="10%">
+                                    <label><strong>Transferred To:<strong></label>
+                                </td>
+                                <td><p>{{$Header->transferTo}}</p></td>
+                                @endif
                         </tr>
 
                         <tr>
@@ -89,11 +95,7 @@
                                     </thead>
                                     <tbody>
 
-                                        <?Php   $item_count = 0; ?>
-
                                         @foreach($return_body as $rowresult)
-
-                                            <?Php $item_count++; ?>
 
                                             <tr>
                                                 @if($rowresult->digits_code != null)
@@ -115,7 +117,7 @@
                                                 @endif
                                             </tr>
 
-                                            <?Php $cost_total = $rowresult->total_unit_cost; ?>
+                                            <?Php $cost_total = $rowresult->total_cost; ?>
                                             
                                         @endforeach
                                 
@@ -127,11 +129,7 @@
                                         </td>
 
                                         <td style="text-align:center">
-                                            @if($item_count == 1)
-                                                <label>{{$cost_total}}</label>
-                                            @else
-                                                <label>{{$Header->total}}</label>
-                                            @endif
+                                                <label>{{$cost_total}}</label>      
                                         </td>
 
                                     </tr>
@@ -151,18 +149,6 @@
                             <td width="40%"><p>{{$Header->approvedby}}</p></td>
                             <td width="20%"><label><strong>Approved Date:<strong></label></td>
                             <td><p>{{$Header->approved_date}}</p></td>
-                        </tr>
-
-                        <tr>
-                        @if($Header->request_type == "TRANSFER")
-                            <td width="20%">
-                                <label><strong>Transferred To:<strong></label>
-                            </td>
-                            <td width="40%"><p>{{$Header->transferTo}}</p></td>
-                            <td width="20%"><label><strong>Transferred Date:<strong></label></td>
-                            <td><p>{{$Header->approved_date}}</p></td>
-
-                        @endif
                         </tr>
 
                         <tr>
@@ -203,7 +189,7 @@
                             </td>
                             <td>
                             
-                                <p>{{$Header->created_at}}</p>
+                                <p>{{$Header->requested_date}}</p>
                             </td>
 
                         </tr>
