@@ -123,7 +123,7 @@
 			$for_approval = DB::table('statuses')->where('id', 20)->value('id');
 			$reject = DB::table('statuses')->where('id', 21)->value('id');
 			$recieved = DB::table('statuses')->where('id', 22)->value('id');
-			if(CRUDBooster::myPrivilegeId() == 6){
+			if(CRUDBooster::myPrivilegeId() == 6 || CRUDBooster::myPrivilegeId() == 9){
 				// $this->addaction[] = ['url'=>CRUDBooster::mainpath('detail/[id]'),'icon'=>'fa fa-pencil','color'=>'default', "showIf"=>"[header_approval_status] == $for_approval && [location] == 1"];
 				// $this->addaction[] = ['url'=>CRUDBooster::mainpath('detail/[id]'),'icon'=>'fa fa-pencil','color'=>'default', "showIf"=>"[header_approval_status] == $for_approval && [location] == 2"];
 				$this->addaction[] = ['url'=>CRUDBooster::mainpath('detail-view-print/[id]'),'icon'=>'fa fa-eye','color'=>'default', "showIf"=>"[header_approval_status] == $recieved"];

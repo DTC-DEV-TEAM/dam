@@ -117,7 +117,7 @@
         <!-- Body Area -->
       
         <div class="box-header text-center">
-        <a style="float:left" class='btn btn-success btn-xs' href='{{CRUDBooster::mainpath("generate-barcode/".$Header->header_id)."?return_url=".urlencode(Request::fullUrl())}}'><i class='fa fa-barcode'></i> Print all Barcode</a>
+        <!-- <a style="float:left" class='btn btn-success btn-xs' href='{{CRUDBooster::mainpath("generate-barcode/".$Header->header_id)."?return_url=".urlencode(Request::fullUrl())}}'><i class='fa fa-barcode'></i> Print all Barcode</a> -->
             <h3 class="box-title"><b>{{ trans('message.form-label.asset_items') }}</b></h3>
         </div>
 
