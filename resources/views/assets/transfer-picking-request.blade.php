@@ -145,7 +145,7 @@
 
         <div class='panel-footer'>
             <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
-            <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-circle-o" ></i> {{ trans('message.form.pick') }}</button>
+            <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-circle-o" ></i> Receive</button>
 
         </div>
 
@@ -322,7 +322,7 @@
                 showCancelButton: true,
                 confirmButtonColor: "#41B314",
                 cancelButtonColor: "#F9354C",
-                confirmButtonText: "Yes, pick it!",
+                confirmButtonText: "Yes, receive it!",
                 width: 450,
                 height: 200
                 }, function () {

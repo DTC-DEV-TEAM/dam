@@ -30,93 +30,62 @@
         <div class='panel-body'>
 
             <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label"><span style="color:red">*</span> {{ trans('message.form-label.employee_name') }}</label>
+                        <input class="form-control auto" placeholder="Search Employee" id="search_employee">
+                        <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" id="ui-id-2" style="display: none; top: 60px; left: 15px; width: 520px;">
+                            <li>Loading...</li>
+                        </ul>
+                    </div>
+                </div>
 
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label require">{{ trans('message.form-label.company_name') }}</label>
-                         
-                       <!-- <input type="text" class="form-control"  id="employee_name" name="employee_name"  required readonly value="{{$employeeinfos->bill_to}}"> -->
-
-                        <select class="js-example-basic-single" style="width: 100%;" required name="company_name" id="company_name">
-                                            <option value="">-- Select Company Name --</option>
-
-                                            @foreach($companies as $datas)    
-                                                <option  value="{{$datas->company_name}}">{{$datas->company_name}}</option>
-                                            @endforeach
-
-                         </select>
-
+                        <input type="text" class="form-control"  id="company" name="company"  required readonly>
                     </div>
-
                 </div>
-
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label class="control-label require">{{ trans('message.form-label.employee_name') }}</label>
-                        <select class="js-example-basic-single" style="width: 100%;" required name="employee_name" id="employee_name">
-
-                         </select>
-
-                    </div>
-
-                </div>
-
             </div>
 
 
             <div class="row">
-
-
-
-
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label require">{{ trans('message.form-label.department') }}</label>
-                        <input type="text" class="form-control"  id="department" name="department"  required readonly value="{{$employeeinfos->department_name}}">
+                        <input type="text" class="form-control"  id="department" name="department"  required readonly>
 
                     </div>
-
                 </div>
-
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label require">{{ trans('message.form-label.position') }}</label>
-                        <input type="text" class="form-control"  id="position" name="position"  required readonly value="{{$employeeinfos->position_description}}">                                   
+                        <input type="text" class="form-control"  id="position" name="position"  required readonly>                                   
                     </div>
                 </div>
-
-
             </div>
 
            
                 <div class="row" id="div_store_branch">
-
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label require">*{{ trans('message.form-label.store_branch') }}</label>
                             <select class="js-example-basic-single" style="width: 100%;" name="store_branch" id="store_branch">
-                                                <option value="">-- Select Store/Branch --</option>
+                                <option value="">-- Select Store/Branch --</option>
 
-                                                @foreach($stores as $datas)    
-                                                    <option  value="{{$datas->id}}">{{$datas->bea_mo_store_name}}</option>
-                                                @endforeach
+                                @foreach($stores as $datas)    
+                                    <option  value="{{$datas->id}}">{{$datas->bea_mo_store_name}}</option>
+                                @endforeach
 
                             </select>
-
                         </div>
-
                     </div>
-
                 </div>
-            
-
             <hr/>
 
             <div class="row"> 
                 <label class="require control-label col-md-2">*{{ trans('message.form-label.purpose') }}</label>
                     @foreach($purposes as $data)
-                    
                         @if($data->id == 1)
                                     <div class="col-md-5">
                                         <label class="radio-inline control-label col-md-5" ><input type="radio" required   class="purpose" name="purpose" value="{{$data->id}}" >{{$data->request_description}}</label>
@@ -128,101 +97,9 @@
                                         <br>
                                     </div>
                         @endif
-
                     @endforeach
             </div>
-
-            <!--
             <hr/>
-
-            <div class="row"> 
-                <label class="require control-label col-md-2">*{{ trans('message.form-label.condition') }}</label>
-                    @foreach($conditions as $data)
-                    
-                        @if($data->id == 1)
-                                    <div class="col-md-5">
-                                        <label class="radio-inline control-label col-md-5" ><input type="radio" required   class="condition" name="condition" value="{{$data->id}}" >{{$data->condition_description}}</label>
-                                        <br>
-                                    </div>
-                            @else
-                                    <div class="col-md-5">
-                                        <label class="radio-inline control-label col-md-5"><input type="radio" required  class="condition" name="condition" value="{{$data->id}}" >{{$data->condition_description}}</label>
-                                        <br>
-                                    </div>
-                        @endif
-
-                    @endforeach
-            </div> -->
-
-            <hr/>
-
-            <!--<div class="row">
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <label class="control-label">{{ trans('message.form-label.add_item') }}</label>
-                        <input class="form-control auto" style="width:420px;" placeholder="Search Item" id="search">
-                        <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" id="ui-id-2" style="display: none; top: 60px; left: 15px; width: 520px;">
-                            <li>Loading...</li>
-                        </ul>
-                    </div>
-                </div>
-            </div> -->
-
-            <!-- 
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="box-header text-center">
-                        <h3 class="box-title"><b>{{ trans('message.form-label.asset_items') }}</b></h3>
-                    </div>
-                                <div class="box-body no-padding">
-                                    <div class="table-responsive">
-                                        <div class="pic-container">
-                                            <div class="pic-row">
-                                                <table class="table table-bordered" id="asset-items">
-                                                    <tbody>
-                                                        <tr class="tbl_header_color dynamicRows">
-                                                            <th width="15%" class="text-center">{{ trans('message.table.digits_code') }}</th>
-                                                            <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
-                                                            <th width="15%" class="text-center">{{ trans('message.table.serial_no') }}</th>
-                                                            <th width="20%" class="text-center">{{ trans('message.table.item_remarks') }}</th>
-                                                            <th width="5%" class="text-center">{{ trans('message.table.item_quantity') }}</th>
-                                                            <th width="10%" class="text-center">{{ trans('message.table.item_cost') }}</th>
-                                                            <th width="10%" class="text-center">{{ trans('message.table.item_total_cost') }}</th>
-                                                            <th width="5%" class="text-center">{{ trans('message.table.action') }}</th>
-                                                        </tr>
-                                                        
-                                                        <tr class="tableInfo">
-                                                            <td colspan="6" align="right"><strong>{{ trans('message.table.total') }}</strong></td>
-                                                            <td align="left" colspan="1">
-
-
-                                                                <input type='hidden' name="quantity_total" class="form-control text-center" id="quantity_total" readonly>
-
-                                                                <input type='hidden' name="cost_total" class="form-control text-center" id="cost_total" readonly>
-
-                                                                <input type='number' name="total" class="form-control text-center" id="total" readonly>
-                                                            </td>
-                                                            <td colspan="1"></td>
-                                                        </tr>
-                                                    
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                
-                                    </div>
-                                    <br>
-                                </div>
-                </div>
-          
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <label>{{ trans('message.table.note') }}</label>
-                        <textarea placeholder="{{ trans('message.table.comments') }} ..." rows="3" class="form-control" name="requestor_comments"></textarea>
-                    </div>
-                </div>
-         
-            </div>  -->
 
             <div class="row">
                 <div class="col-md-12">
@@ -244,30 +121,13 @@
                                                             <th width="5%" class="text-center">{{ trans('message.table.action') }}</th>
                                                         </tr>
                                                         
-                                                        <!--tr class="tableInfo">
-                                                            <td colspan="6" align="right"><strong>{{ trans('message.table.total') }}</strong></td>
-                                                            <td align="left" colspan="1">
-
-
-                                                                <input type='hidden' name="quantity_total" class="form-control text-center" id="quantity_total" readonly>
-
-                                                                <input type='hidden' name="cost_total" class="form-control text-center" id="cost_total" readonly>
-
-                                                                <input type='number' name="total" class="form-control text-center" id="total" readonly>
-                                                            </td>
-                                                            <td colspan="1"></td>
-                                                        </tr> -->
-
                                                         <tr id="tr-table">
                                                             <tr>
                                             
                                                             </tr>
                                                         </tr>
-                                                    
                                                     </tbody>
-
                                                     <tfoot>
-
                                                         <tr id="tr-table1" class="bottom">
             
                                                             <td colspan="3">
@@ -278,7 +138,6 @@
                                                             </td>
                                                         </tr>
                                                     </tfoot>
-
                                                 </table>
                                             </div>
                                         </div>
@@ -294,32 +153,18 @@
                         <textarea placeholder="{{ trans('message.table.comments') }} ..." rows="3" class="form-control" name="requestor_comments"></textarea>
                     </div>
                 </div>
-         
             </div>
-
         </div>
-
         <div class='panel-footer'>
-
             <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
-
             <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('message.form.save') }}</button>
-
         </div>
-
     </form>
-
-
 </div>
 
-
-
 @endsection
-
-
 @push('bottom')
     <script type="text/javascript">
-
         function preventBack() {    
             window.history.forward();
         }
@@ -331,30 +176,21 @@
         var tableRow = 1;
 
         $(document).ready(function() {
-
             $('.js-example-basic-single').select2();
-
             $('#div_store_branch').hide();
             $('#store_branch').removeAttr('required');
 
-
             $("#add-Row").click(function() {
-
                 var description = "";
                 var count_fail = 0;
-
                 $('.itemDesc').each(function() {
                     description = $(this).val();
                     if (description == null) {
-
                         alert("Please fill Item Description !");
                         count_fail++;
-
                     } else if (description == "") {
-
                         alert("Please fill Item Description !");
                         count_fail++;
-
                     }else{
                         count_fail = 0;
                     }
@@ -363,10 +199,8 @@
                 tableRow++;
 
                 if(count_fail == 0){
-
                     var newrow =
                     '<tr>' +
-
                         '<td >' +
                         '  <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control itemDesc" data-id="' + tableRow + '" id="itemDesc' + tableRow + '"  name="item_description[]"  required maxlength="100">' +
                         '</td>' +  
@@ -378,7 +212,6 @@
                             '        <option value="{{$data->category_description}}">{{$data->category_description}}</option>'+
                             '         @endforeach'+
                             '</select></td>' +
-
                         '<td>'+
                             '<select class="js-example-basic-multiple" multiple="multiple" name="app_id' + tableRow + '[]" data-id="' + tableRow + '" id="app_id' + tableRow + '" required style="width:100%;">' +
                         
@@ -516,278 +349,79 @@
         $(document).ready(function(){
             $(function(){
 
-                $("#search").autocomplete({
-
-                    source: function (request, response) {
-                    $.ajax({
-                        url: "{{ route('asset.item.search') }}",
-                        dataType: "json",
-                        type: "POST",
-                        data: {
-                            "_token": token,
-                            "search": request.term
-                        },
-                        success: function (data) {
-                            var rowCount = $('#asset-items tr').length;
-                            //myStr = data.sample;   
-                            if (data.status_no == 1) {
-
-                                $("#val_item").html();
-                                var data = data.items;
-                                $('#ui-id-2').css('display', 'none');
-
-                                response($.map(data, function (item) {
-                                    return {
-                                        id:                         item.id,
-                                        asset_code:                 item.asset_code,
-                                        digits_code:                item.digits_code,
-                                        asset_tag:                  item.asset_tag,
-                                        serial_no:                  item.serial_no,
-                                        value:                      item.item_description,
-                                        category_description:       item.category_description,
-                                        item_cost:                  item.item_cost,
-                                     
-                                    }
-
-                                }));
-
-                            } else {
-
-                                $('.ui-menu-item').remove();
-                                $('.addedLi').remove();
-                                $("#ui-id-2").append($("<li class='addedLi'>").text(data.message));
-                                var searchVal = $("#search").val();
-                                if (searchVal.length > 0) {
-                                    $("#ui-id-2").css('display', 'block');
-                                } else {
-                                    $("#ui-id-2").css('display', 'none');
+            $('#search_employee').autocomplete({
+                source: function (request, response) {
+                $.ajax({
+                    url: "{{ route('hr.search.user') }}",
+                    dataType: "json",
+                    type: "POST",
+                    data: {
+                        "_token": token,
+                        "search": request.term
+                    },
+                    success: function (data) { 
+                        if (data.status_no == 1) {
+                            $("#val_item").html();
+                            var data = data.items;
+                            $('#ui-id-2'+tableRow).css('display', 'none');
+                            response($.map(data, function (item) {
+                                return {
+                                    id:                         item.id,
+                                    asset_code:                 item.asset_code,
+                                    digits_code:                item.digits_code,
+                                    asset_tag:                  item.asset_tag,
+                                    serial_no:                  item.serial_no,
+                                    value:                      item.item_description,
+                                    category_description:       item.category_description,
+                                    item_cost:                  item.item_cost,
+                                
                                 }
+
+                            }));
+
+                        } else {
+
+                            $('.ui-menu-item').remove();
+                            $('.addedLi').remove();
+                            $("#ui-id-2"+tableRow).append($("<li class='addedLi'>").text(data.message));
+                            var searchVal = $('#itemDesc'+tableRow).val();
+                            if (searchVal.length > 0) {
+                                $("#ui-id-2"+tableRow).css('display', 'block');
+                            } else {
+                                $("#ui-id-2"+tableRow).css('display', 'none');
                             }
                         }
-                    })
+                    }
+                })
                 },
                 select: function (event, ui) {
-                        var e = ui.item;
+                    var e = ui.item;
+                    if (e.id) {
+                    
+                        $("#digits_code"+$(this).attr("data-id")).val(e.digits_code);
+                        $('#itemDesc'+$(this).attr("data-id")).val(e.value);
+                        $('#val_item').html('');
+                        return false;
 
-                        if (e.id) {
-                            
-                            // if (!in_array(e.id, stack)) {
-                                if (!stack.includes(e.id)) {
-            
-                                    stack.push(e.id);           
-                                    
-                                    
-
-                                        var new_row = '<tr class="nr" id="rowid' + e.id + '">' +
-                                                '<td><input class="form-control text-center" type="text" name="digits_code[]" readonly value="' + e.digits_code + '"></td>' +
-                                                '<td><input class="form-control" type="text" name="item_description[]" readonly value="' + e.value + '"></td>' +
-                                                '<td><input class="form-control" type="text" name="serial_no[]" readonly value="' + e.serial_no + '"></td>' +
-                                                '<td><textarea placeholder="Remarks ..." rows="3" class="form-control" name="remarks[]"></textarea></td>' +
-
-                                                '<td><input class="form-control text-center quantity_item" type="number" name="quantity[]" id="quantity' + e.id  + '" data-id="' + e.id  + '"  value="1" min="0" max="9999999999" step="any" onKeyPress="if(this.value.length==10) return false;" oninput="validity.valid||(value=0);"></td>' +
-                            
-                                                '<td><input class="form-control text-center cost_item" type="number" name="unit_cost[]" id="unit_cost' + e.id  + '"   data-id="' + e.id  + '"  value="' + e.item_cost + '" min="0" max="9999999999" step="any" onKeyPress="if(this.value.length==10) return false;" oninput="validity.valid||(value=0);"></td>' +
-                                                
-                                                '<td><input class="form-control text-center total_cost_item" type="number" name="total_unit_cost[]"  id="total_unit_cost' + e.id  + '"   value="' + e.item_cost + '" readonly="readonly" step="0.01" required maxlength="100"></td>' +
-
-                                                '<td class="text-center"><button id="' +e.id + '" onclick="reply_click1(this.id)" class="btn btn-xs btn-danger delete_item" style="width:60px;height:30px;font-size: 11px;text-align: center;">REMOVE</button></td>' +
-                                                
-                                                '<input type="hidden" name="item_id[]" readonly value="' +e.id + '">' +
-
-                                                '</tr>';
-                                    $(new_row).insertAfter($('table tr.dynamicRows:last'));
-                
-                                    //blank++;
-
-                                    $("#total").val(calculateTotalValue2());
-
-                                    $(this).val('');
-                                    $('#val_item').html('');
-                                    return false;
-                                
-                                }else{
-
-
-
-                                        $('#quantity' + e.id).val(function (i, oldval) {
-                                            return ++oldval;
-                                        });
-
-                                        var temp_qty = $('#quantity'+ e.id).attr("data-id");
-
-                                        var q = $('#quantity' +e.id).val();
-                                        var r = $("#unit_cost" + e.id).val();
-
-                                        $('#unit_cost' + e.id).val(function (i, amount) {
-                                            if (q != 0) {
-                                                var itemPrice = (q * r);
-                                                return itemPrice;
-                                            } else {
-                                                return 0;
-                                            }
-                                        });
-
-                                        $('#'+temp_qty).val(q);
-
-
-
-                                        var price = calculatePrice(q, r).toFixed(2); 
-
-                                        $("#total_unit_cost" + e.id).val(price);
-
-                                        $("#quantity_total").val(calculateTotalQuantity());
-                                        $("#cost_total").val(calculateTotalValue());
-                                        $("#total").val(calculateTotalValue2());
-
-                                        //var subTotalQuantity = calculateTotalQuantity();
-                                        //$("#totalQuantity").val(subTotalQuantity);
-
-
-                                        $(this).val('');
-                                        $('#val_item').html('');
-                                        return false;
-
-                                }
-                                
-
-                        }
+                    }
                 },
-              
                 minLength: 1,
                 autoFocus: true
                 });
 
-
             });
         });
         
-        $('#employee_name').change(function() {
     
-                var employee_name =  this.value;
-                
-                //var id_data = $(this).attr("data-id");
-                // $('.account'+id_data).prop("disabled", false);
-
-                $.ajax
-                ({ 
-                    url: "{{ URL::to('/employees')}}",
-                    type: "POST",
-                    data: {
-                        'employee_name': employee_name,
-                        _token: '{!! csrf_token() !!}'
-                        },
-                        
-                     
-                    success: function(result)
-                    {   
-                        //alert(result.length);
-                       
-                        //$('#company_name').val(result[0].company_name);
-                        $('#position').val(result[0].position_description);
-                        $('#department').val(result[0].department_name);
-                        
-                        if(result[0].department_name.includes("STORE")){
-
-
-                            $('#div_store_branch').show();
-                            
-                            $('#store_branch').attr('required', 'required');
-
-                        }else{
-
-                            $('#div_store_branch').hide();
-                            $('#store_branch').removeAttr('required');
-
-                        }
-
-                        /*var i;
-                        var showData = [];
-
-                        for (i = 0; i < result.length; ++i) {
-                            var j = i + 1;
-                            showData[i] = "<option value='"+result[i].id+"'>"+result[i].sub_department_name+"</option>";
-                        }
-                        //$('.account'+id_data).find('option').remove();
-                        //jQuery('.account'+id_data).html(showData);          
-                        
-                        jQuery('#sub_department_id').html(showData);*/
-                    }
-                });
-
-        });
-
-        
-        $('#employee_name').attr('disabled', true);
-
-        $('#company_name').change(function() {
-    
-                var company_name =  this.value;
-                
-                //var id_data = $(this).attr("data-id");
-                // $('.account'+id_data).prop("disabled", false);
-
-                $.ajax
-                ({ 
-                    url: "{{ URL::to('/companies')}}",
-                    type: "POST",
-                    data: {
-                        'company_name': company_name,
-                        _token: '{!! csrf_token() !!}'
-                        },
-                        
-                    
-                        
-                    success: function(result)
-                    {   
-                        //alert(result.length);
-                    
-                        var i;
-                        var showData = [];
-
-                        showData[0] = "<option value=''>-- Select Employee Name --</option>";
-                        
-                        for (i = 0; i < result.length; ++i) {
-                            var j = i + 1;
-                            showData[j] = "<option value='"+result[i].bill_to+"'>"+result[i].bill_to+"</option>";
-                        }
-                            
-                        $('#employee_name').attr('disabled', false);
-                        
-                        jQuery('#employee_name').html(showData);        
-                        
-   
-
-                    }
-                });
-
-        });
-
-        
         $(document).on('keyup', '.quantity_item', function(ev) {
-
-            //var id = $(this).attr("data-id");
-            //var rate = parseFloat($(this).val());
-            //var qty = $("#unit_cost" + id).val();
-
-            //var price = calculatePrice(rate, qty).toFixed(2); 
-
-           // $("#total_unit_cost" + id).val(price);
             $("#quantity_total").val(calculateTotalQuantity());
-           // $("#cost_total").val(calculateTotalValue());
-           // $("#total").val(calculateTotalValue2());
         });
 
         $(document).on('keyup', '.cost_item', function(ev) {
 
-       
-
                 var id = $(this).attr("data-id");
                 var rate = parseFloat($(this).val());
-
                 var qty = $("#quantity" + id).val();
-
-              
-
                 var price = calculatePrice(qty, rate).toFixed(2); // this is for total Value in row
 
                 $("#total_unit_cost" + id).val(price);

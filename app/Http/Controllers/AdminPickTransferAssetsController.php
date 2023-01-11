@@ -274,6 +274,7 @@
 			$locationList = array_map('intval',explode(",",$approval_string));
 
 			$query->where('return_transfer_assets_header.transfer_to', $locationList)
+			        ->whereIn('return_transfer_assets_header.status', [24,25,13]) 
 					->whereNotNull('return_transfer_assets_header.transfer_to')
 					->orderBy('return_transfer_assets_header.id', 'ASC');
 
@@ -415,6 +416,7 @@
 			
 					MoveOrder::create([
 						'status_id'           => 13,
+						'mo_reference_number' => $arf_header->reference_no,
 						'inventory_id'        => $finalinventory_id[$x],
 						'item_id'             => $mo_item_id[$x],
 						'request_created_by'  => $employee_name->id,
@@ -452,6 +454,7 @@
 			
 			    	 MoveOrder::create([
 						'status_id'           => 13,
+						'mo_reference_number' => $arf_header->reference_no,
 						'inventory_id'        => $finalinventory_id[$x],
 						'item_id'             => $mo_item_id[$x],
 						'request_created_by'  => $employee_name->id,
@@ -515,7 +518,7 @@
 
 			$data = array();
 
-			$data['page_title'] = 'Asset Return Receiving';
+			$data['page_title'] = 'Asset Transfer Receiving';
 
 			$data['Header'] = ReturnTransferAssetsHeader::leftjoin('cms_users as employees', 'return_transfer_assets_header.requestor_name', '=', 'employees.id')
 				->leftjoin('requests', 'return_transfer_assets_header.request_type_id', '=', 'requests.id')

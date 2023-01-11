@@ -129,6 +129,7 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('/admin/return_approval/getRequestApprovalReturn/{id}','AdminReturnApprovalController@getRequestApprovalReturn')->name('approval-request-return');
     Route::get('/admin/return_close/getRequestClosingReturn/{id}','AdminReturnCloseController@getRequestClosingReturn')->name('return-closing-request');
     Route::get('/admin/return_picking/getRequestPickingReturn/{id}','AdminReturnPickingController@getRequestPickingReturn')->name('return-picking-request');
+    Route::get('/admin/return_transfer_assets_header/getRequestPrintTF/{id}','AdminReturnTransferAssetsHeaderController@getRequestPrintTF')->name('print-request-tf');
     //Transfer Assets
     Route::get(config('crudbooster.ADMIN_PATH').'/return_transfer_assets/transfer-assets', 'AdminReturnTransferAssetsHeaderController@getTransferAssets')->name('assets.transfer.assets'); 
     Route::post(config('crudbooster.ADMIN_PATH').'/transfer_assets/save-transfer-assets','AdminReturnTransferAssetsHeaderController@saveTransferAssets')->name('assets.save.transfer.assets');
@@ -141,6 +142,9 @@ Route::group(['middleware' => ['web']], function() {
     //Deployed Assets
     Route::get('/admin/deployed_asset/Detail/{id}','AdminDeployedAssetsController@Detail')->name('deployed-asset');
     Route::get('/admin/deployed_asset/DetailMoOnly/{id}','AdminDeployedAssetsController@DetailMoOnly')->name('deployed-asset');
+    
+    //hr requisition for new employee
+    Route::post(config('crudbooster.ADMIN_PATH').'/hr_requisition/search-user','AdminHrRequisitionController@SearchUser')->name('hr.search.user');
     Route::get('/admin/clear-view', function() {
         Artisan::call('view:clear');
         return "View cache is cleared!";

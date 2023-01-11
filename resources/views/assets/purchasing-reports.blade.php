@@ -61,6 +61,7 @@
                         <th width="auto">Reference No.</th>
                         <th width="auto">Description</th>
                         <th width="auto">Request Quantity</th>
+                        <th width="auto">Transaction Type</th>
                         <th width="auto">Request Type</th>
                         <th width="auto">Requested By</th>
                         <th width="auto">Department</th>
@@ -100,7 +101,8 @@
                     @endif
                     <td>{{$val['reference_number']}}</td>
                     <td>{{$val['description']}}</td>  
-                    <td>{{$val['request_quantity']}}</td>  
+                    <td>{{$val['request_quantity']}}</td>
+                    <td>{{$val['transaction_type']}}</td>  
                     <td>{{$val['request_type']}}</td>
                     <td>{{$val['requested_by']}}</td>     
                     <td>{{$val['department']}}</td>                                                                
