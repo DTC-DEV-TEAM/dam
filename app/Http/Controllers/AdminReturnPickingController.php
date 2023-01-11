@@ -410,7 +410,7 @@
 							'item_condition'=> 			"Defective",
 							'deployed_to'=> 			NULL,
 							'deployed_to_id'=> 			NULL,
-							'location'=> 				$location
+							'location'=> 				2
 						]);
 						DB::table('assets_inventory_body')->where('id', $mo_info->inventory_id)->increment('quantity');
 					}
@@ -444,7 +444,7 @@
 							'statuses_id'=> 			6,
 							'deployed_to'=> 			NULL,
 							'deployed_to_id'=> 			NULL,
-							'location'=> 				$location	
+							'location'=> 				2	
 						]);
 						DB::table('assets_inventory_body')->where('id', $finalinventory_id[$x])->increment('quantity');
 					}
