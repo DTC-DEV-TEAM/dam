@@ -53,6 +53,14 @@
                 @endif
             </div>
 
+            <hr>
+            <div class="row">
+                <label class="control-label col-md-2">Purpose:</label>
+                <div class="col-md-4">
+                        <p>{{$Header->request_type}}</p>
+                </div>                    
+            </div>
+
             <hr/>
         
             <div class="box-header text-center">

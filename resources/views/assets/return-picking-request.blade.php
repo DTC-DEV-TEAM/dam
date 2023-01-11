@@ -40,7 +40,7 @@
         <div class='panel-body'>
 
             <div class="row">                           
-                <label class="control-label col-md-2">{{ trans('message.form-label.employee_name') }}:</label>
+                <label class="control-label col-md-2">From:</label>
                 <div class="col-md-4">
                         <p>{{$Header->employee_name}}</p>
                 </div>
@@ -78,6 +78,35 @@
             </div>
 
             <hr/>
+            <div class="row">
+                <label class="control-label col-md-2">Purpose:</label>
+                <div class="col-md-4">
+                        <p>{{$Header->request_type}}</p>
+                </div>                    
+            </div>
+
+            <hr/>
+            @if($Header->approvedby != null || $Header->approvedby != "")
+            <div class="row">                           
+                <label class="control-label col-md-2">{{ trans('message.form-label.approved_by') }}:</label>
+                <div class="col-md-4">
+                        <p>{{$Header->approvedby}}</p>
+                </div>
+                <label class="control-label col-md-2">{{ trans('message.form-label.approved_at') }}:</label>
+                <div class="col-md-4">
+                        <p>{{$Header->approved_date}}</p>
+                </div>
+            </div>
+            @endif
+            @if($Header->approver_comments != null || $Header->approver_comments != "")
+                <div class="row">                           
+                    <label class="control-label col-md-2">{{ trans('message.table.approver_comments') }}:</label>
+                    <div class="col-md-10">
+                            <p>{{$Header->approver_comments}}</p>
+                    </div>
+                </div>
+            @endif 
+            <hr>
         
             <div class="box-header text-center">
                 <h3 class="box-title"><b>{{ trans('message.form-label.asset_items') }}</b></h3>

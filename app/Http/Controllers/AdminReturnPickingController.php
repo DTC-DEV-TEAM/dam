@@ -10,6 +10,7 @@
 	use App\MoveOrder;
 	use App\CommentsGoodDefect;
 	use App\WarehouseLocationModel;
+	use App\Models\OutAssets;
 	class AdminReturnPickingController extends \crocodicstudio\crudbooster\controllers\CBController {
 
 	    public function cbInit() {
@@ -349,7 +350,7 @@
 	        $fields = Request::all();
 
 			$item_id 					= $fields['item_id'];
-			$mo_id 					= $fields['mo_id'];
+			$mo_id 					    = $fields['mo_id'];
 			//$pick_value 				= $fields['pick_value'];
 
 			$good_text 					= $fields['good_text'];
@@ -372,8 +373,24 @@
 
 			$inventory_id 	= 	MoveOrder::whereIn('id',$mo_id)->get();
 			$finalinventory_id = [];
+			// $mo_reference = [];
+			// $request_type_id_mo = [];
+			// $digits_code = [];
+            // $asset_code = [];
+            // $item_description = [];
+			// $serial_no = [];
+			// $quantity = [];
+			// $unit_cost = [];
 			foreach($inventory_id as $invData){
 				array_push($finalinventory_id, $invData['inventory_id']);
+				// array_push($mo_reference, $invData['mo_reference_number']);
+				// array_push($request_type_id_mo, $invData['request_type_id_mo']);
+				// array_push($digits_code, $invData['digits_code']);
+                // array_push($asset_code, $invData['asset_code']);
+                // array_push($item_description, $invData['item_description']);
+				// array_push($serial_no, $invData['serial_no']);
+				// array_push($quantity, $invData['quantity']);
+				// array_push($unit_cost, $invData['unit_cost']);
 			}
 		
 			for($x=0; $x < count((array)$item_id); $x++) {
@@ -450,6 +467,24 @@
 					}
 
 				}
+				$employee_name = DB::table('cms_users')->where('id', $arf_header->requestor_name)->first();
+				//save in OUT ASSETS
+				// OutAssets::create([
+				// 	'arf_number'          => $arf_header->reference_no,
+				// 	'mo_ref_number'       => $mo_reference[$x],
+				// 	'requestor_id'        => $arf_header->requestor_name,
+				// 	'requestor_name'      => $employee_name->bill_to,
+				// 	'transfer_to'         => NULL,
+				// 	'transaction_type'    => $request_type_id_mo[$x],
+				// 	'request_type'        => "REQUEST",
+				// 	'asset_code'          => $asset_code[$x],
+				// 	'digits_code'         => $digits_code[$x],
+				// 	'item_description'    => $item_description[$x],
+				// 	'serial_no'           => $serial_no[$x],
+				// 	'quantity'            => -1 * abs($quantity[$x]),
+				// 	'amount'              => -1 * abs($unit_cost[$x]),
+				// 	'date_received'       => date('Y-m-d H:i:s'),
+				// ]);
 
 			}
 
@@ -556,6 +591,7 @@
 				->leftjoin('requests', 'return_transfer_assets_header.request_type_id', '=', 'requests.id')
 				->leftjoin('departments', 'employees.department_id', '=', 'departments.id')
 				->leftjoin('locations', 'return_transfer_assets_header.store_branch', '=', 'locations.id')
+				->leftjoin('cms_users as approved', 'return_transfer_assets_header.approved_by','=', 'approved.id')
 				->select(
 						'return_transfer_assets_header.*',
 						'return_transfer_assets_header.id as requestid',
@@ -564,7 +600,8 @@
 						'employees.company_name_id as company',
 						'employees.position_id as position',
 						'departments.department_name as department_name',
-						'locations.store_name as store_branch'
+						'locations.store_name as store_branch',
+						'approved.name as approvedby',
 						)
 				->where('return_transfer_assets_header.id', $id)->first();
            

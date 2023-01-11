@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class InAssets extends Model
+class OutAssets extends Model
 {
-    protected $table = 'in_assets';
+    protected $table = 'out_assets';
 
     protected $fillable = [
         'arf_number', 

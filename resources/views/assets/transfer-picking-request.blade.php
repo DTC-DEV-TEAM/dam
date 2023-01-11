@@ -40,7 +40,7 @@
         <div class='panel-body'>
 
             <div class="row">                           
-                <label class="control-label col-md-2">{{ trans('message.form-label.employee_name') }}:</label>
+                <label class="control-label col-md-2">From:</label>
                 <div class="col-md-4">
                         <p>{{$Header->employee_name}}</p>
                 </div>
@@ -76,8 +76,25 @@
                     </div>
                 @endif
             </div>
-
-            <hr/>
+            <hr>
+            <div class="row">
+                @if($Header->transfer_to != null)    
+                    <label class="control-label col-md-2">Purpose:</label>
+                    <div class="col-md-4">
+                            <p>{{$Header->request_type}}</p>
+                    </div>                    
+                    <label class="control-label col-md-2">Transfer To:</label>
+                    <div class="col-md-4">
+                            <p>{{$Header->transfer_to}}</p>
+                    </div>
+                    @else
+                    <label class="control-label col-md-2">Purpose:</label>
+                    <div class="col-md-4">
+                            <p>{{$Header->request_type}}</p>
+                    </div>
+                @endif
+            </div>
+            <hr>
         
             <div class="box-header text-center">
                 <h3 class="box-title"><b>{{ trans('message.form-label.asset_items') }}</b></h3>

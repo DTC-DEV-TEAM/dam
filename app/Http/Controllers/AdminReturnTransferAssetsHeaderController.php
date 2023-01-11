@@ -829,11 +829,11 @@
 					->leftjoin('mo_body_request', 'return_transfer_assets.mo_id', '=', 'mo_body_request.id')
 				->select(
 					'return_transfer_assets.*',
-					DB::raw('SUM(mo_body_request.unit_cost) as total_unit_cost'),
+					DB::raw('SUM(mo_body_request.unit_cost) as total_cost'),
 					'mo_body_request.*',
 					'statuses.*',
 					)
-					->where('return_transfer_assets.return_header_id', $id)->get();	
+					->where('return_transfer_assets.return_header_id', $id)->get();	;
 			$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
 			
 			return $this->view("assets.print-request-trf", $data);

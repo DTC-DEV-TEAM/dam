@@ -3,7 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-
+use DB;
 class MoveOrder extends Model
 {
     //
@@ -23,8 +23,9 @@ class MoveOrder extends Model
         'unit_cost',    
         'item_id'
     ];
-    public function scopeArraytwo($query)
+    public function scopeArrayMO($query, $closed, $for_closing)
     {
+        
         return $query->leftjoin('header_request', 'mo_body_request.header_request_id', '=', 'header_request.id')
         ->leftjoin('body_request', 'mo_body_request.body_request_id', '=', 'body_request.id')
         ->leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
@@ -33,7 +34,7 @@ class MoveOrder extends Model
         ->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
         ->leftjoin('departments', 'header_request.department', '=', 'departments.id')
         ->leftjoin('locations', 'header_request.store_branch', '=', 'locations.id')
-        ->leftjoin('cms_users as requested', 'header_request.created_by','=', 'requested.id')
+        ->leftjoin('cms_users as requested', 'mo_body_request.request_created_by','=', 'requested.id')
         ->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
         ->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
         ->leftjoin('cms_users as processed', 'header_request.purchased2_by','=', 'processed.id')
@@ -62,8 +63,11 @@ class MoveOrder extends Model
                 'closed.name as closedby',
                 'header_request.created_at as created_at',
                 'statuses.status_description as status_description',
-                'body_request.item_description as body_description'
+                'body_request.item_description as body_description',
+                DB::raw('IF(header_request.created_at IS NULL, mo_body_request.created_at, header_request.created_at) as received_at')
                 )
+        ->whereIn('mo_body_request.status_id', [$closed, $for_closing])
+        ->whereNull('mo_body_request.return_flag')
         ->get();
 
     }
