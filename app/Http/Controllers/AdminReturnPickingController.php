@@ -264,7 +264,7 @@
 			}
 			$approval_string = implode(",",$approval_array);
 			$locationList = array_map('intval',explode(",",$approval_string));
-	
+	 
 			$List = ReturnTransferAssetsHeader::whereIn('return_transfer_assets_header.location_to_pick', $locationList)->where('return_transfer_assets_header.status', $forturnover)->orderby('return_transfer_assets_header.id', 'asc')->get();
 
 			$list_array = array();
@@ -278,7 +278,7 @@
 				$forturnover =  	DB::table('statuses')->where('id', 24)->value('id');
 
 				$query->where('return_transfer_assets_header.status', $forturnover)
-					  ->where('return_transfer_assets_header.location_to_pick', $locationList)
+					  ->whereIn('return_transfer_assets_header.location_to_pick', $locationList)
 					  ->whereNull('return_transfer_assets_header.transfer_to')
 					  ->orderBy('return_transfer_assets_header.id', 'ASC');
 
@@ -286,7 +286,8 @@
 
 				$forturnover =  	DB::table('statuses')->where('id', 24)->value('id');
 				$query->where('return_transfer_assets_header.status', $forturnover)
-					  ->whereNull('return_transfer_assets_header.location_to_pick')
+				      ->whereIn('return_transfer_assets_header.location_to_pick', $locationList)
+					//   ->whereNull('return_transfer_assets_header.location_to_pick')
 					  ->whereNull('return_transfer_assets_header.transfer_to')
 					  ->orderBy('return_transfer_assets_header.id', 'ASC');
 

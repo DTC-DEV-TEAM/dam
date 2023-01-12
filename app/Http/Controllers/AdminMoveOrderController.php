@@ -347,7 +347,7 @@
 			
 			$cancelled  = 		DB::table('statuses')->where('id', 8)->value('id');
 
-			$List = MoveOrder::whereNull('closed_at')->whereNotNull('mo_reference_number')->orderby('mo_body_request.status_id', 'asc')->orderby('mo_body_request.id', 'asc')->get();
+			$List = MoveOrder::whereNull('closed_at')->whereNotNull('mo_reference_number')->whereNotNull('header_request_id')->orderby('mo_body_request.status_id', 'asc')->orderby('mo_body_request.id', 'asc')->get();
 
 			$list_array = array();
 

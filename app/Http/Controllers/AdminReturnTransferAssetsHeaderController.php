@@ -576,7 +576,7 @@
 			$rid = $request['request_type_id'];
 			$request_type_id = array_unique($rid);
 			$location = $request['location_id'];
-   
+            
 			$getData = MoveOrder::leftjoin('header_request', 'mo_body_request.header_request_id', '=', 'header_request.id')
 			->leftjoin('requests', 'header_request.request_type_id', '=', 'requests.id')
 			->select(
@@ -597,8 +597,31 @@
 			$conHeader = [];
 			$conHeaderSave = [];
 			$count_header       = DB::table('return_transfer_assets_header')->count();
+			$forApproval        = DB::table('statuses')->where('id', 1)->value('id');
+			$forturnover        = DB::table('statuses')->where('id', 24)->value('id');
+			$forReturn          = DB::table('statuses')->where('id', 26)->value('id');
+
+			$inventory_id 	    = MoveOrder::whereIn('id',$moId)->get();
+			$finalinventory_id = [];
+			foreach($inventory_id as $invData){
+				array_push($finalinventory_id, $invData['inventory_id']);
+			}
+			
+			if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15])){ 
+				$status		 			= $forturnover;
+				for($x=0; $x < count($moId); $x++) {
+					DB::table('assets_inventory_body')->where('id', $finalinventory_id[$x])
+					->update([
+						'statuses_id'=> 			$forReturn,
+					]);
+				}
+			}else{
+				$status		 			= $forApproval;
+	
+			}
+		    
 			foreach($request_type_id as $hKey => $hData){
-				$conHeader['status'] = 1;
+				$conHeader['status'] = $status;
 				$conHeader['requestor_name'] = CRUDBooster::myId();
 				$conHeader['request_type_id'] = $hData;
 				$conHeader['request_type'] = "RETURN";
@@ -607,7 +630,7 @@
 				if($hData == 1){
 					$conHeader['location_to_pick'] = 3; 
 				}else{
-					$conHeader['location_to_pick'] = NULL; 
+					$conHeader['location_to_pick'] = 2; 
 				}
 				$conHeader['store_branch'] = $location[$hKey];
 
@@ -656,7 +679,7 @@
 			$containerSave = [];
 	       
 			foreach($getData as $rKey => $rData){		
-				$container['status'] = 1;
+				$container['status'] = $status;
 				$container['return_header_id'] = $rData['return_header'];
 				$container['mo_id'] = $rData['mo_id'];
 				if($rData['request_type_id'] == 1){
@@ -664,7 +687,7 @@
 					$container['location_to_pick'] = 3;
 				}else{
 					$container['reference_no'] = $rData['reference_no'];
-					$container['location_to_pick'] = NULL;
+					$container['location_to_pick'] = 2;
 				}
 				$container['asset_code'] =  $rData['asset_code'];
 				$container['digits_code'] = $rData['digits_code'];
@@ -706,13 +729,36 @@
 			->whereIn('mo_body_request.id', $moId)
 			->get();
 
+			$forApproval        = DB::table('statuses')->where('id', 1)->value('id');
+			$forturnover        = DB::table('statuses')->where('id', 24)->value('id');
+			$forTransfer          = DB::table('statuses')->where('id', 27)->value('id');
+
+			$inventory_id 	    = MoveOrder::whereIn('id',$moId)->get();
+			$finalinventory_id = [];
+			foreach($inventory_id as $invData){
+				array_push($finalinventory_id, $invData['inventory_id']);
+			}
+			
+			if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15])){ 
+				$status		 			= $forturnover;
+				for($x=0; $x < count($moId); $x++) {
+					DB::table('assets_inventory_body')->where('id', $finalinventory_id[$x])
+					->update([
+						'statuses_id'=> 			$forTransfer,
+					]);
+				}
+			}else{
+				$status		 			= $forApproval;
+	
+			}
+
 			// Header Area
 			$count_header       = DB::table('return_transfer_assets_header')->count();
 			$reference_no = "1".str_pad($count_header + 1, 7, '0', STR_PAD_LEFT)."AT";
 
 			$id = ReturnTransferAssetsHeader::Create(
                 [
-                    'status' => 1, 
+                    'status' => $status, 
 					'reference_no' => $reference_no,
                     'requestor_name' => CRUDBooster::myId(), 
                     'request_type_id' => 8,
@@ -732,7 +778,7 @@
 			$containerSave = [];
 			
 			foreach($getData as $rKey => $rData){		
-				$container['status'] = 1;
+				$container['status'] = $status;
 				$container['return_header_id'] = $header_id;
 				$container['mo_id'] = $rData['mo_id'];
 				$container['reference_no'] = $ref_no->reference_no;

@@ -486,7 +486,7 @@
 			$pending            = DB::table('statuses')->where('id', 1)->value('id');
 			$approved           = DB::table('statuses')->where('id', 4)->value('id');
 
-			if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14])){ 
+			if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15])){ 
 				//$postdata['status_id']		 			= $pending;
 				$postdata['status_id']		 			= StatusMatrix::where('current_step', 2)
 																		->where('request_type', $request_type_id)
@@ -595,7 +595,7 @@
 
 				}
 
-				if(in_array(CRUDBooster::myPrivilegeId(), [4,11,12,14])){ 
+				if(in_array(CRUDBooster::myPrivilegeId(), [4,11,12,14,15])){ 
 
 					if($category_id[$x] == "IT ASSETS"){
 
@@ -746,7 +746,7 @@
 			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();
 			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
 			
-			if(in_array(CRUDBooster::myPrivilegeId(), [1,2,3,4,5,6,7,9,10,11,12,13,14])){ 
+			if(in_array(CRUDBooster::myPrivilegeId(), [1,2,3,4,5,6,7,9,10,11,12,13,14,15])){ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
 				return $this->view("assets.add-requisition", $data);
 
@@ -787,7 +787,7 @@
 			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();
 			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
 
-			if(in_array(CRUDBooster::myPrivilegeId(), [1,2,3,4,5,6,7,9,10,11,12,13,14])){ 
+			if(in_array(CRUDBooster::myPrivilegeId(), [1,2,3,4,5,6,7,9,10,11,12,13,14,15])){ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
 				return $this->view("assets.add-requisition-fa", $data);
 			}else if(CRUDBooster::myPrivilegeId() == 8){ 
@@ -826,7 +826,7 @@
 			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();
 			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
 
-			if(in_array(CRUDBooster::myPrivilegeId(), [1,2,3,4,5,6,7,9,10,11,12,13,14])){ 
+			if(in_array(CRUDBooster::myPrivilegeId(), [1,2,3,4,5,6,7,9,10,11,12,13,14,15])){ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
 				return $this->view("assets.add-requisition-marketing", $data);
 			}else if(CRUDBooster::myPrivilegeId() == 8){ 
@@ -868,7 +868,7 @@
 			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();	
 			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
 
-			if(in_array(CRUDBooster::myPrivilegeId(), [1,2,3,4,5,6,7,9,10,11,12,13,14])){ 
+			if(in_array(CRUDBooster::myPrivilegeId(), [1,2,3,4,5,6,7,9,10,11,12,13,14,15])){ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
 				return $this->view("assets.add-requisition-supplies", $data);
 			}else if(CRUDBooster::myPrivilegeId() == 8){ 
