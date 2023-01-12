@@ -81,7 +81,7 @@
 
                         <tr>
                             <td colspan="4">
-                                <table border="1" width="100%" style="text-align:center;border-collapse: collapse; table-layout: fixed; font-size: 13px;">
+                                <table border="1" width="100%" style="text-align:center;border-collapse: collapse; table-layout: fixed; font-size: 13px;" id="total">
                                     
                                     <thead>
                                         <tr><th colspan="5"><h4 align="center" ><strong>Item Details</strong></h4></th></tr>
@@ -113,7 +113,7 @@
                                                     <td height="10">{{$rowresult->description}}</td>
                                                     <td height="10">{{$rowresult->serial_no}}</td>
                                                     <td height="10">{{$rowresult->quantity}}</td>
-                                                    <td height="10">{{$rowresult->unit_cost}}</td>
+                                                    <td height="10" class="cost">{{$rowresult->unit_cost}}</td>
                                                 @endif
                                             </tr>
 
@@ -123,7 +123,7 @@
                                 
                                     </tbody>
 
-                                    <tr>
+                                    <!-- <tr>
                                         <td colspan="4" style="text-align:right">
                                             <label>Total:</label>
                                         </td>
@@ -132,7 +132,7 @@
                                                 <label>{{$cost_total}}</label>      
                                         </td>
 
-                                    </tr>
+                                    </tr> -->
 
                                 </table> 
                             </td>
@@ -267,6 +267,25 @@
         //           });
         //           return false;
         // });
+        function thousands_separators(num) {
+        var num_parts = num.toString().split(".");
+        num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return num_parts.join(".");
+        }
+        var tds = document
+        .getElementById("total")
+        .getElementsByTagName("td");
+        var sumqty = 0;
+        var sumcost = 0;
+        for (var i = 0; i < tds.length; i++) {
+        if (tds[i].className == "cost") {
+            sumcost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+        }
+        }
+        document.getElementById("total").innerHTML +=
+        "<tr><td colspan='4' style='text-align:right'><strong>TOTAL</strong></td><td><strong>" +
+        sumcost.toFixed(2) +
+        "</strong></td></tr>";
 
     </script>
 @endpush

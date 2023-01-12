@@ -501,7 +501,10 @@
                                             type: data.status,
                                             title: data.message,
                                         });
-                                        window.location.replace(data.redirect_url);
+                                        //window.location.replace(data.redirect_url);
+                                        setTimeout(function(){
+                                            window.location.replace(document.referrer);
+                                        }, 1000); 
                                         } else if (data.status == "error") {
                                         swal({
                                             type: data.status,
