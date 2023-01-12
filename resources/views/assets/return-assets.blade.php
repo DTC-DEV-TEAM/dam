@@ -117,9 +117,9 @@ var table;
             request_type_id.push($("#request_type_id"+$(this).attr("data-id")).val());
             location_id.push($("#location_id"+$(this).attr("data-id")).val());
         });
-
+    
         var check = $('input:checkbox:checked').length;
-        console.log(check);
+       
         event.preventDefault();
         if (check == 0) {
             swal({
