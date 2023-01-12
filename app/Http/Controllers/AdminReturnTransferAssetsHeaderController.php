@@ -567,7 +567,9 @@
 			}else{
 				$data['stores'] = NULL;
 			}	
-			$data['users'] = Users::where('id_cms_privileges','!=',1)->get();
+			
+			$data['users'] = Users::where('id_cms_privileges','!=',1)->where('department_id',$data['user']->department_id)->get();
+	
 			return $this->view("assets.transfer-assets", $data);
 		}
 
