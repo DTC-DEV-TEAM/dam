@@ -4,6 +4,11 @@
 	use Request;
 	use DB;
 	use CRUDBooster;
+	use App\Users;
+	use App\HeaderRequest;
+	use App\BodyRequest;
+	use App\ApprovalMatrix;
+	use App\StatusMatrix;
 
 	class AdminHrRequisitionController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -262,7 +267,20 @@
 	    |
 	    */
 	    public function hook_before_add(&$postdata) {        
-	        //Your code here
+			$fields = Request::all();
+			$emp_id = $fields['employee'];
+			$employees          = DB::table('cms_users')->where('id', $emp_id)->first();
+			if(in_array($employees->id_cms_privileges, [11,12,14,15])){ 
+				$status = StatusMatrix::where('current_step', 2)
+										->where('request_type', 1)
+										->value('status_id');
+			}else{
+				$status	= StatusMatrix::where('current_step', 1)
+										->where('request_type', 1)
+										->value('status_id');
+	
+			}
+			dd($employees,$status);
 
 	    }
 
@@ -353,57 +371,32 @@
 			$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
 			$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
 			$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'HR')->get();
-				
+			$data['new_employee'] = Users::where('new_employee_plug','=',1)->get();
 			return $this->view("assets.add-hr-requisition", $data);
 				
 		}
 
 		public function SearchUser(Request $request) {
 			$request = Request::all();
-			$search 		= $request['search'];
+			$search 		= $request['id'];
+
 			$data = array();
 			$data['status_no'] = 0;
 			$data['message']   ='No Item Found!';
 			$data['items'] = array();
 			$items = DB::table('cms_users')
-				->where('cms_users.name','LIKE','%'.$search.'%')
+				->where('cms_users.id','=',$search)
 				->leftjoin('departments', 'cms_users.department_id','=','departments.id')
 				->leftjoin('sub_department', 'cms_users.sub_department_id','=','sub_department.id')
 				->leftjoin('locations', 'cms_users.location_id', '=', 'locations.id')
 				->select(	'cms_users.*',
+				            'cms_users.id as id',
 							'departments.*',
 							'sub_department.*',
 							'locations.*'
 						)
-				->take(10)->get();
-			dd($items);
-			if($items){
-				$data['status'] = 1;
-				$data['problem']  = 1;
-				$data['status_no'] = 1;
-				$data['message']   ='Item Found';
-				$i = 0;
-				foreach ($items as $key => $value) {
-
-					$return_data[$i]['id']                   = 	$value->assetID;
-					$return_data[$i]['asset_code']           = 	$value->asset_code;
-					$return_data[$i]['digits_code']          = 	$value->digits_code;
-					$return_data[$i]['asset_tag']            = 	$value->asset_tag;
-					$return_data[$i]['serial_no']            = 	$value->serial_no;
-					$return_data[$i]['item_description']     = 	$value->item_description;
-					$return_data[$i]['category_description'] = 	$value->category_description;
-					$return_data[$i]['item_cost']            = 	$value->item_cost;
-					$return_data[$i]['item_type']            = 	$value->item_type;
-					$return_data[$i]['image']                = 	$value->image;
-					$return_data[$i]['quantity']             = 	$value->quantity;
-					$return_data[$i]['total_quantity']       = 	$value->total_quantity;
-
-					$i++;
-
-				}
-				$data['items'] = $return_data;
-			}
-
+				->first();
+			$data['items'] = $items;
 
 			echo json_encode($data);
 			exit;  
