@@ -1065,6 +1065,7 @@
 			//Option 2
 			$data['AssetRequest'] = HeaderRequest::whereNotNull('purchased2_by')->where('mo_plug', 0)
 			                                       ->whereNotIn('request_type_id' , [6,7])
+												   ->where('status_id','!=',13)
 												   ->orwhere('to_mo', 1)
 												   ->get();
 
