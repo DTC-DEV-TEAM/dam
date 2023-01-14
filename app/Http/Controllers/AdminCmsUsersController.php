@@ -542,6 +542,11 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 			$postdata['approver_id_manager'] = NULL;
 			$postdata['approver_id_executive'] = NULL;
 		}
+		if(CRUDBooster::myPrivilegeId() == 4){
+			$postdata['new_employee_plug'] = 1;
+		}else{
+			$postdata['new_employee_plug'] = NULL;
+		}
 
 		$locationToPickData1 = array();
     		$locationToPick = json_encode($postdata['location_to_pick'], true);
