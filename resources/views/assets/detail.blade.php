@@ -163,6 +163,8 @@
                                                 @if(in_array($Header->request_type_id, [6,7]))       
                                                     @if($Header->mo_so_num != null)                   
                                                     <th width="10%" class="text-center">Serve Quantity</th> 
+                                                    <th width="10%" class="text-center">Item Cost</th> 
+                                                    <th width="10%" class="text-center">Total Cost</th> 
                                                     @endif
                                                 @endif 
                                                 @if($Header->recommendedby != null || $Header->recommendedby != "")
@@ -211,6 +213,12 @@
                                                                                     <td style="text-align:center" height="10">
                                                                                         {{$rowresult->serve_qty}}
                                                                                     </td>
+                                                                                    <td style="text-align:center" height="10">
+                                                                                        {{$rowresult->unit_cost}}
+                                                                                    </td>
+                                                                                    <td style="text-align:center" height="10" class="cost">
+                                                                                        {{$rowresult->unit_cost * $rowresult->serve_qty}}
+                                                                                    </td>
                                                                                     @endif
                                                                                 @endif
                                                                                 @if($Header->recommendedby != null || $Header->recommendedby != "")                                                                               
@@ -258,6 +266,12 @@
                                                                                     @if($Header->mo_so_num != null) 
                                                                                     <td style="text-align:center" height="10">
                                                                                         {{$rowresult->serve_qty}}
+                                                                                    </td>
+                                                                                    <td style="text-align:center" height="10">
+                                                                                        {{$rowresult->unit_cost}}
+                                                                                    </td>
+                                                                                    <td style="text-align:center" height="10" class="cost">
+                                                                                        {{$rowresult->unit_cost * $rowresult->serve_qty}}
                                                                                     </td>
                                                                                     @endif
                                                                                 @endif
@@ -612,5 +626,19 @@
             return totalQuantity;
         }
     
+        // var tds = document
+        // .getElementById("asset-items1")
+        // .getElementsByTagName("td");
+        // var sumqty = 0;
+        // var sumcost = 0;
+        // for (var i = 0; i < tds.length; i++) {
+        // if (tds[i].className == "cost") {
+        //     sumcost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+        // }
+        // }
+        // document.getElementById("asset-items1").innerHTML +=
+        // "<tr><td colspan='7' style='text-align:right'><strong>TOTAL</strong></td><td style='text-align:center'><strong>" +
+        // sumcost.toFixed(2) +
+        // "</strong></td></td></tr>";
 </script>
 @endpush
