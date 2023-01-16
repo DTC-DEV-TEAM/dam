@@ -464,6 +464,7 @@
 
 			$dataLines = array();
 			$digits_code 		= $fields['supplies_digits_code'];
+			$supplies_cost 		= $fields['supplies_cost'];
 			$employee_name 		= $fields['employee_name'];
 			$company_name 		= $fields['company_name'];
 			$position 			= $fields['position'];
@@ -556,6 +557,7 @@
 			$item_id 			= $fields['item_id'];
 			*/
 			$digits_code 		= $fields['supplies_digits_code'] ? $fields['supplies_digits_code'] : null;
+			$supplies_cost 		= $fields['supplies_cost'];
 			$item_description 	= $fields['item_description'];
 			$category_id 		= $fields['category_id'];
 
@@ -616,6 +618,7 @@
 				$dataLines[$x]['app_id'] 			= implode(", ",$apps_array);
 				$dataLines[$x]['app_id_others'] 	= $app_id_others[$x];
 				$dataLines[$x]['quantity'] 			= $quantity[$x];
+				$dataLines[$x]['unit_cost'] 		= $supplies_cost[$x];
 
 				if($request_type_id == 5){
 

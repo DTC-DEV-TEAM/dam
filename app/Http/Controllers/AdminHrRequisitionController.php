@@ -280,7 +280,39 @@
 										->value('status_id');
 	
 			}
+			$purpose 			= $fields['purpose'];
+			$condition 			= $fields['condition'];
+			$quantity_total 	= $fields['quantity_total'];
+			$cost_total 		= $fields['cost_total'];
+			$total 				= $fields['total'];
+			$request_type_id 	= $fields['request_type_id'];
+			$requestor_comments = $fields['requestor_comments'];
+			$application 		= $fields['application'];
+			$application_others = $fields['application_others'];
+			$count_header       = DB::table('header_request')->count();
+			$header_ref         = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);			
+			$reference_number	= "ARF-".$header_ref;
 			dd($employees,$status);
+			
+			$postdata['reference_number']		 	= $reference_number;
+			$postdata['employee_name'] 				= $employees->id;
+			$postdata['company_name'] 				= $employees->company_name_id;
+			$postdata['position'] 					= $employees->position_id;
+			$postdata['department'] 				= $employees->department_id;
+			$postdata['purpose'] 					= $purpose;
+			$postdata['conditions'] 				= $condition;
+			$postdata['quantity_total'] 			= $quantity_total;
+			$postdata['cost_total'] 				= $cost_total;
+			$postdata['total'] 						= $total;
+			$postdata['requestor_comments'] 		= $requestor_comments;
+			$postdata['created_by'] 				= $employees->id;
+			$postdata['created_at'] 				= date('Y-m-d H:i:s');
+			$postdata['request_type_id']		 	= $request_type_id;
+			$postdata['privilege_id']		 		= $employees->id_cms_privileges;
+			if(!empty($application)){
+				$postdata['application'] 				= implode(", ",$application);
+				$postdata['application_others'] 		= $application_others;
+			}
 
 	    }
 
@@ -292,7 +324,86 @@
 	    | 
 	    */
 	    public function hook_after_add($id) {        
-	        //Your code here
+	        $fields = Request::all();
+			$dataLines = array();
+			$arf_header = DB::table('header_request')->where(['created_by' => CRUDBooster::myId()])->orderBy('id','desc')->first();
+			$digits_code 		= $fields['supplies_digits_code'] ? $fields['supplies_digits_code'] : null;
+			$item_description 	= $fields['item_description'];
+			$category_id 		= $fields['category_id'];
+			$sub_category_id 	= $fields['sub_category_id'];
+			$app_id_others 		= $fields['app_id_others'];
+			$quantity 			= $fields['quantity'];
+			$image 				= $fields['image'];
+			$request_type_id 	= $fields['request_type_id'];
+			$app_count = 2;
+
+			for($x=0; $x < count((array)$item_description); $x++) {
+
+				$apps_array = array();
+				$app_no = 'app_id'.$app_count;
+				$app_id 			= $fields[$app_no];
+				for($xxx=0; $xxx < count((array)$app_id); $xxx++) {
+					array_push($apps_array,$app_id[$xxx]); 
+				}
+	
+				$app_count++;
+				if (!empty($image[$x])) {
+					$extension1 =  $app_count.time() . '.' .$image[$x]->getClientOriginalExtension();
+					$filename = $extension1;
+					$image[$x]->move('vendor/crudbooster/',$filename);
+				}
+
+				if(in_array(CRUDBooster::myPrivilegeId(), [4,11,12,14,15])){ 
+					if($category_id[$x] == "IT ASSETS"){
+						HeaderRequest::where('id', $arf_header->id)->update([
+							'to_reco'=> 1
+						]);
+					}					
+				}
+
+				$dataLines[$x]['header_request_id'] = $arf_header->id;
+				$dataLines[$x]['digits_code'] 	    = $digits_code[$x];
+				$dataLines[$x]['item_description'] 	= $item_description[$x];
+				$dataLines[$x]['category_id'] 		= $category_id[$x];
+				$dataLines[$x]['sub_category_id'] 	= $sub_category_id[$x];
+				$dataLines[$x]['app_id'] 			= implode(", ",$apps_array);
+				$dataLines[$x]['app_id_others'] 	= $app_id_others[$x];
+				$dataLines[$x]['quantity'] 			= $quantity[$x];
+
+				if($request_type_id == 5){
+					$dataLines[$x]['to_reco'] = 0;
+					
+				}else{
+					if (str_contains($item_description[$x], 'LAPTOP') || str_contains($item_description[$x], 'DESKTOP')) {
+						$dataLines[$x]['to_reco'] = 1;
+					}else{
+						$dataLines[$x]['to_reco'] = 0;
+					}
+				}
+
+				if (!empty($image[$x])) {
+
+					$dataLines[$x]['image'] 			= 'vendor/crudbooster/'.$filename;
+				}else{
+					$dataLines[$x]['image'] 			= "";
+				}
+				$dataLines[$x]['created_at'] 		= date('Y-m-d H:i:s');
+				unset($apps_array);
+			}
+
+			DB::beginTransaction();
+			try {
+				BodyRequest::insert($dataLines);
+				DB::commit();
+				//CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_pullout_data_success",['mps_reference'=>$pullout_header->reference]), 'success');
+			} catch (\Exception $e) {
+				DB::rollback();
+				CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_database_error",['database_error'=>$e]), 'danger');
+			}
+
+			CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_add_success",['reference_number'=>$arf_header->reference_number]), 'success');
+
+			
 
 	    }
 

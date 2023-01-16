@@ -349,6 +349,9 @@
                         '<td>' + 
                             '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control digits_code" data-id="'+ tableRow +'" id="digits_code'+ tableRow +'"  name="supplies_digits_code[]"   maxlength="100" readonly>' +
                         '</td>' +
+                        '<td style="display:none">' + 
+                            '<input type="hidden" class="form-control cost" data-id="'+ tableRow +'" id="cost'+ tableRow +'"  name="supplies_cost[]"   maxlength="100" readonly>' +
+                        '</td>' +
                         '<td>'+
                             '<select class="form-control drop'+ tableRow + '" name="category_id[]" data-id="' + tableRow + '" id="category_id' + tableRow + '" required style="width:100%">' +
                             '  ' +
@@ -532,6 +535,7 @@
                                         if (e.id) {
                                           
                                             $("#digits_code"+$(this).attr("data-id")).val(e.digits_code);
+                                            $("#cost"+$(this).attr("data-id")).val(e.item_cost);
                                             $('#itemDesc'+$(this).attr("data-id")).val(e.value);
                                             $('#val_item').html('');
                                             return false;
