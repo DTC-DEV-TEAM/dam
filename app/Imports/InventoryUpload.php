@@ -87,7 +87,7 @@ class InventoryUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
                 'asset_code'                     => $asset_code,
                 'digits_code'                    => $row['digits_code'],
                 'item_description'               => $item_id->item_description,
-                'value'                          => $row['value'],
+                'value'                          => $item_id->item_cost,
                 'quantity'                       => $quantity,
                 'serial_no'                      => $serial_no,
                 'warranty_coverage'              => $row['warranty_coverage'],
