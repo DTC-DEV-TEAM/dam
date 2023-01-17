@@ -251,6 +251,7 @@
 						"icon"=>"fa fa-upload",
 						"url"=>CRUDBooster::mainpath('item-master-upload')];
 				}
+				// $this->index_button[] = ["label"=>"Sync Data","icon"=>"fa fa-refresh","color"=>"primary"];
 			}
 
 
@@ -287,14 +288,9 @@
 	        $this->script_js = NULL;
 			$this->script_js = "
 			$(document).ready(function() {
-
 				$('#category_id, #class_id').attr('disabled', 'true');
-
 				 $('#digits_code').change(function() {
-
 					var digits_code = this.value;
-					
-
 					$.ajax
 					({ 
 						type: 'GET',
@@ -302,15 +298,9 @@
 						data: '',
 						success: function(result)
 						{
-							
 							//alert(result.length);
-
 					        var i;
-
 							for (i = 0; i < result.length; ++i) {
-
-						
-
 								$('#item_description').val(result[i].item_description);
 								$('#category_id').val(result[i].category_id);
 								$('#brand_id').val(result[i].brand_id);
@@ -318,13 +308,68 @@
 								$('#vendor_id').val(result[i].vendor_id);
 								$('#item_cost').val(result[i].current_srp);
 							}
-
 						}
-
 					});
 				});
 
-				
+				setInterval(getItemMasterData, 60*60*1000);
+				function getItemMasterData(){
+					$.ajax({
+						type: 'POST',
+						url: '".route('get-item-master-data')."',
+						dataType: 'json',
+						data: {
+							'_token': $(\"#token\").val(),
+						},
+						success: function(response) {
+							if (response.status == \"success\") {
+								swal({
+									type: response.status,
+									title: response.message,
+								});
+								location.reload();
+								} else if (response.status == \"error\") {
+								swal({
+									type: response.status,
+									title: response.message,
+								});
+								}
+						},
+						error: function(e) {
+							console.log(e);
+						}
+					});
+				}
+                
+				//updated item master data
+				setInterval(getItemMasterUpdatedData, 60*60*1000);
+				function getItemMasterUpdatedData(){
+					$.ajax({
+						type: 'POST',
+						url: '".route('get-item-master-updated-data')."',
+						dataType: 'json',
+						data: {
+							'_token': $(\"#token\").val(),
+						},
+						success: function(response) {
+							if (response.status == \"success\") {
+								swal({
+									type: response.status,
+									title: response.message,
+								});
+								location.reload();
+								} else if (response.status == \"error\") {
+								swal({
+									type: response.status,
+									title: response.message,
+								});
+								}
+						},
+						error: function(e) {
+							console.log(e);
+						}
+					});
+				}
 
 
 			});
@@ -479,14 +524,14 @@
 	    public function hook_query_index(&$query) {
 	        //Your code here
 
-			if(CRUDBooster::myPrivilegeName() == "Employee"){
+			// if(CRUDBooster::myPrivilegeName() == "Employee"){
 
-				$query->where('assets.assign_to', CRUDBooster::myId());
+			// 	$query->where('assets.assign_to', CRUDBooster::myId());
 
-			}else{
+			// }else{
 
-				$query->whereNull('assets.image')->whereNull('assets.deleted_at');
-			}
+			// 	$query->whereNull('assets.image')->whereNull('assets.deleted_at');
+			// }
 
 	            
 	    }
@@ -716,12 +761,158 @@
 			Excel::import(new ItemMasterImport, $path);	
 			CRUDBooster::redirect(CRUDBooster::adminpath('assets'), trans("Upload Successfully!"), 'success');
 		}
-	
-		// public function inventoryUpload(Request $request) {
-		// 	$path_excel = $request->file('import_file')->store('temp');
-		// 	$path = storage_path('app').'/'.$path_excel;
-		// 	Excel::import(new InventoryUpload, $path);	
-		// 	CRUDBooster::redirect(CRUDBooster::adminpath('assets_inventory_body'), trans("Upload Successfully!"), 'success');
-		// }
+
+		public function getItemMasterDataApi(Request $request) {
+			$secretKey = "1f9653c84409990a899f5bd63f719771"; 
+            $uniqueString = time(); 
+            $userAgent = $_SERVER['HTTP_USER_AGENT']; 
+            $userAgent = $_SERVER['HTTP_USER_AGENT']; 
+            if($userAgent == '' || is_null($userAgent)){
+                $userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36';    
+            }
+            $xAuthorizationToken = md5( $secretKey . $uniqueString . $userAgent);
+            $xAuthorizationTime = $uniqueString;
+            $vars = [
+                "your_param"=>1
+            ];
+    
+            //https://stackoverflow.com/questions/8115683/php-curl-custom-headers
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL,"https://aimfs.digitstrading.ph/public/api/imfs_items_created");
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+            curl_setopt($ch, CURLOPT_POST, FALSE);
+            curl_setopt($ch, CURLOPT_POSTFIELDS,null);
+            curl_setopt($ch, CURLOPT_HTTPGET, TRUE);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 300);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT , 30);
+    
+            $headers = [
+            'X-Authorization-Token: ' . $xAuthorizationToken,
+            'X-Authorization-Time: ' . $xAuthorizationTime,
+            'User-Agent: '.$userAgent
+            ];
+    
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            $server_output = curl_exec ($ch);
+            curl_close ($ch);
+    
+            $response = json_decode($server_output, true);
+          
+            $data = [];
+            $count = 0;
+            if(!empty($response["data"])) {
+				foreach ($response["data"] as $key => $value) {
+					$count++;
+						DB::beginTransaction();
+						try {
+							Assets::updateOrcreate([
+								'digits_code' => $row['digits_code'] 
+							],
+							[
+								'digits_code' => $value['digits_code'],
+								'item_description' => $value['item_description'],
+								'brand_id' => $value['brand_id'],
+								'category_id' => $value['category_id'],
+								'class_id' => $value['class_id'],
+								'vendor_id' => $value['vendor_id'],
+								'item_cost' => $value['current_srp'],
+								'asset_tag' => "",
+								'quantity' => 0,
+								'add_quantity' => 0,
+								'total_quantity' => 0,
+								'status_id' => 0,
+								'created_by' => CRUDBooster::myId(),
+								'created_at' => date('Y-m-d H:i:s'),
+							]);
+							DB::commit();
+						} catch (\Exception $e) {
+							\Log::debug($e);
+							DB::rollback();
+						}
+					
+				}
+            }
+            \Log::info('Item Create: executed! items');
+		}
+
+		public function getItemMasterUpdatedDataApi(Request $request) {
+			$secretKey = "1f9653c84409990a899f5bd63f719771"; 
+            $uniqueString = time(); 
+            $userAgent = $_SERVER['HTTP_USER_AGENT']; 
+            $userAgent = $_SERVER['HTTP_USER_AGENT']; 
+            if($userAgent == '' || is_null($userAgent)){
+                $userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36';    
+            }
+            $xAuthorizationToken = md5( $secretKey . $uniqueString . $userAgent);
+            $xAuthorizationTime = $uniqueString;
+            $vars = [
+                "your_param"=>1
+            ];
+    
+            //https://stackoverflow.com/questions/8115683/php-curl-custom-headers
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL,"https://aimfs.digitstrading.ph/public/api/imfs_items_updated");
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+            curl_setopt($ch, CURLOPT_POST, FALSE);
+            curl_setopt($ch, CURLOPT_POSTFIELDS,null);
+            curl_setopt($ch, CURLOPT_HTTPGET, TRUE);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 300);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT , 30);
+    
+            $headers = [
+            'X-Authorization-Token: ' . $xAuthorizationToken,
+            'X-Authorization-Time: ' . $xAuthorizationTime,
+            'User-Agent: '.$userAgent
+            ];
+    
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            $server_output = curl_exec ($ch);
+            curl_close ($ch);
+    
+            $response = json_decode($server_output, true);
+       
+            $data = [];
+            $count = 0;
+            if(!empty($response["data"])) {
+				foreach ($response["data"] as $key => $value) {
+					$count++;
+						DB::beginTransaction();
+						try {
+							Assets::updateOrcreate([
+								'digits_code' => $row['digits_code'] 
+							],
+							[
+								'digits_code' => $value['digits_code'],
+								'item_description' => $value['item_description'],
+								'brand_id' => $value['brand_id'],
+								'category_id' => $value['category_id'],
+								'class_id' => $value['class_id'],
+								'vendor_id' => $value['vendor_id'],
+								'item_cost' => $value['current_srp'],
+								'asset_tag' => "",
+								'quantity' => 0,
+								'add_quantity' => 0,
+								'total_quantity' => 0,
+								'status_id' => 0,
+								'updated_by' => CRUDBooster::myId(),
+								'updated_at' => date('Y-m-d H:i:s'),
+							]);
+							DB::commit();
+						} catch (\Exception $e) {
+							\Log::debug($e);
+							DB::rollback();
+						}
+					
+				}
+            }
+            \Log::info('Item Create: executed! items');
+		}
+
 
 	}
