@@ -57,7 +57,7 @@ class InventoryUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
                 $location = 4;
             }
             
-            if($row['category_id'] == 5){
+            if($item_id->category_id == 5){
                 $asset_code = "A1".str_pad ($DatabaseCounterIt + 1, 6, '0', STR_PAD_LEFT);
                 $DatabaseCounterIt++; // or any rule you want.	
                 $request_type_id_inventory = 1;
