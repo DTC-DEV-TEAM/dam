@@ -357,7 +357,6 @@
 				$released  = 		DB::table('statuses')->where('id', 12)->value('id');
 
 				$query->whereNull('header_request.deleted_at')
-					  ->where('header_request.status_id', '!=' , $released)
 					  ->orderBy('header_request.status_id', 'ASC')
 					  ->orderBy('header_request.id', 'DESC');
 
@@ -372,10 +371,10 @@
 					$released  = 		DB::table('statuses')->where('id', 12)->value('id');
 
 					$sub_query->where('header_request.created_by', CRUDBooster::myId())
-							  ->where('header_request.status_id', '!=' , $released)
+	
 							  ->whereNull('header_request.deleted_at'); 
-					$sub_query->orwhere('header_request.employee_name', $user->employee_id)
-							  ->where('header_request.status_id', '!=' , $released)
+					$sub_query->orwhere('header_request.employee_name', $user->id)
+	
 							  ->whereNull('header_request.deleted_at');
 
 				});
