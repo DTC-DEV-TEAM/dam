@@ -411,7 +411,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 					$('#form-group-location_to_pick').show();
 					$('#location_to_pick').attr('required', 'required');
 
-				}else if($('#id_cms_privileges').val() == 11 || $('#id_cms_privileges').val() == 11){
+				}else if($('#id_cms_privileges').val() == 11 || $('#id_cms_privileges').val() == 15){
 					$('#form-group-approver_id_manager').hide();
 					$('#approver_id_manager').removeAttr('required');
 
