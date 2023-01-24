@@ -748,7 +748,15 @@
 			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();
 			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
 			
-			if(in_array(CRUDBooster::myPrivilegeId(), [1,2,3,4,5,6,7,9,10,11,12,13,14,15])){ 
+			$privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
+			$privileges_array = array();
+			foreach($privilegesMatrix as $matrix){
+				array_push($privileges_array, $matrix->id);
+			}
+			$privileges_string = implode(",",$privileges_array);
+			$privilegeslist = array_map('intval',explode(",",$privileges_string));
+
+			if(in_array(CRUDBooster::myPrivilegeId(), $privilegeslist)){ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
 				return $this->view("assets.add-requisition", $data);
 
@@ -788,8 +796,16 @@
 			$data['sub_categories'] = DB::table('class')->where('class_status', 'ACTIVE')->where('category_id', 1)->orderby('class_description', 'asc')->get();
 			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();
 			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
+			
+			$privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
+			$privileges_array = array();
+			foreach($privilegesMatrix as $matrix){
+				array_push($privileges_array, $matrix->id);
+			}
+			$privileges_string = implode(",",$privileges_array);
+			$privilegeslist = array_map('intval',explode(",",$privileges_string));
 
-			if(in_array(CRUDBooster::myPrivilegeId(), [1,2,3,4,5,6,7,9,10,11,12,13,14,15])){ 
+			if(in_array(CRUDBooster::myPrivilegeId(), $privilegeslist)){ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
 				return $this->view("assets.add-requisition-fa", $data);
 			}else if(CRUDBooster::myPrivilegeId() == 8){ 
@@ -827,8 +843,16 @@
 			$data['sub_categories'] = DB::table('class')->where('class_status', 'ACTIVE')->where('category_id', 4)->orderby('class_description', 'asc')->get();
 			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();
 			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
+			
+			$privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
+			$privileges_array = array();
+			foreach($privilegesMatrix as $matrix){
+				array_push($privileges_array, $matrix->id);
+			}
+			$privileges_string = implode(",",$privileges_array);
+			$privilegeslist = array_map('intval',explode(",",$privileges_string));
 
-			if(in_array(CRUDBooster::myPrivilegeId(), [1,2,3,4,5,6,7,9,10,11,12,13,14,15])){ 
+			if(in_array(CRUDBooster::myPrivilegeId(),$privilegeslist)){ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
 				return $this->view("assets.add-requisition-marketing", $data);
 			}else if(CRUDBooster::myPrivilegeId() == 8){ 
@@ -870,7 +894,15 @@
 			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();	
 			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
 
-			if(in_array(CRUDBooster::myPrivilegeId(), [1,2,3,4,5,6,7,9,10,11,12,13,14,15])){ 
+			$privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
+			$privileges_array = array();
+			foreach($privilegesMatrix as $matrix){
+				array_push($privileges_array, $matrix->id);
+			}
+			$privileges_string = implode(",",$privileges_array);
+			$privilegeslist = array_map('intval',explode(",",$privileges_string));
+
+			if(in_array(CRUDBooster::myPrivilegeId(), $privilegeslist)){ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
 				return $this->view("assets.add-requisition-supplies", $data);
 			}else if(CRUDBooster::myPrivilegeId() == 8){ 
@@ -887,7 +919,6 @@
 
 		public function getDetail($id){
 			
-
 			$this->cbLoader();
             if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
                 CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
