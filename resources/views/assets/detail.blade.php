@@ -63,7 +63,7 @@
 
             </div>
 
-            @if($Header->store_branch != null || $Header->store_branch != "")
+            @if(CRUDBooster::myPrivilegeId() == 8 || CRUDBooster::isSuperadmin())
                 <div class="row">                           
                     <label class="control-label col-md-2">{{ trans('message.form-label.store_branch') }}:</label>
                     <div class="col-md-4">
