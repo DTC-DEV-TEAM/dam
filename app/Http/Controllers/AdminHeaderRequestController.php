@@ -505,7 +505,7 @@
 			$postdata['company_name'] 				= $employees->company_name_id;
 			$postdata['position'] 					= $employees->position_id;
 			$postdata['department'] 				= $employees->department_id;
-			$postdata['store_branch'] 				= $store_branch_id;
+			$postdata['store_branch'] 				= $employees->location_id;
 			$postdata['purpose'] 					= $purpose;
 			$postdata['conditions'] 				= $condition;
 			$postdata['quantity_total'] 			= $quantity_total;
@@ -934,7 +934,7 @@
 				->leftjoin('cms_users as employees', 'header_request.employee_name', '=', 'employees.id')
 				->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
 				->leftjoin('departments', 'header_request.department', '=', 'departments.id')
-				->leftjoin('locations', 'header_request.store_branch', '=', 'locations.id')
+				->leftjoin('locations', 'employees.location_id', '=', 'locations.id')
 				->leftjoin('cms_users as requested', 'header_request.created_by','=', 'requested.id')
 				->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
 				->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
