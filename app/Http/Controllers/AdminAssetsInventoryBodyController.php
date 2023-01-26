@@ -254,7 +254,11 @@
 	        | $this->style_css = ".style{....}";
 	        |
 	        */
-	        $this->style_css = NULL;
+	        $this->style_css = "
+			.change-color{
+				background-color:#343a40 !important;
+			}
+			";
 	        
 	        
 	        
@@ -331,7 +335,7 @@
 				}else if($column_value == $forTransfer){
 					$column_value = '<span class="label label-info">'.$forTransfer.'</span>';
 				}else if($column_value == $notAvailabe){
-					$column_value = '<span class="label label-danger">'.$notAvailabe.'</span>';
+					$column_value = '<span class="label label-warning change-color">'.$notAvailabe.'</span>';
 				}
 			}
 
