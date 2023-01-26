@@ -387,7 +387,7 @@
                                                                                 -->
                                                                             
                                                                             </td>
-                                                                            <td style="text-align:center" height="10">
+                                                                            <td style="text-align:center" height="10" class="cost">
                                                                                     {{$rowresult->quantity}}
                                                                             </td>
 
@@ -487,15 +487,16 @@
                                                                 <td colspan="3">
                                                                     <!-- <input type="button" id="add-Row" name="add-Row" class="btn btn-info add" value='Add Item' /> -->
                                                                 </td> 
-                                                                <td align="center" colspan="1">
-                                                                    
-                                                                    <label>{{$Header->quantity_total}}</label>
-
-                                                                </td>
+                                                               
                                                             </tr>
                                                         </tfoot>
 
                                                     </table>
+                                                    <td colspan="4">
+                                                                    
+                                                        <!-- <label>{{$Header->quantity_total}}</label> -->
+
+                                                    </td>
                                                 </div>
                                             </div>
                                   
@@ -1070,6 +1071,21 @@
         }
 
     });
+
+    var tds = document
+    .getElementById("asset-items1")
+    .getElementsByTagName("td");
+    var sumqty = 0;
+    var sumcost = 0;
+    for (var i = 0; i < tds.length; i++) {
+    if (tds[i].className == "cost") {
+        sumcost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+    }
+    }
+    document.getElementById("asset-items1").innerHTML +=
+    "<tr><td colspan='3' style='text-align:right'><strong>TOTAL</strong></td><td style='text-align:center'><strong>" +
+    sumcost +
+    "</strong></td></tr>";
 
 </script>
 @endpush
