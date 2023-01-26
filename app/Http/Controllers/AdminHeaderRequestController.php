@@ -962,7 +962,7 @@
 						'header_request.created_at as created_at'
 						)
 				->where('header_request.id', $id)->first();
-				
+		
 			$data['Body'] = BodyRequest::
 				select(
 				  'body_request.*'
@@ -1144,14 +1144,13 @@
 
 		public function RemoveItem(Request $request)
 		{
-
+	
 			$data = 				Request::all();	
 			
-
 			$headerID = 			$data['headerID'];
 			$bodyID = 				$data['bodyID'];
 			$quantity_total = 		$data['quantity_total']; 
-
+       
 			HeaderRequest::where('id', $headerID)
 			->update([
 				'quantity_total'=> 		$quantity_total
@@ -1166,14 +1165,17 @@
 
 
 			if($quantity_total == 0){
-				HeaderRequest::where('id', $headerID)
+			HeaderRequest::where('id', $headerID)
 				->update([
 					'status_id'=> 8,
 					'cancelled_by'=> CRUDBooster::myId(),
-					'cancelled_at'=> date('Y-m-d H:i:s')
+					'cancelled_at'=> date('Y-m-d H:i:s'),
+					'quantity_total'=> 0
 				]);	
+				
 			}
-
+			
+			CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Request has been cancelled successfully!"), 'info');
 			
 		}
 
