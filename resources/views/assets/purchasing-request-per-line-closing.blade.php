@@ -340,7 +340,7 @@
                                                                             </td>
 
                                                 
-                                                                            <td style="text-align:center" height="10">
+                                                                            <td style="text-align:center" height="10" class="qty">
                                                                             <input type="text"  class="form-control mo_so_num" name="quantity{{$tableRow}}" value="{{$rowresult->quantity}}" id="quantity{{$tableRow}}" readonly>
                                                                                     <!-- {{$rowresult->quantity}} -->
                                                                             </td>
@@ -409,21 +409,22 @@
                                                         </tbody>
 
                                                         <tfoot>
-
-                                                            <tr id="tr-table1" class="bottom">
-                
-                                                                <td colspan="4">
-                                                                    <!-- <input type="button" id="add-Row" name="add-Row" class="btn btn-info add" value='Add Item' /> -->
-                                                                </td> 
-                                                                <td align="center" colspan="1">
-                                                                    
-                                                                    <label>{{$Header->quantity_total}}</label>
-
-                                                                </td>
-                                                            </tr>
+                                                        <tr>
+                                                            <td colspan='4' style='text-align:right'>
+                                                            <strong>TOTAL</strong>
+                                                            </td>
+                                                            <td style='text-align:center'>
+                                                            <strong>
+                                                            @foreach($bodyTotal as $total_qty)       
+                                                                    {{$total_qty->quantity}}
+                                                                @endforeach
+                                                           </strong>
+                                                           </td>
+                                                           </tr>
                                                         </tfoot>
 
                                                     </table>
+                                                  
                                                 </div>
                                             </div>
                                   
@@ -615,5 +616,21 @@
         });
         }
     });
+
+        // var tds = document
+        // .getElementById("asset-items1")
+        // .getElementsByTagName("td");
+        // var sumqty = 0;
+     
+        // for (var i = 0; i < tds.length; i++) {
+        //     console.log(tds[i].innerHTML);
+        // if (tds[i].className == "qty") {
+        //     sumqty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+        // }
+        // }
+        // document.getElementById("asset-items1").innerHTML +=
+        // "<tr><td colspan='4' style='text-align:right'><strong>TOTAL</strong></td><td style='text-align:center'><strong>" +
+        // sumqty +
+        // "</strong></td></tr>";
 </script>
 @endpush

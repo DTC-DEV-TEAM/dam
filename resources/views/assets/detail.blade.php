@@ -207,6 +207,7 @@
                                                                                 <td style="text-align:center" height="10">
                                                                                         {{$rowresult->quantity}}
                                                                                         <input type='hidden' name="quantity" class="form-control text-center quantity_item" id="quantity" readonly value="{{$rowresult->quantity}}">
+                                                                                        <input type='hidden' name="quantity_body" id="quantity{{$tableRow}}" readonly value="{{$rowresult->quantity}}">
                                                                                 </td>
                                                                                 @if(in_array($Header->request_type_id, [6,7]))
                                                                                     @if($Header->mo_so_num != null) 
@@ -261,6 +262,7 @@
                                                                                 <td style="text-align:center" height="10">
                                                                                         {{$rowresult->quantity}}
                                                                                         <input type='hidden' name="quantity" class="form-control text-center quantity_item" id="quantity" readonly value="{{$rowresult->quantity}}">
+                                                                                        <input type='hidden' name="quantity_body" id="quantity{{$tableRow}}" readonly value="{{$rowresult->quantity}}">
                                                                                 </td>
                                                                                 @if(in_array($Header->request_type_id, [6,7]))
                                                                                     @if($Header->mo_so_num != null) 
@@ -418,9 +420,9 @@
                                                     @endforeach
                                                 @endif       
                                                 <tr class="tableInfo">
-                                                    <td colspan="8" align="right"><strong>{{ trans('message.table.total') }}</strong></td>
+                                                    <td colspan="3" align="right"><strong>{{ trans('message.table.total') }}</strong></td>
                                                     <td align="center" colspan="1">
-                                                        <label>{{$Header->total}}</label>
+                                                        <label>{{$Header->quantity_total}}</label>
                                                     </td>
                                                     <td colspan="1"></td>
                                                 </tr>
@@ -575,11 +577,11 @@
                 var strconfirm = confirm("Are you sure you want to remove this item?");
                 if (strconfirm == true) {
                     if ($('#asset-items1 tbody tr').length != 1) { //check if not the first row then delete the other rows
-                                  
+                        var id_data = $(this).attr("data-id");    
+           
+                        $("#quantity_total").val(calculateTotalQuantity($("#quantity"+id_data).val()));
 
-                        $("#quantity_total").val(calculateTotalQuantity());
-
-                        var id_data = $(this).attr("data-id");
+                       
 
                         item_id = $("#ids"+id_data).val();
 
@@ -617,13 +619,13 @@
             });
     });
 
-        function calculateTotalQuantity() {
-            var totalQuantity = 0;
+        function calculateTotalQuantity(...body_qty) {
+            var totalQuantity = 0;  
             $('.quantity_item').each(function() {
-
-            totalQuantity = parseInt($("#quantity_total").val()) - 1;
+             totalQuantity = parseInt($("#quantity_total").val()) - parseInt(body_qty);
             });
             return totalQuantity;
+    
         }
     
         // var tds = document
