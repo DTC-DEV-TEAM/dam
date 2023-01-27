@@ -989,6 +989,14 @@
 				->where('body_request.header_request_id', $id)
 				->whereNull('deleted_at')
 				->get();
+			$data['bodyTotal'] = BodyRequest::
+				select(
+				  'body_request.*',
+				  DB::raw('SUM(body_request.quantity) as quantity')
+				)
+				->where('body_request.header_request_id', $id)
+				->whereNull('deleted_at')
+				->get();
 
 			$data['BodyReco'] = DB::table('recommendation_request')
 				->select(
