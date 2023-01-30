@@ -1144,9 +1144,8 @@
 
 		public function RemoveItem(Request $request)
 		{
-	
+	       
 			$data = 				Request::all();	
-			
 			$headerID = 			$data['headerID'];
 			$bodyID = 				$data['bodyID'];
 			$quantity_total = 		$data['quantity_total']; 
@@ -1163,19 +1162,19 @@
 				'deleted_by'=> 		CRUDBooster::myId()
 			]);	
 
+			$bodyCount = DB::table('body_request')->where('header_request_id',$headerID)->whereNull('body_request.deleted_at')->count();
 
-			if($quantity_total == 0){
+			if($bodyCount == 0){
 			HeaderRequest::where('id', $headerID)
 				->update([
 					'status_id'=> 8,
 					'cancelled_by'=> CRUDBooster::myId(),
-					'cancelled_at'=> date('Y-m-d H:i:s'),
-					'quantity_total'=> 0
+					'cancelled_at'=> date('Y-m-d H:i:s')
 				]);	
-				
-			}
 			
-			CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Request has been cancelled successfully!"), 'info');
+			}
+			$message = ['status'=>'success', 'message' => 'Cancelled Successfully!'];
+			echo json_encode($message);
 			
 		}
 

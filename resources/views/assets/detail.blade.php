@@ -574,48 +574,79 @@
     $(document).ready(function() {
             $(document).on('click', '.removeRow', function() {
                 
-                var strconfirm = confirm("Are you sure you want to remove this item?");
-                if (strconfirm == true) {
-                    if ($('#asset-items1 tbody tr').length != 1) { //check if not the first row then delete the other rows
-                        var id_data = $(this).attr("data-id");    
-           
-                        $("#quantity_total").val(calculateTotalQuantity($("#quantity"+id_data).val()));
-
-                       
-
-                        item_id = $("#ids"+id_data).val();
-
-                        $("#bodyID").val(item_id);
-
-                        var data = $('#myform').serialize();
-
-                        $.ajax
+                // var strconfirm = confirm("Are you sure you want to remove this item?");
+                // if (strconfirm == true) {
+                //     if ($('#asset-items1 tbody tr').length != 1) { //check if not the first row then delete the other rows
+                //         var id_data = $(this).attr("data-id");    
+                //         $("#quantity_total").val(calculateTotalQuantity($("#quantity"+id_data).val()));
+                //         item_id = $("#ids"+id_data).val();
+                //         $("#bodyID").val(item_id);
+                //         var data = $('#myform').serialize();
+                //         $.ajax
+                //         ({ 
+                //             url:  '{{ url('admin/header_request/RemoveItem') }}',
+                //             type: "GET",
+                //             data: data,
+                //             success: function(result)
+                //             {   
+                //                 console.log( response ); 
+                //             }
+                //         });
+                //         $("#deleteRow"+id_data).attr('disabled', true);
+                //         tableRow--;
+                //         $(this).closest('tr').css('background-color','#d9534f');
+                //         $(this).closest('tr').css('color','white');
+                //         return false;
+                //     }
+                // }else{
+                //     return false;
+                //     window.stop();
+                // }
+                event.preventDefault();
+                if ($('#asset-items1 tbody tr').length != 1) { //check if not the first row then delete the other rows
+                var id_data = $(this).attr("data-id");    
+                $("#quantity_total").val(calculateTotalQuantity($("#quantity"+id_data).val()));
+                item_id = $("#ids"+id_data).val();
+                $("#bodyID").val(item_id);
+                var data = $('#myform').serialize();
+                swal({
+                    title: "Are you sure?",
+                    type: "warning",
+                    text: "You won't be able to revert this!",
+                    showCancelButton: true,
+                    confirmButtonColor: "#41B314",
+                    cancelButtonColor: "#F9354C",
+                    confirmButtonText: "Yes, cancel it!"
+                    }, function () {
+                    $.ajax
                         ({ 
                             url:  '{{ url('admin/header_request/RemoveItem') }}',
                             type: "GET",
                             data: data,
-                            success: function(result)
-                            {   
-                                console.log( response ); 
+                            success: function(data){    
+                                if (data.status == "success") {
+                                    swal({
+                                        type: data.status,
+                                        title: data.message,
+                                    });
+                                    setTimeout(function(){
+                                        window.location.replace(document.referrer);
+                                    }, 1000); 
+                                    } else if (data.status == "error") {
+                                    swal({
+                                        type: data.status,
+                                        title: data.message,
+                                    });
+                                }
                             }
-                        });
-
-                        $("#deleteRow"+id_data).attr('disabled', true);
-
-                        tableRow--;
-
-                        $(this).closest('tr').css('background-color','#d9534f');
-
-                        $(this).closest('tr').css('color','white');
-
-                    
-                        return false;
-                    }
-                }else{
-                    return false;
-                    window.stop();
-                }
-                
+                        });                            
+                    });
+                    $("#deleteRow"+id_data).attr('disabled', true);
+                    tableRow--;
+                    $(this).closest('tr').css('background-color','#d9534f');
+                    $(this).closest('tr').css('color','white'); 
+                    return false;   
+               }
             });
     });
 

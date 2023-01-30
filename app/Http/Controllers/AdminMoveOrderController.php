@@ -1076,7 +1076,7 @@
 				->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
 				->leftjoin('departments', 'header_request.department', '=', 'departments.id')
 				->leftjoin('positions', 'header_request.position', '=', 'positions.id')
-				->leftjoin('locations', 'header_request.store_branch', '=', 'locations.id')
+				->leftjoin('locations', 'employees.location_id', '=', 'locations.id')
 				->leftjoin('cms_users as requested', 'header_request.created_by','=', 'requested.id')
 				->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
 				->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
@@ -1158,7 +1158,7 @@
 				->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
 				->leftjoin('departments', 'header_request.department', '=', 'departments.id')
 				->leftjoin('positions', 'header_request.position', '=', 'positions.id')
-				->leftjoin('locations', 'header_request.store_branch', '=', 'locations.id')
+				->leftjoin('locations', 'employees.location_id', '=', 'locations.id')
 				->leftjoin('cms_users as requested', 'header_request.created_by','=', 'requested.id')
 				->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
 				->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
@@ -1247,7 +1247,7 @@
 				->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
 				->leftjoin('departments', 'header_request.department', '=', 'departments.id')
 				->leftjoin('positions', 'header_request.position', '=', 'positions.id')
-				->leftjoin('locations', 'header_request.store_branch', '=', 'locations.id')
+				->leftjoin('locations', 'employees.location_id', '=', 'locations.id')
 				->leftjoin('cms_users as requested', 'header_request.created_by','=', 'requested.id')
 				->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
 				->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
@@ -1307,7 +1307,7 @@
 				->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
 				->leftjoin('departments', 'header_request.department', '=', 'departments.id')
 				->leftjoin('positions', 'header_request.position', '=', 'positions.id')
-				->leftjoin('locations', 'header_request.store_branch', '=', 'locations.id')
+				->leftjoin('locations', 'employees.location_id', '=', 'locations.id')
 				->leftjoin('cms_users as requested', 'header_request.created_by','=', 'requested.id')
 				->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
 				->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
@@ -1420,7 +1420,7 @@
 								->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
 								->leftjoin('departments', 'header_request.department', '=', 'departments.id')
 								->leftjoin('positions', 'header_request.position', '=', 'positions.id')
-								->leftjoin('locations', 'header_request.store_branch', '=', 'locations.id')
+								->leftjoin('locations', 'employees.location_id', '=', 'locations.id')
 								->leftjoin('cms_users as requested', 'header_request.created_by','=', 'requested.id')
 								->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
 								->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
@@ -1714,7 +1714,7 @@
 				->leftjoin('cms_users as employees', 'header_request.employee_name', '=', 'employees.id')
 				->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
 				->leftjoin('departments', 'header_request.department', '=', 'departments.id')
-				->leftjoin('locations', 'header_request.store_branch', '=', 'locations.id')
+				->leftjoin('locations', 'employees.location_id', '=', 'locations.id')
 				->leftjoin('cms_users as requested', 'header_request.created_by','=', 'requested.id')
 				->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
 				->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
@@ -1858,11 +1858,11 @@
 				$infos['assign_to'] = $employee_name->bill_to;
 				$infos['reference_number'] = $arf_header->reference_number;
 				//if(app()->environment('production')) {
-					$infos['systemlink'] = "<a href='https://dam.digitstrading.ph/public/admin/receiving_asset/getADFStatus/$arf_header->id'>I have read and agree to the terms of use, and have received this item.</a>";
+					//$infos['systemlink'] = "<a href='https://dam.digitstrading.ph/public/admin/receiving_asset/getADFStatus/$arf_header->id'>I have read and agree to the terms of use, and have received this item.</a>";
 				//}else if(app()->environment('staging')){
 					//$infos['systemlink'] = "<a href='https://dam-test.digitstrading.ph/public/admin/receiving_asset/getADFStatus/$arf_header->id'>I have read and agree to the terms of use, and have received this item.</a>";
 				//}else{
-					//$infos['systemlink'] = "<a href='https://localhost/dam/public/admin/receiving_asset/getADFStatus/$arf_header->id'>I have read and agree to the terms of use, and have received this item.</a>";
+					$infos['systemlink'] = "<a href='https://localhost/dam/public/admin/receiving_asset/getADFStatus/$arf_header->id'>I have read and agree to the terms of use, and have received this item.</a>";
 				//}
 			
 				$infos['mo_reference_number'] = '<p>'. implode("<br>", $mo_reference_number) .'</p>';
@@ -1872,8 +1872,8 @@
 				$infos['item_category'] = '<p>'. implode("<br>", $item_category) .'</p>';
 				$infos['serial_no'] = '<p>'. implode("<br>", $serial_no) .'</p>';
 				
-				CRUDBooster::sendEmail(['to'=>$employee_name->email,'data'=>$infos,'template'=>'assets_confirmation','attachments'=>$files]);
-				//CRUDBooster::sendEmail(['to'=>'marvinmosico@digits.ph','data'=>$infos,'template'=>'assets_confirmation','attachments'=>$files]);
+				//CRUDBooster::sendEmail(['to'=>$employee_name->email,'data'=>$infos,'template'=>'assets_confirmation','attachments'=>$files]);
+				CRUDBooster::sendEmail(['to'=>'marvinmosico@digits.ph','data'=>$infos,'template'=>'assets_confirmation','attachments'=>$files]);
 
 				if($arf_header->print_by_form == null){
 
