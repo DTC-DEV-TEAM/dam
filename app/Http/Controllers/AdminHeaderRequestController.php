@@ -373,9 +373,9 @@
 					$sub_query->where('header_request.created_by', CRUDBooster::myId())
 	
 							  ->whereNull('header_request.deleted_at'); 
-					$sub_query->orwhere('header_request.employee_name', $user->id)
+					// $sub_query->orwhere('header_request.employee_name', $user->id)
 	
-							  ->whereNull('header_request.deleted_at');
+					// 		  ->whereNull('header_request.deleted_at');
 
 				});
 
