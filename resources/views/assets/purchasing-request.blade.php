@@ -15,7 +15,8 @@
     <form method='post' id="myform" action='{{CRUDBooster::mainpath('edit-save/'.$Header->requestid)}}'>
         <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
         <input type="hidden" value="0" name="action" id="action">
-
+        <input type="hidden" value="{{$Header->request_type_id}}"  id="request_type_id">
+        
         <!-- Modal -->
         <div class="modal fade" id="search-items" role="dialog">
             <div class="modal-dialog">
@@ -308,7 +309,9 @@
                                                             <tr class="tbl_header_color dynamicRows">
 
                                                                 <!--<th width="5%" class="text-center">{{ trans('message.table.action') }}</th>-->
-
+                                                                @if(in_array($Header->request_type_id, [6,7]))
+                                                                 <th width="20%" class="text-center">Digits Code</th>
+                                                                @endif
                                                                 <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
                                                                 <th width="9%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
                                                                 <th width="15%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
@@ -360,8 +363,11 @@
 
                                                                             </td>
                                                                             -->
-
-
+                                                                            @if(in_array($Header->request_type_id, [6,7]))
+                                                                                <td style="text-align:center" height="10">
+                                                                                        {{$rowresult->digits_code}}
+                                                                                </td>
+                                                                            @endif
                                                                             <td style="text-align:center" height="10">
                                                                                 
                                                                                    <!-- <input type="hidden"  class="form-control"  name="item_id[]" id="item_id{{$tableRow}}"  required  value="{{$rowresult->id}}"> -->
@@ -1082,10 +1088,18 @@
         sumcost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
     }
     }
-    document.getElementById("asset-items1").innerHTML +=
-    "<tr><td colspan='3' style='text-align:right'><strong>TOTAL</strong></td><td style='text-align:center'><strong>" +
-    sumcost +
-    "</strong></td></tr>";
+    if($('#request_type_id').val() == 6 || $('#request_type_id').val() == 7){
+        document.getElementById("asset-items1").innerHTML +=
+        "<tr><td colspan='4' style='text-align:right'><strong>TOTAL</strong></td><td style='text-align:center'><strong>" +
+        sumcost +
+        "</strong></td></tr>";
+    }else{
+        document.getElementById("asset-items1").innerHTML +=
+        "<tr><td colspan='3' style='text-align:right'><strong>TOTAL</strong></td><td style='text-align:center'><strong>" +
+        sumcost +
+        "</strong></td></tr>";
+    }
+   
 
 </script>
 @endpush
