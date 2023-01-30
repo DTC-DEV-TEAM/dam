@@ -877,7 +877,6 @@
 					->leftjoin('mo_body_request', 'return_transfer_assets.mo_id', '=', 'mo_body_request.id')
 				->select(
 					'return_transfer_assets.*',
-					DB::raw('SUM(mo_body_request.unit_cost) as total_cost'),
 					'mo_body_request.*',
 					'statuses.*',
 					)
