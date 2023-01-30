@@ -420,8 +420,8 @@
                                                     @endforeach
                                                 @endif       
                                                 <tr class="tableInfo">
-                                                    <td colspan="3" align="right"><strong>{{ trans('message.table.total') }}</strong></td>
-                                                    <td align="center" colspan="1">
+                                                    <td colspan="6" align="right"><strong>{{ trans('message.table.total') }}</strong></td>
+                                                    <td align="center">
                                                         <label>{{$Header->quantity_total}}</label>
                                                     </td>
                                                     <td colspan="1"></td>
