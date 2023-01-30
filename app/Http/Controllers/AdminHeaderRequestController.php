@@ -625,7 +625,7 @@
 					
 				}else{
 
-					if (str_contains($item_description[$x], 'LAPTOP') || str_contains($item_description[$x], 'DESKTOP')) {
+					if (str_contains($sub_category_id[$x], 'LAPTOP') || str_contains($sub_category_id[$x], 'DESKTOP')) {
 						$dataLines[$x]['to_reco'] = 1;
 					}else{
 						$dataLines[$x]['to_reco'] = 0;
