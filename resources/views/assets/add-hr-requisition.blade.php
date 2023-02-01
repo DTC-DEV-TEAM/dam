@@ -40,21 +40,16 @@
 
             <div class="row">
                 <div class="col-md-6">
-                    <div class="form-group">
-                        <label class="control-label"><span style="color:red">*</span> {{ trans('message.form-label.employee_name') }}</label>
-                            <select required selected data-placeholder="-- Please Select Employee --" id="employee" name="employee" class="form-select select2" style="width:100%;">
-                                @foreach($new_employee as $res)
-                                    <option value=""></option>
-                                    <option value="{{ $res->id }}">{{ $res->bill_to }}</option>
-                                @endforeach
-                            </select>
+                <div class="form-group">
+                        <label class="control-label require">ERF Name</label>
+                        <input type="text" class="form-control"  id="company" name="company"  required>
                     </div>
                 </div>
 
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label require">{{ trans('message.form-label.company_name') }}</label>
-                        <input type="text" class="form-control"  id="company" name="company"  required readonly>
+                        <input type="text" class="form-control"  id="company" name="company" value="DIGITS"  required readonly>
                     </div>
                 </div>
             </div>
@@ -62,16 +57,20 @@
 
             <div class="row">
                 <div class="col-md-6">
-                    <div class="form-group">
-                        <label class="control-label require">{{ trans('message.form-label.department') }}</label>
-                        <input type="text" class="form-control"  id="department" name="department"  required readonly>
-
+                <div class="form-group">
+                        <label class="control-label"><span style="color:red">*</span> {{ trans('message.form-label.department') }}</label>
+                            <select required selected data-placeholder="-- Please Select Department --" id="department" name="department" class="form-select select2" style="width:100%;">
+                                @foreach($departments as $res)
+                                    <option value=""></option>
+                                    <option value="{{ $res->id }}">{{ $res->department_name }}</option>
+                                @endforeach
+                            </select>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label require">{{ trans('message.form-label.position') }}</label>
-                        <input type="text" class="form-control"  id="position" name="position"  required readonly>                                   
+                        <input type="text" class="form-control"  id="position" name="position"  required>                                   
                     </div>
                 </div>
             </div>
@@ -192,7 +191,7 @@
         null;
     };
     setTimeout("preventBack()", 0);
-    $('#employee').select2({
+    $('#department').select2({
                 placeholder_text_single : "- Select Sub Category -"});
     var tableRow = 1;
 

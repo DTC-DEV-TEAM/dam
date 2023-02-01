@@ -358,7 +358,7 @@
                     <hr/>
                     <div class="form-group">
                         <label>{{ trans('message.table.note') }}</label>
-                        <textarea placeholder="{{ trans('message.table.comments') }} ..." rows="3" class="form-control" name="it_comments"></textarea>
+                        <textarea placeholder="{{ trans('message.table.comments') }} ..." rows="3" class="form-control" name="it_comments" id="it_comments"></textarea>
                     </div>
                 </div>
          
@@ -611,6 +611,16 @@
                     return false;
             } 
     
+        } 
+        if($('#it_comments').val() == ""){
+            swal({  
+                    type: 'error',
+                    title: 'Required Additional Notes',
+                    icon: 'error',
+                    confirmButtonColor: "#367fa9",
+                });
+                event.preventDefault();
+                return false;
         } 
         swal({
             title: "Are you sure you want to reco this request?",
