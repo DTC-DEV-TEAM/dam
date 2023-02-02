@@ -15,7 +15,39 @@
             .select2-selection__arrow {
                 height: 34px !important;
             }
-            
+            .firstRow {
+                border: 1px solid rgba(39, 38, 38, 0.5);
+                padding: 10px;
+                margin-left: 10px;
+                border-radius: 3px;
+                opacity: 2;
+            }
+
+            .firstRow {
+                padding: 10px;
+                margin-left: 10px;
+            }
+
+            .finput {
+                border:none;
+                border-bottom: 1px solid rgba(18, 17, 17, 0.5);
+            }
+
+            input.finput:read-only {
+                background-color: #fff;
+            }
+
+            input.sinput:read-only {
+                background-color: #fff;
+            }
+
+            input.addinput:read-only {
+                background-color: #f5f5f5;
+            }
+
+            .input-group-addon {
+                background-color: #f5f5f5 !important;
+            }
 
            
         </style>
@@ -32,33 +64,33 @@
         Asset Form
     </div>
 
-    <form action="{{ CRUDBooster::mainpath('add-save') }}" method="POST" id="AssetRequest" enctype="multipart/form-data">
+    <form action="{{ CRUDBooster::mainpath('add-save') }}" method="POST" id="ERFRequest" enctype="multipart/form-data">
         <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
         <input type="hidden" value="1" name="request_type_id" id="request_type_id">
 
         <div class='panel-body'>
-
             <div class="row">
                 <div class="col-md-6">
-                <div class="form-group">
-                        <label class="control-label require">ERF Name</label>
-                        <input type="text" class="form-control"  id="company" name="company"  required>
+                    <div class="form-group">
+                        <label class="control-label require"> COMPANY</label>
+                        <input type="text" class="form-control finput"  id="company" name="company" value="Digits Trading Corp."  required readonly>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label"><span style="color:red">*</span> REQUESTED DATE</label>
+                        <input class="form-control finput date" type="text" placeholder="Select Requested Date" name="requested_date" id="requested_date">
                     </div>
                 </div>
 
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label class="control-label require">{{ trans('message.form-label.company_name') }}</label>
-                        <input type="text" class="form-control"  id="company" name="company" value="DIGITS"  required readonly>
-                    </div>
-                </div>
+                
             </div>
 
 
             <div class="row">
                 <div class="col-md-6">
                 <div class="form-group">
-                        <label class="control-label"><span style="color:red">*</span> {{ trans('message.form-label.department') }}</label>
+                        <label class="control-label"><span style="color:red">*</span> DEPARTMENT</label>
                             <select required selected data-placeholder="-- Please Select Department --" id="department" name="department" class="form-select select2" style="width:100%;">
                                 @foreach($departments as $res)
                                     <option value=""></option>
@@ -69,36 +101,132 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label class="control-label require">{{ trans('message.form-label.position') }}</label>
-                        <input type="text" class="form-control"  id="position" name="position"  required>                                   
+                        <label class="control-label"><span style="color:red">*</span> DATE NEEDED</label>
+                        <input class="form-control finput date" type="text" placeholder="Select Needed Date" name="date_needed" id="date_needed">
+                    </div>
+                </div>
+               
+            </div>
+            <div class="row"> 
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label"><span style="color:red">*</span> POSITION</label>
+                        <input type="text" class="form-control finput"  id="position" name="position"  required>                                   
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label"><span style="color:red">*</span> WORK LOCATION</label>
+                        <input type="text" class="form-control finput"  id="work_location" name="work_location"  required>                                   
+                    </div>
+                </div>
+                
+            </div>
+            <div class="row"> 
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label"><span style="color:red">*</span> SALARY RANGE</label>
+                        <input type="text" class="form-control finput"  id="salary_range" name="salary_range"  required>                                   
+                    </div>
+                </div>
+                
+            </div>
+            <hr/>
+            <div class="row"> 
+                <div class="col-md-6">
+                    <label class="require control-label"><span style="color:red">*</span> SCHEDULE</label><br>
+                        @foreach($schedule as $data)
+                        <div class="col-md-6">
+                            <label class="checkbox-inline control-label col-md-6" >
+                            <input type="checkbox" required  class="schedule" name="schedule" id="schedule" value="{{$data->schedule_description}}" >{{$data->schedule_description}}
+                            </label>
+                        </div>
+                        @endforeach
+                </div>
+                <div class="col-md-6">
+                    <label class="require control-label"><span style="color:red">*</span> ALLOW WFH</label><br>
+                        @foreach($allow_wfh as $data)
+                        <div class="col-md-6">
+                            <label class="checkbox-inline control-label col-md-8" ><br>
+                            <input type="checkbox" required   class="allow_wfh" name="allow_wfh" value="{{$data->description}}" >{{$data->description}}
+                            </label>
+                        </div>
+                        @endforeach
+                </div>
+            </div>
+            <br>
+            <div class="row"> 
+                <div class="col-md-6">
+                    <label class="require control-label"><span style="color:red">*</span> MANPOWER</label><br>
+                        @foreach($manpower as $data)
+                        <div class="col-md-6">
+                            <label class="checkbox-inline control-label col-md-6" ><br>
+                             <input type="checkbox" required   class="manpower" name="manpower" value="{{$data->description}}" >{{$data->description}}
+                            </label>
+                        </div>
+                        @endforeach
+                </div>
+                <div class="col-md-6">
+                    <label class="require control-label"><span style="color:red">*</span> MANPOWER TYPE</label><br>
+                        @foreach($manpower_type as $data)
+                        <div class="col-md-6">
+                            <label class="checkbox-inline control-label col-md-6" ><br>
+                            <input type="checkbox" required   class="manpower_type" name="manpower_type" value="{{$data->description}}" >{{$data->description}}
+                            </label>
+                        </div>
+                        @endforeach
+                </div>
+            </div>
+            <br>
+            <div class="row"> 
+                <div class="col-md-6">
+                    <label class="require control-label"><span style="color:red">*</span> REQUIRED EXAM</label><br>
+                        @foreach($required_exams as $data)
+                        <div class="col-md-6">
+                            <label class="checkbox-inline control-label col-md-12" ><br>
+                             <input type="checkbox" required   class="required_exams" name="required_exams[]" value="{{$data->description}}" >{{$data->description}}
+                            </label>
+                        </div>
+                        @endforeach
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label> QUALIFICATIONS</label>
+                        <textarea placeholder=" Qualifications ..." rows="3" class="form-control finput" name="qualifications"></textarea>
                     </div>
                 </div>
             </div>
-
-            <hr/>
-
-            <div class="row"> 
-                <label class="require control-label col-md-2">*{{ trans('message.form-label.purpose') }}</label>
-                    @foreach($purposes as $data)
-                        @if($data->id == 1)
-                                    <div class="col-md-5">
-                                        <label class="radio-inline control-label col-md-5" ><input type="radio" required   class="purpose" name="purpose" value="{{$data->id}}" >{{$data->request_description}}</label>
-                                        <br>
-                                    </div>
-                            @else
-                                    <div class="col-md-5">
-                                        <label class="radio-inline control-label col-md-5"><input type="radio" required  class="purpose" name="purpose" value="{{$data->id}}" >{{$data->request_description}}</label>
-                                        <br>
-                                    </div>
-                        @endif
-                    @endforeach
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label> JOB DESCRIPTIONS</label>
+                        <textarea placeholder=" Job Descriptions ..." rows="3" class="form-control finput" name="job_descriptions"></textarea>
+                    </div>
+                </div>
             </div>
-            <hr/>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label class="control-label"><span style="color:red">*</span> Please attach the following documents:</label>
+                        <p>Job Description <br>
+                        Specialty Test / Additional Tests with Answer Key (Optional)
+                        </p> 
+                        <input type="file" class="form-control finput" style="" name="documents[]" id="documents" multiple accept=".xlsx, .pdf">
+                        <div class="gallery" style="margin-bottom:5px; margin-top:15px"></div>
+                        <a class="btn btn-xs btn-danger" style="display:none; margin-left:10px" id="removeImageHeader" href="#"><i class="fa fa-remove"></i></a>
+                    </div>
+                </div> 
+            </div>
+        
+            <hr>
 
             <div class="row">
                 <div class="col-md-12">
                     <div class="box-header text-center">
-                        <h3 class="box-title"><b>{{ trans('message.form-label.asset_items') }}</b></h3>
+                        <h3 class="box-title"><b> REQUIRED ASSETS</b></h3>
                     </div>
                                 <div class="box-body no-padding">
                                     <div class="table-responsive">
@@ -125,7 +253,7 @@
                                                         <tr id="tr-table1" class="bottom">
             
                                                             <td colspan="3">
-                                                                <input type="button" id="add-Row" name="add-Row" class="btn btn-info add" value='Add Item' />
+                                                                <input type="button" id="add-Row" name="add-Row" class="btn btn-primary add" value='Add Item' />
                                                             </td>
                                                             <td align="left" colspan="1">
                                                                 <input type='number' name="quantity_total" class="form-control text-center" id="quantity_total" readonly>
@@ -164,14 +292,58 @@
                     </div>
                     <hr/>
                 </div>
-          
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <label>{{ trans('message.table.note') }}</label>
-                        <textarea placeholder="{{ trans('message.table.comments') }} ..." rows="3" class="form-control" name="requestor_comments"></textarea>
+                <br>  
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <label class="require control-label"><span style="color:red">*</span> Does the Employee need to shared files?</label><br>
+                    @foreach($shared_files as $data)
+                    <div class="col-md-6">
+                        <label class="checkbox-inline control-label col-md-6" ><br>
+                            <input type="checkbox" required   class="shared_files" name="shared_files" value="{{$data->description}}" >{{$data->description}}
+                        </label>
                     </div>
+                    @endforeach
+                </div>
+           
+       
+                <div class="col-md-6">
+                    <label class="require control-label"><span style="color:red">*</span> Who will the employee interact with?</label><br>
+                    @foreach($interact_with as $data)
+                    <div class="col-md-4">
+                        <label class="checkbox-inline control-label col-md-12" ><br>
+                            <input type="checkbox" required   class="employee_interaction" name="employee_interaction[]" value="{{$data->description}}" >{{$data->description}}
+                        </label>
+                    </div>
+                    @endforeach
                 </div>
             </div>
+            <br>
+            <div class="row">
+                <div class="col-md-6">
+                    <label class="require control-label"><span style="color:red">*</span> What will you be using the PC for?</label><br>
+                    @foreach($asset_usage as $data)
+                    <div class="col-md-6">
+                        <label class="checkbox-inline control-label col-md-12" ><br>
+                            <input type="checkbox" required   class="asset_usage" name="asset_usage[]" value="{{$data->description}}" >{{$data->description}}
+                        </label>
+                    </div>
+                    @endforeach
+                </div>
+           
+       
+                <div class="col-md-6">
+                    <label class="require control-label"><span style="color:red">*</span> Email Domain</label><br>
+                    @foreach($email_domain as $data)
+                    <div class="col-md-6">
+                        <label class="checkbox-inline control-label col-md-6" ><br>
+                            <input type="checkbox" required multiple class="email_domain" name="email_domain" value="{{$data->description}}" >{{$data->description}}
+                        </label>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+                
         </div>
         <div class='panel-footer'>
             <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
@@ -190,6 +362,32 @@
     window.onunload = function() {
         null;
     };
+    //preview image before save
+    $(function() {
+    // Multiple images preview in browser
+    var imagesPreview = function(input, placeToInsertImagePreview) {
+
+        if (input.files) {
+            var filesAmount = input.files.length;
+
+            for (i = 0; i < filesAmount; i++) {
+                var reader = new FileReader();
+
+                reader.onload = function(event) {
+                    $($.parseHTML('<img height="120px" class="header_images" width="180px;" hspace="10" data-action="zoom">')).attr('src', event.target.result).appendTo(placeToInsertImagePreview);
+                }
+
+                reader.readAsDataURL(input.files[i]);
+            }
+        }
+
+    };
+
+        $('#si_dr').on('change', function() {
+            imagesPreview(this, 'div.gallery');
+            $("#removeImageHeader").toggle(); 
+        });
+    });
     setTimeout("preventBack()", 0);
     $('#department').select2({
                 placeholder_text_single : "- Select Sub Category -"});
@@ -200,7 +398,12 @@
 
     $("#application_others").removeAttr('required');
     $(".application").removeAttr('required');
-
+    
+    $(".date").datetimepicker({
+                    viewMode: "days",
+                    format: "YYYY-MM-DD",
+                    dayViewHeaderFormat: "MMMM YYYY",
+            });
 
     $('#OTHERS').change(function() {
 
@@ -226,6 +429,18 @@
             app_count++;
         }
 
+    });
+
+    //checkbox validations
+    $("input[name^='schedule'], input[name^='allow_wfh'], input[name^='manpower'], input[name^='manpower_type'], input[name^='shared_files'], input[name^='email_domain']").on('click', function() {
+        var $box = $(this);
+        if ($box.is(':checked')) {
+            var group = "input:checkbox[name='" + $box.attr("name") + "']";
+            $(group).prop("checked", false);
+            $box.prop('checked', true);
+        } else {
+            $box.prop('checked', false);
+        }
     });
 
 
@@ -263,7 +478,7 @@
                 '<tr>' +
 
                     '<td >' +
-                    '  <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control itemDesc" data-id="' + tableRow + '" id="itemDesc' + tableRow + '"  name="item_description[]"  required maxlength="100">' +
+                    '  <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control finput itemDesc" data-id="' + tableRow + '" id="itemDesc' + tableRow + '"  name="item_description[]"  required maxlength="100">' +
                     '</td>' +  
 
                     '<td>'+
@@ -399,53 +614,8 @@
             }
         });
 
-        $('#employee').change(function(){
-          var id = $(this).val();
-            $.ajax({
-                url: "{{ route('hr.search.user') }}",
-                dataType: "json",
-                data: {
-                    id: id
-                },
-                type: "POST",
-                success:function(data){   
-                        if(data.items != null){
-                            $("#company").val(data.items.company_name_id);
-                            $("#department").val(data.items.department_name);
-                            $("#position").val(data.items.position_id);
-                        }
- 
-                },
-            error:function (){}
-            });
-        });
-
     });
 
-
-    $('#employee_name').change(function() {
-
-            var employee_name =  this.value;
-            $.ajax
-            ({ 
-                url: "{{ URL::to('/employees')}}",
-                type: "POST",
-                data: {
-                    'employee_name': employee_name,
-                    _token: '{!! csrf_token() !!}'
-                    },
-                               
-                success: function(result)
-                {   
-
-                    $('#company_name').val(result[0].company_name);
-                    $('#position').val(result[0].position_description);
-                    $('#department').val(result[0].department_name);
-                    
-                }
-            });
-
-    });
 
     $(document).on('keyup', '.quantity_item', function(ev) {
 
@@ -510,7 +680,7 @@
     }
 
     $(document).ready(function() {
-        $("#AssetRequest").submit(function() {
+        $("#ERFRequest").submit(function() {
             $("#btnSubmit").attr("disabled", true);
             return true;
         });
@@ -522,24 +692,177 @@
         var countRow = $('#asset-items tfoot tr').length;
         var reg = /^0/gi;
             // var value = $('.vvalue').val();
-            if(! $(".purpose").is(':checked')){
+            if($("#requested_date").val() === ""){
                 swal({
                     type: 'error',
-                    title: 'Please choose Purpose!',
+                    title: 'Please select Requested Date!',
                     icon: 'error',
                     confirmButtonColor: "#367fa9",
                 }); 
                 event.preventDefault(); // cancel default behavior
                 return false;
-            }else if (countRow == 1) {
+            }else if($("#department").val() === ""){
                 swal({
                     type: 'error',
-                    title: 'Please add an item!',
+                    title: 'Please select Department!',
                     icon: 'error',
                     confirmButtonColor: "#367fa9",
                 }); 
                 event.preventDefault(); // cancel default behavior
+                return false;
+            }else if($("#date_needed").val() === ""){
+                swal({
+                    type: 'error',
+                    title: 'Please select Needed Date!',
+                    icon: 'error',
+                    confirmButtonColor: "#367fa9",
+                }); 
+                event.preventDefault(); // cancel default behavior
+                return false;
+            }else if($("#position").val() === ""){
+                swal({
+                    type: 'error',
+                    title: 'Required Position!',
+                    icon: 'error',
+                    confirmButtonColor: "#367fa9",
+                }); 
+                event.preventDefault(); // cancel default behavior
+                return false;
+            }else if($("#work_location").val() === ""){
+                swal({
+                    type: 'error',
+                    title: 'Required Work Location!',
+                    icon: 'error',
+                    confirmButtonColor: "#367fa9",
+                }); 
+                event.preventDefault(); // cancel default behavior
+                return false;
+            }else if($("#salary_range").val() === ""){
+                swal({
+                    type: 'error',
+                    title: 'Required Salary Range!',
+                    icon: 'error',
+                    confirmButtonColor: "#367fa9",
+                }); 
+                event.preventDefault(); // cancel default behavior
+                return false;
+            }else if(!$(".schedule").is(':checked')){
+                    swal({
+                        type: 'error',
+                        title: 'Please choose Schedule!',
+                        icon: 'error',
+                        confirmButtonColor: "#367fa9",
+                    }); 
+                    event.preventDefault(); // cancel default behavior
+                    return false;
+            }else if(!$(".allow_wfh").is(':checked')){
+                    swal({
+                        type: 'error',
+                        title: 'Please choose Allow Wfh!',
+                        icon: 'error',
+                        confirmButtonColor: "#367fa9",
+                    }); 
+                    event.preventDefault(); // cancel default behavior
+                    return false;
+            }else if(!$(".manpower").is(':checked')){
+                    swal({
+                        type: 'error',
+                        title: 'Please choose Manpower!',
+                        icon: 'error',
+                        confirmButtonColor: "#367fa9",
+                    }); 
+                    event.preventDefault(); // cancel default behavior
+                    return false;
+            }else if(!$(".manpower_type").is(':checked')){
+                    swal({
+                        type: 'error',
+                        title: 'Please choose Manpower Type!',
+                        icon: 'error',
+                        confirmButtonColor: "#367fa9",
+                    }); 
+                    event.preventDefault(); // cancel default behavior
+                    return false;
+            }else if(!$(".required_exams").is(':checked')){
+                    swal({
+                        type: 'error',
+                        title: 'Please choose Required Exams!',
+                        icon: 'error',
+                        confirmButtonColor: "#367fa9",
+                    }); 
+                    event.preventDefault(); // cancel default behavior
+                    return false;
+            }else if(!$(".shared_files").is(':checked')){
+                    swal({
+                        type: 'error',
+                        title: 'Please Shared Files!',
+                        icon: 'error',
+                        confirmButtonColor: "#367fa9",
+                    }); 
+                    event.preventDefault(); // cancel default behavior
+                    return false;
+            }else if(!$(".employee_interaction").is(':checked')){
+                    swal({
+                        type: 'error',
+                        title: 'Please interact with!',
+                        icon: 'error',
+                        confirmButtonColor: "#367fa9",
+                    }); 
+                    event.preventDefault(); // cancel default behavior
+                    return false;
+            }else if(!$(".asset_usage").is(':checked')){
+                    swal({
+                        type: 'error',
+                        title: 'Please choose what will you be using the PC for!',
+                        icon: 'error',
+                        confirmButtonColor: "#367fa9",
+                    }); 
+                    event.preventDefault(); // cancel default behavior
+                    return false;
+            }else if(!$(".email_domain").is(':checked')){
+                    swal({
+                        type: 'error',
+                        title: 'Please choose Email Domain!',
+                        icon: 'error',
+                        confirmButtonColor: "#367fa9",
+                    }); 
+                    event.preventDefault(); // cancel default behavior
+                    return false;
+            }else if($('#documents').val() === ""){
+                swal({
+                    type: 'error',
+                    title: 'Upload file documents required!',
+                    icon: 'error',
+                    customClass: 'swal-wide'
+                });
+                event.preventDefault();
+            }else if (countRow == 1) {
+            swal({
+                type: 'error',
+                title: 'Please add an item!',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            }); 
+                event.preventDefault(); // cancel default behavior
             }else{
+                 //header image validation
+                 for (var i = 0; i < $("#documents").get(0).files.length; ++i) {
+                    var file1=$("#documents").get(0).files[i].name;
+                    if(file1){                        
+                        var file_size=$("#documents").get(0).files[i].size;
+                            var ext = file1.split('.').pop().toLowerCase();                            
+                            if($.inArray(ext,['xlsx','pdf'])===-1){
+                                swal({
+                                    type: 'error',
+                                    title: 'Invalid File!',
+                                    icon: 'error',
+                                    customClass: 'swal-wide'
+                                });
+                                event.preventDefault();
+                                return false;
+                            }                                          
+                    }
+                }
+
                 var item = $("input[name^='item_description']").length;
                 var item_value = $("input[name^='item_description']");
                 for(i=0;i<item;i++){
@@ -628,7 +951,7 @@
                             width: 450,
                             height: 200
                             }, function () {
-                                $("#AssetRequest").submit();                                                   
+                                $("#ERFRequest").submit();                                                   
                         });
                     }
                 }); 
