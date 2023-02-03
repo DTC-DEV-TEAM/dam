@@ -104,7 +104,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label"> SALARY RANGE</label>
-                        <input type="text" style="-webkit-text-security: square;" class="form-control finput" value="{{encrypt($Header->salary_range)}}" aria-describedby="basic-addon1" readonly>                                                                                    
+                        <input type="text" class="form-control finput" value="{{$Header->salary_range}}" aria-describedby="basic-addon1" readonly>                                                                                    
                                
                     </div>
                 </div>
@@ -135,7 +135,7 @@
             <br>
             <div class="row"> 
                 <div class="col-md-6">
-                    <label class="require control-label"><span style="color:red">*</span> REQUIRED EXAM</label><br>
+                    <label class="require control-label"> REQUIRED EXAM</label><br>
                     @foreach($required_exams as $val)
                     <input type="text" class="form-control finput" value="{{trim($val)}}" aria-describedby="basic-addon1" readonly>                                                                                       
                     @endforeach

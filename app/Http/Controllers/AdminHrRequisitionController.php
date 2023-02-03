@@ -291,10 +291,9 @@
 	    */
 	    public function hook_before_add(&$postdata) {        
 			$fields = Request::all();
-	
+			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
 			$company                   = $fields['company'];
-			$requested_date            = $fields['requested_date'];
-			$department                = $fields['department'];
+			$department                = $data['user']->department_id;
 			$date_needed               = $fields['date_needed'];
 			$position                  = $fields['position'];
 			$work_location             = $fields['work_location'];
@@ -317,16 +316,17 @@
 			$count_header              = DB::table('erf_header_request')->count();
 			$header_ref                = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);			
 			$reference_number	       = "ERF-".$header_ref;
+			$category_id 		       = $fields['category_id'];
 			
 			$postdata['reference_number']		 	= $reference_number;
 			$postdata['status_id']                  = 1;
 			$postdata['company'] 				    = $company;
-			$postdata['date_requested'] 	        = date('Y-m-d', strtotime($requested_date));
+			$postdata['date_requested'] 	        = date('Y-m-d');
 			$postdata['department'] 				= $department;
 			$postdata['position'] 					= $position;
 			$postdata['date_needed'] 			    = date('Y-m-d', strtotime($date_needed));
 			$postdata['work_location'] 				= $work_location;
-			$postdata['salary_range'] 				= $salary_range;
+			$postdata['salary_range'] 				= intval(str_replace(',', '', $salary_range));
 			$postdata['schedule'] 					= $schedule;
 			$postdata['allow_wfh'] 		            = $allow_wfh;
 			$postdata['manpower'] 		            = $manpower;
@@ -348,7 +348,7 @@
 			$postdata['email_domain'] 		        = $email_domain;
 			$postdata['created_by'] 				= CRUDBooster::myId();
 			$postdata['created_at'] 				= date('Y-m-d H:i:s');
-			$postdata['request_type_id']		 	= $request_type_id;
+			$postdata['request_type_id'] 		    = NULL;
 			if(!empty($application)){
 				$postdata['application'] 				= implode(", ",$application);
 				$postdata['application_others'] 		= $application_others;
@@ -403,6 +403,12 @@
 				$dataLines[$x]['sub_category_id'] 	= $sub_category_id[$x];
 				$dataLines[$x]['quantity'] 			= $quantity[$x];
 				$dataLines[$x]['created_at'] 		= date('Y-m-d H:i:s');
+				if($category_id[$x] == "IT ASSETS"){
+					$dataLines[$x]['request_type_id'] = 1;
+					
+				}else{
+					$dataLines[$x]['request_type_id'] = 5;
+				}
 			}
 
 			DB::beginTransaction();
@@ -477,7 +483,7 @@
 			}
 
 			$this->cbLoader();
-			$data['page_title'] = 'Create IT Asset Request';
+			$data['page_title'] = 'Create Employee Requisition Form';
 			$data['conditions'] = DB::table('condition_type')->where('status', 'ACTIVE')->get();
 			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
 			$data['stores'] = DB::table('stores')->where('status', 'ACTIVE')->get();
@@ -488,7 +494,7 @@
 										 ->leftjoin('departments', 'cms_users.department_id', '=', 'departments.id')
 										 ->select( 'cms_users.*', 'positions.position_description as position_description', 'departments.department_name as department_name')
 										 ->where('cms_users.id', $data['user']->id)->first();
-			$data['categories'] = DB::table('category')->where('category_status', 'ACTIVE')->where('id', 5)->orderby('category_description', 'asc')->get();
+			$data['categories'] = DB::table('category')->where('category_status', 'ACTIVE')->whereIn('id', [5,1])->orderby('category_description', 'asc')->get();
 			$data['sub_categories'] = DB::table('class')->where('class_status', 'ACTIVE')->where('category_id', 5)->orderby('class_description', 'asc')->get();
 			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();
 			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();

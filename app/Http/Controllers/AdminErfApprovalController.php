@@ -11,6 +11,8 @@
 	use App\StatusMatrix;
 	use App\Models\ErfHeaderDocuments;
 	use Illuminate\Support\Facades\Response;
+	use App\HeaderRequest;
+	use App\BodyRequest;
 
 	class AdminErfApprovalController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -313,27 +315,106 @@
 			$approval_action 		= $fields['approval_action'];
 			$approved =  4;
 			$rejected =  5;
-
-			$erf_header = HeaderRequest::where(['id' => $id])->first();
-			$erf_body = BodyRequest::where(['header_request_id' => $id])->get();
-
+			$approver_comments 		= $fields['additional_notess'];
+           
+			$erf_header = ErfHeaderRequest::where(['id' => $id])->first();
+			$erf_body = ErfBodyRequest::where(['header_request_id' => $id])->get();
 			if($approval_action  == 1){
-				$postdata['status_id']		    = 13;
-				$postdata['approver_comments'] 	= $approver_comments;
-				$postdata['approved_by'] 		= CRUDBooster::myId();
-				$postdata['approved_at'] 		= date('Y-m-d H:i:s');
-				foreach($erf_body as $body_arf){
-					if($body_arf->category_id == "IT ASSETS"){
-						$postdata['to_reco'] 	= 1;
+				ErfHeaderRequest::where('id',$id)
+				->update([
+					'status_id'		                    => 29,
+				    'approver_comments'	                => $approver_comments,
+				    'approved_immediate_head_by' 		=> CRUDBooster::myId(),
+				    'approved_immediate_head_at' 		=> date('Y-m-d H:i:s'),
+				]);	
+				
+			}else{
+				ErfHeaderRequest::where('id',$id)
+				->update([
+					'status_id'		                    => rejected,
+				    'approver_comments'	                => $approver_comments,
+				    'approved_immediate_head_by' 		=> CRUDBooster::myId(),
+				    'approved_immediate_head_at' 		=> date('Y-m-d H:i:s'),
+				]);	
+			}
+		
+			//add in arf heaader request table
+			$count_header       = DB::table('header_request')->count();
+			$header_ref         = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);			
+			$reference_number	= "ARF-".$header_ref;
+			$status		 		= StatusMatrix::where('current_step', 2)
+								  ->where('request_type', $erf_header->request_type_id)
+								  ->value('status_id');
+			$arf = HeaderRequest::Create(
+				[
+					'status_id'                 => $status,
+					'reference_number'		 	=> $reference_number,
+					'employee_name' 		    => $erf_header->reference_number,
+					'company_name' 				=> "DIGITS",
+					'position' 					=> $erf_header->position,
+					'department' 				=> $erf_header->department,
+					'store_branch' 			    => NULL,
+					'purpose' 					=> 6,
+					'conditions' 				=> NULL,
+					'quantity_total' 			=> $erf_header->quantity_total,
+					'cost_total' 				=> NULL,
+					'total' 					=> NULL,
+					'requestor_comments' 		=> NULL,
+					'created_by' 				=> NULL,
+					'created_at' 				=> date('Y-m-d H:i:s'),
+					'request_type_id'		 	=> $erf_header->request_type_id,
+					'privilege_id'		 		=> NULL,
+					'application' 				=> $erf_header->application,
+					'application_others' 		=> $erf_header->application_others,
+					'to_reco'                   => 1
+				]
+				);   
+			$arf_id = $arf->id;
+
+			ErfHeaderRequest::where('id',$id)
+				->update([
+					'arf_id'                     => $arf_id,
+					'to_tag_employee'            => 1
+				]);	
+
+			//save items in Body Request
+			$insertData = [];
+			$insertContainer = [];
+			foreach($erf_body as $key => $val){
+				$insertContainer['header_request_id']   = $arf_id;
+				$insertContainer['digits_code'] 	    = NULL;
+				$insertContainer['item_description'] 	= $val['item_description'];
+				$insertContainer['category_id'] 		= $val['category_id'];
+				$insertContainer['sub_category_id'] 	= $val['sub_category_id'];
+				$insertContainer['app_id'] 			    = NULL;
+				$insertContainer['app_id_others'] 	    = NULL;
+				$insertContainer['quantity'] 			= $val['quantity'];
+				$insertContainer['unit_cost'] 		    = NULL;
+				if($request_type_id == 5){
+					$insertContainer['to_reco'] = 0;
+				}else{
+					if (str_contains($val['sub_category_id'], 'LAPTOP') || str_contains($val['sub_category_id'], 'DESKTOP')) {
+						$insertContainer['to_reco'] = 1;
+					}else{
+						$insertContainer['to_reco'] = 0;
 					}
 				}
-			}else{
-				$postdata['status_id'] 			= $rejected;
-				$postdata['approver_comments'] 	= $approver_comments;
-				$postdata['approved_by'] 		= CRUDBooster::myId();
-				$postdata['rejected_at'] 		= date('Y-m-d H:i:s');
+				$insertContainer['created_at'] 		= date('Y-m-d H:i:s');
+				$insertData[] = $insertContainer;
 			}
-
+		
+			DB::beginTransaction();
+			try {
+				BodyRequest::insert($insertData);
+				DB::commit();
+			} catch (\Exception $e) {
+				DB::rollback();
+				CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_database_error",['database_error'=>$e]), 'danger');
+			}
+			
+		
+			CRUDBooster::redirect(CRUDBooster::mainpath(), trans('Successfully Added!'), 'success');
+		
 	    }
 
 	    /* 
@@ -388,6 +469,7 @@
 				->leftjoin('departments', 'erf_header_request.department', '=', 'departments.id')
 				->select(
 						'erf_header_request.*',
+						'erf_header_request.id as requestid',
 						'departments.department_name as department'
 						)
 				->where('erf_header_request.id', $id)->first();
