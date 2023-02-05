@@ -313,12 +313,14 @@
 	        $fields = Request::all();
 			$dataLines = array();
 			$approval_action 		= $fields['approval_action'];
-			$approved =  4;
-			$rejected =  5;
 			$approver_comments 		= $fields['additional_notess'];
            
 			$erf_header = ErfHeaderRequest::where(['id' => $id])->first();
 			$erf_body = ErfBodyRequest::where(['header_request_id' => $id])->get();
+			$req_type = ErfBodyRequest::where(['header_request_id' => $id])->groupBy('request_type_id')->get();
+			$latestRequest = DB::table('header_request')->select('id')->orderBy('id','DESC')->first();
+			$latestRequestId = $latestRequest->id != NULL ? $latestRequest->id : 0;
+			
 			if($approval_action  == 1){
 				ErfHeaderRequest::where('id',$id)
 				->update([
@@ -327,49 +329,94 @@
 				    'approved_immediate_head_by' 		=> CRUDBooster::myId(),
 				    'approved_immediate_head_at' 		=> date('Y-m-d H:i:s'),
 				]);	
-				
-			}else{
-				ErfHeaderRequest::where('id',$id)
-				->update([
-					'status_id'		                    => rejected,
-				    'approver_comments'	                => $approver_comments,
-				    'approved_immediate_head_by' 		=> CRUDBooster::myId(),
-				    'approved_immediate_head_at' 		=> date('Y-m-d H:i:s'),
-				]);	
-			}
-		
-			//add in arf heaader request table
+				//add in arf heaader request table
 			$count_header       = DB::table('header_request')->count();
-			$header_ref         = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);			
-			$reference_number	= "ARF-".$header_ref;
 			$status		 		= StatusMatrix::where('current_step', 2)
 								  ->where('request_type', $erf_header->request_type_id)
 								  ->value('status_id');
-			$arf = HeaderRequest::Create(
-				[
-					'status_id'                 => $status,
-					'reference_number'		 	=> $reference_number,
-					'employee_name' 		    => $erf_header->reference_number,
-					'company_name' 				=> "DIGITS",
-					'position' 					=> $erf_header->position,
-					'department' 				=> $erf_header->department,
-					'store_branch' 			    => NULL,
-					'purpose' 					=> 6,
-					'conditions' 				=> NULL,
-					'quantity_total' 			=> $erf_header->quantity_total,
-					'cost_total' 				=> NULL,
-					'total' 					=> NULL,
-					'requestor_comments' 		=> NULL,
-					'created_by' 				=> NULL,
-					'created_at' 				=> date('Y-m-d H:i:s'),
-					'request_type_id'		 	=> $erf_header->request_type_id,
-					'privilege_id'		 		=> NULL,
-					'application' 				=> $erf_header->application,
-					'application_others' 		=> $erf_header->application_others,
-					'to_reco'                   => 1
-				]
-				);   
-			$arf_id = $arf->id;
+		    $arfHeaderSave = [];
+			$arfHeaderContainer = [];
+			foreach($req_type as $arfHeadKey => $arfHeadVal){
+				if($arfHeadVal['request_type_id'] == 1){
+					$arfHeaderContainer['status_id']              = 4;
+					$arfHeaderContainer['application'] 			  = $erf_header->application;
+				    $arfHeaderContainer['application_others'] 	  = $erf_header->application_others;
+					$arfHeaderContainer['to_reco']                = 1;
+				}else{
+					$arfHeaderContainer['status_id']              = 7;
+					$arfHeaderContainer['application'] 			  = NULL;
+				    $arfHeaderContainer['application_others'] 	  = NULL;  
+					$arfHeaderContainer['to_reco']                = 0;
+				}
+				$arfHeaderContainer['reference_number']		      = "ARF-".str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);
+				$count_header ++;
+				$arfHeaderContainer['employee_name' ]		      = $erf_header->reference_number;
+				$arfHeaderContainer['company_name'] 			  = "DIGITS";
+				$arfHeaderContainer['position'] 				  = $erf_header->position;
+				$arfHeaderContainer['department' ]				  = $erf_header->department;
+				$arfHeaderContainer['store_branch']		          = NULL;
+				$arfHeaderContainer['purpose'] 				      = 6;
+				$arfHeaderContainer['conditions'] 				  = NULL;
+				$arfHeaderContainer['quantity_total'] 			  = $arfHeadVal->quantity;
+				$arfHeaderContainer['cost_total'] 				  = NULL;
+				$arfHeaderContainer['total'] 					  = NULL;
+				$arfHeaderContainer['requestor_comments'] 		  = NULL;
+				$arfHeaderContainer['created_by'] 				  = NULL;
+				$arfHeaderContainer['created_at'] 				  = date('Y-m-d H:i:s');
+				$arfHeaderContainer['request_type_id']		 	  = $arfHeadVal['request_type_id'];
+				$arfHeaderContainer['privilege_id']		 	      = NULL;
+			
+				$arfHeaderSave[] = $arfHeaderContainer;
+			}
+			HeaderRequest::insert($arfHeaderSave);
+			$itId = DB::table('header_request')->select('*')->where('id','>', $latestRequestId)->where('request_type_id',1)->first();
+			$faId = DB::table('header_request')->select('*')->where('id','>', $latestRequestId)->where('request_type_id',5)->first();
+			$SuppliesId = DB::table('header_request')->select('*')->where('id','>', $latestRequestId)->where('request_type_id',7)->first();
+	
+			$resultArrforIT = [];
+			foreach($erf_body as $item){
+				if($item['request_type_id'] == 1){
+					for($i = 0; $i < $item['request_type_id']; $i++){
+						$t = $item;
+						$t['header_request_id'] = $itId->id;
+						$resultArrforIT[] = $t;
+					}
+				}
+			}
+
+			$resultArrforFA = [];
+			foreach($erf_body as $itemFa){
+				if($itemFa['request_type_id'] == 5){
+					for($x = 0; $x < $itemFa['request_type_id']; $x++){
+						$fa = $itemFa;
+						$fa['header_request_id'] = $faId->id;
+						$resultArrforFA[] = $fa;
+					}
+				}
+			}
+
+			$resultArrforSu = [];	
+			foreach($erf_body as $itemSu){
+				if($itemSu['request_type_id'] == 7){
+					for($s = 0; $s < $itemSu['request_type_id']; $s++){
+						$su = $itemSu;
+						$su['header_request_id'] = $SuppliesId->id;
+						$resultArrforSu[] = $su;
+					}
+				}
+			}
+			$arf_ids = [];
+			if($itId->id){
+				array_push($arf_ids, $itId->id);
+			}
+			if($faId->id){
+				array_push($arf_ids, $faId->id);
+			}
+			if($SuppliesId->id){
+				array_push($arf_ids, $SuppliesId->id);
+			}
+
+			$arf_id =  implode(", ",$arf_ids);
 
 			ErfHeaderRequest::where('id',$id)
 				->update([
@@ -381,7 +428,7 @@
 			$insertData = [];
 			$insertContainer = [];
 			foreach($erf_body as $key => $val){
-				$insertContainer['header_request_id']   = $arf_id;
+				$insertContainer['header_request_id']   = $val['header_request_id'];
 				$insertContainer['digits_code'] 	    = NULL;
 				$insertContainer['item_description'] 	= $val['item_description'];
 				$insertContainer['category_id'] 		= $val['category_id'];
@@ -414,6 +461,18 @@
 			
 		
 			CRUDBooster::redirect(CRUDBooster::mainpath(), trans('Successfully Added!'), 'success');
+				
+			}else{
+				ErfHeaderRequest::where('id',$id)
+				->update([
+					'status_id'		                    => 5,
+				    'approver_comments'	                => $approver_comments,
+				    'approved_immediate_head_by' 		=> CRUDBooster::myId(),
+				    'approved_immediate_head_at' 		=> date('Y-m-d H:i:s'),
+				]);	
+			}
+			CRUDBooster::redirect(CRUDBooster::mainpath(), trans('Successfully Rejected!'), 'success');
+			
 		
 	    }
 
