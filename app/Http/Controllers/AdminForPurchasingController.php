@@ -535,6 +535,12 @@
 				}
 			}
 
+			if($column_index == 6){
+				if($column_value == null){
+					$column_value = "ERF";
+				}
+			}
+
 	    }
 
 	    /*
@@ -905,7 +911,8 @@
 						'condition_type.*',
 						'requested.name as requestedby',
 						'employees.bill_to as employee_name',
-						'employees.company_name_id as company_name',
+						'header_request.employee_name as header_emp_name',
+						//'employees.company_name_id as company_name',
 						'departments.department_name as department',
 						//'positions.position_description as position',
 						'locations.store_name as store_branch',
@@ -968,7 +975,8 @@
 						'condition_type.*',
 						'requested.name as requestedby',
 						'employees.bill_to as employee_name',
-						'employees.company_name_id as company_name',
+						'header_request.employee_name as header_emp_name',
+						//'employees.company_name_id as company_name',
 						'departments.department_name as department',
 						//'positions.position_description as position',
 						'locations.store_name as store_branch',
@@ -1042,7 +1050,8 @@
 						'condition_type.*',
 						'requested.name as requestedby',
 						'employees.bill_to as employee_name',
-						'employees.company_name_id as company_name',
+						'header_request.employee_name as header_emp_name',
+						//'employees.company_name_id as company_name',
 						'departments.department_name as department',
 						//'positions.position_description as position',
 						'locations.store_name as store_branch',
@@ -1105,7 +1114,8 @@
 						'condition_type.*',
 						'requested.name as requestedby',
 						'employees.bill_to as employee_name',
-						'companies.company_name as company_name',
+						'header_request.employee_name as header_emp_name',
+						//'companies.company_name as company_name',
 						'departments.department_name as department',
 						'positions.position_description as position',
 						'locations.store_name as store_branch',
@@ -1240,7 +1250,8 @@
 						'condition_type.*',
 						'requested.name as requestedby',
 						'employees.bill_to as employee_name',
-						'companies.company_name as company_name',
+						'header_request.employee_name as header_emp_name',
+						//'companies.company_name as company_name',
 						'departments.department_name as department',
 						'positions.position_description as position',
 						'locations.store_name as store_branch',
@@ -1465,7 +1476,8 @@
 						'condition_type.*',
 						'requested.name as requestedby',
 						'employees.bill_to as employee_name',
-						'employees.company_name_id as company_name',
+						'header_request.employee_name as header_emp_name',
+						//'employees.company_name_id as company_name',
 						'departments.department_name as department',
 						//'positions.position_description as position',
 						'locations.store_name as store_branch',

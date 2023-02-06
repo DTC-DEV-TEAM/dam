@@ -11,13 +11,16 @@
 	use App\StatusMatrix;
 	use App\Models\ErfHeaderDocuments;
 	use Illuminate\Support\Facades\Response;
+	use App\HeaderRequest;
+	use App\BodyRequest;
+	use App\Statuses;
 
-	class AdminHrRequisitionController extends \crocodicstudio\crudbooster\controllers\CBController {
+	class AdminErfEditStatusController extends \crocodicstudio\crudbooster\controllers\CBController {
 
 	    public function cbInit() {
 
 			# START CONFIGURATION DO NOT REMOVE THIS LINE
-			$this->title_field = "employee_name";
+			$this->title_field = "id";
 			$this->limit = "20";
 			$this->orderby = "id,desc";
 			$this->global_privilege = false;
@@ -25,9 +28,9 @@
 			$this->button_bulk_action = false;
 			$this->button_action_style = "button_icon";
 			$this->button_add = false;
-			$this->button_edit = false;
+			$this->button_edit = true;
 			$this->button_delete = false;
-			$this->button_detail = true;
+			$this->button_detail = false;
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
@@ -46,14 +49,48 @@
 			$this->col[] = ["label"=>"Requested Date","name"=>"date_requested"];
 			$this->col[] = ["label"=>"Date Needed","name"=>"date_needed"];
 			$this->col[] = ["label"=>"Requested By","name"=>"created_by","join"=>"cms_users,name"];
-			
-		
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
 
 			# END FORM DO NOT REMOVE THIS LINE
+
+			# OLD START FORM
+			//$this->form = [];
+			//$this->form[] = ["label"=>"Reference Number","name"=>"reference_number","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Status Id","name"=>"status_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"status,id"];
+			//$this->form[] = ["label"=>"Company","name"=>"company","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Position","name"=>"position","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Salary Range","name"=>"salary_range","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Department","name"=>"department","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Work Location","name"=>"work_location","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Date Requested","name"=>"date_requested","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
+			//$this->form[] = ["label"=>"Date Needed","name"=>"date_needed","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
+			//$this->form[] = ["label"=>"Schedule","name"=>"schedule","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Allow Wfh","name"=>"allow_wfh","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Manpower","name"=>"manpower","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Manpower Type","name"=>"manpower_type","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Required Exams","name"=>"required_exams","type"=>"textarea","required"=>TRUE,"validation"=>"required|string|min:5|max:5000"];
+			//$this->form[] = ["label"=>"Qualifications","name"=>"qualifications","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Job Description","name"=>"job_description","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Shared Files","name"=>"shared_files","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Employee Interaction","name"=>"employee_interaction","type"=>"textarea","required"=>TRUE,"validation"=>"required|string|min:5|max:5000"];
+			//$this->form[] = ["label"=>"Asset Usage","name"=>"asset_usage","type"=>"textarea","required"=>TRUE,"validation"=>"required|string|min:5|max:5000"];
+			//$this->form[] = ["label"=>"Email Domain","name"=>"email_domain","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Quantity Total","name"=>"quantity_total","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Approved Immediate Head By","name"=>"approved_immediate_head_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Approved Immediate Head At","name"=>"approved_immediate_head_at","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
+			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Updated By","name"=>"updated_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Rejected At","name"=>"rejected_at","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
+			//$this->form[] = ["label"=>"Application","name"=>"application","type"=>"textarea","required"=>TRUE,"validation"=>"required|string|min:5|max:5000"];
+			//$this->form[] = ["label"=>"Application Others","name"=>"application_others","type"=>"textarea","required"=>TRUE,"validation"=>"required|string|min:5|max:5000"];
+			//$this->form[] = ["label"=>"Request Type Id","name"=>"request_type_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"request_type,id"];
+			//$this->form[] = ["label"=>"Approver Comments","name"=>"approver_comments","type"=>"textarea","required"=>TRUE,"validation"=>"required|string|min:5|max:5000"];
+			//$this->form[] = ["label"=>"Arf Id","name"=>"arf_id","type"=>"select2","required"=>TRUE,"validation"=>"required|string|min:5|max:5000","datatable"=>"arf,id"];
+			//$this->form[] = ["label"=>"To Tag Employee","name"=>"to_tag_employee","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			# OLD END FORM
 
 			/* 
 	        | ---------------------------------------------------------------------- 
@@ -82,7 +119,8 @@
 	        | 
 	        */
 	        $this->addaction = array();
-			
+
+
 	        /* 
 	        | ---------------------------------------------------------------------- 
 	        | Add More Button Selected
@@ -118,15 +156,6 @@
 	        | 
 	        */
 	        $this->index_button = array();
-			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
-
-				$this->index_button[] = ["label"=>"Create ERF","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-it-requisition'),"color"=>"success"];
-
-				// $this->index_button[] = ["label"=>"FA Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-requisition-fa'),"color"=>"success"];
-				// $this->index_button[] = ["label"=>"Marketing Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-requisition-marketing'),"color"=>"success"];
-				// $this->index_button[] = ["label"=>"Supplies Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-requisition-supplies'),"color"=>"success"];
-
-			}
 
 
 
@@ -196,7 +225,7 @@
 	        |
 	        */
 	        $this->load_js = array();
-	        $this->load_js[] = asset("datetimepicker/bootstrap-datetimepicker.min.js");
+	        
 	        
 	        
 	        /*
@@ -220,7 +249,7 @@
 	        |
 	        */
 	        $this->load_css = array();
-			$this->load_css[] = asset("datetimepicker/bootstrap-datetimepicker.min.css");
+	        
 	        
 	    }
 
@@ -247,23 +276,12 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-	        if(CRUDBooster::isSuperadmin()){
-				$query->whereNull('erf_header_request.deleted_at')
-					  ->orderBy('erf_header_request.status_id', 'ASC')
-					  ->orderBy('erf_header_request.id', 'DESC');
-
+			if(CRUDBooster::isSuperadmin()){
+				$query->whereNull('erf_header_request.deleted_at')->orderBy('erf_header_request.status_id', 'DESC')->orderBy('erf_header_request.id', 'DESC');
 			}else{
-				$user = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-				$query->where(function($sub_query){
-					$user = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-
-					$sub_query->where('erf_header_request.created_by', CRUDBooster::myId())
-							  ->whereNull('erf_header_request.deleted_at'); 
-
-				});
-
-				$query->orderBy('erf_header_request.status_id', 'asc')->orderBy('erf_header_request.id', 'DESC');
+				$query->whereNull('erf_header_request.deleted_at')->whereIn('status_id',[29,30,31,32])->orderBy('erf_header_request.id', 'DESC');
 			}
+	            
 	            
 	    }
 
@@ -273,8 +291,8 @@
 	    | ---------------------------------------------------------------------- 
 	    |
 	    */    
-	    public function hook_row_index($column_index,&$column_value) {	 
-			$pending          =  DB::table('statuses')->where('id', 1)->value('status_description');  
+	    public function hook_row_index($column_index,&$column_value) {	        
+	    	$pending          =  DB::table('statuses')->where('id', 1)->value('status_description');  
 			$rejected         =  DB::table('statuses')->where('id', 5)->value('status_description');  
 			$for_hired        =  DB::table('statuses')->where('id', 29)->value('status_description');  
 			$for_interview    =  DB::table('statuses')->where('id', 30)->value('status_description');  
@@ -305,69 +323,7 @@
 	    |
 	    */
 	    public function hook_before_add(&$postdata) {        
-			$fields = Request::all();
-			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-			$company                   = $fields['company'];
-			$department                = $data['user']->department_id;
-			$date_needed               = $fields['date_needed'];
-			$position                  = $fields['position'];
-			$work_location             = $fields['work_location'];
-			$salary_range              = $fields['salary_range'];
-			$schedule                  = $fields['schedule'];
-			$allow_wfh                 = $fields['allow_wfh'];
-			$manpower                  = $fields['manpower'];
-			$manpower_type             = $fields['manpower_type'];
-			$required_exams            = $fields['required_exams'];
-			$qualifications            = $fields['qualifications'];
-			$job_descriptions          = $fields['job_descriptions'];
-			$quantity_total 	       = $fields['quantity_total'];
-			$request_type_id 	       = $fields['request_type_id'];
-			$application 		       = $fields['application'];
-			$application_others        = $fields['application_others'];
-			$shared_files              = $fields['shared_files'];
-			$employee_interaction      = $fields['employee_interaction'];
-			$asset_usage               = $fields['asset_usage'];
-			$email_domain              = $fields['email_domain'];
-			$count_header              = DB::table('erf_header_request')->count();
-			$header_ref                = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);			
-			$reference_number	       = "ERF-".$header_ref;
-			$category_id 		       = $fields['category_id'];
-			
-			$postdata['reference_number']		 	= $reference_number;
-			$postdata['status_id']                  = 1;
-			$postdata['company'] 				    = $company;
-			$postdata['date_requested'] 	        = date('Y-m-d');
-			$postdata['department'] 				= $department;
-			$postdata['position'] 					= $position;
-			$postdata['date_needed'] 			    = date('Y-m-d', strtotime($date_needed));
-			$postdata['work_location'] 				= $work_location;
-			$postdata['salary_range'] 				= intval(str_replace(',', '', $salary_range));
-			$postdata['schedule'] 					= $schedule;
-			$postdata['allow_wfh'] 		            = $allow_wfh;
-			$postdata['manpower'] 		            = $manpower;
-			$postdata['manpower_type'] 		        = $manpower_type;
-			if(!empty($required_exams)){
-				$postdata['required_exams'] 	    = implode(", ",$required_exams);
-			}
-
-			$postdata['qualifications'] 		    = $qualifications;
-			$postdata['job_description'] 		    = $job_descriptions;
-			$postdata['quantity_total'] 			= $quantity_total;
-			$postdata['shared_files'] 		        = $shared_files;
-			if(!empty($employee_interaction)){
-				$postdata['employee_interaction'] 	    = implode(", ",$employee_interaction);
-			}
-			if(!empty($asset_usage)){
-				$postdata['asset_usage'] 	    = implode(", ",$asset_usage);
-			}
-			$postdata['email_domain'] 		        = $email_domain;
-			$postdata['created_by'] 				= CRUDBooster::myId();
-			$postdata['created_at'] 				= date('Y-m-d H:i:s');
-			$postdata['request_type_id'] 		    = NULL;
-			if(!empty($application)){
-				$postdata['application'] 				= implode(", ",$application);
-				$postdata['application_others'] 		= $application_others;
-			}
+	        //Your code here
 
 	    }
 
@@ -379,68 +335,7 @@
 	    | 
 	    */
 	    public function hook_after_add($id) {        
-	        $fields = Request::all();
-			$dataLines = array();
-			$erf_header = DB::table('erf_header_request')->where(['created_by' => CRUDBooster::myId()])->orderBy('id','desc')->first();
-		
-			$item_description 	= $fields['item_description'];
-			$category_id 		= $fields['category_id'];
-			$sub_category_id 	= $fields['sub_category_id'];
-			$app_id_others 		= $fields['app_id_others'];
-			$quantity 			= $fields['quantity'];
-			$request_type_id 	= $fields['request_type_id'];
-			$app_count = 2;
-
-			$files 	= $fields['documents'];
-			$documents = [];
-			if (!empty($files)) {
-				$counter = 0;
-				foreach($files as $file){
-					$counter++;
-					$name = $erf_header->reference_number . '-' . $file->getClientOriginalName();
-					$filename = $name;
-					$file->move('vendor/crudbooster/erf_folder',$filename);
-					$documents[]= $filename;
-
-					$header_documents = new ErfHeaderDocuments;
-					$header_documents->header_id 		    = $erf_header->id;
-					$header_documents->file_name 		    = $filename;
-					$header_documents->ext 		            = $file->getClientOriginalExtension();
-					$header_documents->created_by 		    = CRUDBooster::myId();
-					$header_documents->save();
-				}
-			}
-
-			for($x=0; $x < count((array)$item_description); $x++) {		
-				$dataLines[$x]['header_request_id'] = $erf_header->id;
-				$dataLines[$x]['item_description'] 	= $item_description[$x];
-				$dataLines[$x]['category_id'] 		= $category_id[$x];
-				$dataLines[$x]['sub_category_id'] 	= $sub_category_id[$x];
-				$dataLines[$x]['quantity'] 			= $quantity[$x];
-				$dataLines[$x]['created_at'] 		= date('Y-m-d H:i:s');
-				if($category_id[$x] == "IT ASSETS"){
-					$dataLines[$x]['request_type_id'] = 1;
-					
-				}else if($category_id[$x] == "FIXED ASSETS"){
-					$dataLines[$x]['request_type_id'] = 5;
-				}else{
-					$dataLines[$x]['request_type_id'] = 7;
-				}
-			}
-
-			DB::beginTransaction();
-			try {
-				ErfBodyRequest::insert($dataLines);
-				DB::commit();
-				//CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_pullout_data_success",['mps_reference'=>$pullout_header->reference]), 'success');
-			} catch (\Exception $e) {
-				DB::rollback();
-				CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_database_error",['database_error'=>$e]), 'danger');
-			}
-
-			CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_add_success",['reference_number'=>$arf_header->reference_number]), 'success');
-
-			
+	        //Your code here
 
 	    }
 
@@ -453,7 +348,12 @@
 	    | 
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
-	        //Your code here
+			$fields             = Request::all();
+			$hr_comments 		= $fields['additional_notess'];
+			$status             = $fields['status'];
+
+			$postdata['status_id'] 	= $status;
+			$postdata['hr_comments'] 	= $hr_comments;
 
 	    }
 
@@ -492,49 +392,8 @@
 	        //Your code here
 
 	    }
- 
-        public function getAddItRequisition() {
 
-			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
-				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
-			}
-
-			$this->cbLoader();
-			$data['page_title'] = 'Create Employee Requisition Form';
-			$data['conditions'] = DB::table('condition_type')->where('status', 'ACTIVE')->get();
-			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
-			$data['stores'] = DB::table('stores')->where('status', 'ACTIVE')->get();
-			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
-			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-			$data['employeeinfos'] = DB::table('cms_users')
-										 ->leftjoin('positions', 'cms_users.position_id', '=', 'positions.id')
-										 ->leftjoin('departments', 'cms_users.department_id', '=', 'departments.id')
-										 ->select( 'cms_users.*', 'positions.position_description as position_description', 'departments.department_name as department_name')
-										 ->where('cms_users.id', $data['user']->id)->first();
-			$data['categories'] = DB::table('category')->where('category_status', 'ACTIVE')->whereIn('id', [5,1,2])->orderby('category_description', 'asc')->get();
-			$data['sub_categories'] = DB::table('class')->where('class_status', 'ACTIVE')->where('category_id', 5)->orderby('class_description', 'asc')->get();
-			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();
-			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
-			$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
-			$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
-			$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
-			$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'HR')->get();
-			//$data['new_employee'] = Users::where('new_employee_plug','=',1)->get();
-			//sub masterfile
-			$data['schedule'] = DB::table('sub_masterfile_schedule')->where('status', 'ACTIVE')->get();
-			$data['allow_wfh'] = DB::table('sub_masterfile_allow_wfh')->where('status', 'ACTIVE')->get();
-			$data['manpower'] = DB::table('sub_masterfile_manpower')->where('status', 'ACTIVE')->get();
-			$data['manpower_type'] = DB::table('sub_masterfile_manpower_type')->where('status', 'ACTIVE')->get();
-			$data['required_exams'] = DB::table('sub_masterfile_required_exams')->where('status', 'ACTIVE')->get();
-			$data['asset_usage'] = DB::table('sub_masterfile_asset_usage')->where('status', 'ACTIVE')->get();
-			$data['shared_files'] = DB::table('sub_masterfile_shared_files')->where('status', 'ACTIVE')->get();
-			$data['interact_with'] = DB::table('sub_masterfile_interact_with')->where('status', 'ACTIVE')->get();
-			$data['email_domain'] = DB::table('sub_masterfile_email_domain')->where('status', 'ACTIVE')->get();
-			return $this->view("erf.add-hr-requisition", $data);
-				
-		}
-
-		public function getDetail($id){
+		public function getEdit($id){
 			
 			$this->cbLoader();
             if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
@@ -543,13 +402,14 @@
 
 			$data = array();
 
-			$data['page_title'] = 'View Erf Details';
+			$data['page_title'] = 'Edit Employee Requisition Form Status';
 
 			$data['Header'] = ErfHeaderRequest::
 				leftjoin('companies', 'erf_header_request.company', '=', 'companies.id')
 				->leftjoin('departments', 'erf_header_request.department', '=', 'departments.id')
 				->select(
 						'erf_header_request.*',
+						'erf_header_request.id as requestid',
 						'departments.department_name as department'
 						)
 				->where('erf_header_request.id', $id)->first();
@@ -573,45 +433,13 @@
 				  )
 				  ->where('erf_header_documents.header_id', $id)
 				  ->get();
+			$data['statuses'] = Statuses::select(
+					'statuses.*'
+				  )
+				  ->whereIn('id', [30,31,32])
+				  ->get();
 	
-			return $this->view("erf.erf_details", $data);
-		}
-
-		public function SearchUser(Request $request) {
-			$request = Request::all();
-			$search 		= $request['id'];
-
-			$data = array();
-			$data['status_no'] = 0;
-			$data['message']   ='No Item Found!';
-			$data['items'] = array();
-			$items = DB::table('cms_users')
-				->where('cms_users.id','=',$search)
-				->leftjoin('departments', 'cms_users.department_id','=','departments.id')
-				->leftjoin('sub_department', 'cms_users.sub_department_id','=','sub_department.id')
-				->leftjoin('locations', 'cms_users.location_id', '=', 'locations.id')
-				->select(	'cms_users.*',
-				            'cms_users.id as id',
-							'departments.*',
-							'sub_department.*',
-							'locations.*'
-						)
-				->first();
-			$data['items'] = $items;
-
-			echo json_encode($data);
-			exit;  
-		}
-
-		public function getDownload($id) {
-			$getFile = DB::table('erf_header_documents')->where('id',$id)->first();
-			$file= public_path(). "/vendor/crudbooster/erf_folder/".$getFile->file_name;
-
-			$headers = array(
-					'Content-Type: application/pdf',
-					);
-
-			return Response::download($file, $getFile->file_name, $headers);
+			return $this->view("erf.erf_edit_status", $data);
 		}
 
 

@@ -57,7 +57,7 @@
 @endif
 
     <div class='panel-heading'>
-        ERF Details
+        ERF History Details
     </div>
 
         <div class='card'>
@@ -143,7 +143,7 @@
         <div class="card">
             <div class="row"> 
                 <div class="col-md-6">
-                    <label class="require control-label"> Required Exams</label><br>
+                    <label class="require control-label"><span style="color:red">*</span> Required Exams</label><br>
                     @foreach($required_exams as $val)
                     <input type="text" class="form-control finput" value="{{trim($val)}}" aria-describedby="basic-addon1" readonly>                                                                                       
                     @endforeach
@@ -273,8 +273,6 @@
                 @endif
             </div>
         </div>
-        
-        @if($Header->approver_comments != NULL)
         <div class="card">
             <div class="row">
                 <div class="col-md-12">
@@ -297,8 +295,6 @@
                 @endif
             </div>
         </div>
-        @endif
-       
             
                 
 @endsection

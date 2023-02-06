@@ -57,7 +57,7 @@
 @endif
 
     <div class='panel-heading'>
-        ERF for Approval Form
+        ERF Edit Status Form
     </div>
 
     <form method='post' id="myform" action='{{CRUDBooster::mainpath('edit-save/'.$Header->requestid)}}'>
@@ -281,6 +281,17 @@
             
             <div class="card">
                 <div class="row">
+                <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label"><span style="color:red">*</span> Select Status</label>
+                            <select required selected data-placeholder="-- Please Select Status --" id="status" name="status" class="form-select status" style="width:100%;">
+                            @foreach($statuses as $res)
+                                <option value=""></option>
+                                <option value="{{ $res->id }}">{{ $res->status_description }}</option>
+                            @endforeach
+                            </select>
+                        </div>
+                       </div>
                     <div class="col-md-12">
                         <div class="form-group">
                             <label> Additional Notes</label>
@@ -290,8 +301,7 @@
                 </div>
                 <div class='panel-footer'>
                     <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
-                    <button class="btn btn-danger pull-right" type="button" id="btnReject" style="margin-left: 5px;"><i class="fa fa-thumbs-down" ></i> Reject</button>
-                    <button class="btn btn-success pull-right" type="button" id="btnApprove"><i class="fa fa-thumbs-up" ></i> Approve</button>
+                    <button class="btn btn-success pull-right" type="button" id="btnApprove"><i class="fa fa-pencil" ></i> Edit</button>
                 </div>
             </div>
             
@@ -301,42 +311,33 @@
 @endsection
 @push('bottom')
 <script type="text/javascript">
+$('.status').select2({placeholder_text_single : "- Select Status -"});
  $('#btnApprove').click(function(event) {
         event.preventDefault();
-        swal({
+        if($('#status').val() === ""){
+            swal({
+                type: 'error',
+                title: 'Please select status!',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            }); 
+            event.preventDefault(); // cancel default behavior
+            return false;
+        }else{
+            swal({
             title: "Are you sure?",
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: "#41B314",
             cancelButtonColor: "#F9354C",
-            confirmButtonText: "Yes, approve it!",
+            confirmButtonText: "Yes, edit it!",
             width: 450,
             height: 200
             }, function () {
                 $(this).attr('disabled','disabled');
-                $('#approval_action').val('1');
                 $("#myform").submit();                   
         });
-    });
-
-    $('#btnReject').click(function(event) {
-        event.preventDefault();
-        swal({
-            title: "Are you sure?",
-            type: "warning",
-            text: "You won't be able to revert this!",
-            showCancelButton: true,
-            confirmButtonColor: "#41B314",
-            cancelButtonColor: "#F9354C",
-            confirmButtonText: "Yes, reject it!",
-            width: 450,
-            height: 200
-            }, function () {
-                $(this).attr('disabled','disabled');
-                $('#approval_action').val('0');
-                $("#myform").submit();                   
-        });
-        
+        }
     });
     
 </script>

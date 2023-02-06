@@ -269,10 +269,25 @@
 	    |
 	    */    
 	    public function hook_row_index($column_index,&$column_value) {	        
-			$pending  =  		DB::table('statuses')->where('id', 1)->value('status_description');       
+			$pending          =  DB::table('statuses')->where('id', 1)->value('status_description');  
+			$rejected         =  DB::table('statuses')->where('id', 5)->value('status_description');  
+			$for_hired        =  DB::table('statuses')->where('id', 29)->value('status_description');  
+			$for_interview    =  DB::table('statuses')->where('id', 30)->value('status_description');  
+			$for_job_offer    =  DB::table('statuses')->where('id', 31)->value('status_description');    
+			$hired            =  DB::table('statuses')->where('id', 32)->value('status_description');   
 			if($column_index == 1){
 				if($column_value == $pending){
 					$column_value = '<span class="label label-warning">'.$pending.'</span>';
+				}else if($column_value == $rejected){
+					$column_value = '<span class="label label-danger">'.$rejected.'</span>';
+				}else if($column_value == $for_hired){
+					$column_value = '<span class="label label-info">'.$for_hired.'</span>';
+				}else if($column_value == $for_interview){
+					$column_value = '<span class="label label-info">'.$for_interview.'</span>';
+				}else if($column_value == $for_job_offer){
+					$column_value = '<span class="label label-info">'.$for_job_offer.'</span>';
+				}else if($column_value == $hired){
+					$column_value = '<span class="label label-success">'.$hired.'</span>';
 				}
 			}
 	    }
@@ -331,9 +346,7 @@
 				]);	
 				//add in arf heaader request table
 			$count_header       = DB::table('header_request')->count();
-			$status		 		= StatusMatrix::where('current_step', 2)
-								  ->where('request_type', $erf_header->request_type_id)
-								  ->value('status_id');
+		
 		    $arfHeaderSave = [];
 			$arfHeaderContainer = [];
 			foreach($req_type as $arfHeadKey => $arfHeadVal){
@@ -459,7 +472,6 @@
 				CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_database_error",['database_error'=>$e]), 'danger');
 			}
 			
-		
 			CRUDBooster::redirect(CRUDBooster::mainpath(), trans('Successfully Added!'), 'success');
 				
 			}else{
