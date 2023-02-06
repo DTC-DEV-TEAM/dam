@@ -28,7 +28,7 @@
 			$this->button_bulk_action = false;
 			$this->button_action_style = "button_icon";
 			$this->button_add = false;
-			$this->button_edit = true;
+			$this->button_edit = false;
 			$this->button_delete = false;
 			$this->button_detail = false;
 			$this->button_show = true;
@@ -119,7 +119,12 @@
 	        | 
 	        */
 	        $this->addaction = array();
+			if(CRUDBooster::isUpdate()) {
+				$hired =  32;
+				$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getEditErf/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[status_id] != $hired"];
+				$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailErf/[id]'),'icon'=>'fa fa-eye', "showIf"=>"[status_id] == $hired"];
 
+			}
 
 	        /* 
 	        | ---------------------------------------------------------------------- 
@@ -365,7 +370,16 @@
 	    | 
 	    */
 	    public function hook_after_edit($id) {
-	        //Your code here 
+			$fields = Request::all();
+
+			$erf_header = erfHeaderRequest::where(['id' => $id])->first();
+			$hired         =   32;
+
+			if($erf_header->status_id  == $hired){
+				CRUDBooster::redirect(CRUDBooster::adminpath('users/add'), trans("crudbooster.alert_for_hired_success",['reference_number'=>$erf_header->reference_number]), 'success');
+			}else{
+				CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Update Successfully!"), 'success');
+			}
 
 	    }
 
@@ -393,7 +407,7 @@
 
 	    }
 
-		public function getEdit($id){
+		public function getEditErf($id){
 			
 			$this->cbLoader();
             if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
@@ -436,10 +450,59 @@
 			$data['statuses'] = Statuses::select(
 					'statuses.*'
 				  )
-				  ->whereIn('id', [30,31,32])
+				  ->whereIn('id', [29,30,31,32])
 				  ->get();
 	
 			return $this->view("erf.erf_edit_status", $data);
+		}
+
+		public function getDetailErf($id){
+			
+			$this->cbLoader();
+            if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
+                CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+            }
+
+			$data = array();
+
+			$data['page_title'] = 'Edit Employee Requisition Form Status';
+
+			$data['Header'] = ErfHeaderRequest::
+				leftjoin('companies', 'erf_header_request.company', '=', 'companies.id')
+				->leftjoin('departments', 'erf_header_request.department', '=', 'departments.id')
+				->select(
+						'erf_header_request.*',
+						'erf_header_request.id as requestid',
+						'departments.department_name as department'
+						)
+				->where('erf_header_request.id', $id)->first();
+		
+			$res_req = explode(",",$data['Header']->required_exams);
+			$interact_with = explode(",",$data['Header']->employee_interaction);
+			$asset_usage = explode(",",$data['Header']->asset_usage);
+			$application = explode(",",$data['Header']->application);
+			$data['required_exams'] = $res_req;
+			$data['interaction'] = $interact_with;
+			$data['asset_usage'] = $asset_usage;
+			$data['application'] = $application;
+			$data['Body'] = ErfBodyRequest::
+				select(
+				  'erf_body_request.*'
+				)
+				->where('erf_body_request.header_request_id', $id)
+				->get();
+			$data['erf_header_documents'] = ErfHeaderDocuments::select(
+					'erf_header_documents.*'
+				  )
+				  ->where('erf_header_documents.header_id', $id)
+				  ->get();
+			$data['statuses'] = Statuses::select(
+					'statuses.*'
+				  )
+				  ->whereIn('id', [29,30,31,32])
+				  ->get();
+	
+			return $this->view("erf.erf_details", $data);
 		}
 
 

@@ -239,7 +239,7 @@
                                                     <td style="text-align:center" height="10">
                                                         {{$rowresult->sub_category_id}}
                                                     </td>
-                                                    <td style="text-align:center" height="10">
+                                                    <td style="text-align:center" height="10" class="qty">
                                                         {{$rowresult->quantity}}
                                                     </td>
                                                     
@@ -338,6 +338,21 @@
         });
         
     });
+
+    var tds = document
+    .getElementById("table_dashboard")
+    .getElementsByTagName("td");
+    var sumqty = 0;
+    var sumcost = 0;
+    for (var i = 0; i < tds.length; i++) {
+    if (tds[i].className == "qty") {
+        sumcost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+    }
+    }
+    document.getElementById("table_dashboard").innerHTML +=
+    "<tr><td colspan='3' style='text-align:right'><strong>TOTAL</strong></td><td style='text-align:center'><strong>" +
+    sumcost +
+    "</strong></td></td></tr>";
     
 </script>
 @endpush

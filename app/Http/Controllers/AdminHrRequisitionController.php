@@ -82,7 +82,11 @@
 	        | 
 	        */
 	        $this->addaction = array();
-			
+			if(CRUDBooster::isUpdate()) {
+
+				$pending           = 1;
+				$this->addaction[] = ['title'=>'Cancel Request','url'=>CRUDBooster::mainpath('getRequestCancel/[id]'),'icon'=>'fa fa-times', "showIf"=>"[status_id] == $pending"];
+			}
 	        /* 
 	        | ---------------------------------------------------------------------- 
 	        | Add More Button Selected
@@ -160,7 +164,18 @@
 	        | $this->script_js = "function() { ... }";
 	        |
 	        */
-	        $this->script_js = NULL;
+	        $this->script_js = "
+			$('.fa.fa-times').click(function(){
+				var strconfirm = confirm('Are you sure you want to cancel this request?');
+				if (strconfirm == true) {
+					return true;
+				}else{
+					return false;
+					window.stop();
+				}
+
+			});
+			";
 
 
             /*
@@ -273,7 +288,8 @@
 	    | ---------------------------------------------------------------------- 
 	    |
 	    */    
-	    public function hook_row_index($column_index,&$column_value) {	 
+	    public function hook_row_index($column_index,&$column_value) {	
+			$cancelled        =  DB::table('statuses')->where('id', 8)->value('status_description');   
 			$pending          =  DB::table('statuses')->where('id', 1)->value('status_description');  
 			$rejected         =  DB::table('statuses')->where('id', 5)->value('status_description');  
 			$for_hired        =  DB::table('statuses')->where('id', 29)->value('status_description');  
@@ -293,6 +309,8 @@
 					$column_value = '<span class="label label-info">'.$for_job_offer.'</span>';
 				}else if($column_value == $hired){
 					$column_value = '<span class="label label-success">'.$hired.'</span>';
+				}else if($column_value == $cancelled){
+					$column_value = '<span class="label label-danger">'.$cancelled.'</span>';
 				}
 			}
 	    }
@@ -614,5 +632,14 @@
 			return Response::download($file, $getFile->file_name, $headers);
 		}
 
+		public function getRequestCancel($id) {
+			erfHeaderRequest::where('id',$id)
+			->update([
+					'status_id'=> 8,
+					'cancelled_by'=> CRUDBooster::myId(),
+					'cancelled_at'=> date('Y-m-d H:i:s')	
+			]);	
+			CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Request has been cancelled successfully!"), 'info');
+		}
 
 	}

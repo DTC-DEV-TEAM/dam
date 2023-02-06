@@ -104,6 +104,8 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 			$this->form[] = array("label"=>"Location","name"=>"location_id","type"=>"select2","datatable"=>"locations,store_name", 'datatable_where'=>"store_status = 'ACTIVE'",'width'=>'col-sm-5');
 			//$this->form[] = array("label"=>"Stores","name"=>"store_id","type"=>"check-box","datatable"=>"stores,bea_mo_store_name", 'datatable_where'=>"status = 'ACTIVE'", 'width'=>'col-sm-10' );
             $this->form[] = array("label"=>"Location to Pick","name"=>"location_to_pick","type"=>"check-box5","required"=>true,"datatable"=>"warehouse_location_model,location", 'datatable_where'=>"id != '4'",'width'=>'col-sm-10' );
+			$this->form[] = array("label"=>"ERF","name"=>"erf_id","type"=>"select2","required"=>true,"datatable"=>"erf_header_request,reference_number", 'datatable_where'=>"status_id = 32",'width'=>'col-sm-5');
+	
 		}
 
 		
@@ -720,7 +722,26 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
     }
 
 	public function hook_after_edit($id) {
-		// $details = Users::where(['id' => $id])->orderBy('id','desc')->first();
+		$details = Users::where(['id' => $id])->orderBy('id','desc')->first();
+
+		$getArfids = ErfHeaderRequest::where(['id' => $details->erf_id])->first();
+
+		$arf_array = array();
+		array_push($arf_array, $getArfids->arf_id);
+		$arf_string = implode(",",$arf_array);
+		$finalArfs = array_map('intval',explode(",",$arf_string));
+
+		for ($i = 0; $i < count($finalArfs); $i++) {
+			HeaderRequest::where(['id' => $finalArfs[$i]])
+			   ->update([
+					   'employee_name' => $details->id, 
+					   'created_by' => $details->id
+					   ]);
+		}
+		ErfHeaderRequest::where('id',$details->erf_id)
+		->update([
+			'to_tag_employee'            => NULL
+		]);	
 		
 	}
     

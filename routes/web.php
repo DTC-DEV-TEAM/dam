@@ -147,6 +147,10 @@ Route::group(['middleware' => ['web']], function() {
     
     //hr requisition for new employee
     Route::post(config('crudbooster.ADMIN_PATH').'/hr_requisition/search-user','AdminHrRequisitionController@SearchUser')->name('hr.search.user');
+    Route::get('admin/erf_header_request/getRequestCancel/{id}','AdminHrRequisitionController@getRequestCancel')->name('getRequestCancel');
+    Route::get('/admin/erf_edit_status/getEditErf/{id}','AdminErfEditStatusController@getEditErf')->name('edit-erf');
+    Route::get('/admin/erf_edit_status/getDetailErf/{id}','AdminErfEditStatusController@getDetailErf')->name('details-erf');
+    
     Route::get('/admin/clear-view', function() {
         Artisan::call('view:clear');
         return "View cache is cleared!";

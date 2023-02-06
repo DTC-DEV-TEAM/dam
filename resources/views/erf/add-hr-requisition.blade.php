@@ -385,11 +385,12 @@
 
     $("#application_others").removeAttr('required');
     $(".application").removeAttr('required');
-    
+
     $(".date").datetimepicker({
-                    viewMode: "days",
-                    format: "YYYY-MM-DD",
-                    dayViewHeaderFormat: "MMMM YYYY",
+                 minDate:new Date(), // Current year from transactions
+                viewMode: "days",
+                format: "YYYY-MM-DD",
+                dayViewHeaderFormat: "MMMM YYYY",
             });
 
     $('#OTHERS').change(function() {
@@ -579,6 +580,7 @@
                 $('#category_id'+tableRow).change(function(){
                 var category =  this.value;
                 var id_data = $(this).attr("data-id");
+                
                 $.ajax
                 ({ 
                     type: 'POST',
@@ -598,7 +600,6 @@
                         jQuery('#sub_category_id'+id_data).html(showData);        
                     }
                 });
-
 
                 });
 

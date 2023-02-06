@@ -239,7 +239,7 @@
                                                     <td style="text-align:center" height="10">
                                                         {{$rowresult->sub_category_id}}
                                                     </td>
-                                                    <td style="text-align:center" height="10">
+                                                    <td style="text-align:center" height="10" class="qty">
                                                         {{$rowresult->quantity}}
                                                     </td>
                                                     
@@ -286,8 +286,10 @@
                             <label class="control-label"><span style="color:red">*</span> Select Status</label>
                             <select required selected data-placeholder="-- Please Select Status --" id="status" name="status" class="form-select status" style="width:100%;">
                             @foreach($statuses as $res)
-                                <option value=""></option>
-                                <option value="{{ $res->id }}">{{ $res->status_description }}</option>
+                            <option value="{{ $res->id }}"
+                                {{ isset($Header->status_id) && $Header->status_id == $res->id ? 'selected' : '' }}>
+                                {{ $res->status_description }} 
+                            </option>>
                             @endforeach
                             </select>
                         </div>
@@ -301,7 +303,7 @@
                 </div>
                 <div class='panel-footer'>
                     <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
-                    <button class="btn btn-success pull-right" type="button" id="btnApprove"><i class="fa fa-pencil" ></i> Edit</button>
+                    <button class="btn btn-success pull-right" type="button" id="btnApprove"><i class="fa fa-pencil" ></i> Update</button>
                 </div>
             </div>
             
@@ -330,7 +332,7 @@ $('.status').select2({placeholder_text_single : "- Select Status -"});
             showCancelButton: true,
             confirmButtonColor: "#41B314",
             cancelButtonColor: "#F9354C",
-            confirmButtonText: "Yes, edit it!",
+            confirmButtonText: "Yes, update it!",
             width: 450,
             height: 200
             }, function () {
@@ -339,6 +341,21 @@ $('.status').select2({placeholder_text_single : "- Select Status -"});
         });
         }
     });
+
+    var tds = document
+    .getElementById("table_dashboard")
+    .getElementsByTagName("td");
+    var sumqty = 0;
+    var sumcost = 0;
+    for (var i = 0; i < tds.length; i++) {
+    if (tds[i].className == "qty") {
+        sumcost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+    }
+    }
+    document.getElementById("table_dashboard").innerHTML +=
+    "<tr><td colspan='3' style='text-align:right'><strong>TOTAL</strong></td><td style='text-align:center'><strong>" +
+    sumcost +
+    "</strong></td></td></tr>";
     
 </script>
 @endpush
