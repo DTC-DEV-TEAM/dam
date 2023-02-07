@@ -131,7 +131,7 @@
 				$this->addaction[] = ['url'=>CRUDBooster::mainpath('detail-view/[id]'),'icon'=>'fa fa-eye','color'=>'default', "showIf"=>"[header_approval_status] == $for_approval"];
 			
 			}
-			else if(CRUDBooster::myPrivilegeId() == 5 || CRUDBooster::myPrivilegeId() == 9 || CRUDBooster::isSuperadmin()){
+			else if(CRUDBooster::myPrivilegeId() == 5 || CRUDBooster::myPrivilegeId() == 17 || CRUDBooster::myPrivilegeId() == 9 || CRUDBooster::isSuperadmin()){
 				$this->addaction[] = ['url'=>CRUDBooster::mainpath('detail-view-print/[id]'),'icon'=>'fa fa-eye','color'=>'default', "showIf"=>"[header_approval_status] == $recieved"];
 				$this->addaction[] = ['url'=>CRUDBooster::mainpath('detail/[id]'),'icon'=>'fa fa-pencil','color'=>'default', "showIf"=>"[header_approval_status] == $for_approval"];
 				$this->addaction[] = ['url'=>CRUDBooster::mainpath('detail-view/[id]'),'icon'=>'fa fa-eye','color'=>'default', "showIf"=>"[header_approval_status] == $reject"];
@@ -320,7 +320,7 @@
 			$it_warehouse  =    DB::table('warehouse_location_model')->where('id', 3)->value('id');
 			$admin_threef  =    DB::table('warehouse_location_model')->where('id', 1)->value('id');
 			$admin_gf  =  		DB::table('warehouse_location_model')->where('id', 2)->value('id');
-			if(CRUDBooster::myPrivilegeId() == 5){ 
+			if(CRUDBooster::myPrivilegeId() == 5 || CRUDBooster::myPrivilegeId() == 17){ 
 				$query->where('assets_inventory_header_for_approval.location', $it_warehouse)
 					  ->orderBy('assets_inventory_header_for_approval.id', 'DESC');
 

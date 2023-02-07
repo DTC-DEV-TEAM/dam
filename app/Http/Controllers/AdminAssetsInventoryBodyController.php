@@ -643,6 +643,33 @@
 			return Excel::download(new ExportMultipleSheet, 'asset_lists.xlsx');
 		}
 
+		public function uploadInventoryTemplate() {
+			// Excel::create('user-account-upload-'.date("Ymd").'-'.date("h.i.sa"), function ($excel) {
+			// 	$excel->sheet('useraccount', function ($sheet) {
+			// 		$sheet->row(1, array('FIRST NAME', 'LAST NAME', 'EMAIL', 'PRIVILEGE', 'CHANNEL', 'STORES ID'));
+			// 		$sheet->row(2, array('John', 'Doe', 'johndoe@digits.ph','Requestor','Retail','1'));
+			// 	});
+			// })->download('csv');
+			$filename = "inventory-import-template"."-".date("Ymd").".csv";
+		
+				header("Content-Disposition: attachment; filename=\"$filename\"");
+				header("Content-Type: text/csv; charset=UTF-16LE");
+		
+				$out = fopen("php://output", 'w');
+				$flag = false;
+	
+				if(!$flag) {
+					// display field/column names as first row
+					fputcsv($out, array('EMAIL', 'DIGITS CODE', 'ITEM DESCRIPTION', 'SERIAL NUMBER', 'QTY', 'STATUS', 'LOCATION', 'WARRANTY COVERAGE'));
+					$flag = true;
+				}
+				
+				fputcsv($out, array('johndoe@digits.ph', '40000769', 'ASUS X415J LAPTOP', 'XSER12', '1', 'WORKING', 'IT WAREHOUSE' , '1'));
+				fclose($out);
+				
+				exit;
+		}
+
 
 		public function getInventory(Request $request){
         $AssetsInventoryBody = AssetsInventoryBody::select('assets_inventory_body.*');
