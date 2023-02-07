@@ -1,6 +1,14 @@
 @extends('crudbooster::admin_template')
 @section('content')
-
+    @push('head')
+        <style type="text/css">   
+            table, th, td {
+            border: 1px solid rgba(000, 0, 0, .5);
+            padding: 8px;
+            border-radius: 5px 0 0 5px;
+            }
+        </style>
+    @endpush
 @if(g('return_url'))
 	<p class="noprint"><a title='Return' href='{{g("return_url")}}'><i class='fa fa-chevron-circle-left '></i> &nbsp; {{trans("crudbooster.form_back_to_list",['module'=>CRUDBooster::getCurrentModule()->name])}}</a></p>       
 @else
@@ -284,9 +292,65 @@
                 </div>
             </div>
 
-            <hr/>
+            <br>
+            @if( $Header->processedby != null )
+                <div class="row">
+                    <div class="col-md-6">
+                        <table style="width:100%">
+                            <tbody>
+                                <tr>
+                                    <th class="control-label col-md-2">{{ trans('message.form-label.po_number') }}:</th>
+                                    <td class="col-md-4">{{$Header->po_number}}</td>     
+                                </tr>
 
-            <div class="row">  
+                                <tr>
+                                    <th class="control-label col-md-2">{{ trans('message.form-label.po_date') }}:</th>
+                                    <td class="col-md-4">{{$Header->po_date}}</td>
+                                </tr>
+
+                                <tr>
+                                    <th class="control-label col-md-2">{{ trans('message.form-label.quote_date') }}:</th>
+                                    <td class="col-md-4">{{$Header->quote_date}}</td>
+                                </tr>
+                                @if( $Header->processedby != null )
+                                    <tr>
+                                        <th class="control-label col-md-2">{{ trans('message.form-label.processed_by') }}:</th>
+                                        <td class="col-md-4">{{$Header->processedby}} / {{$Header->purchased2_at}}</td>
+                                    </tr>
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="col-md-6">
+                        <table style="width:100%">
+                            <tbody>
+                                @if($Header->ac_comments != null)
+                                    <tr>
+                                        <th class="control-label col-md-2">{{ trans('message.table.ac_comments') }}:</th>
+                                        <td class="col-md-4">{{$Header->ac_comments}}</td>
+                                    </tr>
+                                @endif
+                                    <tr>
+                                        <th class="control-label col-md-2">{{ trans('message.form-label.mo_by') }}:</th>
+                                        <td class="col-md-4">{{$Header->moby}} / {{$Header->mo_at}}</td>
+                                    </tr>
+                                @if( $Header->pickedby != null )
+                                    <tr>
+                                        <th class="control-label col-md-2">{{ trans('message.form-label.picked_by') }}:</th>
+                                        <td class="col-md-4">{{$Header->pickedby}} / {{$Header->picked_at}}</td>
+                                    </tr>
+                                @endif
+                        
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            @endif
+
+
+
+            <!-- <div class="row">  
 
                 @if($Header->po_number != null)
                     <label class="control-label col-md-2">{{ trans('message.form-label.po_number') }}:</label>
@@ -357,7 +421,7 @@
                         <p>{{$Header->picked_at}}</p>
                 </div>
 
-            </div>
+            </div> -->
  
 
         </div>

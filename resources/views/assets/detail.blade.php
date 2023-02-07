@@ -1,9 +1,9 @@
 @extends('crudbooster::admin_template')
-@push('head')
+    @push('head')
         <style type="text/css">   
             table, th, td {
-            border: 1px solid black;
-            padding: 10px;
+            border: 1px solid rgba(000, 0, 0, .5);
+            padding: 8px;
             border-radius: 5px 0 0 5px;
             }
         </style>
@@ -300,15 +300,17 @@
                                                                                         {{$rowresult->reco_item_description}}
                                                                                     </td>
                                                                                 @endif
-                                                                                @if($Header->po_number == null || $Header->po_number == "")    
-                                                                                        <td style="text-align:center" height="10">
-                                                                                            <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow"><i class="glyphicon glyphicon-remove"></i></button>
-                                                                                        </td>
-                                                                                    @else
-                                                                                    @if($Header->closed_by == null)
-                                                                                        <td style="text-align:center" height="10">
-                                                                                            <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow" disabled><i class="glyphicon glyphicon-remove"></i></button>
-                                                                                        </td>
+                                                                                @if(!CRUDBooster::isSuperadmin())
+                                                                                    @if($Header->po_number == null || $Header->po_number == "")    
+                                                                                            <td style="text-align:center" height="10">
+                                                                                                <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow"><i class="glyphicon glyphicon-remove"></i></button>
+                                                                                            </td>
+                                                                                        @else
+                                                                                        @if($Header->closed_by == null)
+                                                                                            <td style="text-align:center" height="10">
+                                                                                                <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow" disabled><i class="glyphicon glyphicon-remove"></i></button>
+                                                                                            </td>
+                                                                                        @endif
                                                                                     @endif
                                                                                 @endif
 
@@ -448,7 +450,7 @@
                     </div>
                 </div> 
             @endif
-
+            <br>
             @if( $Header->processedby != null )
                 <div class="row">
                     <div class="col-md-6">
@@ -461,7 +463,7 @@
 
                                 <tr>
                                     <th class="control-label col-md-2">{{ trans('message.form-label.po_date') }}:</th>
-                                    <td class="col-md-4">{{$Header->po_number}}</td>
+                                    <td class="col-md-4">{{$Header->po_date}}</td>
                                 </tr>
 
                                 <tr>
