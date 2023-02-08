@@ -761,6 +761,7 @@
 					'rr_date' => $header->rr_date,
 					'location' => $header->location,
 					'header_approval_status' => 6,
+					'remarks' => $header->remarks,
 					'created_by' => $header->header_created_by,
 					'created_at' => Carbon::parse($header->date_created)->toDateTimeString(),
 				]

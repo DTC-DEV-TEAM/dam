@@ -121,9 +121,9 @@
              @endforeach
             </div>
             <label class="control-label col-md-2">Remarks:</label>
-           <div class="col-md-4">
-             <p>{{ $Header->remarks }}</p>
-           </div>
+            <div class="col-md-4">
+                <p>{{ $Header->remarks }}</p>
+            </div>
         </div>
 
         <hr>
