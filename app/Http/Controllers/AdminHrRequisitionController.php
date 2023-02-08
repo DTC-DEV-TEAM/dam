@@ -350,7 +350,7 @@
 			$header_ref                = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);			
 			$reference_number	       = "ERF-".$header_ref;
 			$category_id 		       = $fields['category_id'];
-			
+			dd();
 			$postdata['reference_number']		 	= $reference_number;
 			$postdata['status_id']                  = 1;
 			$postdata['company'] 				    = $company;

@@ -93,7 +93,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 			$this->form[] = array('label'=>'Approver','name'=>'approver_id','type'=>'select2','datatable'=>'cms_users,name','datatable_where'=>"id_cms_privileges = '3' || id_cms_privileges = '11' || id_cms_privileges = '12' || id_cms_privileges = '14' || id_cms_privileges = '15' || id_cms_privileges = '17'",'width'=>'col-sm-5');
 			$this->form[] = array('label'=>'Approver','name'=>'approver_id_manager','type'=>'select2','datatable'=>'cms_users,name','datatable_where'=>"id_cms_privileges = '11' || id_cms_privileges = '12' || id_cms_privileges = '14' || id_cms_privileges = '15'",'width'=>'col-sm-5', 'class'=>'approver_one');
 			$this->form[] = array("label"=>"Location","name"=>"location_id","type"=>"select2","required"=>true,"datatable"=>"locations,store_name", 'datatable_where'=>"store_status = 'ACTIVE'",'width'=>'col-sm-5');
-			$this->form[] = array("label"=>"ERF","name"=>"erf_id","type"=>"select2","required"=>true,"datatable"=>"erf_header_request,reference_number", 'datatable_where'=>"status_id = 32 && to_tag_employee = 1",'width'=>'col-sm-5');
+			//$this->form[] = array("label"=>"ERF","name"=>"erf_id","type"=>"select2","required"=>true,"datatable"=>"erf_header_request,reference_number", 'datatable_where'=>"status_id = 32 && to_tag_employee = 1",'width'=>'col-sm-5');
 			
 		}elseif(CRUDBooster::isSuperadmin()) {
 
@@ -104,7 +104,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 			$this->form[] = array("label"=>"Location","name"=>"location_id","type"=>"select2","datatable"=>"locations,store_name", 'datatable_where'=>"store_status = 'ACTIVE'",'width'=>'col-sm-5');
 			//$this->form[] = array("label"=>"Stores","name"=>"store_id","type"=>"check-box","datatable"=>"stores,bea_mo_store_name", 'datatable_where'=>"status = 'ACTIVE'", 'width'=>'col-sm-10' );
             $this->form[] = array("label"=>"Location to Pick","name"=>"location_to_pick","type"=>"check-box5","required"=>true,"datatable"=>"warehouse_location_model,location", 'datatable_where'=>"id != '4'",'width'=>'col-sm-10' );
-			$this->form[] = array("label"=>"ERF","name"=>"erf_id","type"=>"select2","datatable"=>"erf_header_request,reference_number", 'datatable_where'=>"status_id = 32",'width'=>'col-sm-5');
+			//$this->form[] = array("label"=>"ERF","name"=>"erf_id","type"=>"select2","datatable"=>"erf_header_request,reference_number", 'datatable_where'=>"status_id = 32",'width'=>'col-sm-5');
 	
 		}
 
@@ -207,20 +207,22 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 						$('#form-group-erf_id').hide();
 				        $('#erf_id').removeAttr('required');
 
-					}else if($(this).val() == 2){
-						$('#form-group-erf_id').show();
-						//$('#erf_id').attr('required', 'required');
+					}
+					// else if($(this).val() == 2){
+					// 	$('#form-group-erf_id').show();
+					// 	//$('#erf_id').attr('required', 'required');
 
-						$('#form-group-approver_id_manager').hide();
-						$('#approver_id_manager').removeAttr('required');
+					// 	$('#form-group-approver_id_manager').hide();
+					// 	$('#approver_id_manager').removeAttr('required');
 
-						$('#form-group-approver_id_executive').hide();
-						$('#approver_id_executive').removeAttr('required');
+					// 	$('#form-group-approver_id_executive').hide();
+					// 	$('#approver_id_executive').removeAttr('required');
 
-						$('#form-group-location_to_pick').hide();
-						$('#location_to_pick').removeAttr('required');
+					// 	$('#form-group-location_to_pick').hide();
+					// 	$('#location_to_pick').removeAttr('required');
 
-					}else if($(this).val() == 3){
+					// }
+					else if($(this).val() == 3){
 						$('#form-group-approver_id_manager').show();
 						$('#approver_id_manager').attr('required', 'required');
 
@@ -342,20 +344,22 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 						$('#form-group-erf_id').hide();
 				        $('#erf_id').removeAttr('required');
 
-					}else if($(this).val() == 2){
-						$('#form-group-erf_id').show();
-						//$('#erf_id').attr('required', 'required');
+					}
+					// else if($(this).val() == 2){
+					// 	$('#form-group-erf_id').show();
+					// 	//$('#erf_id').attr('required', 'required');
 
-						$('#form-group-approver_id_manager').hide();
-						$('#approver_id_manager').removeAttr('required');
+					// 	$('#form-group-approver_id_manager').hide();
+					// 	$('#approver_id_manager').removeAttr('required');
 
-						$('#form-group-approver_id_executive').hide();
-						$('#approver_id_executive').removeAttr('required');
+					// 	$('#form-group-approver_id_executive').hide();
+					// 	$('#approver_id_executive').removeAttr('required');
 
-						$('#form-group-location_to_pick').hide();
-						$('#location_to_pick').removeAttr('required');
+					// 	$('#form-group-location_to_pick').hide();
+					// 	$('#location_to_pick').removeAttr('required');
 
-					}else if($(this).val() == 3){
+					// }
+					else if($(this).val() == 3){
 						$('#form-group-approver_id_manager').show();
 						$('#approver_id_manager').attr('required', 'required');
 
@@ -470,19 +474,21 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 					$('#form-group-erf_id').hide();
 				    $('#erf_id').removeAttr('required');
 
-				}if($('#id_cms_privileges').val() == 2){
-					$('#form-group-erf_id').show();
+				}
+				// if($('#id_cms_privileges').val() == 2){
+				// 	$('#form-group-erf_id').show();
 
-					$('#form-group-approver_id_manager').hide();
-					$('#approver_id_manager').removeAttr('required');
+				// 	$('#form-group-approver_id_manager').hide();
+				// 	$('#approver_id_manager').removeAttr('required');
 
-					$('#form-group-approver_id_executive').hide();
-					$('#approver_id_executive').removeAttr('required');
+				// 	$('#form-group-approver_id_executive').hide();
+				// 	$('#approver_id_executive').removeAttr('required');
 
-					$('#form-group-location_to_pick').hide();
-					$('#location_to_pick').removeAttr('required');
+				// 	$('#form-group-location_to_pick').hide();
+				// 	$('#location_to_pick').removeAttr('required');
 
-				}else if($('#id_cms_privileges').val() == 3){
+				// }
+				else if($('#id_cms_privileges').val() == 3){
 					$('#form-group-approver_id_manager').show();
 					$('#approver_id_manager').attr('required', 'required');
 
@@ -661,25 +667,25 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 	public function hook_after_add($id) {        
 		$details = Users::where(['created_by' => CRUDBooster::myId()])->orderBy('id','desc')->first();
 
-		$getArfids = ErfHeaderRequest::where(['id' => $details->erf_id])->first();
+		// $getArfids = ErfHeaderRequest::where(['id' => $details->erf_id])->first();
 
-		$arf_array = array();
-		array_push($arf_array, $getArfids->arf_id);
-		$arf_string = implode(",",$arf_array);
-		$finalArfs = array_map('intval',explode(",",$arf_string));
+		// $arf_array = array();
+		// array_push($arf_array, $getArfids->arf_id);
+		// $arf_string = implode(",",$arf_array);
+		// $finalArfs = array_map('intval',explode(",",$arf_string));
 
-		for ($i = 0; $i < count($finalArfs); $i++) {
-			HeaderRequest::where(['id' => $finalArfs[$i]])
-			   ->update([
-					   'employee_name' => $details->id, 
-					   'created_by' => $details->id,
-					   'to_update_id' => $details->id,
-					   ]);
-		}
-		ErfHeaderRequest::where('id',$details->erf_id)
-		->update([
-			'to_tag_employee'            => NULL
-		]);	
+		// for ($i = 0; $i < count($finalArfs); $i++) {
+		// 	HeaderRequest::where(['id' => $finalArfs[$i]])
+		// 	   ->update([
+		// 			   'employee_name' => $details->id, 
+		// 			   'created_by' => $details->id,
+		// 			   'to_update_id' => $details->id,
+		// 			   ]);
+		// }
+		// ErfHeaderRequest::where('id',$details->erf_id)
+		// ->update([
+		// 	'to_tag_employee'            => NULL
+		// ]);	
     }
 
 	public function hook_before_edit(&$postdata,$id) {        
@@ -723,39 +729,39 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 	public function hook_after_edit($id) {
 		$details = Users::where(['id' => $id])->orderBy('id','desc')->first();
 
-		$getArfids = ErfHeaderRequest::where(['id' => $details->erf_id])->first();
-		$getOldErfids = ErfHeaderRequest::where(['id' => $details->to_update_id])->first();
-        ErfHeaderRequest::where('id',$details->to_update_id)
-		->update([
-			'to_tag_employee'            => 1
-		]);	
-		HeaderRequest::where(['to_update_id' => $details->id])
-			   ->update([
-					   'employee_name' => $getOldErfids->reference_number, 
-					   'created_by' => NULL
-					   ]);
+		// $getArfids = ErfHeaderRequest::where(['id' => $details->erf_id])->first();
+		// $getOldErfids = ErfHeaderRequest::where(['id' => $details->to_update_id])->first();
+        // ErfHeaderRequest::where('id',$details->to_update_id)
+		// ->update([
+		// 	'to_tag_employee'            => 1
+		// ]);	
+		// HeaderRequest::where(['to_update_id' => $details->id])
+		// 	   ->update([
+		// 			   'employee_name' => $getOldErfids->reference_number, 
+		// 			   'created_by' => NULL
+		// 			   ]);
 
-		$arf_array = array();
-		array_push($arf_array, $getArfids->arf_id);
-		$arf_string = implode(",",$arf_array);
-		$finalArfs = array_map('intval',explode(",",$arf_string));
+		// $arf_array = array();
+		// array_push($arf_array, $getArfids->arf_id);
+		// $arf_string = implode(",",$arf_array);
+		// $finalArfs = array_map('intval',explode(",",$arf_string));
 
-		for ($i = 0; $i < count($finalArfs); $i++) {
-			HeaderRequest::where(['id' => $finalArfs[$i]])
-			   ->update([
-					   'employee_name' => $details->id, 
-					   'created_by' => $details->id,
-					   'to_update_id' => $details->id,
-					   ]);
-		}
-		ErfHeaderRequest::where('id',$details->erf_id)
-		->update([
-			'to_tag_employee'            => NULL
-		]);	
-		Users::where('id',$id)
-		->update([
-			'to_update_id'            => $getArfids->id
-		]);
+		// for ($i = 0; $i < count($finalArfs); $i++) {
+		// 	HeaderRequest::where(['id' => $finalArfs[$i]])
+		// 	   ->update([
+		// 			   'employee_name' => $details->id, 
+		// 			   'created_by' => $details->id,
+		// 			   'to_update_id' => $details->id,
+		// 			   ]);
+		// }
+		// ErfHeaderRequest::where('id',$details->erf_id)
+		// ->update([
+		// 	'to_tag_employee'            => NULL
+		// ]);	
+		// Users::where('id',$id)
+		// ->update([
+		// 	'to_update_id'            => $getArfids->id
+		// ]);
 		
 	}
     
