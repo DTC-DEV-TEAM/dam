@@ -114,8 +114,8 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label"> Salary Range</label>
-                            <input type="text" class="form-control finput" value="{{number_format($Header->salary_range)}}" aria-describedby="basic-addon1" readonly>                                                                                    
-                                
+                            <input type="text" class="form-control finput" value="{{number_format($Header->salary_range_from) .' - '. number_format($Header->salary_range_to)}}" aria-describedby="basic-addon1" readonly>                                                                                         
+  
                         </div>
                     </div> 
                 </div>
@@ -143,6 +143,15 @@
                         <input type="text" class="form-control finput" value="{{$Header->manpower_type}}" aria-describedby="basic-addon1" readonly>                                                                                     
                     </div>
                 </div>
+                <br>
+                @if($Header->replacement_of != NULL || $Header->replacement_of != "")
+                <div class="row"> 
+                    <div class="col-md-6">
+                        <label class="require control-label"> Replacement Of</label><br>
+                        <input type="text" class="form-control finput" value="{{$Header->replacement_of}}" aria-describedby="basic-addon1" readonly>                                                                                    
+                    </div>
+                </div>
+                @endif
             </div>
             <!-- 3rd row -->
             <div class="card">

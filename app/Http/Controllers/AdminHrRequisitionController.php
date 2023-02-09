@@ -292,23 +292,23 @@
 			$cancelled        =  DB::table('statuses')->where('id', 8)->value('status_description');   
 			$pending          =  DB::table('statuses')->where('id', 1)->value('status_description');  
 			$rejected         =  DB::table('statuses')->where('id', 5)->value('status_description');  
-			$for_hired        =  DB::table('statuses')->where('id', 29)->value('status_description');  
-			$for_interview    =  DB::table('statuses')->where('id', 30)->value('status_description');  
-			$for_job_offer    =  DB::table('statuses')->where('id', 31)->value('status_description');    
-			$hired            =  DB::table('statuses')->where('id', 32)->value('status_description');   
+			$for_verification =  DB::table('statuses')->where('id', 29)->value('status_description');  
+			$verified         =  DB::table('statuses')->where('id', 30)->value('status_description');  
+			$jo_done          =  DB::table('statuses')->where('id', 31)->value('status_description');    
+			$onboarding       =  DB::table('statuses')->where('id', 32)->value('status_description');   
 			if($column_index == 1){
 				if($column_value == $pending){
 					$column_value = '<span class="label label-warning">'.$pending.'</span>';
 				}else if($column_value == $rejected){
 					$column_value = '<span class="label label-danger">'.$rejected.'</span>';
-				}else if($column_value == $for_hired){
-					$column_value = '<span class="label label-info">'.$for_hired.'</span>';
-				}else if($column_value == $for_interview){
-					$column_value = '<span class="label label-info">'.$for_interview.'</span>';
-				}else if($column_value == $for_job_offer){
-					$column_value = '<span class="label label-info">'.$for_job_offer.'</span>';
-				}else if($column_value == $hired){
-					$column_value = '<span class="label label-success">'.$hired.'</span>';
+				}else if($column_value == $for_verification){
+					$column_value = '<span class="label label-warning">'.$for_verification.'</span>';
+				}else if($column_value == $verified){
+					$column_value = '<span class="label label-info">'.$verified.'</span>';
+				}else if($column_value == $jo_done){
+					$column_value = '<span class="label label-info">'.$jo_done.'</span>';
+				}else if($column_value == $onboarding){
+					$column_value = '<span class="label label-success">'.$onboarding.'</span>';
 				}else if($column_value == $cancelled){
 					$column_value = '<span class="label label-danger">'.$cancelled.'</span>';
 				}
@@ -330,10 +330,11 @@
 			$date_needed               = $fields['date_needed'];
 			$position                  = $fields['position'];
 			$work_location             = $fields['work_location'];
-			$salary_range              = $fields['salary_range'];
+			$salary_range              = explode("-",$fields['salary_range']);
 			$schedule                  = $fields['schedule'];
 			$allow_wfh                 = $fields['allow_wfh'];
 			$manpower                  = $fields['manpower'];
+			$replacement_of            = $fields['replacement_of'];
 			$manpower_type             = $fields['manpower_type'];
 			$required_exams            = $fields['required_exams'];
 			$qualifications            = $fields['qualifications'];
@@ -350,7 +351,7 @@
 			$header_ref                = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);			
 			$reference_number	       = "ERF-".$header_ref;
 			$category_id 		       = $fields['category_id'];
-			dd();
+			//dd($fields);
 			$postdata['reference_number']		 	= $reference_number;
 			$postdata['status_id']                  = 1;
 			$postdata['company'] 				    = $company;
@@ -359,10 +360,12 @@
 			$postdata['position'] 					= $position;
 			$postdata['date_needed'] 			    = date('Y-m-d', strtotime($date_needed));
 			$postdata['work_location'] 				= $work_location;
-			$postdata['salary_range'] 				= intval(str_replace(',', '', $salary_range));
+			$postdata['salary_range_from'] 			= intval(str_replace(',', '', $salary_range[0]));
+			$postdata['salary_range_to'] 			= intval(str_replace(',', '', $salary_range[1]));
 			$postdata['schedule'] 					= $schedule;
 			$postdata['allow_wfh'] 		            = $allow_wfh;
 			$postdata['manpower'] 		            = $manpower;
+			$postdata['replacement_of'] 		    = $replacement_of;
 			$postdata['manpower_type'] 		        = $manpower_type;
 			if(!empty($required_exams)){
 				$postdata['required_exams'] 	    = implode(", ",$required_exams);

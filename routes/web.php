@@ -150,8 +150,12 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/hr_requisition/search-user','AdminHrRequisitionController@SearchUser')->name('hr.search.user');
     Route::get('admin/erf_header_request/getRequestCancel/{id}','AdminHrRequisitionController@getRequestCancel')->name('getRequestCancel');
     Route::get('/admin/erf_edit_status/getEditErf/{id}','AdminErfEditStatusController@getEditErf')->name('edit-erf');
+    Route::get('/admin/erf_edit_status/getErfCreateAccount/{id}','AdminErfEditStatusController@getErfCreateAccount')->name('create-account-erf');
     Route::get('/admin/erf_edit_status/getDetailErf/{id}','AdminErfEditStatusController@getDetailErf')->name('details-erf');
-    
+    //Applicant Moduel
+    Route::get('/admin/applicant_module/getEditApplicant/{id}','AdminApplicantModuleController@getEditApplicant')->name('edit-applicant');
+    Route::get('/admin/applicant_module/getDetailApplicant/{id}','AdminApplicantModuleController@getDetailApplicant')->name('applicant-detail');
+
     Route::get('/admin/clear-view', function() {
         Artisan::call('view:clear');
         return "View cache is cleared!";

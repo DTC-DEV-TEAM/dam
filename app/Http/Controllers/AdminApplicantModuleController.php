@@ -4,6 +4,9 @@
 	use Request;
 	use DB;
 	use CRUDBooster;
+	use App\models\Applicant;
+	use App\statuses;
+	use App\Models\ErfHeaderRequest;
 
 	class AdminApplicantModuleController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -15,12 +18,12 @@
 			$this->orderby = "id,desc";
 			$this->global_privilege = false;
 			$this->button_table_action = true;
-			$this->button_bulk_action = true;
+			$this->button_bulk_action = false;
 			$this->button_action_style = "button_icon";
 			$this->button_add = false;
-			$this->button_edit = true;
+			$this->button_edit = false;
 			$this->button_delete = false;
-			$this->button_detail = true;
+			$this->button_detail = false;
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
@@ -30,15 +33,15 @@
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
+			$this->col[] = ["label"=>"Status","name"=>"status","join"=>"statuses,status_description"];
 			$this->col[] = ["label"=>"Erf Number","name"=>"erf_number"];
-			$this->col[] = ["label"=>"Status","name"=>"status"];
 			$this->col[] = ["label"=>"First Name","name"=>"first_name"];
 			$this->col[] = ["label"=>"Last Name","name"=>"last_name"];
 			$this->col[] = ["label"=>"Screen Date","name"=>"screen_date"];
-			$this->col[] = ["label"=>"Created By","name"=>"created_by"];
+			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Created At","name"=>"created_at"];
-			$this->col[] = ["label"=>"Update By","name"=>"update_by"];
-			$this->col[] = ["label"=>"Update At","name"=>"update_at"];
+			$this->col[] = ["label"=>"Update By","name"=>"updated_by","join"=>"cms_users,name"];
+			$this->col[] = ["label"=>"Update At","name"=>"updated_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
@@ -71,7 +74,13 @@
 	        | 
 	        */
 	        $this->addaction = array();
+			if(CRUDBooster::isUpdate()) {
+				$for_job_offer =  36;
+				$cancelled     =  8;
+				$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getEditApplicant/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[status] != $for_job_offer && [status] != $cancelled"];
+				$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailApplicant/[id]'),'icon'=>'fa fa-eye', "showIf"=>"[status] == $for_job_offer || [status] == $cancelled"];
 
+			}
 
 	        /* 
 	        | ---------------------------------------------------------------------- 
@@ -172,7 +181,22 @@
 	    |
 	    */    
 	    public function hook_row_index($column_index,&$column_value) {	        
-	    	//Your code here
+	    	$cancelled        =  DB::table('statuses')->where('id', 8)->value('status_description');        
+			$first_interview  =  DB::table('statuses')->where('id', 34)->value('status_description');  
+			$final_interview  =  DB::table('statuses')->where('id', 35)->value('status_description');  
+			$job_offer        =  DB::table('statuses')->where('id', 36)->value('status_description');    
+ 
+			if($column_index == 1){
+				if($column_value == $first_interview){
+					$column_value = '<span class="label label-info">'.$first_interview.'</span>';
+				}else if($column_value == $final_interview){
+					$column_value = '<span class="label label-info">'.$final_interview.'</span>';
+				}else if($column_value == $job_offer){
+					$column_value = '<span class="label label-success">'.$job_offer.'</span>';
+				}else if($column_value == $cancelled){
+					$column_value = '<span class="label label-danger">'.$cancelled.'</span>';
+				}
+			}
 	    }
 
 	    /*
@@ -182,8 +206,19 @@
 	    | @arr
 	    |
 	    */
-	    public function hook_before_add(&$postdata) {        
-	        //Your code here
+	    public function hook_before_add(&$postdata) {       
+			$fields = Request::all();
+			$erf_number  = $fields['erf_number'];
+			$screen_date = $fields['screen_date'];
+			$first_name  = $fields['first_name'];
+			$last_name   = $fields['last_name'];
+
+			$postdata['status']      = 34;
+			$postdata['erf_number']  = $erf_number;
+			$postdata['screen_date'] = $screen_date;
+			$postdata['first_name']  = $first_name;
+			$postdata['last_name']   = $last_name;
+	        $postdata['created_by']  = CRUDBooster::myId();
 
 	    }
 
@@ -208,8 +243,18 @@
 	    | 
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
-	        //Your code here
-
+	        $fields = Request::all();
+			$erf_number = $fields['erf_number'];
+			// dd($fields);
+			$status = $fields['status'];
+			if($status == 36){
+				ErfHeaderRequest::where('reference_number',$erf_number)
+				->update([
+					'status_id'		 => 31
+				]);	
+			}
+			$postdata['status']      = $status;
+			$postdata['updated_by']  = CRUDBooster::myId();
 	    }
 
 	    /* 
@@ -233,15 +278,57 @@
 	    */
 
 		public function getAddApplicant() {
-
 			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
 				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
 			}
 			$this->cbLoader();
 			$data['page_title'] = 'Create New Applicant';
-			$data['erf_number'] = DB::table('erf_header_request')->get();
+			$data['erf_number'] = DB::table('erf_header_request')->where('status_id', 30)->get();
 			return $this->view("applicant.add-applicant", $data);
 	
+		}
+
+		public function getEditApplicant($id){
+			$this->cbLoader();
+            if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
+                CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+            }
+
+			$data = array();
+			$data['page_title'] = 'Edit Applicant Status';
+			$data['applicant'] = Applicant::select(
+						'applicant_table.*',
+						'applicant_table.id as apid'
+						)
+				->where('applicant_table.id', $id)->first();
+			$data['erf_number'] = DB::table('erf_header_request')->where('status_id', 30)->get();
+			$data['statuses'] = Statuses::select(
+					'statuses.*'
+				  )
+				  ->whereIn('id', [34,35,36,8])
+				  ->get();
+
+			return $this->view("applicant.edit_applicant_status", $data);
+		}
+
+		public function getDetailApplicant($id){
+			$this->cbLoader();
+            if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
+                CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+            }
+
+			$data = array();
+			$data['page_title'] = 'Applicant Detail';
+			$data['applicant'] = Applicant::
+			leftjoin('statuses','applicant_table.status','=','statuses.id')
+			->select(
+						'applicant_table.*',
+						'applicant_table.id as apid',
+						'statuses.status_description as status_desc'
+						)
+				->where('applicant_table.id', $id)->first();
+			$data['erf_number'] = DB::table('erf_header_request')->where('status_id', 30)->get();
+			return $this->view("applicant.applicant_detail", $data);
 		}
 
 

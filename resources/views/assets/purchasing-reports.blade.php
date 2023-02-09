@@ -146,7 +146,7 @@
        $(document).ready(function() {
            table = $("#table_dashboard").DataTable({
                 ordering:false,
-                pageLength:100,
+                pageLength:50,
                 language: {
                     searchPlaceholder: "Search"
                 },

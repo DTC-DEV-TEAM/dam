@@ -46,6 +46,12 @@
             .panel-heading{
                 background-color: #f5f5f5 ;
             }
+
+            table, th, td {
+            border: 1px solid rgba(000, 0, 0, .5);
+            padding: 8px;
+            border-radius: 5px 0 0 5px;
+            }
            
         </style>
     @endpush
@@ -110,8 +116,8 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label"> Salary Range</label>
-                        <input type="text" class="form-control finput" value="{{number_format($Header->salary_range)}}" aria-describedby="basic-addon1" readonly>                                                                                    
-                               
+                        <input type="text" class="form-control finput" value="{{number_format($Header->salary_range_from) .' - '. number_format($Header->salary_range_to)}}" aria-describedby="basic-addon1" readonly>                                                                                         
+      
                     </div>
                 </div>
                 
@@ -138,6 +144,15 @@
                     <input type="text" class="form-control finput" value="{{$Header->manpower_type}}" aria-describedby="basic-addon1" readonly>                                                                                     
                 </div>
             </div>
+            <br>
+                @if($Header->replacement_of != NULL || $Header->replacement_of != "")
+                <div class="row"> 
+                    <div class="col-md-6">
+                        <label class="require control-label"> Replacement Of</label><br>
+                        <input type="text" class="form-control finput" value="{{$Header->replacement_of}}" aria-describedby="basic-addon1" readonly>                                                                                    
+                    </div>
+                </div>
+                @endif
         </div>
             
         <div class="card">
@@ -275,22 +290,40 @@
         </div>
         <div class="card">
             <div class="row">
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <label> {{ trans('message.table.approver_comments') }}:</label>
-                   
-                            <p>{{$Header->approver_comments}}</p>
-                       
-                    </div>
+                <div class="col-md-6">
+                    <table style="width:100%">
+                        <tbody>
+                            <tr>
+                                <th class="control-label col-md-2">{{ trans('message.form-label.approved_by') }}:</th>
+                                <td class="col-md-4">{{$Header->approved_immediate_head_by}} / {{$Header->approved_immediate_head_at}}</td>     
+                            </tr>
+                            @if($Header->approver_comments != NULL)
+                            <tr>
+                                <th class="control-label col-md-2">{{ trans('message.table.approver_comments') }}:</th>
+                                <td class="col-md-4">{{$Header->approver_comments}}</td>
+                            </tr>
+                            @endif
+
+                        </tbody>
+                    </table>
                 </div>
-                @if($Header->hr_comments != NULL)
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <label> HR Comments:</label>
-                   
-                            <p>{{$Header->hr_comments}}</p>
-                       
-                    </div>
+                @if($Header->approved_hr_by != NULL)
+                <div class="col-md-6">
+                    <table style="width:100%">
+                        <tbody>
+                            <tr>
+                                <th class="control-label col-md-2">Verified By:</th>
+                                <td class="col-md-4">{{$Header->approved_hr_by}} / {{$Header->approved_hr_at}}</td>     
+                            </tr>
+                            @if($Header->hr_comments != NULL)
+                            <tr>
+                                <th class="control-label col-md-2">Verifier Comments:</th>
+                                <td class="col-md-4">{{$Header->hr_comments}}</td>
+                            </tr>
+                            @endif
+
+                        </tbody>
+                    </table>
                 </div>
                 @endif
             </div>

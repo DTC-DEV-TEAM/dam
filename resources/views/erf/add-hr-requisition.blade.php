@@ -153,12 +153,17 @@
                         <div class="col-md-6">
                             <label class="require control-label"><span style="color:red">*</span> Manpower</label><br>
                                 @foreach($manpower as $data)
-                                <div class="col-md-6">
+                                <div class="col-md-6" style="margin-bottom:20px">
                                     <label class="checkbox-inline control-label col-md-6" ><br>
                                     <input type="checkbox" required   class="manpower" name="manpower" value="{{$data->description}}" >{{$data->description}}
                                     </label>
                                 </div>
                                 @endforeach
+                                <div class="form-group" id="show_replacement_of" style="display:none;">
+                              
+                                <label class="control-label"> Replacement Of</label>
+                                    <input type="text" class="form-control finput"  id="replacement_of" name="replacement_of">   
+                                </div>
                         </div>
                         <div class="col-md-6">
                             <label class="require control-label"><span style="color:red">*</span> Manpower Type</label><br>
@@ -166,7 +171,6 @@
                                 <div class="col-md-6">
                                     <label class="checkbox-inline control-label col-md-6" ><br>
                                     <input type="checkbox" required   class="manpower_type" name="manpower_type" value="{{$data->description}}" >{{$data->description}}
-                                    </label>
                                 </div>
                                 @endforeach
                         </div>
@@ -350,32 +354,6 @@
     window.onunload = function() {
         null;
     };
-    //preview image before save
-    $(function() {
-    // Multiple images preview in browser
-    var imagesPreview = function(input, placeToInsertImagePreview) {
-
-        if (input.files) {
-            var filesAmount = input.files.length;
-
-            for (i = 0; i < filesAmount; i++) {
-                var reader = new FileReader();
-
-                reader.onload = function(event) {
-                    $($.parseHTML('<img height="120px" class="header_images" width="180px;" hspace="10" data-action="zoom">')).attr('src', event.target.result).appendTo(placeToInsertImagePreview);
-                }
-
-                reader.readAsDataURL(input.files[i]);
-            }
-        }
-
-    };
-
-        $('#si_dr').on('change', function() {
-            imagesPreview(this, 'div.gallery');
-            $("#removeImageHeader").toggle(); 
-        });
-    });
     setTimeout("preventBack()", 0);
 
     var tableRow = 1;
@@ -418,6 +396,17 @@
         }
 
     });
+     //checkbox validations
+     $(".manpower").change(function() {
+        var rep = $(this);
+        console.log($(this).val());
+        if(rep.val() === "REPLACEMENT"){
+            $("#show_replacement_of").show();
+        }else{
+            $("#show_replacement_of").hide();
+        }
+
+    });
 
     //checkbox validations
     $("input[name^='schedule'], input[name^='allow_wfh'], input[name^='manpower'], input[name^='manpower_type'], input[name^='shared_files'], input[name^='email_domain']").on('click', function() {
@@ -430,6 +419,8 @@
             $box.prop('checked', false);
         }
     });
+
+    
 
 
     $(document).ready(function() {
@@ -763,6 +754,15 @@
                 swal({
                     type: 'error',
                     title: 'Required Salary Range!',
+                    icon: 'error',
+                    confirmButtonColor: "#367fa9",
+                }); 
+                event.preventDefault(); // cancel default behavior
+                return false;
+            }else if(!$("#salary_range").val().includes("-")){
+                swal({
+                    type: 'error',
+                    title: 'Invalid Salary Range! please refer to the ff(10,000-15,000).',
                     icon: 'error',
                     confirmButtonColor: "#367fa9",
                 }); 

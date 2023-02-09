@@ -46,6 +46,12 @@
             .panel-heading{
                 background-color: #f5f5f5 ;
             }
+
+            table, th, td {
+            border: 1px solid rgba(000, 0, 0, .5);
+            padding: 8px;
+            border-radius: 5px 0 0 5px;
+            }
            
         </style>
     @endpush
@@ -114,8 +120,8 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label"> Salary Range</label>
-                            <input type="text" class="form-control finput" value="{{number_format($Header->salary_range)}}" aria-describedby="basic-addon1" readonly>                                                                                    
-                                
+                            <input type="text" class="form-control finput" value="{{number_format($Header->salary_range_from) .' - '. number_format($Header->salary_range_to)}}" aria-describedby="basic-addon1" readonly>                                                                                         
+   
                         </div>
                     </div> 
                 </div>
@@ -143,6 +149,15 @@
                         <input type="text" class="form-control finput" value="{{$Header->manpower_type}}" aria-describedby="basic-addon1" readonly>                                                                                     
                     </div>
                 </div>
+                <br>
+                @if($Header->replacement_of != NULL || $Header->replacement_of != "")
+                <div class="row"> 
+                    <div class="col-md-6">
+                        <label class="require control-label"> Replacement Of</label><br>
+                        <input type="text" class="form-control finput" value="{{$Header->replacement_of}}" aria-describedby="basic-addon1" readonly>                                                                                    
+                    </div>
+                </div>
+                @endif
             </div>
             <!-- 3rd row -->
             <div class="card">
@@ -281,19 +296,28 @@
             
             <div class="card">
                 <div class="row">
-                <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="control-label"><span style="color:red">*</span> Select Status</label>
-                            <select required selected data-placeholder="-- Please Select Status --" id="status" name="status" class="form-select status" style="width:100%;">
-                            @foreach($statuses as $res)
-                            <option value="{{ $res->id }}"
-                                {{ isset($Header->status_id) && $Header->status_id == $res->id ? 'selected' : '' }}>
-                                {{ $res->status_description }} 
-                            </option>>
-                            @endforeach
-                            </select>
-                        </div>
-                       </div>
+                    <div class="col-md-6">
+                        <table style="width:100%">
+                            <tbody>
+                                <tr>
+                                    <th class="control-label col-md-2">{{ trans('message.form-label.approved_by') }}:</th>
+                                    <td class="col-md-4">{{$Header->approved_immediate_head_by}} / {{$Header->approved_immediate_head_at}}</td>     
+                                </tr>
+                                @if($Header->approver_comments != NULL)
+                                <tr>
+                                    <th class="control-label col-md-2">{{ trans('message.table.approver_comments') }}:</th>
+                                    <td class="col-md-4">{{$Header->approver_comments}}</td>
+                                </tr>
+                                @endif
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="row">
                     <div class="col-md-12">
                         <div class="form-group">
                             <label> Additional Notes</label>
@@ -301,10 +325,10 @@
                         </div>
                     </div>
                 </div>
-                <div class='panel-footer'>
-                    <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
-                    <button class="btn btn-success pull-right" type="button" id="btnApprove"><i class="fa fa-pencil" ></i> Update</button>
-                </div>
+              
+                <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
+                <button class="btn btn-danger pull-right" type="button" id="btnReject" style="margin-left: 5px;"><i class="fa fa-thumbs-down" ></i> Reject</button>
+                <button class="btn btn-success pull-right" type="button" id="btnApprove"><i class="fa fa-thumbs-up" ></i> Verify</button>
             </div>
             
 
@@ -316,30 +340,42 @@
 $('.status').select2({placeholder_text_single : "- Select Status -"});
  $('#btnApprove').click(function(event) {
         event.preventDefault();
-        if($('#status').val() === ""){
-            swal({
-                type: 'error',
-                title: 'Please select status!',
-                icon: 'error',
-                confirmButtonColor: "#367fa9",
-            }); 
-            event.preventDefault(); // cancel default behavior
-            return false;
-        }else{
+        
             swal({
             title: "Are you sure?",
             type: "warning",
             showCancelButton: true,
             confirmButtonColor: "#41B314",
             cancelButtonColor: "#F9354C",
-            confirmButtonText: "Yes, update it!",
+            confirmButtonText: "Yes, verify it!",
             width: 450,
             height: 200
             }, function () {
                 $(this).attr('disabled','disabled');
+                $('#approval_action').val('1');
                 $("#myform").submit();                   
         });
-        }
+
+    });
+
+    $('#btnReject').click(function(event) {
+        event.preventDefault();
+        swal({
+            title: "Are you sure?",
+            type: "warning",
+            text: "You won't be able to revert this!",
+            showCancelButton: true,
+            confirmButtonColor: "#41B314",
+            cancelButtonColor: "#F9354C",
+            confirmButtonText: "Yes, reject it!",
+            width: 450,
+            height: 200
+            }, function () {
+                $(this).attr('disabled','disabled');
+                $('#approval_action').val('0');
+                $("#myform").submit();                   
+        });
+        
     });
 
     var tds = document

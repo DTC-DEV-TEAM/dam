@@ -227,17 +227,17 @@
     $('.good').change(function() {
         var asset_code = $(this).val();
         var id = $(this).attr("data-id");
-
+        $("#defective_text"+id).val("0");
         var ischecked= $(this).is(':checked');
         if(ischecked == false){
             $(".comment_div").html("");
             $("#good_text"+id).val("0");
-            //$("#defective"+id).val("0");
             count_pick--;
             if(count_pick == 0){
                 $('#btnSubmit').attr("disabled", true);
             }                
         }else{
+            $("#good_text"+id).val("1");
             $('#defective'+id).not(this).prop('checked', false); 
             $.ajax({
             url: "{{ route('assets.get.comments') }}",
@@ -277,14 +277,12 @@
         // $('.good').not(this).prop('checked', false);    
         var asset_code = $(this).val();
         var id = $(this).attr("data-id");
-            
+        $("#good_text"+id).val("0");
         var ischecked= $(this).is(':checked');
             if(ischecked == false){
-
                 //$("#good"+id).val("0");
                 $(".comment_div").html("");
                 $("#defective_text"+id).val("0");
-
                 count_pick--;
 
                 if(count_pick == 0){
@@ -293,6 +291,7 @@
 
                     
             }else{
+                $("#defective_text"+id).val("1");
                 $('#good'+id).not(this).prop('checked', false); 
                 $.ajax({
                 url: "{{ route('assets.get.comments') }}",

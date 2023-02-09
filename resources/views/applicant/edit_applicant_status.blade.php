@@ -68,10 +68,10 @@
 @endif
 
         <div class='panel-heading'>
-            Applicant Form
+            Edit Applicant Form
         </div>
 
-       <form action="{{ CRUDBooster::mainpath('add-save') }}" method="POST" id="applicant" enctype="multipart/form-data">
+       <form action="{{ CRUDBooster::mainpath('edit-save/'.$applicant->apid) }}" method="POST" id="edit_applicant" enctype="multipart/form-data">
         <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
         <input type="hidden" value="1" name="request_type_id" id="request_type_id">
             <div class="card">
@@ -79,18 +79,14 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label require"> ERF</label>
-                            <select required selected data-placeholder="-- Please Select ERF --" id="erf_number" name="erf_number" class="form-select erf" style="width:100%;">
-                                @foreach($erf_number as $res)
-                                    <option value=""></option>
-                                    <option value="{{ $res->reference_number }}">{{ $res->reference_number }}</option>
-                                @endforeach
-                            </select>
+                            <input class="form-control finput" type="text" name="erf_number" id="erf_number" value="{{$applicant->erf_number}}" readonly>
+                    
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label"><span style="color:red">*</span> Screen Date</label>
-                            <input class="form-control finput date" type="text" placeholder="Select Date" name="screen_date" id="screen_date">
+                            <input class="form-control finput" type="text" placeholder="Select Date" name="screen_date" id="screen_date" value="{{$applicant->screen_date}}" readonly>
                         </div>
                     </div>  
                 </div>
@@ -100,13 +96,29 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label"><span style="color:red">*</span> First Name</label>
-                            <input type="text" class="form-control finput"  id="first_name" name="first_name"  required>                                   
+                            <input type="text" class="form-control finput"  id="first_name" name="first_name"  value="{{$applicant->first_name}}" readonly>                                   
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label"><span style="color:red">*</span> Last Name</label>
-                            <input type="text" class="form-control finput"  id="last_name" name="last_name"  required>                                   
+                            <input type="text" class="form-control finput"  id="last_name" name="last_name"  value="{{$applicant->last_name}}" readonly>                                   
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label require"> Status</label>
+                            <select required selected data-placeholder="-- Please Select ERF --" id="status" name="status" class="form-select erf" style="width:100%;">
+                                @foreach($statuses as $res)
+                                <option value="{{ $res->id }}"
+                                    {{ isset($applicant->status) && $applicant->status == $res->id ? 'selected' : '' }}>
+                                    {{ $res->status_description }} 
+                                </option>>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -138,65 +150,21 @@
         format: "YYYY-MM-DD",
         dayViewHeaderFormat: "MMMM YYYY",
     });
-    $(document).ready(function() {
-        $(".date").val('');
-        $("#first_name").focus();
-    });
+
 
     $("#btnSubmit").click(function(event) {
-    
         event.preventDefault();
-
-            if($("#erf_number").val() === ""){
-                swal({
-                    type: 'error',
-                    title: 'Please select ERF Number!',
-                    icon: 'error',
-                    confirmButtonColor: "#367fa9",
-                }); 
-                event.preventDefault(); // cancel default behavior
-                return false;
-            }else if($("#screen_date").val() === ""){
-                swal({
-                    type: 'error',
-                    title: 'Screen Date Required!',
-                    icon: 'error',
-                    confirmButtonColor: "#367fa9",
-                }); 
-                event.preventDefault(); // cancel default behavior
-                return false;
-            }else if($("#first_name").val() === ""){
-                swal({
-                    type: 'error',
-                    title: 'First Name Required!',
-                    icon: 'error',
-                    confirmButtonColor: "#367fa9",
-                }); 
-                event.preventDefault(); // cancel default behavior
-                return false;
-            }else if($("#last_name").val() === ""){
-                swal({
-                    type: 'error',
-                    title: 'Last Name Required!',
-                    icon: 'error',
-                    confirmButtonColor: "#367fa9",
-                }); 
-                event.preventDefault(); // cancel default behavior
-                return false;
-            }else{
-                    swal({
-                        title: "Are you sure?",
-                        type: "warning",
-                        showCancelButton: true,
-                        confirmButtonColor: "#41B314",
-                        cancelButtonColor: "#F9354C",
-                        confirmButtonText: "Yes, send it!",
-                        }, function () {
-                            $("#applicant").submit();                                                   
-                    });
-            }
-                
-        
+        swal({
+            title: "Are you sure?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#41B314",
+            cancelButtonColor: "#F9354C",
+            confirmButtonText: "Yes, send it!",
+            }, function () {
+                $("#edit_applicant").submit();                                                   
+        });
+            
     });
 
     $("#btn-cancel").click(function(event) {

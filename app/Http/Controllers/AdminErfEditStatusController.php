@@ -120,10 +120,12 @@
 	        */
 	        $this->addaction = array();
 			if(CRUDBooster::isUpdate()) {
-				$hired =  32;
-				$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getEditErf/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[status_id] != $hired"];
-				$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailErf/[id]'),'icon'=>'fa fa-eye', "showIf"=>"[status_id] == $hired"];
-
+				$for_verification =  29;
+				$jo_done =  31;
+				$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getEditErf/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[status_id] == $for_verification"];
+				$this->addaction[] = ['title'=>'Create Account','url'=>CRUDBooster::mainpath('getErfCreateAccount/[id]'),'icon'=>'fa fa-pencil', "showIf"=>"[status_id] == $jo_done"];
+				$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailErf/[id]'),'icon'=>'fa fa-eye', "showIf"=>"[status_id] != $for_verification"];
+				
 			}
 
 	        /* 
@@ -281,11 +283,11 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-			if(CRUDBooster::isSuperadmin()){
+			//if(CRUDBooster::isSuperadmin()){
 				$query->whereNull('erf_header_request.deleted_at')->orderBy('erf_header_request.status_id', 'DESC')->orderBy('erf_header_request.id', 'DESC');
-			}else{
-				$query->whereNull('erf_header_request.deleted_at')->whereIn('status_id',[29,30,31,32])->orderBy('erf_header_request.id', 'DESC');
-			}
+			//}else{
+				//$query->whereNull('erf_header_request.deleted_at')->whereIn('status_id',[29,30,31,32,33])->orderBy('erf_header_request.id', 'DESC');
+			//}
 	            
 	            
 	    }
@@ -297,25 +299,28 @@
 	    |
 	    */    
 	    public function hook_row_index($column_index,&$column_value) {	        
+			$cancelled        =  DB::table('statuses')->where('id', 8)->value('status_description');  
 	    	$pending          =  DB::table('statuses')->where('id', 1)->value('status_description');  
 			$rejected         =  DB::table('statuses')->where('id', 5)->value('status_description');  
-			$for_hired        =  DB::table('statuses')->where('id', 29)->value('status_description');  
-			$for_interview    =  DB::table('statuses')->where('id', 30)->value('status_description');  
-			$for_job_offer    =  DB::table('statuses')->where('id', 31)->value('status_description');    
-			$hired            =  DB::table('statuses')->where('id', 32)->value('status_description');   
+			$for_verification =  DB::table('statuses')->where('id', 29)->value('status_description');  
+			$verified         =  DB::table('statuses')->where('id', 30)->value('status_description');  
+			$jo_done          =  DB::table('statuses')->where('id', 31)->value('status_description');    
+			$onboarding       =  DB::table('statuses')->where('id', 33)->value('status_description');   
 			if($column_index == 1){
 				if($column_value == $pending){
 					$column_value = '<span class="label label-warning">'.$pending.'</span>';
 				}else if($column_value == $rejected){
 					$column_value = '<span class="label label-danger">'.$rejected.'</span>';
-				}else if($column_value == $for_hired){
-					$column_value = '<span class="label label-info">'.$for_hired.'</span>';
-				}else if($column_value == $for_interview){
-					$column_value = '<span class="label label-info">'.$for_interview.'</span>';
-				}else if($column_value == $for_job_offer){
-					$column_value = '<span class="label label-info">'.$for_job_offer.'</span>';
-				}else if($column_value == $hired){
-					$column_value = '<span class="label label-success">'.$hired.'</span>';
+				}else if($column_value == $for_verification){
+					$column_value = '<span class="label label-warning">'.$for_verification.'</span>';
+				}else if($column_value == $verified){
+					$column_value = '<span class="label label-info">'.$verified.'</span>';
+				}else if($column_value == $jo_done){
+					$column_value = '<span class="label label-info">'.$jo_done.'</span>';
+				}else if($column_value == $onboarding){
+					$column_value = '<span class="label label-success">'.$onboarding.'</span>';
+				}else if($column_value == $cancelled){
+					$column_value = '<span class="label label-danger">'.$cancelled.'</span>';
 				}
 			}
 	    }
@@ -355,10 +360,20 @@
 	    public function hook_before_edit(&$postdata,$id) {        
 			$fields             = Request::all();
 			$hr_comments 		= $fields['additional_notess'];
-			$status             = $fields['status'];
+			$status             = 30;
+			$approval_action 	= $fields['approval_action'];
 
-			$postdata['status_id'] 	= $status;
-			$postdata['hr_comments'] 	= $hr_comments;
+			if($approval_action  == 1){
+				$postdata['status_id'] 	            = $status;
+				$postdata['hr_comments'] 	        = $hr_comments;
+				$postdata['approved_hr_by']         = CRUDBooster::myId();
+				$postdata['approved_hr_at']         = date('Y-m-d H:i:s');
+			}else{
+				$postdata['status_id'] 			    = 5;
+				$postdata['hr_comments'] 	        = $hr_comments;
+				$postdata['approved_hr_by'] 		= CRUDBooster::myId();
+				$postdata['approved_hr_at'] 		= date('Y-m-d H:i:s');
+			}
 
 	    }
 
@@ -372,14 +387,14 @@
 	    public function hook_after_edit($id) {
 			$fields = Request::all();
 
-			$erf_header = erfHeaderRequest::where(['id' => $id])->first();
-			$hired         =   32;
+			// $erf_header = erfHeaderRequest::where(['id' => $id])->first();
+			// $hired         =   32;
 
-			if($erf_header->status_id  == $hired){
-				CRUDBooster::redirect(CRUDBooster::adminpath('users/add'), trans("crudbooster.alert_for_hired_success",['reference_number'=>$erf_header->reference_number]), 'success');
-			}else{
-				CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Update Successfully!"), 'success');
-			}
+			// if($erf_header->status_id  == $hired){
+			// 	CRUDBooster::redirect(CRUDBooster::adminpath('users/add'), trans("crudbooster.alert_for_hired_success",['reference_number'=>$erf_header->reference_number]), 'success');
+			// }else{
+			// 	CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Update Successfully!"), 'success');
+			// }
 
 	    }
 
@@ -453,7 +468,7 @@
 				  ->whereIn('id', [29,30,31,32])
 				  ->get();
 	
-			return $this->view("erf.erf_edit_status", $data);
+			return $this->view("erf.erf_hr_approval", $data);
 		}
 
 		public function getDetailErf($id){
@@ -503,6 +518,56 @@
 				  ->get();
 	
 			return $this->view("erf.erf_details", $data);
+		}
+
+		public function getErfCreateAccount($id){
+			
+			$this->cbLoader();
+            if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
+                CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+            }
+
+			$data = array();
+
+			$data['page_title'] = 'Create an Account';
+
+			$data['Header'] = ErfHeaderRequest::
+				leftjoin('companies', 'erf_header_request.company', '=', 'companies.id')
+				->leftjoin('departments', 'erf_header_request.department', '=', 'departments.id')
+				->leftJoin('applicant_table', function($join) 
+				{
+					$join->on('erf_header_request.reference_number', '=', 'applicant_table.erf_number')
+					->where('applicant_table.status',36);
+				})
+				->select(
+						'erf_header_request.*',
+						'erf_header_request.id as requestid',
+						'departments.department_name as department',
+						'applicant_table.*'
+						)
+				->where('erf_header_request.id', $id)->first();
+		
+			$res_req = explode(",",$data['Header']->required_exams);
+			$interact_with = explode(",",$data['Header']->employee_interaction);
+			$asset_usage = explode(",",$data['Header']->asset_usage);
+			$application = explode(",",$data['Header']->application);
+			$data['required_exams'] = $res_req;
+			$data['interaction'] = $interact_with;
+			$data['asset_usage'] = $asset_usage;
+			$data['application'] = $application;
+			$data['Body'] = ErfBodyRequest::
+				select(
+				  'erf_body_request.*'
+				)
+				->where('erf_body_request.header_request_id', $id)
+				->get();
+			$data['erf_header_documents'] = ErfHeaderDocuments::select(
+					'erf_header_documents.*'
+				  )
+				  ->where('erf_header_documents.header_id', $id)
+				  ->get();
+	
+			return $this->view("erf.erf-account-creation", $data);
 		}
 
 
