@@ -78,7 +78,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="control-label require"> ERF</label>
+                            <label class="control-label require"> Erf No.</label>
                             <select required selected data-placeholder="-- Please Select ERF --" id="erf_number" name="erf_number" class="form-select erf" style="width:100%;">
                                 @foreach($erf_number as $res)
                                     <option value=""></option>

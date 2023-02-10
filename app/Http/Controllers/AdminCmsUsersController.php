@@ -661,7 +661,6 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
     		}
     
     		$postdata['location_to_pick'] = implode(",", $locationToPickData1);
-			$postdata['to_update_id'] = $postdata['erf_id'];
 	}
 
 	public function hook_after_add($id) {        

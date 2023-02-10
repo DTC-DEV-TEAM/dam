@@ -160,7 +160,7 @@
             showCancelButton: true,
             confirmButtonColor: "#41B314",
             cancelButtonColor: "#F9354C",
-            confirmButtonText: "Yes, send it!",
+            confirmButtonText: "Yes, submit it!",
             }, function () {
                 $("#edit_applicant").submit();                                                   
         });

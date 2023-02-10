@@ -117,6 +117,7 @@
                         <div class="form-group">
                             <label class="control-label"><span style="color:red">*</span> Salary Range</label>
                             <input type="text" class="form-control finput"  id="salary_range" name="salary_range"  required>                                   
+                            <div id="display-error"></div>
                         </div>
                     </div>
                 </div>
@@ -1021,6 +1022,15 @@
             parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             return parts.join(".");
         });
+    });
+
+    $('#salary_range').on("keyup", function() {
+        var value =  $(this).val();
+        if(!value.includes("-")){
+            $('#display-error').html("<span id='notif' class='label label-danger'> Invalid Salary Range!</span>")
+        }else{
+            $('#display-error').html('')  
+        }
     });
 
 </script>

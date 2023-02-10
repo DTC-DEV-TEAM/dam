@@ -63,20 +63,23 @@
 @endif
 
     <div class='panel-heading'>
-        Crreation of Account Form
+        Creation of Account Form
     </div>
 
-    <form method='post' id="myform" action='{{CRUDBooster::mainpath('edit-save/'.$Header->requestid)}}'>
+    <form method='post' id="createAccount">
         <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
         <input type="hidden" value="" name="approval_action" id="approval_action">
+        <input type="hidden" name="id" id="id" value="{{$Header->requestid}}">
      
             <div class="card">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label"> Email</label>
-                            <input type="text" class="form-control finput" name="email" id="email" aria-describedby="basic-addon1">             
+                            <input type="text" class="form-control finput" name="email" id="email" aria-describedby="basic-addon1" onChange="checkemailAvailability()">             
+                            <div id="email-availability-status"></div>
                         </div>
+                 
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
@@ -115,7 +118,7 @@
                     </div>
                 </div>
                 
-                <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
+                <a href="{{ CRUDBooster::mainpath() }}" id="btn-cancel" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
                 <button class="btn btn-success pull-right" type="button" id="btnCreateAccount"> Create Account</button>
             </div>
         
@@ -144,18 +147,63 @@
                 });
                 event.preventDefault();
         }else{
-            swal({
-                title: "Are you sure?",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#41B314",
-                cancelButtonColor: "#F9354C",
-                confirmButtonText: "Yes, create it!",
-                width: 450,
-                height: 200
-                }, function () {
-                    $(this).attr('disabled','disabled');
-                    $("#myform").submit();                   
+            $.ajax({
+                url: "{{ route('getEmail') }}",
+                dataType: "json",
+                type: "POST",
+                data: {
+                    //"_token": token,
+                },
+                success: function (data) {
+                var checkEmail = $('#email').val();
+                    if($.inArray(checkEmail, data.items) != -1){
+                        swal({
+                                type: 'error',
+                                title: 'Email Already Exist! (' + checkEmail + ')',
+                                icon: 'error',
+                                confirmButtonColor: "#367fa9",
+                            }); 
+                            event.preventDefault();
+                            return false;
+                    } else{
+                        swal({
+                            title: "Are you sure?",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#41B314",
+                            cancelButtonColor: "#F9354C",
+                            confirmButtonText: "Yes, create it!",
+                            width: 450,
+                            height: 200
+                            }, function () {
+                                $.ajax({
+                                    data: $('#createAccount').serialize(),
+                                    url: "{{ route('create-account') }}",
+                                    type: "POST",
+                                    dataType: 'json',
+                                    success: function (data) {
+                                        if (data.status == "success") {
+                                            swal({
+                                                type: data.status,
+                                                title: data.message,
+                                            });
+                                            setTimeout(function(){
+                                                window.location.replace(document.referrer);
+                                            }, 2000); 
+                                            } else if (data.status == "error") {
+                                            swal({
+                                                type: data.status,
+                                                title: data.message,
+                                            });
+                                        }                            
+                                    },
+                                    error: function (data) {
+                                        console.log('Error:', data);
+                                    }
+                                });                  
+                        });
+                    }
+                }
             });
         }
             
@@ -171,20 +219,35 @@
         }
     }
 
-    var tds = document
-    .getElementById("table_dashboard")
-    .getElementsByTagName("td");
-    var sumqty = 0;
-    var sumcost = 0;
-    for (var i = 0; i < tds.length; i++) {
-    if (tds[i].className == "qty") {
-        sumcost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+    //check email availability in database
+    function checkemailAvailability() {
+        $.ajax({
+            url: "{{ route('checkEmail') }}",
+            dataType: "json",
+            data:'email='+$("#email").val(),
+            type: "POST",
+            success:function(data){
+                $("#email-availability-status").html(data);
+            },
+        error:function (){}
+        });
     }
-    }
-    document.getElementById("table_dashboard").innerHTML +=
-    "<tr><td colspan='3' style='text-align:right'><strong>TOTAL</strong></td><td style='text-align:center'><strong>" +
-    sumcost +
-    "</strong></td></td></tr>";
+
+    $("#btn-cancel").click(function(event) {
+       event.preventDefault();
+       swal({
+            title: "Are you sure?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#41B314",
+            cancelButtonColor: "#F9354C",
+            confirmButtonText: "Yes, Go back!",
+            width: 450,
+            height: 200
+            }, function () {
+                window.history.back();                                                  
+        });
+    });
     
 </script>
 @endpush

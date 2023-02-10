@@ -297,6 +297,7 @@
 			$verified         =  DB::table('statuses')->where('id', 30)->value('status_description');  
 			$jo_done          =  DB::table('statuses')->where('id', 31)->value('status_description');    
 			$onboarding       =  DB::table('statuses')->where('id', 33)->value('status_description');   
+			$closed           =  DB::table('statuses')->where('id', 13)->value('status_description');
 			if($column_index == 1){
 				if($column_value == $pending){
 					$column_value = '<span class="label label-warning">'.$pending.'</span>';
@@ -309,9 +310,11 @@
 				}else if($column_value == $jo_done){
 					$column_value = '<span class="label label-info">'.$jo_done.'</span>';
 				}else if($column_value == $onboarding){
-					$column_value = '<span class="label label-success">'.$onboarding.'</span>';
+					$column_value = '<span class="label label-info">'.$onboarding.'</span>';
 				}else if($column_value == $cancelled){
 					$column_value = '<span class="label label-danger">'.$cancelled.'</span>';
+				}else if($column_value == $closed){
+					$column_value = '<span class="label label-success">'.$closed.'</span>';
 				}
 			}
 	    }
@@ -403,10 +406,20 @@
 			$data['Header'] = ErfHeaderRequest::
 				leftjoin('companies', 'erf_header_request.company', '=', 'companies.id')
 				->leftjoin('departments', 'erf_header_request.department', '=', 'departments.id')
+				->leftjoin('cms_users as approver', 'erf_header_request.approved_immediate_head_by', '=', 'approver.id')
+				->leftjoin('cms_users as verifier', 'erf_header_request.approved_hr_by', '=', 'verifier.id')
+				->leftJoin('applicant_table', function($join) 
+				{
+					$join->on('erf_header_request.reference_number', '=', 'applicant_table.erf_number')
+					->where('applicant_table.status',31);
+				})
 				->select(
 						'erf_header_request.*',
 						'erf_header_request.id as requestid',
-						'departments.department_name as department'
+						'approver.name as approved_head_by',
+						'verifier.name as verified_by',
+						'departments.department_name as department',
+						'applicant_table.*'
 						)
 				->where('erf_header_request.id', $id)->first();
 		

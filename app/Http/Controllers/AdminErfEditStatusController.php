@@ -122,9 +122,11 @@
 			if(CRUDBooster::isUpdate()) {
 				$for_verification =  29;
 				$jo_done =  31;
+				$for_onboarding = 33;
 				$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getEditErf/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[status_id] == $for_verification"];
 				$this->addaction[] = ['title'=>'Create Account','url'=>CRUDBooster::mainpath('getErfCreateAccount/[id]'),'icon'=>'fa fa-pencil', "showIf"=>"[status_id] == $jo_done"];
-				$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailErf/[id]'),'icon'=>'fa fa-eye', "showIf"=>"[status_id] != $for_verification"];
+				$this->addaction[] = ['title'=>'Set Onboarding Date','url'=>CRUDBooster::mainpath('getErfSetOnboardingDate/[id]'),'icon'=>'fa fa-pencil', "showIf"=>"[status_id] == $for_onboarding"];
+				$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailErf/[id]'),'icon'=>'fa fa-eye', "showIf"=>"[status_id] != $for_verification && [status_id] != $for_onboarding"];
 				
 			}
 
@@ -232,7 +234,7 @@
 	        |
 	        */
 	        $this->load_js = array();
-	        
+			$this->load_js[] = asset("datetimepicker/bootstrap-datetimepicker.min.js");
 	        
 	        
 	        /*
@@ -256,7 +258,7 @@
 	        |
 	        */
 	        $this->load_css = array();
-	        
+			$this->load_css[] = asset("datetimepicker/bootstrap-datetimepicker.min.css");
 	        
 	    }
 
@@ -306,6 +308,7 @@
 			$verified         =  DB::table('statuses')->where('id', 30)->value('status_description');  
 			$jo_done          =  DB::table('statuses')->where('id', 31)->value('status_description');    
 			$onboarding       =  DB::table('statuses')->where('id', 33)->value('status_description');   
+			$closed           =  DB::table('statuses')->where('id', 13)->value('status_description');   
 			if($column_index == 1){
 				if($column_value == $pending){
 					$column_value = '<span class="label label-warning">'.$pending.'</span>';
@@ -318,7 +321,9 @@
 				}else if($column_value == $jo_done){
 					$column_value = '<span class="label label-info">'.$jo_done.'</span>';
 				}else if($column_value == $onboarding){
-					$column_value = '<span class="label label-success">'.$onboarding.'</span>';
+					$column_value = '<span class="label label-info">'.$onboarding.'</span>';
+				}else if($column_value == $closed){
+					$column_value = '<span class="label label-success">'.$closed.'</span>';
 				}else if($column_value == $cancelled){
 					$column_value = '<span class="label label-danger">'.$cancelled.'</span>';
 				}
@@ -436,10 +441,20 @@
 			$data['Header'] = ErfHeaderRequest::
 				leftjoin('companies', 'erf_header_request.company', '=', 'companies.id')
 				->leftjoin('departments', 'erf_header_request.department', '=', 'departments.id')
+				->leftjoin('cms_users as approver', 'erf_header_request.approved_immediate_head_by', '=', 'approver.id')
+				->leftjoin('cms_users as verifier', 'erf_header_request.approved_hr_by', '=', 'verifier.id')
+				->leftJoin('applicant_table', function($join) 
+				{
+					$join->on('erf_header_request.reference_number', '=', 'applicant_table.erf_number')
+					->where('applicant_table.status',31);
+				})
 				->select(
 						'erf_header_request.*',
 						'erf_header_request.id as requestid',
-						'departments.department_name as department'
+						'approver.name as approved_head_by',
+						'verifier.name as verified_by',
+						'departments.department_name as department',
+						'applicant_table.*'
 						)
 				->where('erf_header_request.id', $id)->first();
 		
@@ -485,10 +500,20 @@
 			$data['Header'] = ErfHeaderRequest::
 				leftjoin('companies', 'erf_header_request.company', '=', 'companies.id')
 				->leftjoin('departments', 'erf_header_request.department', '=', 'departments.id')
+				->leftjoin('cms_users as approver', 'erf_header_request.approved_immediate_head_by', '=', 'approver.id')
+				->leftjoin('cms_users as verifier', 'erf_header_request.approved_hr_by', '=', 'verifier.id')
+				->leftJoin('applicant_table', function($join) 
+				{
+					$join->on('erf_header_request.reference_number', '=', 'applicant_table.erf_number')
+					->where('applicant_table.status',31);
+				})
 				->select(
 						'erf_header_request.*',
 						'erf_header_request.id as requestid',
-						'departments.department_name as department'
+						'approver.name as approved_head_by',
+						'verifier.name as verified_by',
+						'departments.department_name as department',
+						'applicant_table.*'
 						)
 				->where('erf_header_request.id', $id)->first();
 		
@@ -507,7 +532,7 @@
 				->where('erf_body_request.header_request_id', $id)
 				->get();
 			$data['erf_header_documents'] = ErfHeaderDocuments::select(
-					'erf_header_documents.*'
+					'erf_header_documents.*',
 				  )
 				  ->where('erf_header_documents.header_id', $id)
 				  ->get();
@@ -537,7 +562,7 @@
 				->leftJoin('applicant_table', function($join) 
 				{
 					$join->on('erf_header_request.reference_number', '=', 'applicant_table.erf_number')
-					->where('applicant_table.status',36);
+					->where('applicant_table.status',31);
 				})
 				->select(
 						'erf_header_request.*',
@@ -566,9 +591,164 @@
 				  )
 				  ->where('erf_header_documents.header_id', $id)
 				  ->get();
-	
 			return $this->view("erf.erf-account-creation", $data);
 		}
 
+        public function createAccount(Request $request) {	
+			$fields = Request::all();
+			
+			$getErfDetail              = DB::table('erf_header_request')->where('id', $fields['id'])->first();
+			$getDepartment             = DB::table('cms_users')->where('id', $getErfDetail->created_by)->first();
+			$status                    = 'ACTIVE';
+			$name                      = $fields['first_name'].' '.$fields['last_name'];
+			$first_name                = $fields['first_name'];
+			$last_name                 = $fields['last_name'];
+			$user_name                 = $fields['last_name'].''.substr($fields['first_name'], 0, 1);
+			$email                     = $fields['email'];
+			$password                  = "$2y$10$/RI0pcvGM38JZ9l.kPanlugtultmE7USwhqvEQTAuajUPeEOvfjlS";
+			$privilege                 = 2;
+			$department                = $getDepartment->department_id;
+			$company                   = "DIGITS";
+			$location                  = 115;
+			$approver                  = $getErfDetail->created_by;
+			$contactPerson             = $fields['first_name'].', '.$fields['last_name'];
+			$bill_to                   = $fields['last_name'].', '.$fields['first_name'];
+			$csutomer_location         = $fields['last_name'].', '.$fields['first_name'].".EEE";
+			$position                  = $fields['position'];
 
+			$getLastId = Users::Create(
+				[
+					'name'                        => $name,
+					'first_name'                  => $first_name,
+					'last_name'                   => $last_name,
+					'user_name'                   => $user_name,
+					'email'                       => $email,
+					'password'                    => $password,
+					'id_cms_privileges'           => $privilege,
+					'status'                      => $status,
+					'created_by'                  => CRUDBooster::myId(),
+					'department_id'               => $department,
+					'company_name_id'             => $company,
+					'location_id'                 => $location,
+					'approver_id'                 => $approver,
+					'contact_person'              => $contactPerson,
+					'bill_to'                     => $bill_to,
+					'customer_location_name'      => $csutomer_location,
+					'position_id'                 => $position
+				]
+				);   
+			$userID = $getLastId->id;
+
+			$arf_array = array();
+			array_push($arf_array, $getErfDetail->arf_id);
+			$arf_string = implode(",",$arf_array);
+			$finalArfs = array_map('intval',explode(",",$arf_string));
+
+			for ($i = 0; $i < count($finalArfs); $i++) {
+				HeaderRequest::where(['id' => $finalArfs[$i]])
+					->update([
+							'employee_name' => $userID, 
+							'created_by' => $userID
+							]);
+			}
+
+			erfHeaderRequest::where(['id' => $fields['id']])
+					->update([
+							'status_id' => 33, 
+							]);
+			$message = ['status'=>'success', 'message' => 'Created Successfully!'];
+			echo json_encode($message);
+		}
+
+		//Get email for validation
+		public function getEmail(Request $request) {
+			$data = array();
+			$data['status_no'] = 0;
+			$data['message']   ='No Item Found!';
+			$data['items'] = array();
+			$checkEmailDb = DB::table('cms_users')->select(DB::raw("email AS email"))->get()->toArray();
+			$checkEmailDbColumn = array_column($checkEmailDb, 'email');
+			$data['items'] = $checkEmailDbColumn;
+			//dd($checkEmailDbColumn);
+			echo json_encode($data);
+			exit;  
+		}
+
+		public function checkEmail(Request $request){
+			$fields = Request::all();
+			$email = $fields['email'];
+			$countEmail = Users::select(
+				'cms_users.*'
+			  )
+			  ->where('cms_users.email', $email)
+			  ->get()->count();
+			  if($countEmail == 1) {
+				$data = "<span id='notif' class='label label-danger'> Email Not Available</span>";
+			  }else if($countEmail == 0){
+				$data = "<span id='notif' class='label label-success'> Email Available.</span>";
+			  }else{
+				$data = "";
+			  }
+			echo json_encode($data);
+		}
+
+		public function getErfSetOnboardingDate($id){
+			
+			$this->cbLoader();
+            if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
+                CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+            }
+
+			$data = array();
+
+			$data['page_title'] = 'Set On Boarding Date';
+
+			$data['Header'] = ErfHeaderRequest::
+				leftjoin('companies', 'erf_header_request.company', '=', 'companies.id')
+				->leftjoin('departments', 'erf_header_request.department', '=', 'departments.id')
+				->leftJoin('applicant_table', function($join) 
+				{
+					$join->on('erf_header_request.reference_number', '=', 'applicant_table.erf_number')
+					->where('applicant_table.status',31);
+				})
+				->select(
+						'erf_header_request.*',
+						'erf_header_request.id as requestid',
+						'departments.department_name as department',
+						'applicant_table.*'
+						)
+				->where('erf_header_request.id', $id)->first();
+		
+			$res_req = explode(",",$data['Header']->required_exams);
+			$interact_with = explode(",",$data['Header']->employee_interaction);
+			$asset_usage = explode(",",$data['Header']->asset_usage);
+			$application = explode(",",$data['Header']->application);
+			$data['required_exams'] = $res_req;
+			$data['interaction'] = $interact_with;
+			$data['asset_usage'] = $asset_usage;
+			$data['application'] = $application;
+			$data['Body'] = ErfBodyRequest::
+				select(
+				  'erf_body_request.*'
+				)
+				->where('erf_body_request.header_request_id', $id)
+				->get();
+			$data['erf_header_documents'] = ErfHeaderDocuments::select(
+					'erf_header_documents.*'
+				  )
+				  ->where('erf_header_documents.header_id', $id)
+				  ->get();
+			return $this->view("erf.erf-set-onboarding-date", $data);
+		}
+
+		public function setOnboarding(Request $request) {	
+			$fields = Request::all();
+			erfHeaderRequest::where(['id' => $fields['id']])
+					->update([
+							'status_id' => 13, 
+							'onboarding_date' => $fields['date'],
+							]);
+			$message = ['status'=>'success', 'message' => 'Set Successfully!'];
+			echo json_encode($message);
+		}
 	}

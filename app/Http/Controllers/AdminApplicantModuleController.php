@@ -75,7 +75,7 @@
 	        */
 	        $this->addaction = array();
 			if(CRUDBooster::isUpdate()) {
-				$for_job_offer =  36;
+				$for_job_offer =  31;
 				$cancelled     =  8;
 				$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getEditApplicant/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[status] != $for_job_offer && [status] != $cancelled"];
 				$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailApplicant/[id]'),'icon'=>'fa fa-eye', "showIf"=>"[status] == $for_job_offer || [status] == $cancelled"];
@@ -185,14 +185,14 @@
 			$first_interview  =  DB::table('statuses')->where('id', 34)->value('status_description');  
 			$final_interview  =  DB::table('statuses')->where('id', 35)->value('status_description');  
 			$job_offer        =  DB::table('statuses')->where('id', 36)->value('status_description');    
- 
+			$jo_done          =  DB::table('statuses')->where('id', 31)->value('status_description');   
 			if($column_index == 1){
 				if($column_value == $first_interview){
 					$column_value = '<span class="label label-info">'.$first_interview.'</span>';
 				}else if($column_value == $final_interview){
 					$column_value = '<span class="label label-info">'.$final_interview.'</span>';
-				}else if($column_value == $job_offer){
-					$column_value = '<span class="label label-success">'.$job_offer.'</span>';
+				}else if($column_value == $jo_done){
+					$column_value = '<span class="label label-success">'.$jo_done.'</span>';
 				}else if($column_value == $cancelled){
 					$column_value = '<span class="label label-danger">'.$cancelled.'</span>';
 				}
@@ -252,8 +252,11 @@
 				->update([
 					'status_id'		 => 31
 				]);	
+			    $postdata['status']      = 31;
+			}else{
+				$postdata['status']      = $status;
 			}
-			$postdata['status']      = $status;
+			
 			$postdata['updated_by']  = CRUDBooster::myId();
 	    }
 

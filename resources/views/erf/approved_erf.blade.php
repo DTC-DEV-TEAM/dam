@@ -298,7 +298,7 @@
                     </div>
                 </div>
                 <div class='panel-footer'>
-                    <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
+                    <a href="{{ CRUDBooster::mainpath() }}" id="btn-cancel" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
                     <button class="btn btn-danger pull-right" type="button" id="btnReject" style="margin-left: 5px;"><i class="fa fa-thumbs-down" ></i> Reject</button>
                     <button class="btn btn-success pull-right" type="button" id="btnApprove"><i class="fa fa-thumbs-up" ></i> Approve</button>
                 </div>
@@ -346,6 +346,22 @@
                 $("#myform").submit();                   
         });
         
+    });
+
+    $("#btn-cancel").click(function(event) {
+       event.preventDefault();
+       swal({
+            title: "Are you sure?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#41B314",
+            cancelButtonColor: "#F9354C",
+            confirmButtonText: "Yes, Go back!",
+            width: 450,
+            height: 200
+            }, function () {
+                window.history.back();                                                  
+        });
     });
 
     var tds = document
