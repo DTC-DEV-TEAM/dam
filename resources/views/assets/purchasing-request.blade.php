@@ -162,7 +162,11 @@
             <div class="row">                           
                 <label class="control-label col-md-2">{{ trans('message.form-label.employee_name') }}:</label>
                 <div class="col-md-4">
+                    @if($Header->header_created_by != null || $Header->header_created_by != "")
                         <p>{{$Header->employee_name}}</p>
+                    @else
+                    <p>{{$Header->header_emp_name}}</p>
+                    @endif
                 </div>
 
                 <label class="control-label col-md-2">{{ trans('message.form-label.company_name') }}:</label>

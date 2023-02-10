@@ -40,7 +40,7 @@
 			$this->button_action_style = "button_icon";
 			$this->button_add = false;
 			$this->button_edit = false;
-			$this->button_delete = true;
+			$this->button_delete = false;
 			$this->button_detail = true;
 			$this->button_show = true;
 			$this->button_filter = true;
@@ -117,7 +117,7 @@
 
 				$pending           = DB::table('statuses')->where('id', 1)->value('id');
 				$released  = 		DB::table('statuses')->where('id', 12)->value('id');
-
+        
 				$this->addaction[] = ['title'=>'Cancel Request','url'=>CRUDBooster::mainpath('getRequestCancel/[id]'),'icon'=>'fa fa-times', "showIf"=>"[status_id] == $pending"];
 			
 				//$this->addaction[] = ['title'=>'Receive Asset','url'=>CRUDBooster::mainpath('getRequestReceive/[id]'),'icon'=>'fa fa-check', "showIf"=>"[status_id] == $released"];
@@ -444,6 +444,12 @@
 					$column_value = '<span class="label label-info">'.$for_printing.'</span>';
 				}
 
+			}
+
+			if($column_index == 6){
+				if($column_value == null){
+					$column_value = "ERF";
+				}
 			}
 
 	    }
@@ -955,7 +961,8 @@
 						'condition_type.*',
 						'requested.name as requestedby',
 						'employees.bill_to as employee_name',
-						'employees.company_name_id as company_name',
+						'header_request.employee_name as header_emp_name',
+						//'employees.company_name_id as company_name',
 						'departments.department_name as department',
 						'locations.store_name as store_branch',
 						'approved.name as approvedby',
@@ -1108,8 +1115,13 @@
 					'cancelled_by'=> CRUDBooster::myId(),
 					'cancelled_at'=> date('Y-m-d H:i:s')	
 			]);	
+			BodyRequest::where('header_request_id', $id)
+			->update([
+				'deleted_at'=> 		date('Y-m-d H:i:s'),
+				'deleted_by'=> 		CRUDBooster::myId()
+			]);	
 			
-			CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Request has been cancelled successfully!"), 'info');
+			CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Request has been cancelled successfully!"), 'success');
 		}
 
 

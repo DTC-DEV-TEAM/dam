@@ -29,7 +29,8 @@ class AssetsInventoryBody extends Model
         'location',
         'request_type_id_inventory',
         'item_category',
-        'item_id'
+        'item_id',
+        'updated_by'
     ];
 
     public function assetsinventoryheader()

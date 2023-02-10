@@ -198,14 +198,14 @@
                                                 <table class="table table-bordered" id="asset-items">
                                                     <tbody id="bodyTable">
                                                         <tr class="tbl_header_color dynamicRows">
-                                                            <th width="35%" class="text-center">*{{ trans('message.table.item_description') }}</th>
+                                                            <th width="30%" class="text-center">*{{ trans('message.table.item_description') }}</th>
                                                             <th width="20%" class="text-center">Digits Code</th>
                                                             <th width="20%" class="text-center">{{ trans('message.table.category_id_text') }}</th>      
 
                                                             <th width="20%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
 
                                                             <!-- <th width="20%" class="text-center">{{ trans('message.table.application_id_text') }}</th> -->
-                                                            <th width="10%" class="text-center">*{{ trans('message.table.quantity_text') }}</th> 
+                                                            <th width="15%" class="text-center">*{{ trans('message.table.quantity_text') }}</th> 
                                                            <!-- <th width="8%" class="text-center">{{ trans('message.table.image') }}</th>  -->
                                                             <th width="5%" class="text-center">{{ trans('message.table.action') }}</th>
                                                         </tr>
@@ -381,7 +381,7 @@
                         '</td>'+
                         */      
                         
-                        '<td><input class="form-control text-center quantity_item" type="text" required name="quantity[]" id="quantity' + tableRow + '" data-id="' + tableRow  + '"  value="1" max="9999999999" step="any" onKeyPress="if(this.value.length==4) return false;" oninput="validity.valid;"></td>' +
+                        '<td><input class="form-control text-center quantity_item" type="text" required name="quantity[]" id="quantity' + tableRow + '" data-id="' + tableRow  + '"  value="1" max="9999999999" step="any" onKeyPress="if(this.value.length==11) return false;" oninput="validity.valid;"></td>' +
                         
                         /*'<td><input type="file" name="image[]" id="image' + tableRow + '" accept="image/*"></td>' + */
                         

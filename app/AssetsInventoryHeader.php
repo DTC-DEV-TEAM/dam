@@ -17,7 +17,8 @@ class AssetsInventoryHeader extends Model
         'si_di',
         'wattage',
         'phase',
-        'created_by'
+        'created_by',
+        'remarks'
     ];
 
     public function assetsinventorybody()

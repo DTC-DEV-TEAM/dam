@@ -35,7 +35,11 @@
             <div class="row">                           
                 <label class="control-label col-md-2">{{ trans('message.form-label.employee_name') }}:</label>
                 <div class="col-md-4">
+                    @if($Header->header_created_by != null || $Header->header_created_by != "")
                         <p>{{$Header->employee_name}}</p>
+                    @else
+                    <p>{{$Header->header_emp_name}}</p>
+                    @endif
                 </div>
 
                 <label class="control-label col-md-2">{{ trans('message.form-label.company_name') }}:</label>
@@ -358,7 +362,7 @@
                     <hr/>
                     <div class="form-group">
                         <label>{{ trans('message.table.note') }}</label>
-                        <textarea placeholder="{{ trans('message.table.comments') }} ..." rows="3" class="form-control" name="it_comments"></textarea>
+                        <textarea placeholder="{{ trans('message.table.comments') }} ..." rows="3" class="form-control" name="it_comments" id="it_comments"></textarea>
                     </div>
                 </div>
          
@@ -611,6 +615,16 @@
                     return false;
             } 
     
+        } 
+        if($('#it_comments').val() == ""){
+            swal({  
+                    type: 'error',
+                    title: 'Required Additional Notes',
+                    icon: 'error',
+                    confirmButtonColor: "#367fa9",
+                });
+                event.preventDefault();
+                return false;
         } 
         swal({
             title: "Are you sure you want to reco this request?",

@@ -17,6 +17,7 @@
 	use PhpOffice\PhpSpreadsheet\IOFactory;
 	use Carbon\Carbon;
 	use App\Imports\InventoryUpload;
+	use App\Imports\InventoryUploadNotAvailable;
 	
 	class AdminAssetsInventoryBodyController extends \crocodicstudio\crudbooster\controllers\CBController {
 		private static $apiContext;
@@ -159,11 +160,8 @@
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
 			    $this->index_button[] = ["label"=>"Export Data","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('asset-lists-export'),"color"=>"primary"];
 				if(CRUDBooster::isSuperadmin()){
-				$this->index_button[] = [
-					"title"=>"Upload Inventory",
-					"label"=>"Upload Inventory",
-					"icon"=>"fa fa-download",
-					"url"=>CRUDBooster::mainpath('inventory-upload')];
+				    $this->index_button[] = ["title"=>"Upload Inventory","label"=>"Upload Inventory","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('inventory-upload')];
+					$this->index_button[] = ["title"=>"Upload Not Available Inventory","label"=>"Upload Not Available Inventory","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('upload-inventory-not-available'), "color"=>"warning"];
 				}
 				// 	$this->index_button[] = ["label"=>"Add Inventory","icon"=>"fa fa-files-o","url"=>CRUDBooster::adminPath('assets_inventory_header/add-inventory'),"color"=>"success"];
 			// 	//$this->index_button[] = ["label"=>"Return Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-return'),"color"=>"success"];
@@ -643,6 +641,33 @@
 			return Excel::download(new ExportMultipleSheet, 'asset_lists.xlsx');
 		}
 
+		public function uploadInventoryTemplate() {
+			// Excel::create('user-account-upload-'.date("Ymd").'-'.date("h.i.sa"), function ($excel) {
+			// 	$excel->sheet('useraccount', function ($sheet) {
+			// 		$sheet->row(1, array('FIRST NAME', 'LAST NAME', 'EMAIL', 'PRIVILEGE', 'CHANNEL', 'STORES ID'));
+			// 		$sheet->row(2, array('John', 'Doe', 'johndoe@digits.ph','Requestor','Retail','1'));
+			// 	});
+			// })->download('csv');
+			$filename = "inventory-import-template"."-".date("Ymd").".csv";
+		
+				header("Content-Disposition: attachment; filename=\"$filename\"");
+				header("Content-Type: text/csv; charset=UTF-16LE");
+		
+				$out = fopen("php://output", 'w');
+				$flag = false;
+	
+				if(!$flag) {
+					// display field/column names as first row
+					fputcsv($out, array('EMAIL', 'DIGITS CODE', 'ITEM DESCRIPTION', 'SERIAL NUMBER', 'QTY', 'STATUS', 'LOCATION', 'WARRANTY COVERAGE'));
+					$flag = true;
+				}
+				
+				fputcsv($out, array('johndoe@digits.ph', '40000769', 'ASUS X415J LAPTOP', 'XSER12', '1', 'WORKING', 'IT WAREHOUSE' , '1'));
+				fclose($out);
+				
+				exit;
+		}
+
 
 		public function getInventory(Request $request){
         $AssetsInventoryBody = AssetsInventoryBody::select('assets_inventory_body.*');
@@ -681,7 +706,37 @@
 			}
 			CRUDBooster::redirect(CRUDBooster::adminpath('assets_inventory_body'), $errors[0], 'danger');
 		}
+        
+		//Inventory Not Available Upload
+		public function uploadInventoryNotAvailable() {
+			$data['page_title']= 'Inventory Upload Not Available';
+			return view('import.inventory-not-available-import', $data)->render();
+		}
 
+		public function inventoryUploadNotAvailable(Request $request) {
+			$data = Request::all();	
+			$file = $data['import_file'];
+			$path_excel = $file->store('temp');
+			$path = storage_path('app').'/'.$path_excel;
+
+			try {
+				Excel::import(new InventoryUploadNotAvailable, $path);	
+			    CRUDBooster::redirect(CRUDBooster::adminpath('assets_inventory_body'), trans("Update Not Available Successfully!"), 'success');
+			} catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+				$failures = $e->failures();
+				
+				$error = [];
+				foreach ($failures as $failure) {
+					$line = $failure->row();
+					foreach ($failure->errors() as $err) {
+						$error[] = $err . " on line: " . $line; 
+					}
+				}
+				
+				$errors = collect($error)->unique()->toArray();
 		
+			}
+			CRUDBooster::redirect(CRUDBooster::adminpath('assets_inventory_body'), $errors[0], 'danger');
+		}
 
 	}

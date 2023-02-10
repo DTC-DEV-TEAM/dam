@@ -140,13 +140,26 @@ Route::group(['middleware' => ['web']], function() {
     //inventory upload
     Route::get('/admin/assets_inventory_body/inventory-upload','AdminAssetsInventoryBodyController@uploadInventory');
     Route::post('/admin/assets_inventory_body/upload-inventory','AdminAssetsInventoryBodyController@inventoryUpload')->name('upload-inventory');
-    
+    Route::get('/admin/assets_inventory_body/upload-inventory-template','AdminAssetsInventoryBodyController@uploadInventoryTemplate');
+
+    //inventory upload Not Available
+    Route::get('/admin/assets_inventory_body/upload-inventory-not-available','AdminAssetsInventoryBodyController@uploadInventoryNotAvailable');
+    Route::post('/admin/assets_inventory_body/inventory-upload-not-available','AdminAssetsInventoryBodyController@inventoryUploadNotAvailable')->name('upload-inventory-not-available');
+
     //Deployed Assets
     Route::get('/admin/deployed_asset/Detail/{id}','AdminDeployedAssetsController@Detail')->name('deployed-asset');
     Route::get('/admin/deployed_asset/DetailMoOnly/{id}','AdminDeployedAssetsController@DetailMoOnly')->name('deployed-asset');
     
     //hr requisition for new employee
     Route::post(config('crudbooster.ADMIN_PATH').'/hr_requisition/search-user','AdminHrRequisitionController@SearchUser')->name('hr.search.user');
+    Route::get('admin/erf_header_request/getRequestCancel/{id}','AdminHrRequisitionController@getRequestCancel')->name('getRequestCancel');
+    Route::get('/admin/erf_edit_status/getEditErf/{id}','AdminErfEditStatusController@getEditErf')->name('edit-erf');
+    Route::get('/admin/erf_edit_status/getErfCreateAccount/{id}','AdminErfEditStatusController@getErfCreateAccount')->name('create-account-erf');
+    Route::get('/admin/erf_edit_status/getDetailErf/{id}','AdminErfEditStatusController@getDetailErf')->name('details-erf');
+    //Applicant Moduel
+    Route::get('/admin/applicant_module/getEditApplicant/{id}','AdminApplicantModuleController@getEditApplicant')->name('edit-applicant');
+    Route::get('/admin/applicant_module/getDetailApplicant/{id}','AdminApplicantModuleController@getDetailApplicant')->name('applicant-detail');
+
     Route::get('/admin/clear-view', function() {
         Artisan::call('view:clear');
         return "View cache is cleared!";

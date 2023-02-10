@@ -336,7 +336,7 @@
 				->whereNull('header_request.deleted_at')
 				->orderBy('header_request.id', 'ASC');
 
-			}else if(CRUDBooster::myPrivilegeId() == 5){ 
+			}else if(CRUDBooster::myPrivilegeId() == 5 || CRUDBooster::myPrivilegeId() == 17){ 
 
 				//$approved =  		DB::table('statuses')->where('id', 4)->value('id');
 				$user_data         = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();

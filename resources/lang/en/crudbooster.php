@@ -67,6 +67,8 @@ return [
 
     'alert_petty_cash_approve_success'    => ':reference_number has been approved successfully!',
 
+    'alert_for_hired_success'    => ':reference_number Has Been Successfully Hired!',
+
     'alert_petty_cash_validate_success'    => ':reference_number has been validated successfully!',
 
     'alert_petty_cash_record_success'    => ':reference_number has been recorded successfully!',

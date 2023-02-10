@@ -566,7 +566,8 @@
 
                             $("#application_div").hide();
                             $("#application_others_div").hide();
-
+                            $(".application").prop('checked', false);
+                            $(".application_others").prop('checked', false);
                             $("#application_others").removeAttr('required');
                             //$(".application").removeAttr('required');
 
@@ -593,6 +594,8 @@
                         $("#application_div").val("");
                         $("#application_others_div").hide();
                         $("#application_others").removeAttr('required');
+                        $(".application").prop('checked', false);
+                        $(".application_others").prop('checked', false);
    
                 }
 

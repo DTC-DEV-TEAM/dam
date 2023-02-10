@@ -273,7 +273,7 @@
 
 		 
 	        //Your code here
-	        if(CRUDBooster::myPrivilegeId() == 5){ 
+	        if(CRUDBooster::myPrivilegeId() == 5 || CRUDBooster::myPrivilegeId() == 17){ 
 
 				$forturnover =  	DB::table('statuses')->where('id', 24)->value('id');
 
