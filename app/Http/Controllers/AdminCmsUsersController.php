@@ -627,7 +627,6 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 	public function hook_before_add(&$postdata) {        
 	    //Your code here
 		$postdata['created_by']=CRUDBooster::myId();
-
 	    if($postdata['photo'] == '' || $postdata['photo'] == NULL) {
 	    	$postdata['photo'] = 'uploads/mrs-avatar.png';
 	    }
@@ -635,7 +634,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 		$postdata['status'] = 'ACTIVE';
 		$postdata['name'] = $postdata['first_name'].' '.$postdata['last_name'];
 		$postdata['user_name'] = $postdata['last_name'].''.substr($postdata['first_name'], 0, 1);
-		
+		$postdata['bill_to'] = $postdata['last_name'].', '.$postdata['first_name'];
 		
         if($postdata['id_cms_privileges'] == 3){
 			$postdata['approver_id'] = $postdata['approver_id_manager'];
@@ -695,7 +694,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 			}else{
 				$postdata['status'] = 'ACTIVE';
 			}
-
+			$postdata['bill_to'] = $postdata['last_name'].', '.$postdata['first_name'];
 			if($postdata['id_cms_privileges'] == 3){
 				$postdata['approver_id'] = $postdata['approver_id_manager'];
 				$postdata['approver_id_manager'] = $postdata['approver_id_manager'];
