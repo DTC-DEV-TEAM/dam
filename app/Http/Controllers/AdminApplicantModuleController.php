@@ -4,7 +4,7 @@
 	use Request;
 	use DB;
 	use CRUDBooster;
-	use App\models\Applicant;
+	use App\Models\Applicant;
 	use App\statuses;
 	use App\Models\ErfHeaderRequest;
 	use App\Imports\ApplicantUpload;
