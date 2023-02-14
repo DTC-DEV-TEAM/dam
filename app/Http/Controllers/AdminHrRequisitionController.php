@@ -295,7 +295,8 @@
 			$for_verification =  DB::table('statuses')->where('id', 29)->value('status_description');  
 			$verified         =  DB::table('statuses')->where('id', 30)->value('status_description');  
 			$jo_done          =  DB::table('statuses')->where('id', 31)->value('status_description');    
-			$onboarding       =  DB::table('statuses')->where('id', 32)->value('status_description');   
+			$onboarding       =  DB::table('statuses')->where('id', 33)->value('status_description');   
+			$closed           =  DB::table('statuses')->where('id', 13)->value('status_description'); 
 			if($column_index == 1){
 				if($column_value == $pending){
 					$column_value = '<span class="label label-warning">'.$pending.'</span>';
@@ -308,9 +309,11 @@
 				}else if($column_value == $jo_done){
 					$column_value = '<span class="label label-info">'.$jo_done.'</span>';
 				}else if($column_value == $onboarding){
-					$column_value = '<span class="label label-success">'.$onboarding.'</span>';
+					$column_value = '<span class="label label-info">'.$onboarding.'</span>';
 				}else if($column_value == $cancelled){
 					$column_value = '<span class="label label-danger">'.$cancelled.'</span>';
+				}else if($column_value == $closed){
+					$column_value = '<span class="label label-success">'.$closed.'</span>';
 				}
 			}
 	    }
@@ -347,6 +350,7 @@
 			$employee_interaction      = $fields['employee_interaction'];
 			$asset_usage               = $fields['asset_usage'];
 			$email_domain              = $fields['email_domain'];
+			$required_system           = $fields['required_system'];
 			$count_header              = DB::table('erf_header_request')->count();
 			$header_ref                = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);			
 			$reference_number	       = "ERF-".$header_ref;
@@ -379,7 +383,10 @@
 				$postdata['employee_interaction'] 	    = implode(", ",$employee_interaction);
 			}
 			if(!empty($asset_usage)){
-				$postdata['asset_usage'] 	    = implode(", ",$asset_usage);
+				$postdata['asset_usage'] 	        = implode(", ",$asset_usage);
+			}
+			if(!empty($required_system)){
+				$postdata['required_system'] 	    = implode(", ",$required_system);
 			}
 			$postdata['email_domain'] 		        = $email_domain;
 			$postdata['created_by'] 				= CRUDBooster::myId();
@@ -551,6 +558,7 @@
 			$data['shared_files'] = DB::table('sub_masterfile_shared_files')->where('status', 'ACTIVE')->get();
 			$data['interact_with'] = DB::table('sub_masterfile_interact_with')->where('status', 'ACTIVE')->get();
 			$data['email_domain'] = DB::table('sub_masterfile_email_domain')->where('status', 'ACTIVE')->get();
+			$data['required_system'] = DB::table('sub_masterfile_required_system')->where('status', 'ACTIVE')->get();
 			return $this->view("erf.add-hr-requisition", $data);
 				
 		}
@@ -569,9 +577,19 @@
 			$data['Header'] = ErfHeaderRequest::
 				leftjoin('companies', 'erf_header_request.company', '=', 'companies.id')
 				->leftjoin('departments', 'erf_header_request.department', '=', 'departments.id')
+				->leftjoin('cms_users as approver', 'erf_header_request.approved_immediate_head_by', '=', 'approver.id')
+				->leftjoin('cms_users as verifier', 'erf_header_request.approved_hr_by', '=', 'verifier.id')
+				->leftJoin('applicant_table', function($join) 
+				{
+					$join->on('erf_header_request.reference_number', '=', 'applicant_table.erf_number')
+					->where('applicant_table.status',31);
+				})
 				->select(
 						'erf_header_request.*',
-						'departments.department_name as department'
+						'approver.name as approved_head_by',
+						'verifier.name as verified_by',
+						'departments.department_name as department',
+						'applicant_table.*'
 						)
 				->where('erf_header_request.id', $id)->first();
 		
@@ -579,10 +597,12 @@
 			$interact_with = explode(",",$data['Header']->employee_interaction);
 			$asset_usage = explode(",",$data['Header']->asset_usage);
 			$application = explode(",",$data['Header']->application);
+			$required_system = explode(",",$data['Header']->required_system);
 			$data['required_exams'] = $res_req;
 			$data['interaction'] = $interact_with;
 			$data['asset_usage'] = $asset_usage;
 			$data['application'] = $application;
+			$data['required_system'] = $required_system;
 			$data['Body'] = ErfBodyRequest::
 				select(
 				  'erf_body_request.*'

@@ -116,7 +116,8 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label"><span style="color:red">*</span> Salary Range</label>
-                            <input type="text" class="form-control finput"  id="salary_range" name="salary_range"  required>                                   
+                            <input type="text" class="form-control finput" placeholder="(xx,xxx-xx,xxx)"  id="salary_range" name="salary_range"  required>                                   
+                            <div id="display-error"></div>
                         </div>
                     </div>
                 </div>
@@ -234,6 +235,16 @@
                         <div class="col-md-6">
                             <label class="checkbox-inline control-label col-md-6" ><br>
                                 <input type="checkbox" required multiple class="email_domain" name="email_domain" value="{{$data->description}}" >{{$data->description}}
+                            </label>
+                        </div>
+                        @endforeach
+                    </div>
+                    <div class="col-md-6">
+                        <label class="require control-label"><span style="color:red">*</span> Required System</label><br>
+                        @foreach($required_system as $data)
+                        <div class="col-md-6">
+                            <label class="checkbox-inline control-label col-md-6" ><br>
+                                <input type="checkbox" required multiple class="required_system" name="required_system[]" value="{{$data->description}}" >{{$data->description}}
                             </label>
                         </div>
                         @endforeach
@@ -404,6 +415,7 @@
             $("#show_replacement_of").show();
         }else{
             $("#show_replacement_of").hide();
+            $('#replacement_of').val("");
         }
 
     });
@@ -762,7 +774,7 @@
             }else if(!$("#salary_range").val().includes("-")){
                 swal({
                     type: 'error',
-                    title: 'Invalid Salary Range! please refer to the ff(10,000-15,000).',
+                    title: 'Invalid Salary Range! please refer to the ff(xx,xxx-xx,xxx).',
                     icon: 'error',
                     confirmButtonColor: "#367fa9",
                 }); 
@@ -1021,6 +1033,15 @@
             parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             return parts.join(".");
         });
+    });
+
+    $('#salary_range').on("keyup", function() {
+        var value =  $(this).val();
+        if(!value.includes("-")){
+            $('#display-error').html("<span id='notif' class='label label-danger'> Invalid Salary Range! please refer to the ff.(xx,xxx-xx,xxx)</span>")
+        }else{
+            $('#display-error').html('')  
+        }
     });
 
 </script>

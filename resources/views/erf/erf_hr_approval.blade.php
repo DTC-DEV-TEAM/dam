@@ -197,6 +197,12 @@
                         <label class="require control-label"> Email Domain</label><br>
                         <input type="text" class="form-control finput" value="{{$Header->email_domain}}" aria-describedby="basic-addon1" readonly>                                                                                      
                     </div>
+                    @if($Header->required_system != "" || $Header->required_system != NULL)
+                    <div class="col-md-6">
+                        <label class="require control-label"> Required System</label><br>
+                        <input type="text" class="form-control finput" value="{{$Header->required_system}}" aria-describedby="basic-addon1" readonly>                                                                                      
+                    </div>
+                    @endif
                 </div>
             </div>
             <div class="card">
@@ -301,7 +307,7 @@
                             <tbody>
                                 <tr>
                                     <th class="control-label col-md-2">{{ trans('message.form-label.approved_by') }}:</th>
-                                    <td class="col-md-4">{{$Header->approved_immediate_head_by}} / {{$Header->approved_immediate_head_at}}</td>     
+                                    <td class="col-md-4">{{$Header->approved_head_by}} / {{$Header->approved_immediate_head_at}}</td>     
                                 </tr>
                                 @if($Header->approver_comments != NULL)
                                 <tr>
@@ -326,7 +332,7 @@
                     </div>
                 </div>
               
-                <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
+                <a href="{{ CRUDBooster::mainpath() }}" id="btn-cancel" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
                 <button class="btn btn-danger pull-right" type="button" id="btnReject" style="margin-left: 5px;"><i class="fa fa-thumbs-down" ></i> Reject</button>
                 <button class="btn btn-success pull-right" type="button" id="btnApprove"><i class="fa fa-thumbs-up" ></i> Verify</button>
             </div>
@@ -392,6 +398,21 @@ $('.status').select2({placeholder_text_single : "- Select Status -"});
     "<tr><td colspan='3' style='text-align:right'><strong>TOTAL</strong></td><td style='text-align:center'><strong>" +
     sumcost +
     "</strong></td></td></tr>";
-    
+
+    $("#btn-cancel").click(function(event) {
+       event.preventDefault();
+       swal({
+            title: "Are you sure?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#41B314",
+            cancelButtonColor: "#F9354C",
+            confirmButtonText: "Yes, Go back!",
+            width: 450,
+            height: 200
+            }, function () {
+                window.history.back();                                                  
+        });
+    });
 </script>
 @endpush

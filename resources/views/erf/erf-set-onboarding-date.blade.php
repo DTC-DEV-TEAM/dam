@@ -46,6 +46,12 @@
             .panel-heading{
                 background-color: #f5f5f5 ;
             }
+
+            table, th, td {
+            border: 1px solid rgba(000, 0, 0, .5);
+            padding: 8px;
+            border-radius: 5px 0 0 5px;
+            }
            
         </style>
     @endpush
@@ -57,7 +63,7 @@
 @endif
 
     <div class='panel-heading'>
-        ERF for Approval Form
+        Set On Boarding Date Form
     </div>
 
     <form method='post' id="myform" action='{{CRUDBooster::mainpath('edit-save/'.$Header->requestid)}}'>
@@ -115,7 +121,7 @@
                         <div class="form-group">
                             <label class="control-label"> Salary Range</label>
                             <input type="text" class="form-control finput" value="{{number_format($Header->salary_range_from) .' - '. number_format($Header->salary_range_to)}}" aria-describedby="basic-addon1" readonly>                                                                                         
-  
+   
                         </div>
                     </div> 
                 </div>
@@ -191,13 +197,6 @@
                         <label class="require control-label"> Email Domain</label><br>
                         <input type="text" class="form-control finput" value="{{$Header->email_domain}}" aria-describedby="basic-addon1" readonly>                                                                                      
                     </div>
-                    @if($Header->required_system != "" || $Header->required_system != NULL)
-                    <div class="col-md-6">
-                        <label class="require control-label"> Required System</label><br>
-                        <input type="text" class="form-control finput" value="{{$Header->required_system}}" aria-describedby="basic-addon1" readonly>                                                                                      
-
-                    </div>
-                    @endif
                 </div>
             </div>
             <div class="card">
@@ -295,20 +294,78 @@
                 </div>
             </div>
             
-            <div class="card">
+            @if($Header->approved_immediate_head_by != NULL)
+        <div class="card">
+            <div class="row">
+                <div class="col-md-6">
+                    <table style="width:100%">
+                        <tbody>
+                            <tr>
+                                <th class="control-label col-md-2">{{ trans('message.form-label.approved_by') }}:</th>
+                                <td class="col-md-4">{{$Header->approved_immediate_head_by}} / {{$Header->approved_immediate_head_at}}</td>     
+                            </tr>
+                            @if($Header->approver_comments != NULL)
+                            <tr>
+                                <th class="control-label col-md-2">{{ trans('message.table.approver_comments') }}:</th>
+                                <td class="col-md-4">{{$Header->approver_comments}}</td>
+                            </tr>
+                            @endif
+
+                        </tbody>
+                    </table>
+                </div>
+                
+                @if($Header->approved_hr_by != NULL)
+                <div class="col-md-6">
+                    <table style="width:100%">
+                        <tbody>
+                            <tr>
+                                <th class="control-label col-md-2">Verified By:</th>
+                                <td class="col-md-4">{{$Header->approved_hr_by}} / {{$Header->approved_hr_at}}</td>     
+                            </tr>
+                            @if($Header->hr_comments != NULL)
+                            <tr>
+                                <th class="control-label col-md-2">Verifier Comments:</th>
+                                <td class="col-md-4">{{$Header->hr_comments}}</td>
+                            </tr>
+                            @endif
+
+                        </tbody>
+                    </table>
+                </div>
+                @endif
+            </div>
+        </div>
+        @endif
+            
+            <div class="card">  
                 <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-md-6">
                         <div class="form-group">
-                            <label> Additional Notes</label>
-                            <textarea placeholder="Additional Notes ..." rows="3" class="form-control finput" name="additional_notess"></textarea>
+                        <label class="control-label">Erf#</i></label>
+                                <input type="text" class="form-control finput" value="{{$Header->reference_number}}" aria-describedby="basic-addon1" readonly>             
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                        <label class="control-label">Employee Name</i></label>
+                                <input type="text" class="form-control finput" value="{{$Header->first_name . ' ' . $Header->last_name}}" aria-describedby="basic-addon1" readonly>             
                         </div>
                     </div>
                 </div>
-                <div class='panel-footer'>
-                    <a href="{{ CRUDBooster::mainpath() }}" id="btn-cancel" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
-                    <button class="btn btn-danger pull-right" type="button" id="btnReject" style="margin-left: 5px;"><i class="fa fa-thumbs-down" ></i> Reject</button>
-                    <button class="btn btn-success pull-right" type="button" id="btnApprove"><i class="fa fa-thumbs-up" ></i> Approve</button>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                        <label class="control-label">On Boarding Date</i></label>
+                            <input type="hidden" class="form-control finput" id="requesid" value="{{$Header->requestid}}" aria-describedby="basic-addon1" >             
+                            <input type="text" class="form-control finput date" name="onboarding_date" id="onboarding_date" aria-describedby="basic-addon1">             
+                        </div>
+                    </div>
+                  
                 </div>
+                <hr>
+                <a href="{{ CRUDBooster::mainpath() }}" id="btn-cancel" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
+                <button class="btn btn-success pull-right" type="button" id="btnSet"> Submit</button>
             </div>
             
 
@@ -317,58 +374,58 @@
 @endsection
 @push('bottom')
 <script type="text/javascript">
- $('#btnApprove').click(function(event) {
-        event.preventDefault();
-        swal({
-            title: "Are you sure?",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#41B314",
-            cancelButtonColor: "#F9354C",
-            confirmButtonText: "Yes, approve it!",
-            width: 450,
-            height: 200
-            }, function () {
-                $(this).attr('disabled','disabled');
-                $('#approval_action').val('1');
-                $("#myform").submit();                   
+    $(".date").datetimepicker({
+                minDate:new Date(), // Current year from transactions
+            viewMode: "days",
+            format: "YYYY-MM-DD",
+            dayViewHeaderFormat: "MMMM YYYY",
         });
-    });
+    $('.status').select2({placeholder_text_single : "- Select Status -"});
 
-    $('#btnReject').click(function(event) {
+    $('#btnSet').click(function(event) {
+        var id = $('#requesid').val();
+        var date = $('#onboarding_date').val();
         event.preventDefault();
-        swal({
+            swal({
             title: "Are you sure?",
             type: "warning",
-            text: "You won't be able to revert this!",
             showCancelButton: true,
             confirmButtonColor: "#41B314",
             cancelButtonColor: "#F9354C",
-            confirmButtonText: "Yes, reject it!",
+            confirmButtonText: "Yes, set it!",
             width: 450,
             height: 200
             }, function () {
-                $(this).attr('disabled','disabled');
-                $('#approval_action').val('0');
-                $("#myform").submit();                   
+                $.ajax({
+                    url: "{{ route('set-onboarding-date') }}",
+                    type: "POST",
+                    data: {
+                        id: id,
+                        date: date,
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.status == "success") {
+                            swal({
+                                type: data.status,
+                                title: data.message,
+                            });
+                            setTimeout(function(){
+                                window.location.replace(document.referrer);
+                            }, 2000); 
+                            } else if (data.status == "error") {
+                            swal({
+                                type: data.status,
+                                title: data.message,
+                            });
+                        }             
+                    },
+                    error: function (data) {
+                        console.log('Error:', data);
+                    }
+                });                 
         });
-        
-    });
 
-    $("#btn-cancel").click(function(event) {
-       event.preventDefault();
-       swal({
-            title: "Are you sure?",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#41B314",
-            cancelButtonColor: "#F9354C",
-            confirmButtonText: "Yes, Go back!",
-            width: 450,
-            height: 200
-            }, function () {
-                window.history.back();                                                  
-        });
     });
 
     var tds = document
@@ -385,6 +442,21 @@
     "<tr><td colspan='3' style='text-align:right'><strong>TOTAL</strong></td><td style='text-align:center'><strong>" +
     sumcost +
     "</strong></td></td></tr>";
-    
+
+    $("#btn-cancel").click(function(event) {
+       event.preventDefault();
+       swal({
+            title: "Are you sure?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#41B314",
+            cancelButtonColor: "#F9354C",
+            confirmButtonText: "Yes, Go back!",
+            width: 450,
+            height: 200
+            }, function () {
+                window.history.back();                                                  
+        });
+    });
 </script>
 @endpush

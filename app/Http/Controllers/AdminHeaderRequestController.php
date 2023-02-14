@@ -962,6 +962,7 @@
 						'requested.name as requestedby',
 						'employees.bill_to as employee_name',
 						'header_request.employee_name as header_emp_name',
+						'header_request.created_by as header_created_by',
 						//'employees.company_name_id as company_name',
 						'departments.department_name as department',
 						'locations.store_name as store_branch',

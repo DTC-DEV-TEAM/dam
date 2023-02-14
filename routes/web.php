@@ -156,9 +156,20 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('/admin/erf_edit_status/getEditErf/{id}','AdminErfEditStatusController@getEditErf')->name('edit-erf');
     Route::get('/admin/erf_edit_status/getErfCreateAccount/{id}','AdminErfEditStatusController@getErfCreateAccount')->name('create-account-erf');
     Route::get('/admin/erf_edit_status/getDetailErf/{id}','AdminErfEditStatusController@getDetailErf')->name('details-erf');
+    Route::post('/admin/erf_edit_status/create-account','AdminErfEditStatusController@createAccount')->name('create-account');
+    Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/get-getEmail','AdminErfEditStatusController@getEmail')->name('getEmail');
+    Route::post(config('crudbooster.ADMIN_PATH').'/customers/get-checkEmail','AdminErfEditStatusController@checkEmail')->name('checkEmail');
+    Route::get('/admin/erf_edit_status/getErfSetOnboardingDate/{id}','AdminErfEditStatusController@getErfSetOnboardingDate')->name('set-onboarding-erf');
+    Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/setOnboarding','AdminErfEditStatusController@setOnboarding')->name('set-onboarding-date');
+
     //Applicant Moduel
     Route::get('/admin/applicant_module/getEditApplicant/{id}','AdminApplicantModuleController@getEditApplicant')->name('edit-applicant');
     Route::get('/admin/applicant_module/getDetailApplicant/{id}','AdminApplicantModuleController@getDetailApplicant')->name('applicant-detail');
+    //Aplicant Import and export
+    Route::get('/admin/applicant_module/applicant-upload','AdminApplicantModuleController@applicantUploadView');
+    Route::post('/admin/applicant_module/upload-applicant','AdminApplicantModuleController@applicantUpload')->name('upload-applicant');
+    Route::post('/admin/applicant_module/search-applicant','AdminApplicantModuleController@searchApplicant')->name('erf-search');
+    Route::post('/admin/applicant_module/export-applicant','AdminApplicantModuleController@applicantExport')->name('export-applicant');
 
     Route::get('/admin/clear-view', function() {
         Artisan::call('view:clear');

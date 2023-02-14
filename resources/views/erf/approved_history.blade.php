@@ -193,6 +193,13 @@
                     <input type="text" class="form-control finput" value="{{$Header->email_domain}}" aria-describedby="basic-addon1" readonly>                                                                                      
 
                 </div>
+                @if($Header->required_system != "" || $Header->required_system != NULL)
+                <div class="col-md-6">
+                    <label class="require control-label"> Required System</label><br>
+                    <input type="text" class="form-control finput" value="{{$Header->required_system}}" aria-describedby="basic-addon1" readonly>                                                                                      
+
+                </div>
+                @endif
             </div>
         </div>
         <div class="card">
@@ -288,6 +295,7 @@
                 @endif
             </div>
         </div>
+        @if($Header->approved_immediate_head_by != NULL)
         <div class="card">
             <div class="row">
                 <div class="col-md-6">
@@ -295,7 +303,7 @@
                         <tbody>
                             <tr>
                                 <th class="control-label col-md-2">{{ trans('message.form-label.approved_by') }}:</th>
-                                <td class="col-md-4">{{$Header->approved_immediate_head_by}} / {{$Header->approved_immediate_head_at}}</td>     
+                                <td class="col-md-4">{{$Header->approved_head_by}} / {{$Header->approved_immediate_head_at}}</td>     
                             </tr>
                             @if($Header->approver_comments != NULL)
                             <tr>
@@ -307,13 +315,14 @@
                         </tbody>
                     </table>
                 </div>
+                
                 @if($Header->approved_hr_by != NULL)
-                <div class="col-md-6">
+                <div class="col-md-6" style="margin-bottom:10px">
                     <table style="width:100%">
                         <tbody>
                             <tr>
                                 <th class="control-label col-md-2">Verified By:</th>
-                                <td class="col-md-4">{{$Header->approved_hr_by}} / {{$Header->approved_hr_at}}</td>     
+                                <td class="col-md-4">{{$Header->verified_by}} / {{$Header->approved_hr_at}}</td>     
                             </tr>
                             @if($Header->hr_comments != NULL)
                             <tr>
@@ -326,8 +335,26 @@
                     </table>
                 </div>
                 @endif
+                <br>
+                @if($Header->onboarding_date != NULL)
+                <div class="col-md-6">
+                    <table style="width:100%">
+                        <tbody>
+                            <tr>
+                                <th class="control-label col-md-2">Employee:</th>
+                                <td class="col-md-4">{{$Header->first_name}} {{$Header->last_name}}</td>     
+                            </tr>
+                            <tr>
+                                <th class="control-label col-md-2">On Boarding Date:</th>
+                                <td class="col-md-4">{{$Header->onboarding_date}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                @endif
             </div>
         </div>
+        @endif
             
                 
 @endsection
