@@ -402,10 +402,13 @@
 
 			$data['return_body'] = ReturnTransferAssets::
 			           leftjoin('statuses', 'return_transfer_assets.status', '=', 'statuses.id')
+					   ->leftjoin('mo_body_request', 'return_transfer_assets.mo_id', '=', 'mo_body_request.id')
 				
 				->select(
 						'return_transfer_assets.*',
 						'statuses.*',
+						'mo_body_request.unit_cost',
+						'mo_body_request.serial_no',
 						)
 						->where('return_transfer_assets.return_header_id', $id)->get();	
 			// dd($data['return_body']);

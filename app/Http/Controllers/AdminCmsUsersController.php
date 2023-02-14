@@ -37,6 +37,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 		$this->button_export		= FALSE;	
 		if(CRUDBooster::myPrivilegeId() == 4){ 
 			$this->button_edit = false;
+			$this->button_add = false;
 		}
 		# END CONFIGURATION DO NOT REMOVE THIS LINE
 	

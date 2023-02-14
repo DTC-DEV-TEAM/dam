@@ -67,14 +67,16 @@
                 <h3 class="box-title"><b>{{ trans('message.form-label.asset_items') }}</b></h3>
             </div>
 
-            <table  class='table table-striped table-bordered'>
+            <table id="returnClose"  class='table table-striped table-bordered'>
                 <thead>
                     <tr>
                         <th width="20%" class="text-center">Reference No</th>
-                        <th width="20%" class="text-center">Asset Code</th>
-                        <th width="20%" class="text-center">Digits Code</th>
+                        <th width="10%" class="text-center">Asset Code</th>
+                        <th width="10%" class="text-center">Digits Code</th>
+                        <th width="10%" class="text-center">Serial No</th>
                         <th width="30%" class="text-center">{{ trans('message.table.item_description') }}</th>
-                        <th width="25%" class="text-center">Asset Type</th>                                                         
+                        <th width="25%" class="text-center">Asset Type</th> 
+                        <th width="25%" class="text-center">Cost</th>                                                         
                     <!-- <th width="13%" class="text-center">{{ trans('message.table.image') }}</th> -->
                     </tr>
                 </thead>
@@ -84,9 +86,10 @@
                             <td style="text-align:center" height="10">{{$rowresult->reference_no}}</td>
                             <td style="text-align:center" height="10">{{$rowresult->asset_code}}</td>
                             <td style="text-align:center" height="10">{{$rowresult->digits_code}}</td>
+                            <td style="text-align:center" height="10">{{$rowresult->serial_no}}</td>
                             <td style="text-align:center" height="10">{{$rowresult->description}}</td>
                             <td style="text-align:center" height="10">{{$rowresult->asset_type}}</td>
-                                                   
+                            <td style="text-align:center" height="10" class="cost">{{$rowresult->unit_cost}}</td>                     
                         </tr>
                     @endforeach
 
@@ -184,7 +187,21 @@
         });
 
     });
-
+     var tds = document
+    .getElementById("returnClose")
+    .getElementsByTagName("td");
+    var sumqty = 0;
+    
+    for (var i = 0; i < tds.length; i++) {
+        console.log(tds[i].innerHTML);
+    if (tds[i].className == "cost") {
+        sumqty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+    }
+    }
+    document.getElementById("returnClose").innerHTML +=
+    "<tr><td colspan='6' style='text-align:right'><strong>TOTAL</strong></td><td style='text-align:center'><strong>" +
+    sumqty +
+    "</strong></td></tr>";
 
 </script>
 @endpush
