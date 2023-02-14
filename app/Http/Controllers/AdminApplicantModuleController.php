@@ -5,7 +5,7 @@
 	use DB;
 	use CRUDBooster;
 	use App\Models\Applicant;
-	use App\statuses;
+	use App\Statuses;
 	use App\Models\ErfHeaderRequest;
 	use App\Imports\ApplicantUpload;
 	use App\Exports\ExportApplicantMultipleSheet;
