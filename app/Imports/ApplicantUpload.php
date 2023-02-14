@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Models\Applicant;
+use App\Models\ErfHeaderRequest;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Collection;
@@ -11,6 +12,8 @@ use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
+use Maatwebsite\Excel\Concerns\WithConditionalSheets;
 use DB;
 use CRUDBooster;
 class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, WithValidation
@@ -26,6 +29,10 @@ class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
             $getStatus =  DB::table('statuses')->where(DB::raw('LOWER(TRIM(status_description))'), strtolower(trim($row['status'])))->value('id');
             if($getStatus == 36){
                 $status = 31;
+                ErfHeaderRequest::where('reference_number',$row['erf_number'])
+				->update([
+					'status_id'		 => 31
+				]);	
             }else{
                 $status = $getStatus;
             }
@@ -72,6 +79,32 @@ class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
          }else{
              $data['check_erf_exist']['check'] = true;
          }
+
+          //applicant jo done
+          $data['check_jo_done_exist']['check'] = false;
+          $checkRowDbJoDone = DB::table('applicant_table')->select(DB::raw("(full_name) AS fullname"))->where('status', 31)->get()->toArray();
+          $checkRowDbColumnJoDone = array_column($checkRowDbJoDone, 'fullname');
+
+          if(!empty($data['first_name']) && !empty($data['last_name'])){
+              if(in_array(strtolower(trim($data['first_name'])).''.strtolower(trim($data['last_name'])), $checkRowDbColumnJoDone)){
+                  $data['check_jo_done_exist']['check'] = true;
+              }
+          }else{
+              $data['check_jo_done_exist']['check'] = true;
+          }
+
+           //applicant cancelled
+           $data['check_cancelled_exist']['check'] = false;
+           $checkRowDbCancelled = DB::table('applicant_table')->select(DB::raw("(full_name) AS fullname"))->where('status', 8)->get()->toArray();
+           $checkRowDbColumnCancelled = array_column($checkRowDbCancelled, 'fullname');
+ 
+           if(!empty($data['first_name']) && !empty($data['last_name'])){
+               if(in_array(strtolower(trim($data['first_name'])).''.strtolower(trim($data['last_name'])), $checkRowDbColumnCancelled)){
+                   $data['check_cancelled_exist']['check'] = true;
+               }
+           }else{
+               $data['check_cancelled_exist']['check'] = true;
+           }
         
         return $data;
     }
@@ -81,12 +114,22 @@ class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
         return [
             '*.status_exist' => function($attribute, $value, $onFailure) {
                 if ($value['check'] === false) {
-                    $onFailure('Invalid Status, please refer to status sheet!');
+                    $onFailure('Invalid Status! Please refer to valid status in system');
                 }
             },
             '*.check_erf_exist' => function($attribute, $value, $onFailure) {
                 if ($value['check'] === false) {
-                    $onFailure('ERF not verified, please refer to Verified ERF sheet!');
+                    $onFailure('ERF not verified, Please refer to Verified ERF in system');
+                }
+            },
+            '*.check_jo_done_exist' => function($attribute, $value, $onFailure) {
+                if ($value['check'] === true) {
+                    $onFailure('Applicant already Hired!');
+                }
+            },
+            '*.check_cancelled_exist' => function($attribute, $value, $onFailure) {
+                if ($value['check'] === true) {
+                    $onFailure('Applicant already Exist/Cancelled!');
                 }
             },
             '*.status'       => 'required',
@@ -102,7 +145,6 @@ class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
         return [
             '*.status.status_exist'             => 'Invalid Status :input.',
             '*.erf_number.check_erf_exist'      => 'ERF not veried :input.',
-            '*.status.required'                 => 'Status field is required.',
             '*.erf_number.required'             => 'Erf Number field is required.',
             '*.first_name.required'             => 'First Name field is required!.',
             '*.last_name.required'              => 'Last Name field is required!.',

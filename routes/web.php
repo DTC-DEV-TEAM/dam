@@ -165,9 +165,11 @@ Route::group(['middleware' => ['web']], function() {
     //Applicant Moduel
     Route::get('/admin/applicant_module/getEditApplicant/{id}','AdminApplicantModuleController@getEditApplicant')->name('edit-applicant');
     Route::get('/admin/applicant_module/getDetailApplicant/{id}','AdminApplicantModuleController@getDetailApplicant')->name('applicant-detail');
-    //Aplicant Import
+    //Aplicant Import and export
     Route::get('/admin/applicant_module/applicant-upload','AdminApplicantModuleController@applicantUploadView');
     Route::post('/admin/applicant_module/upload-applicant','AdminApplicantModuleController@applicantUpload')->name('upload-applicant');
+    Route::post('/admin/applicant_module/search-applicant','AdminApplicantModuleController@searchApplicant')->name('erf-search');
+    Route::post('/admin/applicant_module/export-applicant','AdminApplicantModuleController@applicantExport')->name('export-applicant');
 
     Route::get('/admin/clear-view', function() {
         Artisan::call('view:clear');

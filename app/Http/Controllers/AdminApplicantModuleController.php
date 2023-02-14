@@ -8,6 +8,7 @@
 	use App\statuses;
 	use App\Models\ErfHeaderRequest;
 	use App\Imports\ApplicantUpload;
+	use App\Exports\ExportApplicantMultipleSheet;
 	use Maatwebsite\Excel\Facades\Excel;
 	use PhpOffice\PhpSpreadsheet\Spreadsheet;
 	use PhpOffice\PhpSpreadsheet\Reader\Exception;
@@ -261,14 +262,31 @@
 			$screen_date = $fields['screen_date'];
 			$first_name  = $fields['first_name'];
 			$last_name   = $fields['last_name'];
+
+			//Jo Done
+			$checkRowDbJoDone = DB::table('applicant_table')->select(DB::raw("(full_name) AS fullname"))->where('status', 31)->get()->toArray();
+			$checkRowDbColumnJoDone = array_column($checkRowDbJoDone, 'fullname');
+			//Cancelled
+			$checkRowDbCancelled = DB::table('applicant_table')->select(DB::raw("(full_name) AS fullname"))->where('status', 8)->get()->toArray();
+			$checkRowDbColumnCancelled = array_column($checkRowDbCancelled, 'fullname');
 		
-			$postdata['status']      = 34;
-			$postdata['erf_number']  = $erf_number;
-			$postdata['screen_date'] = $screen_date;
-			$postdata['first_name']  = $first_name;
-			$postdata['last_name']   = $last_name;
-			$postdata['full_name']   = strtolower(trim($postdata['first_name'])).''.strtolower(trim($postdata['last_name']));
-	        $postdata['created_by']  = CRUDBooster::myId();
+			if (in_array(strtolower(trim($first_name)).''.strtolower(trim($last_name)), $checkRowDbColumnJoDone)) {
+				return CRUDBooster::redirect(CRUDBooster::mainpath("add-applicant"),"Applicant Already Exist!","danger");
+			}else if(in_array(strtolower(trim($first_name)).''.strtolower(trim($last_name)), $checkRowDbColumnCancelled)){
+				return CRUDBooster::redirect(CRUDBooster::mainpath("add-applicant"),"Applicant Already Exist!/Cancelled","danger");
+			}else{
+				$postdata['status']      = 34;
+				$postdata['erf_number']  = $erf_number;
+				$postdata['screen_date'] = $screen_date;
+				$postdata['first_name']  = $first_name;
+				$postdata['last_name']   = $last_name;
+				$postdata['full_name']   = strtolower(trim($postdata['first_name'])).''.strtolower(trim($postdata['last_name']));
+				$postdata['created_by']  = CRUDBooster::myId();
+
+			}
+		
+		
+			
 
 	    }
 
@@ -437,6 +455,55 @@
 		
 			}
 			CRUDBooster::redirect(CRUDBooster::adminpath('applicant_module'), $errors[0], 'danger');
+		}
+
+		
+
+		public function searchApplicant(Request $request){
+			$fields = Request::all();
+			$erf_number = $fields['erf_number'];
+			$status = $fields['status'];
+			$screen_date = $fields['screen_date'];
+		
+			$data = [];
+            $filters = [];
+			$data['page_title'] = 'Applicant Detail';
+			$applicant = Applicant::orderby('applicant_table.id','desc');
+				
+			if($erf_number != '' && !is_null($erf_number)){
+				$applicant->where('applicant_table.erf_number',$erf_number);
+				$filters['filter_column[applicant_table.erf_number][type]'] = '=';
+				$filters['filter_column[applicant_table.erf_number][value]'] = $erf_number;
+			}
+			if($status != '' && !is_null($status)){
+				$applicant->where('applicant_table.status',$status);
+				$filters['filter_column[applicant_table.status][type]'] = '=';
+				$filters['filter_column[applicant_table.status][value]'] = $status;
+			}
+			if($screen_date != '' && !is_null($screen_date)){
+				$applicant->whereDate('applicant_table.screen_date',$screen_date);
+				$filters['filter_column[applicant_table.screen_date][type]'] = '=';
+				$filters['filter_column[applicant_table.screen_date][value]'] = $screen_date;
+			}
+			$applicant->leftjoin('statuses', 'applicant_table.status', '=', 'statuses.id')
+				->leftjoin('cms_users as created', 'applicant_table.created_by', '=', 'created.id')
+			->select(
+				'applicant_table.*',
+				'applicant_table.id as apid',
+				'statuses.status_description as status_description',
+				'created.name as created_name'
+				);
+			$data['result'] = $applicant->get();
+			$data['filters'] = $filters;
+
+			return $this->view("applicant.applicant_search_view", $data);
+		}
+
+		public function applicantExport(Request $request){
+			$fields = Request::all();
+			$filename = $fields['filename'];
+			return Excel::download(new ExportApplicantMultipleSheet($fields), $filename.'.xlsx');
+
 		}
 
 	}

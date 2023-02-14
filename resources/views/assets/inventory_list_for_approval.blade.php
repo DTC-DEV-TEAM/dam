@@ -145,7 +145,7 @@
                             <th>Value</th>                                            
                             <th>Quantity</th> 
                             <th>Serial No</th>   
-                            <th>Warranty Coverage Year</th>                                            
+                            <th>Warranty Expiry Date</th>                                               
                             
                         </tr>
                     </thead>

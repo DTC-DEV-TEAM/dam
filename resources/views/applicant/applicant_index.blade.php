@@ -10,6 +10,11 @@
                 font-size: 13px;
                 color:#3c8dbc
             }
+            .modal-content  {
+                -webkit-border-radius: 3px !important;
+                -moz-border-radius: 3px !important;
+                border-radius: 3px !important; 
+            }
         </style>
     @endpush
 @section('content')
@@ -23,7 +28,7 @@
         <div class="row" style="margin:5px">   
 
         <button type="button" id="btn-export" class="btn btn-primary btn-sm btn-export" data-toggle="modal" data-target="#myModal" style="margin-bottom:10px"><i class="fa fa-download"></i>
-            <span>Export Data</span>
+            <span>Export Filter</span>
         </button>
             <table class='table table-hover table-striped table-bordered' id="table_dashboard">
                 <thead>
@@ -44,7 +49,7 @@
                 @foreach($getData as $val)
                 <tr>
                     <td style="text-align:center">   
-                    @if($val->status != 36 && $val->status != 8)     
+                    @if($val->status != 31 && $val->status != 8)     
                     <a class='btn btn-xs' href='{{CRUDBooster::mainpath("edit-applicant/".$val->apid)."?return_url=".urlencode(Request::fullUrl())}}'><i class='fa fa-pencil'></i></a>                                         
                     @else
                     <a class='btn  btn-xs' href='{{CRUDBooster::mainpath("detail-applicant/".$val->apid)."?return_url=".urlencode(Request::fullUrl())}}'><i class='fa fa-eye'></i></a>   
@@ -96,17 +101,16 @@
                             <h3 class="modal-title text-center" id="exportModalLabel">Filter Export</h3>
                     </div>
                     <div class="modal-body">
-                        <form  id="filterForm" name="filterForm">
+                        <form  id="filterForm" method='post' target='_blank' name="filterForm" action="{{route('erf-search')}}">
                             <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
-                            <input type="hidden" name="id" id="id">
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="control-label require"> Erf No.</label>
-                                        <select required selected data-placeholder="-- Please Select ERF --" id="erf_number" name="erf_number" class="form-select erf" style="width:100%;">
+                                        <select selected data-placeholder="-- Please Select ERF --" id="erf_number" name="erf_number" class="form-select erf" style="width:100%;">
                                             @foreach($erf_number as $res)
                                                 <option value=""></option>
-                                                <option value="{{ $res->id }}">{{ $res->reference_number }}</option>
+                                                <option value="{{ $res->reference_number }}">{{ $res->reference_number }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -114,7 +118,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="control-label require"> Status.</label>
-                                        <select required selected data-placeholder="-- Please Select Status --" id="status" name="status" class="form-select erf" style="width:100%;">
+                                        <select selected data-placeholder="-- Please Select Status --" id="status" name="status" class="form-select erf" style="width:100%;">
                                             @foreach($statuses as $res)
                                                 <option value=""></option>
                                                 <option value="{{ $res->id }}">{{ $res->status_description }}</option>
@@ -131,13 +135,12 @@
                                     </div>
                                 </div>  
                             </div>
-                           
-                        </form>
                     </div>
-                    <div class="modal-footer">
-                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="btnEdit">Export</button>
-                    </div>
+                        <div class="modal-footer">
+                        <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="btnExport">Export</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -170,7 +173,23 @@
                     dayViewHeaderFormat: "MMMM YYYY",
             });
            
-
+            // $('#btnExport').click(function(event) {
+            //     event.preventDefault();
+            //     $.ajax({
+            //         data: $('#filterForm').serialize(),
+            //         url: "{{ route('export-applicant') }}",
+            //         type: "POST",
+            //         dataType: 'json',
+            //         success: function (data) {
+            //             if (data.status == 200) {
+                         
+            //             }                            
+            //         },
+            //         error: function (data) {
+            //             console.log('Error:', data);
+            //         }
+            //     });      
+            // });
         
     });
     </script>

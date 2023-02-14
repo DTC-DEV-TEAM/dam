@@ -191,6 +191,13 @@
                         <label class="require control-label"> Email Domain</label><br>
                         <input type="text" class="form-control finput" value="{{$Header->email_domain}}" aria-describedby="basic-addon1" readonly>                                                                                      
                     </div>
+                    @if($Header->required_system != "" || $Header->required_system != NULL)
+                    <div class="col-md-6">
+                        <label class="require control-label"> Required System</label><br>
+                        <input type="text" class="form-control finput" value="{{$Header->required_system}}" aria-describedby="basic-addon1" readonly>                                                                                      
+
+                    </div>
+                    @endif
                 </div>
             </div>
             <div class="card">

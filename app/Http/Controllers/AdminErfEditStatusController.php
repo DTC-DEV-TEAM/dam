@@ -624,10 +624,12 @@
 			$interact_with = explode(",",$data['Header']->employee_interaction);
 			$asset_usage = explode(",",$data['Header']->asset_usage);
 			$application = explode(",",$data['Header']->application);
+			$required_system = explode(",",$data['Header']->required_system);
 			$data['required_exams'] = $res_req;
 			$data['interaction'] = $interact_with;
 			$data['asset_usage'] = $asset_usage;
 			$data['application'] = $application;
+			$data['required_system'] = $required_system;
 			$data['Body'] = ErfBodyRequest::
 				select(
 				  'erf_body_request.*'
@@ -683,10 +685,12 @@
 			$interact_with = explode(",",$data['Header']->employee_interaction);
 			$asset_usage = explode(",",$data['Header']->asset_usage);
 			$application = explode(",",$data['Header']->application);
+			$required_system = explode(",",$data['Header']->required_system);
 			$data['required_exams'] = $res_req;
 			$data['interaction'] = $interact_with;
 			$data['asset_usage'] = $asset_usage;
 			$data['application'] = $application;
+			$data['required_system'] = $required_system;
 			$data['Body'] = ErfBodyRequest::
 				select(
 				  'erf_body_request.*'
@@ -738,10 +742,12 @@
 			$interact_with = explode(",",$data['Header']->employee_interaction);
 			$asset_usage = explode(",",$data['Header']->asset_usage);
 			$application = explode(",",$data['Header']->application);
+			$required_system = explode(",",$data['Header']->required_system);
 			$data['required_exams'] = $res_req;
 			$data['interaction'] = $interact_with;
 			$data['asset_usage'] = $asset_usage;
 			$data['application'] = $application;
+			$data['required_system'] = $required_system;
 			$data['Body'] = ErfBodyRequest::
 				select(
 				  'erf_body_request.*'
@@ -885,10 +891,12 @@
 			$interact_with = explode(",",$data['Header']->employee_interaction);
 			$asset_usage = explode(",",$data['Header']->asset_usage);
 			$application = explode(",",$data['Header']->application);
+			$required_system = explode(",",$data['Header']->required_system);
 			$data['required_exams'] = $res_req;
 			$data['interaction'] = $interact_with;
 			$data['asset_usage'] = $asset_usage;
 			$data['application'] = $application;
+			$data['required_system'] = $required_system;
 			$data['Body'] = ErfBodyRequest::
 				select(
 				  'erf_body_request.*'

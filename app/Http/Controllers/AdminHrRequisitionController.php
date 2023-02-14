@@ -295,7 +295,7 @@
 			$for_verification =  DB::table('statuses')->where('id', 29)->value('status_description');  
 			$verified         =  DB::table('statuses')->where('id', 30)->value('status_description');  
 			$jo_done          =  DB::table('statuses')->where('id', 31)->value('status_description');    
-			$onboarding       =  DB::table('statuses')->where('id', 32)->value('status_description');   
+			$onboarding       =  DB::table('statuses')->where('id', 33)->value('status_description');   
 			$closed           =  DB::table('statuses')->where('id', 13)->value('status_description'); 
 			if($column_index == 1){
 				if($column_value == $pending){
@@ -350,6 +350,7 @@
 			$employee_interaction      = $fields['employee_interaction'];
 			$asset_usage               = $fields['asset_usage'];
 			$email_domain              = $fields['email_domain'];
+			$required_system           = $fields['required_system'];
 			$count_header              = DB::table('erf_header_request')->count();
 			$header_ref                = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);			
 			$reference_number	       = "ERF-".$header_ref;
@@ -382,7 +383,10 @@
 				$postdata['employee_interaction'] 	    = implode(", ",$employee_interaction);
 			}
 			if(!empty($asset_usage)){
-				$postdata['asset_usage'] 	    = implode(", ",$asset_usage);
+				$postdata['asset_usage'] 	        = implode(", ",$asset_usage);
+			}
+			if(!empty($required_system)){
+				$postdata['required_system'] 	    = implode(", ",$required_system);
 			}
 			$postdata['email_domain'] 		        = $email_domain;
 			$postdata['created_by'] 				= CRUDBooster::myId();
@@ -554,6 +558,7 @@
 			$data['shared_files'] = DB::table('sub_masterfile_shared_files')->where('status', 'ACTIVE')->get();
 			$data['interact_with'] = DB::table('sub_masterfile_interact_with')->where('status', 'ACTIVE')->get();
 			$data['email_domain'] = DB::table('sub_masterfile_email_domain')->where('status', 'ACTIVE')->get();
+			$data['required_system'] = DB::table('sub_masterfile_required_system')->where('status', 'ACTIVE')->get();
 			return $this->view("erf.add-hr-requisition", $data);
 				
 		}
@@ -592,10 +597,12 @@
 			$interact_with = explode(",",$data['Header']->employee_interaction);
 			$asset_usage = explode(",",$data['Header']->asset_usage);
 			$application = explode(",",$data['Header']->application);
+			$required_system = explode(",",$data['Header']->required_system);
 			$data['required_exams'] = $res_req;
 			$data['interaction'] = $interact_with;
 			$data['asset_usage'] = $asset_usage;
 			$data['application'] = $application;
+			$data['required_system'] = $required_system;
 			$data['Body'] = ErfBodyRequest::
 				select(
 				  'erf_body_request.*'
