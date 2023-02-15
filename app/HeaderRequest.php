@@ -28,6 +28,7 @@ class HeaderRequest extends Model
        'privilege_id',
        'application',
        'application_others',
-       'to_reco'
+       'to_reco',
+       'if_from_erf'
     ];
 }
