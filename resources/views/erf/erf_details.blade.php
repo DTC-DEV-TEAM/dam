@@ -193,8 +193,9 @@
                 @if($Header->required_system != "" || $Header->required_system != NULL)
                 <div class="col-md-6">
                     <label class="require control-label"> Required System</label><br>
+                    @foreach($required_system as $val) 
                     <input type="text" class="form-control finput" value="{{$Header->required_system}}" aria-describedby="basic-addon1" readonly>                                                                                      
-
+                    @endforeach
                 </div>
                 @endif
             </div>
@@ -271,6 +272,7 @@
                 </div>
             </div>
         </div>
+        @if($Header->application != "")
         <div class="card">
             <div class="row">
               <div class="col-md-6" >
@@ -292,7 +294,8 @@
                 @endif
             </div>
         </div>
-        
+        @endif
+
         @if($Header->approved_immediate_head_by != NULL)
         <div class="card">
             <div class="row">

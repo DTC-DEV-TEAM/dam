@@ -1505,6 +1505,15 @@
 										 </div>';
 				} 
 
+				if($data['Header']->if_from_erf != null || $data['Header']->if_from_erf != ""){ 
+					$data['ARFHeader'] .= ' <div class="row">                           
+											<label class="control-label col-md-2">Erf Number:</label>
+											<div class="col-md-4">
+													<p>'. $data['Header']->if_from_erf .'</p>
+											</div>
+										 </div>';
+				} 
+
 			$data['ARFHeader'] .= '
 				<hr/>
 				<div class="row">                           
