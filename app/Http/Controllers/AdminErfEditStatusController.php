@@ -599,7 +599,7 @@
 
 			$data = array();
 
-			$data['page_title'] = 'Edit Employee Requisition Form Status';
+			$data['page_title'] = 'Employee Requisition Form Verification';
 
 			$data['Header'] = ErfHeaderRequest::
 				leftjoin('companies', 'erf_header_request.company', '=', 'companies.id')

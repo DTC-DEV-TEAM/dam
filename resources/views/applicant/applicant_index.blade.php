@@ -20,9 +20,7 @@
 @section('content')
 
 <div class='panel panel-default'>
-    <div class='panel-heading'>
-    Asset Movement History
-    </div>
+   
 
         <div class='panel-body'>
         <div class="row" style="margin:5px">   
