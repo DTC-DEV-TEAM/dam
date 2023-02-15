@@ -31,8 +31,7 @@
             <table class='table table-hover table-striped table-bordered' id="table_dashboard">
                 <thead>
                     <tr class="active">
-                        <th width="auto">Action</th>
-                        <th width="auto">Status</th>
+                        <th style="text-align:center" width="auto">Status</th>
                         <th width="auto">Erf Number</th>
                         <th width="auto">First Name</th>
                         <th width="auto">Last Name</th>
@@ -46,13 +45,6 @@
                 <tbody>
                 @foreach($summary_report as $val)
                 <tr>
-                    <td style="text-align:center">   
-                    @if($val->status != 31 && $val->status != 8)     
-                    <a class='btn btn-xs' href='{{CRUDBooster::mainpath("edit-applicant/".$val->apid)."?return_url=".urlencode(Request::fullUrl())}}'><i class='fa fa-pencil'></i></a>                                         
-                    @else
-                    <a class='btn  btn-xs' href='{{CRUDBooster::mainpath("detail-applicant/".$val->apid)."?return_url=".urlencode(Request::fullUrl())}}'><i class='fa fa-eye'></i></a>   
-                    @endif
-                    </td>  
                     @if($val['status'] == 8)
                     <td style="text-align:center">
                      <label class="label label-danger" style="align:center; font-size:10px">{{$val['status_description']}}</label>

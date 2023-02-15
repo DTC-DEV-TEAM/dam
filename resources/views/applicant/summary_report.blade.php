@@ -20,7 +20,7 @@
                 background-color:#3c8dbc;
                 color: #fff !important;
                 font-weight: bold;
-                font-size: 13px;
+                font-size: 14px;
                 
             }
 
