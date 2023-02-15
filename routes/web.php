@@ -170,6 +170,7 @@ Route::group(['middleware' => ['web']], function() {
     Route::post('/admin/applicant_module/upload-applicant','AdminApplicantModuleController@applicantUpload')->name('upload-applicant');
     Route::post('/admin/applicant_module/search-applicant','AdminApplicantModuleController@searchApplicant')->name('erf-search');
     Route::post('/admin/applicant_module/export-applicant','AdminApplicantModuleController@applicantExport')->name('export-applicant');
+    Route::get('/admin/applicant_module/download-applicant-template','AdminApplicantModuleController@downloadApplicantTemplate');
 
     Route::get('/admin/clear-view', function() {
         Artisan::call('view:clear');

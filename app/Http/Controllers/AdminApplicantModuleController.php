@@ -506,4 +506,23 @@
 
 		}
 
+		function downloadApplicantTemplate() {
+			$arrHeader = [
+				"erf_number"         => "erf_number",
+				"status"             => "status",
+				"first_name"         => "first_name",
+				"last_name"          => "last_name",
+				"screen_date"        => "screen_date",
+			];
+		   
+			$spreadsheet = new Spreadsheet();
+			$spreadsheet->getActiveSheet()->fromArray(array_values($arrHeader), null, 'A1');
+			$filename = "applicant-template";
+			header('Content-Type: application/vnd.ms-excel');
+			header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"');
+			header('Cache-Control: max-age=0');
+			$writer = new Xlsx($spreadsheet);
+			$writer->save('php://output');
+		}
+
 	}
