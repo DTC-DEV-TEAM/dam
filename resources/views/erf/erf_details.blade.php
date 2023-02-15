@@ -194,7 +194,7 @@
                 <div class="col-md-6">
                     <label class="require control-label"> Required System</label><br>
                     @foreach($required_system as $val) 
-                    <input type="text" class="form-control finput" value="{{$Header->required_system}}" aria-describedby="basic-addon1" readonly>                                                                                      
+                    <input type="text" class="form-control finput" value="{{trim($val)}}" aria-describedby="basic-addon1" readonly>                                                                                      
                     @endforeach
                 </div>
                 @endif
