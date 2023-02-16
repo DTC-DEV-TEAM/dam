@@ -37,7 +37,7 @@
 
         <div class='panel-body'>
         <div class="row" style="margin:5px">   
-
+       
         <button type="button" id="btn-export" class="btn btn-primary btn-sm btn-export" style="margin-bottom:10px"><i class="fa fa-download"></i>
             <span>Export Data</span>
         </button>
@@ -55,6 +55,10 @@
                 <tbody>
                 @foreach($getData as $val)
                 <tr>
+                <audio id="audio">
+                 <source src="{{asset('audio/hover-click.mp3')}}"/>
+                </audio>
+        
                     <td style="text-align:center"> {{$val->erf_number}}</td>
                     <td class="hover" id="hover" style="text-align:center"><a href='{{CRUDBooster::mainpath("summary-report/".$val->erf_number."-"."31")}}'></a>{{$val->jo_done}}</td>  
                     <td class="hover" id="hover" style="text-align:center"><a href='{{CRUDBooster::mainpath("summary-report/".$val->erf_number."-"."34")}}'></a>{{$val->first_interview}}</td>
@@ -86,6 +90,7 @@
        var table;
        $(document).ready(function() {
             table = $("#table_dashboard").DataTable({
+
                 ordering:false,
                 pageLength:25,
                 language: {
@@ -114,6 +119,15 @@
            
             $('#table_dashboard td.hover').hover(function() {
                 $(this).addClass('hover');
+               
+                var audio = $("#audio")[0];
+                $("#table_dashboard td.hover").mouseenter(function() {  
+                    audio.play();
+                    //audio.loop = true;
+                });
+                $("#table_dashboard td.hover").mouseleave(function() {
+                    audio.pause();
+                });
             }, function() {
                 $(this).removeClass('hover');
             });
@@ -122,6 +136,7 @@
                 var href = $('a', this).attr('href');
                 window.location.href = href;
             });
+
 
     });
     </script>
