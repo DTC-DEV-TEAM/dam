@@ -713,273 +713,241 @@
 
     $("#btnSubmit").click(function(event) {
     
-        event.preventDefault();
-        var countRow = $('#asset-items tfoot tr').length;
-        var reg = /^0/gi;
-            // var value = $('.vvalue').val();
-            if($("#requested_date").val() === ""){
+    event.preventDefault();
+    var countRow = $('#asset-items tfoot tr').length;
+    var reg = /^0/gi;
+        // var value = $('.vvalue').val();
+        if($("#requested_date").val() === ""){
+            swal({
+                type: 'error',
+                title: 'Please select Requested Date!',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            }); 
+            event.preventDefault(); // cancel default behavior
+            return false;
+        }else if($("#department").val() === ""){
+            swal({
+                type: 'error',
+                title: 'Please select Department!',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            }); 
+            event.preventDefault(); // cancel default behavior
+            return false;
+        }else if($("#date_needed").val() === ""){
+            swal({
+                type: 'error',
+                title: 'Please select Needed Date!',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            }); 
+            event.preventDefault(); // cancel default behavior
+            return false;
+        }else if($("#position").val() === ""){
+            swal({
+                type: 'error',
+                title: 'Required Position!',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            }); 
+            event.preventDefault(); // cancel default behavior
+            return false;
+        }else if($("#work_location").val() === ""){
+            swal({
+                type: 'error',
+                title: 'Required Work Location!',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            }); 
+            event.preventDefault(); // cancel default behavior
+            return false;
+        }else if($("#salary_range").val() === ""){
+            swal({
+                type: 'error',
+                title: 'Required Salary Range!',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            }); 
+            event.preventDefault(); // cancel default behavior
+            return false;
+        }else if(!$("#salary_range").val().includes("-")){
+            swal({
+                type: 'error',
+                title: 'Invalid Salary Range! please refer to the ff(xx,xxx-xx,xxx).',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            }); 
+            event.preventDefault(); // cancel default behavior
+            return false;
+        }else if(!$(".schedule").is(':checked')){
                 swal({
                     type: 'error',
-                    title: 'Please select Requested Date!',
+                    title: 'Please choose Schedule!',
                     icon: 'error',
                     confirmButtonColor: "#367fa9",
                 }); 
                 event.preventDefault(); // cancel default behavior
                 return false;
-            }else if($("#department").val() === ""){
+        }else if(!$(".allow_wfh").is(':checked')){
                 swal({
                     type: 'error',
-                    title: 'Please select Department!',
+                    title: 'Please choose Allow Wfh!',
                     icon: 'error',
                     confirmButtonColor: "#367fa9",
                 }); 
                 event.preventDefault(); // cancel default behavior
                 return false;
-            }else if($("#date_needed").val() === ""){
+        }else if(!$(".manpower").is(':checked')){
                 swal({
                     type: 'error',
-                    title: 'Please select Needed Date!',
+                    title: 'Please choose Manpower!',
                     icon: 'error',
                     confirmButtonColor: "#367fa9",
                 }); 
                 event.preventDefault(); // cancel default behavior
                 return false;
-            }else if($("#position").val() === ""){
+        }else if(!$(".manpower_type").is(':checked')){
                 swal({
                     type: 'error',
-                    title: 'Required Position!',
+                    title: 'Please choose Manpower Type!',
                     icon: 'error',
                     confirmButtonColor: "#367fa9",
                 }); 
                 event.preventDefault(); // cancel default behavior
                 return false;
-            }else if($("#work_location").val() === ""){
+        }else if(!$(".required_exams").is(':checked')){
                 swal({
                     type: 'error',
-                    title: 'Required Work Location!',
+                    title: 'Please choose Required Exams!',
                     icon: 'error',
                     confirmButtonColor: "#367fa9",
                 }); 
                 event.preventDefault(); // cancel default behavior
                 return false;
-            }else if($("#salary_range").val() === ""){
+        }else if(!$(".shared_files").is(':checked')){
                 swal({
                     type: 'error',
-                    title: 'Required Salary Range!',
+                    title: 'Please Shared Files!',
                     icon: 'error',
                     confirmButtonColor: "#367fa9",
                 }); 
                 event.preventDefault(); // cancel default behavior
                 return false;
-            }else if(!$("#salary_range").val().includes("-")){
+        }else if(!$(".employee_interaction").is(':checked')){
                 swal({
                     type: 'error',
-                    title: 'Invalid Salary Range! please refer to the ff(xx,xxx-xx,xxx).',
+                    title: 'Please interact with!',
                     icon: 'error',
                     confirmButtonColor: "#367fa9",
                 }); 
                 event.preventDefault(); // cancel default behavior
                 return false;
-            }else if(!$(".schedule").is(':checked')){
-                    swal({
-                        type: 'error',
-                        title: 'Please choose Schedule!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    }); 
-                    event.preventDefault(); // cancel default behavior
-                    return false;
-            }else if(!$(".allow_wfh").is(':checked')){
-                    swal({
-                        type: 'error',
-                        title: 'Please choose Allow Wfh!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    }); 
-                    event.preventDefault(); // cancel default behavior
-                    return false;
-            }else if(!$(".manpower").is(':checked')){
-                    swal({
-                        type: 'error',
-                        title: 'Please choose Manpower!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    }); 
-                    event.preventDefault(); // cancel default behavior
-                    return false;
-            }else if(!$(".manpower_type").is(':checked')){
-                    swal({
-                        type: 'error',
-                        title: 'Please choose Manpower Type!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    }); 
-                    event.preventDefault(); // cancel default behavior
-                    return false;
-            }else if(!$(".required_exams").is(':checked')){
-                    swal({
-                        type: 'error',
-                        title: 'Please choose Required Exams!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    }); 
-                    event.preventDefault(); // cancel default behavior
-                    return false;
-            }else if(!$(".shared_files").is(':checked')){
-                    swal({
-                        type: 'error',
-                        title: 'Please Shared Files!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    }); 
-                    event.preventDefault(); // cancel default behavior
-                    return false;
-            }else if(!$(".employee_interaction").is(':checked')){
-                    swal({
-                        type: 'error',
-                        title: 'Please interact with!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    }); 
-                    event.preventDefault(); // cancel default behavior
-                    return false;
-            }else if(!$(".asset_usage").is(':checked')){
-                    swal({
-                        type: 'error',
-                        title: 'Please choose what will you be using the PC for!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    }); 
-                    event.preventDefault(); // cancel default behavior
-                    return false;
-            }else if(!$(".email_domain").is(':checked')){
-                    swal({
-                        type: 'error',
-                        title: 'Please choose Email Domain!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    }); 
-                    event.preventDefault(); // cancel default behavior
-                    return false;
-            }else if($('#documents').val() === ""){
+        }else if(!$(".asset_usage").is(':checked')){
                 swal({
                     type: 'error',
-                    title: 'Upload file documents required!',
+                    title: 'Please choose what will you be using the PC for!',
                     icon: 'error',
-                    customClass: 'swal-wide'
-                });
-                event.preventDefault();
-            }
-            // else if (countRow == 1) {
-            // swal({
-            //     type: 'error',
-            //     title: 'Please add an item!',
-            //     icon: 'error',
-            //     confirmButtonColor: "#367fa9",
-            // }); 
-            //     event.preventDefault(); // cancel default behavior
-            // }
-            else{
-                 //header image validation
-                 for (var i = 0; i < $("#documents").get(0).files.length; ++i) {
-                    var file1=$("#documents").get(0).files[i].name;
-                    if(file1){                        
-                        var file_size=$("#documents").get(0).files[i].size;
-                            var ext = file1.split('.').pop().toLowerCase();                            
-                            if($.inArray(ext,['xlsx','pdf'])===-1){
-                                swal({
-                                    type: 'error',
-                                    title: 'Invalid File!',
-                                    icon: 'error',
-                                    customClass: 'swal-wide'
-                                });
-                                event.preventDefault();
-                                return false;
-                            }                                          
-                    }
+                    confirmButtonColor: "#367fa9",
+                }); 
+                event.preventDefault(); // cancel default behavior
+                return false;
+        }else if(!$(".email_domain").is(':checked')){
+                swal({
+                    type: 'error',
+                    title: 'Please choose Email Domain!',
+                    icon: 'error',
+                    confirmButtonColor: "#367fa9",
+                }); 
+                event.preventDefault(); // cancel default behavior
+                return false;
+        }else if($('#documents').val() === ""){
+            swal({
+                type: 'error',
+                title: 'Upload file documents required!',
+                icon: 'error',
+                customClass: 'swal-wide'
+            });
+            event.preventDefault();
+        }
+        // else if (countRow == 1) {
+        // swal({
+        //     type: 'error',
+        //     title: 'Please add an item!',
+        //     icon: 'error',
+        //     confirmButtonColor: "#367fa9",
+        // }); 
+        //     event.preventDefault(); // cancel default behavior
+        // }
+        else{
+           
+             //header image validation
+             for (var i = 0; i < $("#documents").get(0).files.length; ++i) {
+                var file1=$("#documents").get(0).files[i].name;
+                if(file1){                        
+                    var file_size=$("#documents").get(0).files[i].size;
+                        var ext = file1.split('.').pop().toLowerCase();                            
+                        if($.inArray(ext,['xlsx','pdf'])===-1){
+                            swal({
+                                type: 'error',
+                                title: 'Invalid File!',
+                                icon: 'error',
+                                customClass: 'swal-wide'
+                            });
+                            event.preventDefault();
+                            return false;
+                        }                                          
                 }
-
-                // var item = $("input[name^='item_description']").length;
-                // var item_value = $("input[name^='item_description']");
-                // for(i=0;i<item;i++){
-                //     if(item_value.eq(i).val() == 0 || item_value.eq(i).val() == null){
-                //         swal({  
-                //                 type: 'error',
-                //                 title: 'Item Description cannot be empty!',
-                //                 icon: 'error',
-                //                 confirmButtonColor: "#367fa9",
-                //             });
-                //             event.preventDefault();
-                //             return false;
-                //     } 
+             }
+    
+                var item = $("input[name^='item_description']").length;
+                var item_value = $("input[name^='item_description']");
+                for(i=0;i<item;i++){
+                    if(item_value.eq(i).val() == 0 || item_value.eq(i).val() == null){
+                        swal({  
+                                type: 'error',
+                                title: 'Item Description cannot be empty!',
+                                icon: 'error',
+                                confirmButtonColor: "#367fa9",
+                            });
+                            event.preventDefault();
+                            return false;
+                    } 
             
-                // } 
-                // var sub_cat = $(".sub_category_id option").length;
-                // var sub_cat_value = $('.sub_category_id').find(":selected");
-                // for(i=0;i<sub_cat;i++){
-                //     if(sub_cat_value.eq(i).val() == ""){
-                //         swal({  
-                //                 type: 'error',
-                //                 title: 'Please select Sub Category!',
-                //                 icon: 'error',
-                //                 confirmButtonColor: "#367fa9",
-                //             });
-                //             event.preventDefault();
-                //             return false;
-                //     } 
+                } 
+                var sub_cat = $(".sub_category_id option").length;
+                var sub_cat_value = $('.sub_category_id').find(":selected");
+                for(i=0;i<sub_cat;i++){
+                    if(sub_cat_value.eq(i).val() == ""){
+                        swal({  
+                                type: 'error',
+                                title: 'Please select Sub Category!',
+                                icon: 'error',
+                                confirmButtonColor: "#367fa9",
+                            });
+                            event.preventDefault();
+                            return false;
+                    } 
             
-                // } 
-                //quantity validation
-                // var v = $("input[name^='quantity']").length;
-                // var value = $("input[name^='quantity']");
-                // var reg = /^0/gi;
-                //     for(i=0;i<v;i++){
-                //         if(value.eq(i).val() == 0){
-                //             swal({  
-                //                     type: 'error',
-                //                     title: 'Quantity cannot be empty or zero!',
-                //                     icon: 'error',
-                //                     confirmButtonColor: "#367fa9",
-                //                 });
-                //                 event.preventDefault();
-                //                 return false;
-                //         }else if(value.eq(i).val() < 0){
-                //             swal({
-                //                 type: 'error',
-                //                 title: 'Negative Value is not allowed!',
-                //                 icon: 'error',
-                //                 confirmButtonColor: "#367fa9",
-                //             }); 
-                //             event.preventDefault(); // cancel default behavior
-                //             return false;
-                //         }else if(value.eq(i).val().match(reg)){
-                //             swal({
-                //                 type: 'error',
-                //                 title: 'Invalid Quantity Value!',
-                //                 icon: 'error',
-                //                 confirmButtonColor: "#367fa9",
-                //             }); 
-                //             event.preventDefault(); // cancel default behavior
-                //             return false;     
-                //         }  
-                
-                //     } 
+                } 
 
-                // $(".sub_category_id :selected").each(function() {
-                //     if(app_count == 0 && $.inArray($(this).val().toLowerCase().replace(/\s/g, ''),['laptop','desktop']) > -1){
-                //         swal({  
-                //             type: 'error',
-                //             title: 'Please choose an Application!',
-                //             icon: 'error',
-                //             confirmButtonColor: "#367fa9",
-                            
-                //         });
-                //         event.preventDefault();
-                //         return false;
-                //     }else{
-                        
-                //     }
-                // }); 
+                var sub_cat = $(".sub_category_id option").length;
+                var sub_cat_value = $('.sub_category_id').find(":selected");
+                for(i=0;i<sub_cat;i++){
+                    var val = sub_cat_value.eq(i).val() || '';
+                    if(app_count == 0 && $.inArray((sub_cat_value.eq(i).val() || '').toLowerCase().replace(/\s/g, ''),['laptop','desktop']) > -1){
+                        swal({  
+                                type: 'error',
+                                title: 'Please choose an Application!',
+                                icon: 'error',
+                                confirmButtonColor: "#367fa9",
+                            });
+                            event.preventDefault();
+                            return false;
+                    } 
+            
+                } 
+
                 swal({
                     title: "Are you sure?",
                     type: "warning",
@@ -992,10 +960,10 @@
                     }, function () {
                         $("#ERFRequest").submit();                                                   
                 });
-            
-            }
-        
-    });
+   
+        }
+    
+});
 
     $("#btn-cancel").click(function(event) {
        event.preventDefault();
