@@ -16,6 +16,7 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use Maatwebsite\Excel\Concerns\WithConditionalSheets;
 use DB;
 use CRUDBooster;
+use Carbon\Carbon;
 class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, WithValidation
 {
     /**
@@ -45,7 +46,7 @@ class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
                 'first_name'  => $row['first_name'],
                 'last_name'   => $row['last_name'],
                 'full_name'   => strtolower(trim($row['first_name'])).''.strtolower(trim($row['last_name'])),
-                'screen_date' => date("Y-m-d,",$row['screen_date']),
+                'screen_date' => Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['screen_date'])),
                 'created_by'  => CRUDBooster::myId(),
                 'updated_at'  => CRUDBooster::myId(),
             ]);
