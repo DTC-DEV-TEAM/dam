@@ -543,16 +543,17 @@
                         var v = $("input[name^='value']").length;
                         var value = $("input[name^='value']");
                         for(i=0;i<v;i++){
-                            if(value.eq(i).val() == 0){
-                                swal({
-                                        type: 'error',
-                                        title: 'Value required!',
-                                        icon: 'error',
-                                        customClass: 'swal-wide'
-                                    });
-                                    event.preventDefault();
-                                    return false;
-                            }else if(value.eq(i).val() < 0){
+                            // if(value.eq(i).val() == 0){
+                            //     swal({
+                            //             type: 'error',
+                            //             title: 'Value required!',
+                            //             icon: 'error',
+                            //             customClass: 'swal-wide'
+                            //         });
+                            //         event.preventDefault();
+                            //         return false;
+                            // }else 
+                            if(value.eq(i).val() < 0){
                                 swal({
                                     type: 'error',
                                     title: 'Value should not be negative!',
