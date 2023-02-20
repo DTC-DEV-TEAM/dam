@@ -595,15 +595,16 @@
                                     });
                                     event.preventDefault();
                                     return false;
-                            }else if(warranty_coverage.eq(i).val() <= 0){
-                                swal({
-                                        type: 'error',
-                                        title: 'Warranty Coverage Year Cannot be zero!',
-                                        icon: 'error'
-                                    });
-                                    event.preventDefault();
-                                    return false;
                             }
+                            // else if(warranty_coverage.eq(i).val() <= 0){
+                            //     swal({
+                            //             type: 'error',
+                            //             title: 'Warranty Coverage Year Cannot be zero!',
+                            //             icon: 'error'
+                            //         });
+                            //         event.preventDefault();
+                            //         return false;
+                            // }
                         
                         }
 
