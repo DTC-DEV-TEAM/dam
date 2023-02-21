@@ -174,6 +174,9 @@ Route::group(['middleware' => ['web']], function() {
      
     //Applicant Report
     //Route::get('/admin/applicant_module/summary-report/{id}', 'AdminApplicantSummaryReportController@applicantSummaryReport')->name('view-applicant-status');
+    //report export filter
+    Route::post('/admin/reports/search-approved','AdminReportsController@searchApplicant')->name('request-search');
+    Route::post('/admin/reports/export-request','AdminReportsController@requestExport')->name('export-request');
     Route::get('/admin/clear-view', function() {
         Artisan::call('view:clear');
         return "View cache is cleared!";

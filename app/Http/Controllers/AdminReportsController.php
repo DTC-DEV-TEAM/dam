@@ -5,8 +5,18 @@
 	use DB;
 	use CRUDBooster;
 	use App\BodyRequest;
+	use App\HeaderRequest;
 	use App\MoveOrder;
 	use App\Models\ReturnTransferAssets;
+	use Maatwebsite\Excel\Facades\Excel;
+	use PhpOffice\PhpSpreadsheet\Spreadsheet;
+	use PhpOffice\PhpSpreadsheet\Reader\Exception;
+	use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+	use PhpOffice\PhpSpreadsheet\IOFactory;
+	use Illuminate\Support\Facades\Log;
+	use Illuminate\Support\Facades\Redirect;
+	use Illuminate\Contracts\Cache\LockTimeoutException;
+	use App\Exports\ExportRequestByApprover;
 
 	class AdminReportsController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -242,7 +252,7 @@
 	        |
 	        */
 	        $this->load_js = array();
-	        
+	        $this->load_js[] = asset("datetimepicker/bootstrap-datetimepicker.min.js");
 	        
 	        
 	        /*
@@ -266,7 +276,7 @@
 	        |
 	        */
 	        $this->load_css = array();
-	        
+			$this->load_css[] = asset("datetimepicker/bootstrap-datetimepicker.min.css");
 	        
 	    }
 
@@ -450,8 +460,97 @@
 			}
 			//dd($returnTransfer);
 			$data['finalData'] = array_merge($suppliesMarketing, $returnTransfer);
-			//Create a view. Please use `view` method instead of view method from laravel.
+
+			$data['categories'] = DB::table('requests')->whereIn('id', [1,5,6,7])->where('status', 'ACTIVE')
+													   ->orderby('request_name', 'asc')
+													   ->get();
+
 			return $this->view('assets.purchasing-reports',$data);
+		}
+
+		public function searchApplicant(Request $request){
+			$fields = Request::all();
+			
+			$from = $fields['from'];
+			$to = $fields['to'];
+		    $category = $fields['category'];
+			$data = [];
+            $filters = [];
+			$data['page_title'] = 'Applicant Detail';
+
+			$applicant = BodyRequest::orderby('body_request.id','asc')->leftjoin('header_request', 'body_request.header_request_id', '=', 'header_request.id');
+			if($from != '' && !is_null($from)){
+				$applicant->whereBetween('header_request.approved_at',[$from,$to]);
+				$filters['filter_column[header_request.approved_at][type]'] = '=';
+				$filters['filter_column[header_request.approved_at][value][0]'] = $from;
+                $filters['filter_column[header_request.approved_at][value][1]'] = $to;
+			}
+			if($category != '' && !is_null($category)){
+				$applicant->where('header_request.request_type_id', $category);
+				$filters['filter_column[header_request.request_type_id][type]'] = '=';
+				$filters['filter_column[header_request.request_type_id][value]'] = $category;
+			}
+			$applicant
+			->leftjoin('mo_body_request', 'body_request.id', '=', 'mo_body_request.body_request_id')
+			->leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
+			->leftjoin('condition_type', 'header_request.conditions', '=', 'condition_type.id')
+			->leftjoin('employees', 'header_request.employee_name', '=', 'employees.id')
+			->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
+			->leftjoin('departments', 'header_request.department', '=', 'departments.id')
+			->leftjoin('positions', 'header_request.position', '=', 'positions.id')
+			->leftjoin('locations', 'header_request.store_branch', '=', 'locations.id')
+			->leftjoin('cms_users as requested', 'header_request.created_by','=', 'requested.id')
+			->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
+			->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
+			->leftjoin('cms_users as tagged', 'header_request.purchased2_by','=', 'tagged.id')
+			->leftjoin('statuses', 'header_request.status_id', '=', 'statuses.id')
+			->leftjoin('statuses as body_statuses', 'body_request.line_status_id', '=', 'body_statuses.id')
+			->leftjoin('statuses as mo_statuses', 'mo_body_request.status_id', '=', 'mo_statuses.id')
+			->select('body_request.*',
+					'header_request.*',
+					'mo_body_request.*',
+					'header_request.id as requestid',
+					'header_request.created_at as created',
+					'request_type.*',
+					'condition_type.*',
+					'requested.name as requestedby',
+					'employees.bill_to as employee_name',
+					'companies.company_name as company_name',
+					'departments.department_name as department',
+					'locations.store_name as store_branch',
+					'approved.name as approvedby',
+					'recommended.name as recommendedby',
+					'tagged.name as taggedby',
+					'header_request.purchased2_at as transacted_date',
+					'header_request.created_at as created_at',
+					'statuses.status_description as status_description',
+					'body_request.item_description as body_description',
+					'body_request.digits_code as body_digits_code',
+					'body_request.quantity as body_quantity',
+					'mo_statuses.status_description as mo_statuses_description',
+					'body_statuses.status_description as body_statuses_description',
+					'body_request.category_id as body_category_id',
+					'mo_body_request.body_request_id as mo_body_request_id',
+					'mo_body_request.item_description as mo_item_description',
+					'body_request.mo_so_num as body_mo_so_num'
+					
+				    );
+		
+					
+			$data['result']        = $applicant->get();
+			$data['from']          = $from;
+			$data['to']            = $to;
+			$data['category']      = $category;
+			$data['filters'] = $filters;
+			//dd($data['result'], $data['filters']);
+			return $this->view("assets.purchasing-reports-view", $data);
+		}
+
+		public function requestExport(Request $request){
+			$fields = Request::all();
+			$filename = $fields['filename'];
+			return Excel::download(new ExportRequestByApprover($fields), $filename.'.xlsx');
+
 		}
 
 
