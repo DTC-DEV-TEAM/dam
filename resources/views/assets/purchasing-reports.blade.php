@@ -10,6 +10,11 @@
                 font-size: 13px;
                 color:#3c8dbc
             }
+            .modal-content  {
+                -webkit-border-radius: 3px !important;
+                -moz-border-radius: 3px !important;
+                border-radius: 3px !important; 
+            }
        
         </style>
     @endpush
@@ -48,10 +53,12 @@
             <br> -->
            
         <div class="row" style="margin:5px">   
-            <button type="button" id="btn-export" class="btn btn-primary btn-sm btn-export" style="margin-bottom:10px"><i class="fa fa-download"></i>
+            <!-- <button type="button" id="btn-export" class="btn btn-primary btn-sm btn-export" style="margin-bottom:10px"><i class="fa fa-download"></i>
                 <span>Export Data</span>
+            </button> -->
+            <button type="button" id="btn-export" class="btn btn-primary btn-sm btn-export" data-toggle="modal" data-target="#myModal" style="margin-bottom:10px"><i class="fa fa-download"></i>
+             <span>Export Filter</span>
             </button>
-            
             <table class='table table-hover table-striped table-bordered' id="table_dashboard">
             
                 <thead>
@@ -118,10 +125,61 @@
                 @endforeach
                 </tbody>
             </table>
+        </div>                 
         </div>
-           
-                   
+
+        <!-- Modal Edit Start-->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria- 
+            labelledby="exportModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-md" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria- 
+                            label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h3 class="modal-title text-center" id="exportModalLabel">Filter Export</h3>
+                    </div>
+                    <div class="modal-body">
+                        <form  id="filterForm" method='post' target='_blank' name="filterForm" action="{{route('request-search')}}">
+                            <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label require"> Approved Date From</label>
+                                        <input type="text" class="form-control date" name="from"  id="from" placeholder="Please Select Date">
+                                    </div>
+                                </div>  
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label require"> Approved Date To</label>
+                                        <input type="text" class="form-control date" name="to"  id="to" placeholder="Please Select Date">
+                                    </div>
+                                </div>  
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label require">Category</label>
+                                        <select selected data-placeholder="-- Select Category --" id="category" name="category" class="form-select erf" style="width:100%;">
+                                            @foreach($categories as $res)
+                                                <option value=""></option>
+                                                <option value="{{ $res->id }}">{{ $res->request_name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>  
+                            </div>
+                    </div>
+                        <div class="modal-footer">
+                        <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="btnExport">Export</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
+        <!-- Modal Edit End-->
 
 
 </div>
@@ -146,7 +204,7 @@
        $(document).ready(function() {
            table = $("#table_dashboard").DataTable({
                 ordering:false,
-                pageLength:50,
+                pageLength:25,
                 language: {
                     searchPlaceholder: "Search"
                 },
@@ -168,8 +226,15 @@
                     },
                     ],
             });
-            $("#btn-export").on("click", function () {
-                table.button(".buttons-excel").trigger();
+            // $("#btn-export").on("click", function () {
+            //     table.button(".buttons-excel").trigger();
+            // });
+
+            $('#erf_number,#status, #category').select2({})
+            $(".date").datetimepicker({
+                    viewMode: "days",
+                    format: "YYYY-MM-DD",
+                    dayViewHeaderFormat: "MMMM YYYY",
             });
         });
  
