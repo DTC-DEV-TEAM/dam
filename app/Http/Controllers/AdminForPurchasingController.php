@@ -916,7 +916,7 @@
 						//'employees.company_name_id as company_name',
 						'departments.department_name as department',
 						//'positions.position_description as position',
-						'locations.store_name as store_branch',
+						//'locations.store_name as store_branch',
 						'approved.name as approvedby',
 						'recommended.name as recommendedby',
 						'header_request.created_at as created_at'
@@ -981,7 +981,7 @@
 						//'employees.company_name_id as company_name',
 						'departments.department_name as department',
 						//'positions.position_description as position',
-						'locations.store_name as store_branch',
+						//'locations.store_name as store_branch',
 						'approved.name as approvedby',
 						'recommended.name as recommendedby',
 						'picked.name as pickedby',

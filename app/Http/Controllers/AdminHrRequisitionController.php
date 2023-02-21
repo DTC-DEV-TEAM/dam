@@ -559,6 +559,7 @@
 			$data['interact_with'] = DB::table('sub_masterfile_interact_with')->where('status', 'ACTIVE')->get();
 			$data['email_domain'] = DB::table('sub_masterfile_email_domain')->where('status', 'ACTIVE')->get();
 			$data['required_system'] = DB::table('sub_masterfile_required_system')->where('status', 'ACTIVE')->get();
+			$data['positions'] = DB::table('positions')->where('status', 'ACTIVE')->get();
 			return $this->view("erf.add-hr-requisition", $data);
 				
 		}

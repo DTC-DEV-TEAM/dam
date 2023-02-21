@@ -2,6 +2,14 @@
 @extends('crudbooster::admin_template')
 @push('head')
 <style type="text/css">   
+   .signature {
+    border-bottom: 1px solid #000;
+    }
+    @media print {
+        .signature {
+         border-bottom: 1px solid #000;
+        }
+    }
 </style>
 @endpush
 @section('content')
@@ -222,6 +230,15 @@
 
                         </tr>
 
+                        <tr>
+                        @if($Header->if_from_erf != null || $Header->if_from_erf != "")
+                        <td width="20%"> <br>
+                               <h3>____________________________</h3>
+                            <label style="margin-left:60px;"><strong>received by HR<strong></label>
+                        </td>
+                        @endif
+                    </tr>
+
                     </table> 
                 </div>
 
@@ -247,7 +264,6 @@
 @endsection
 @push('bottom')
     <script type="text/javascript">
-
         function printDivision(divName) {
          //alert('Please print 2 copies!');
             var generator = window.open(",'printableArea,");
@@ -275,6 +291,8 @@
                   });
                   return false;
         });
+
+        
 
     </script>
 @endpush

@@ -101,7 +101,12 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label"><span style="color:red">*</span> Position</label>
-                            <input type="text" class="form-control finput"  id="position" name="position"  required>                                   
+                            <select required selected data-placeholder="-- Please Select Positions/Title --" id="position" name="position" class="form-select select2" style="width:100%;">
+                            @foreach($positions as $res)
+                                <option value=""></option>
+                                <option value="{{ $res->position_description }}">{{ $res->position_description }}</option>
+                            @endforeach
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -368,7 +373,7 @@
     setTimeout("preventBack()", 0);
 
     var tableRow = 1;
-
+    $('#position').select2({})
     $("#application_div").hide();
     $("#application_others_div").hide();
 

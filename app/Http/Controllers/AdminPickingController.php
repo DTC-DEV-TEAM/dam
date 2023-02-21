@@ -803,7 +803,7 @@
 						'employees.bill_to as employee_name',
 						'employees.company_name_id as company_name',
 						'departments.department_name as department',
-						'locations.store_name as store_branch',
+						//'locations.store_name as store_branch',
 						'approved.name as approvedby',
 						'recommended.name as recommendedby',
 						'header_request.created_at as created_at'
