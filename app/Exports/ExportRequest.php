@@ -9,7 +9,7 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 use App\Models\Applicant;
 use DB;
 
-class ExportRequestByApprover implements FromQuery, WithHeadings, WithMapping
+class ExportRequest implements FromQuery, WithHeadings, WithMapping
 {
     //use Exportable;
     /**
@@ -115,6 +115,6 @@ class ExportRequestByApprover implements FromQuery, WithHeadings, WithMapping
 
     public function title(): string
     {
-        return 'Applicant';
+        return 'Request';
     }
 }
