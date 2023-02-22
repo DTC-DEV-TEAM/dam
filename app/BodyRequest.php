@@ -65,7 +65,7 @@ class BodyRequest extends Model
     
        $query->orderby('body_request.id','asc')
             ->leftjoin('header_request', 'body_request.header_request_id', '=', 'header_request.id')
-			->leftjoin('mo_body_request', 'body_request.id', '=', 'mo_body_request.body_request_id')
+			->leftjoin('mo_body_request', 'header_request.id', '=', 'mo_body_request.header_request_id')
 			->leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
 			->leftjoin('condition_type', 'header_request.conditions', '=', 'condition_type.id')
 			->leftjoin('employees', 'header_request.employee_name', '=', 'employees.id')
