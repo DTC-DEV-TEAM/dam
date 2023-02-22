@@ -24,6 +24,8 @@ class HeaderRequest extends Model
        'requestor_comments',
        'created_by',
        'created_at',
+       'approved_by',
+       'approved_at',
        'request_type_id',
        'privilege_id',
        'application',

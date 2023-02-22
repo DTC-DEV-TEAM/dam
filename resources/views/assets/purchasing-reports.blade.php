@@ -15,7 +15,19 @@
                 -moz-border-radius: 3px !important;
                 border-radius: 3px !important; 
             }
-       
+            .select2-selection__choice{
+                    font-size:14px !important;
+                    color:black !important;
+            }
+            .select2-selection__rendered {
+                line-height: 31px !important;
+            }
+            .select2-container .select2-selection--single {
+                height: 35px !important;
+            }
+            .select2-selection__arrow {
+                height: 34px !important;
+            }
         </style>
     @endpush
 @section('content')
@@ -56,7 +68,7 @@
             <!-- <button type="button" id="btn-export" class="btn btn-primary btn-sm btn-export" style="margin-bottom:10px"><i class="fa fa-download"></i>
                 <span>Export Data</span>
             </button> -->
-            <button type="button" id="btn-export" class="btn btn-primary btn-sm btn-export" data-toggle="modal" data-target="#myModal" style="margin-bottom:10px"><i class="fa fa-download"></i>
+            <button type="button" id="btn-export" class="btn btn-primary btn-sm btn-export" data-toggle="modal" data-target="#myModal" style="margin-bottom:10px"><i class="fa fa-search"></i>
              <span>Export Filter</span>
             </button>
             <table class='table table-hover table-striped table-bordered' id="table_dashboard">
@@ -235,6 +247,25 @@
                     viewMode: "days",
                     format: "YYYY-MM-DD",
                     dayViewHeaderFormat: "MMMM YYYY",
+            });
+
+            $('#btnExport').click(function(event) {
+                event.preventDefault();
+                var from = $('#from').val();
+                var to = $('#to').val();
+                if(from > to){
+                    swal({
+                        type: 'error',
+                        title: 'Invalid Date of Range',
+                        icon: 'error',
+                        confirmButtonColor: "#367fa9",
+                    }); 
+                    event.preventDefault(); // cancel default behavior
+                    return false;
+                }else{
+                    $('#filterForm').submit(); 
+                }
+               
             });
         });
  

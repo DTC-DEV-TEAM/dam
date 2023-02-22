@@ -433,6 +433,8 @@
 					$arfHeaderContainer['requestor_comments'] 		  = NULL;
 					$arfHeaderContainer['created_by'] 				  = NULL;
 					$arfHeaderContainer['created_at'] 				  = date('Y-m-d H:i:s');
+					$arfHeaderContainer['approved_by'] 		          = CRUDBooster::myId();
+				    $arfHeaderContainer['approved_at'] 		          = date('Y-m-d H:i:s');
 					$arfHeaderContainer['request_type_id']		 	  = $arfHeadVal['request_type_id'];
 					$arfHeaderContainer['privilege_id']		 	      = NULL;
 					$arfHeaderContainer['if_from_erf' ]		          = $erf_header->reference_number;
