@@ -177,6 +177,13 @@ Route::group(['middleware' => ['web']], function() {
     //report export filter
     Route::post('/admin/reports/search-approved','AdminReportsController@searchApplicant')->name('request-search');
     Route::post('/admin/reports/export-request','AdminReportsController@requestExport')->name('export-request');
+
+    //serach per category
+    Route::post(config('crudbooster.ADMIN_PATH').'/header_request/item-it-search','AdminHeaderRequestController@itemITSearch')->name('item.it.search');
+    Route::post(config('crudbooster.ADMIN_PATH').'/header_request/item-fa-search','AdminHeaderRequestController@itemFASearch')->name('item.fa.search');
+    Route::post(config('crudbooster.ADMIN_PATH').'/header_request/item-marketing-search','AdminHeaderRequestController@itemMarketingSearch')->name('item.marketing.search');
+    Route::post(config('crudbooster.ADMIN_PATH').'/header_request/item-supplies-search','AdminHeaderRequestController@itemSuppliesSearch')->name('item.supplies.search');
+
     Route::get('/admin/clear-view', function() {
         Artisan::call('view:clear');
         return "View cache is cleared!";

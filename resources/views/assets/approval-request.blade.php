@@ -79,17 +79,6 @@
         
             </div>
 
-           <!-- <hr/>
-
-            <div class="row">                           
-                <label class="control-label col-md-2">{{ trans('message.form-label.condition') }}:</label>
-                <div class="col-md-4">
-                        <p>{{$Header->condition_description}}</p>
-                </div>
-
-        
-            </div> -->
-
             <hr/>                
             
             <div class="box-header text-center">
@@ -99,6 +88,7 @@
             <table  class='table table-striped table-bordered'>
                 <thead>
                     <tr>
+                        <th width="10%" class="text-center">{{ trans('message.table.digits_code') }}</th>
                         <th width="30%" class="text-center">{{ trans('message.table.item_description') }}</th>
                         <th width="25%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
                         <th width="20%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
@@ -109,6 +99,7 @@
                 <tbody>
                     @foreach($Body as $rowresult)
                         <tr>
+                            <td style="text-align:center" height="10">{{$rowresult->digits_code}}</td>
                             <td style="text-align:center" height="10">{{$rowresult->item_description}}</td>
                             <td style="text-align:center" height="10">{{$rowresult->category_id}}</td>
                             <td style="text-align:center" height="10">
@@ -118,24 +109,7 @@
                             </td>
 
                             <td style="text-align:center" height="10">{{$rowresult->quantity}}</td>
-                            
-                            <!--
-                                    {{$rowresult->app_id}}
 
-                                    @if($rowresult->app_id_others != null || $rowresult->app_id_others != "" )
-                                        <br>
-                                        {{$rowresult->app_id_others}}
-                                    @endif
-                            
-                            </td>
-                            <td style="text-align:center" height="10">{{$rowresult->quantity}}</td>
-                             <td style="text-align:center" height="10">
-
-                                @if($rowresult->image != null || $rowresult->image != "")
-                                    <img src="{{asset("$rowresult->image")}}" style="width:150px;height:150px;">
-                                @endif  
-
-                            </td> -->
                         
                         </tr>
                     @endforeach

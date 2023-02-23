@@ -165,6 +165,7 @@
                                                     <table class="table table-bordered" id="asset-items">
                                                         <tbody id="bodyTable">
                                                             <tr class="tbl_header_color dynamicRows">
+                                                                <th width="10%" class="text-center">{{ trans('message.table.digits_code') }}</th>
                                                                 <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
                                                                 <th width="9%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
                                                                 <th width="15%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
@@ -199,10 +200,12 @@
                                                                         <?php   $tableRow++; ?>
 
                                                                         <tr>
-                                                                            <td style="text-align:center" height="10">
-                                                                                
+                                                                            <td style="text-align:center" height="10">                                                                                
                                                                                     <input type="hidden"  class="form-control"  name="item_id[]" id="item_id{{$tableRow}}"  required  value="{{$rowresult->id}}">
-                                                                                
+                                                                                    {{$rowresult->digits_code}}
+                                                                            </td>
+                                                                            <td style="text-align:center" height="10">                                                                                
+                                                                                    <input type="hidden"  class="form-control"  name="item_id[]" id="item_id{{$tableRow}}"  required  value="{{$rowresult->id}}">
                                                                                     {{$rowresult->item_description}}
                                                                             </td>
                                                                             <td style="text-align:center" height="10">
@@ -246,30 +249,7 @@
                                                                                     </select> -->
                                                                                 @endif
 
-                                                                            <!--  <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control Reco" data-id="{{$tableRow}}" id="recommendation{{$tableRow}}"  name="recommendation[]"  required maxlength="100">
-                                        
-                                                                                <table id="reco-table" style="width: 100%;">
-                                                                                    <tbody>
-
-                                                                                        <tr id="tr-reco">
-
-                                                                                            <tr>
-
-                                                                                                
-                                                                                            </tr>
-                                                                                            
-
-                                                                                        </tr>
-                                                                                    </tbody>
-                                                                                    <tfoot>
-                                                                                        <tr id="tr-table-reco{{$tableRow}}" class="bottom">
-                                                                                            
-                                                                                        </tr>
-                                                                                    </tfoot>
-
-                                                                                </table> -->
-
-                                                                            </td>
+      
                                                                                
                                                                             <td>
                                                                                     <div class="form-group">
@@ -284,37 +264,6 @@
                                                                                 <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control itemDesc" data-id="{{$tableRow}}" id="item_description{{$tableRow}}"  name="reco_item_description[]"   maxlength="100" readonly>
                                                                             </td>
 
-                                                                            <!--
-                                                                            <td>
-
-                                                                            
-
-                                                                                <button id="add-row-button" name="add-row-button" class="btn btn-info add-row-button" data-id="{{$tableRow}}" ><i class="glyphicon glyphicon-plus"></i></button>
-
-
-                                                                                <table id="reco-table-delete{{$tableRow}}" class="reco-table-delete" style="width: 100%;">
-                                                                                    <tbody>
-
-                                                                                        <tr id="tr-reco-delete">
-
-                                                                                            <tr>
-
-                                                                                                
-                                                                                            </tr>
-                                                                                            
-
-                                                                                        </tr>
-                                                                                    </tbody>
-                                                                                    <tfoot>
-                                                                                        <tr id="tr-table-reco-delete{{$tableRow}}" class="bottom">
-                                                                                            
-                                                                                        </tr>
-                                                                                    </tfoot>
-
-                                                                                </table>
-
-                                                                            </td> -->
-
                                                                         </tr>
 
                                                                     @endforeach
@@ -328,7 +277,7 @@
 
                                                             <tr id="tr-table1" class="bottom">
                 
-                                                                <td colspan="3">
+                                                                <td colspan="4">
                                                                     <!-- <input type="button" id="add-Row" name="add-Row" class="btn btn-info add" value='Add Item' /> -->
                                                                 </td> 
                                                                 <td align="center" colspan="1">
