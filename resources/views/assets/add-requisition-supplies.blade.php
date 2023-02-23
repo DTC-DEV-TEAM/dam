@@ -362,8 +362,9 @@
                                         },
                                         success: function (data) {
                                             if(data.items === null){
-                                                $('#display-error'+tableRow).html("<span id='notif' class='label label-danger'> Item Not Found!</span>")
+                                                $('#display-error'+tableRow).html("<span id='notif' class='label label-danger'> Item Not Found!</span>");
                                             }else{  
+                                                $('#display-error'+tableRow).html("");
                                             if (data.status_no == 1) {
 
                                                 $("#val_item").html();
