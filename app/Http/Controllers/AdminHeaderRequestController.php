@@ -468,7 +468,7 @@
 			$cont = (new static)->apiContext;
 
 			$dataLines = array();
-			$digits_code 		= $fields['supplies_digits_code'];
+			$digits_code 		= $fields['digits_code'];
 			$supplies_cost 		= $fields['supplies_cost'];
 			$employee_name 		= $fields['employee_name'];
 			$company_name 		= $fields['company_name'];
@@ -566,7 +566,7 @@
 			$total_unit_cost 	= $fields['total_unit_cost'];
 			$item_id 			= $fields['item_id'];
 			*/
-			$digits_code 		= $fields['supplies_digits_code'] ? $fields['supplies_digits_code'] : null;
+			$digits_code 		= $fields['digits_code'];
 			$supplies_cost 		= $fields['supplies_cost'];
 			$item_description 	= $fields['item_description'];
 			$category_id 		= $fields['category_id'];
@@ -1443,6 +1443,246 @@
 						
 						echo $output;
 					}
+				}
+
+				public function itemITSearch(Request $request) {
+
+					$request = Request::all();
+		
+					$cont = (new static)->apiContext;
+		
+					$search 		= $request['search'];
+		
+					$data = array();
+		
+					$data['status_no'] = 0;
+					$data['message']   ='No Item Found!';
+					$data['items'] = array();
+		
+					//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
+		
+					$items = DB::table('assets')
+					->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',5)
+					->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',5)
+					
+						->join('category', 'assets.category_id','=', 'category.id')
+						//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
+						->select(	'assets.*',
+									'assets.id as assetID',
+									//'digits_imfs.digits_code as dcode',
+									'category.category_description as category_description'
+								)->take(10)->get();
+					
+					if($items){
+						$data['status'] = 1;
+						$data['problem']  = 1;
+						$data['status_no'] = 1;
+						$data['message']   ='Item Found';
+						$i = 0;
+						foreach ($items as $key => $value) {
+		
+							$return_data[$i]['id'] = 				$value->assetID;
+							$return_data[$i]['asset_code'] = 		$value->asset_code;
+							$return_data[$i]['digits_code'] = 		$value->digits_code;
+							$return_data[$i]['asset_tag'] = 		$value->asset_tag;
+							$return_data[$i]['serial_no'] = 		$value->serial_no;
+							$return_data[$i]['item_description'] = 	$value->item_description;
+							$return_data[$i]['category_description'] = 		$value->category_description;
+							$return_data[$i]['item_cost'] = 				$value->item_cost;
+							$return_data[$i]['item_type'] = 				$value->item_type;
+							$return_data[$i]['image'] = 				$value->image;
+							$return_data[$i]['quantity'] = 				$value->quantity;
+							$return_data[$i]['total_quantity'] = 				$value->total_quantity;
+		
+							$i++;
+		
+						}
+						$data['items'] = $return_data;
+					}
+		
+		
+					echo json_encode($data);
+					exit;  
+				}
+
+				public function itemFASearch(Request $request) {
+
+					$request = Request::all();
+		
+					$cont = (new static)->apiContext;
+		
+					$search 		= $request['search'];
+		
+					$data = array();
+		
+					$data['status_no'] = 0;
+					$data['message']   ='No Item Found!';
+					$data['items'] = array();
+		
+					//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
+		
+					$items = DB::table('assets')
+					->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',1)
+					->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',1)
+					
+						->join('category', 'assets.category_id','=', 'category.id')
+						//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
+						->select(	'assets.*',
+									'assets.id as assetID',
+									//'digits_imfs.digits_code as dcode',
+									'category.category_description as category_description'
+								)->take(10)->get();
+					
+					if($items){
+						$data['status'] = 1;
+						$data['problem']  = 1;
+						$data['status_no'] = 1;
+						$data['message']   ='Item Found';
+						$i = 0;
+						foreach ($items as $key => $value) {
+		
+							$return_data[$i]['id'] = 				$value->assetID;
+							$return_data[$i]['asset_code'] = 		$value->asset_code;
+							$return_data[$i]['digits_code'] = 		$value->digits_code;
+							$return_data[$i]['asset_tag'] = 		$value->asset_tag;
+							$return_data[$i]['serial_no'] = 		$value->serial_no;
+							$return_data[$i]['item_description'] = 	$value->item_description;
+							$return_data[$i]['category_description'] = 		$value->category_description;
+							$return_data[$i]['item_cost'] = 				$value->item_cost;
+							$return_data[$i]['item_type'] = 				$value->item_type;
+							$return_data[$i]['image'] = 				$value->image;
+							$return_data[$i]['quantity'] = 				$value->quantity;
+							$return_data[$i]['total_quantity'] = 				$value->total_quantity;
+		
+							$i++;
+		
+						}
+						$data['items'] = $return_data;
+					}
+		
+		
+					echo json_encode($data);
+					exit;  
+				}
+
+				public function itemMarketingSearch(Request $request) {
+
+					$request = Request::all();
+		
+					$cont = (new static)->apiContext;
+		
+					$search 		= $request['search'];
+		
+					$data = array();
+		
+					$data['status_no'] = 0;
+					$data['message']   ='No Item Found!';
+					$data['items'] = array();
+		
+					//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
+		
+					$items = DB::table('assets')
+					->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',4)
+					->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',4)
+					
+						->join('category', 'assets.category_id','=', 'category.id')
+						//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
+						->select(	'assets.*',
+									'assets.id as assetID',
+									//'digits_imfs.digits_code as dcode',
+									'category.category_description as category_description'
+								)->take(10)->get();
+					
+					if($items){
+						$data['status'] = 1;
+						$data['problem']  = 1;
+						$data['status_no'] = 1;
+						$data['message']   ='Item Found';
+						$i = 0;
+						foreach ($items as $key => $value) {
+		
+							$return_data[$i]['id'] = 				$value->assetID;
+							$return_data[$i]['asset_code'] = 		$value->asset_code;
+							$return_data[$i]['digits_code'] = 		$value->digits_code;
+							$return_data[$i]['asset_tag'] = 		$value->asset_tag;
+							$return_data[$i]['serial_no'] = 		$value->serial_no;
+							$return_data[$i]['item_description'] = 	$value->item_description;
+							$return_data[$i]['category_description'] = 		$value->category_description;
+							$return_data[$i]['item_cost'] = 				$value->item_cost;
+							$return_data[$i]['item_type'] = 				$value->item_type;
+							$return_data[$i]['image'] = 				$value->image;
+							$return_data[$i]['quantity'] = 				$value->quantity;
+							$return_data[$i]['total_quantity'] = 				$value->total_quantity;
+		
+							$i++;
+		
+						}
+						$data['items'] = $return_data;
+					}
+		
+		
+					echo json_encode($data);
+					exit;  
+				}
+
+				public function itemSuppliesSearch(Request $request) {
+
+					$request = Request::all();
+		
+					$cont = (new static)->apiContext;
+		
+					$search 		= $request['search'];
+		
+					$data = array();
+		
+					$data['status_no'] = 0;
+					$data['message']   ='No Item Found!';
+					$data['items'] = array();
+		
+					//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
+		
+					$items = DB::table('assets')
+					->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',2)
+					->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',2)
+					
+						->join('category', 'assets.category_id','=', 'category.id')
+						//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
+						->select(	'assets.*',
+									'assets.id as assetID',
+									//'digits_imfs.digits_code as dcode',
+									'category.category_description as category_description'
+								)->take(10)->get();
+					
+					if($items){
+						$data['status'] = 1;
+						$data['problem']  = 1;
+						$data['status_no'] = 1;
+						$data['message']   ='Item Found';
+						$i = 0;
+						foreach ($items as $key => $value) {
+		
+							$return_data[$i]['id'] = 				$value->assetID;
+							$return_data[$i]['asset_code'] = 		$value->asset_code;
+							$return_data[$i]['digits_code'] = 		$value->digits_code;
+							$return_data[$i]['asset_tag'] = 		$value->asset_tag;
+							$return_data[$i]['serial_no'] = 		$value->serial_no;
+							$return_data[$i]['item_description'] = 	$value->item_description;
+							$return_data[$i]['category_description'] = 		$value->category_description;
+							$return_data[$i]['item_cost'] = 				$value->item_cost;
+							$return_data[$i]['item_type'] = 				$value->item_type;
+							$return_data[$i]['image'] = 				$value->image;
+							$return_data[$i]['quantity'] = 				$value->quantity;
+							$return_data[$i]['total_quantity'] = 				$value->total_quantity;
+		
+							$i++;
+		
+						}
+						$data['items'] = $return_data;
+					}
+		
+		
+					echo json_encode($data);
+					exit;  
 				}
 
 	}

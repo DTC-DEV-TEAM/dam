@@ -83,6 +83,7 @@
                                     <thead>
                                         <tr><th colspan="5"><h4 align="center" ><strong>Item Details</strong></h4></th></tr>
                                         <tr>
+                                            <th style="text-align:center" height="10">Asset Code</th>
                                             <th style="text-align:center" height="10">Digits Code</th>
                                             <th style="text-align:center" height="10">Item Description</th>          
                                             <th style="text-align:center" height="10">Serial#</th>
@@ -100,6 +101,7 @@
 
                                             <tr>
                                                 @if($rowresult->digits_code != null)
+                                                <td height="10">{{$rowresult->asset_code}}</td>
                                                     <td height="10">
 
                                                         <input type="hidden" value="{{$rowresult->id}}" name="mo_id[]">

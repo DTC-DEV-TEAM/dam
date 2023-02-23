@@ -71,7 +71,7 @@
                                         <tr> -->
                                             <th style="text-align:center" height="10" width="10%">MO#</th>
                                             <th style="text-align:center" height="10" width="8%">Digits Code</th>
-                                            <th style="text-align:center" height="10" width="8%">Asset Tag</th>
+                                            <th style="text-align:center" height="10" width="8%">Asset Code</th>
                                             <th style="text-align:center" height="10" width="11%">Serial#</th>
                                             <th style="text-align:center" height="10" width="30%">DAM Description</th>          
                                             

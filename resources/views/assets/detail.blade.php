@@ -172,6 +172,7 @@
                                     <table class="table table-bordered" id="asset-items1">
                                         <tbody id="bodyTable">
                                             <tr class="tbl_header_color dynamicRows">
+                                                <th width="10%" class="text-center">{{ trans('message.table.digits_code') }}</th>
                                                 <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
                                                 <th width="9%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
                                                 <th width="15%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
@@ -207,6 +208,10 @@
                                                         
                                                                         @if($rowresult->deleted_at != null || $rowresult->deleted_at != "")
                                                                             <tr style="background-color: #d9534f; color: white;">
+                                                                               <td style="text-align:center" height="10">
+                                                                                        <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}">                               
+                                                                                        {{$rowresult->digits_code}}
+                                                                                </td>
                                                                                 <td style="text-align:center" height="10">
                                                                                         
                                                                                         <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}">                               
@@ -262,8 +267,11 @@
                                                                             </tr>
                                                                         @else
                                                                             <tr>
+                                                                               <td style="text-align:center" height="10">
+                                                                                        <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}">                               
+                                                                                        {{$rowresult->digits_code}}
+                                                                                </td>
                                                                                 <td style="text-align:center" height="10">
-                                                                                        
                                                                                         <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}">                               
                                                                                         {{$rowresult->item_description}}
                                                                                 </td>
