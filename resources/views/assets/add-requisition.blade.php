@@ -552,8 +552,6 @@
                         var category =  $('#category_id'+$(this).attr("data-id")).val();
                         var description = this.value;
 
-                        $('#digits_code'+tableRow).val("");
-
                         if(description.includes("LAPTOP") && category == "IT ASSETS"){
                         
                             // alert(description);
