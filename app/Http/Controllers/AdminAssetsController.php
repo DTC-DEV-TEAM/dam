@@ -479,18 +479,9 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-	        //Your code here
-
-			// if(CRUDBooster::myPrivilegeName() == "Employee"){
-
-			// 	$query->where('assets.assign_to', CRUDBooster::myId());
-
-			// }else{
-
-			// 	$query->whereNull('assets.image')->whereNull('assets.deleted_at');
-			// }
-
-	            
+	
+			$query->where('assets.status','!=','INACTIVE');
+			          
 	    }
 
 	    /*
@@ -746,6 +737,11 @@
             $count = 0;
             if(!empty($response["data"])) {
 				foreach ($response["data"] as $key => $value) {
+					if($value['skustatus_id'] == 4){
+                       $status = "INACTIVE";
+					}else{
+					   $status = "ACTIVE";
+					}
 					$count++;
 						DB::beginTransaction();
 						try {
@@ -764,7 +760,7 @@
 								'quantity' => 0,
 								'add_quantity' => 0,
 								'total_quantity' => 0,
-								'status_id' => 0,
+								'status' => $status,
 								'created_by' => CRUDBooster::myId(),
 								'created_at' => date('Y-m-d H:i:s'),
 							]);
@@ -817,11 +813,16 @@
             curl_close ($ch);
     
             $response = json_decode($server_output, true);
-       
+            dd($response);
             $data = [];
             $count = 0;
             if(!empty($response["data"])) {
 				foreach ($response["data"] as $key => $value) {
+					if($value['skustatus_id'] == 4){
+						$status = "INACTIVE";
+					 }else{
+						$status = "ACTIVE";
+					 }
 					$count++;
 						DB::beginTransaction();
 						try {
@@ -840,7 +841,7 @@
 								'quantity' => 0,
 								'add_quantity' => 0,
 								'total_quantity' => 0,
-								'status_id' => 0,
+								'status' => $status,
 								'updated_by' => CRUDBooster::myId(),
 								'updated_at' => date('Y-m-d H:i:s'),
 							]);
