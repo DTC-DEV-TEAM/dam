@@ -266,6 +266,31 @@
                         count_fail = 0;
                     }
                 });
+
+                $('.digits_code').each(function() {
+                    description = $(this).val();
+                    if (description == null) {
+                        swal({  
+                            type: 'error',
+                            title: 'Please fill all Fields!',
+                            icon: 'error',
+                            confirmButtonColor: "#367fa9",
+                        });
+                        count_fail++;
+
+                    } else if (description == "") {
+                        swal({  
+                            type: 'error',
+                            title: 'Please fill all Fields!',
+                            icon: 'error',
+                            confirmButtonColor: "#367fa9",
+                        });
+                        count_fail++;
+
+                    }else{
+                        count_fail = 0;
+                    }
+                });
                 
                 tableRow++;
 
