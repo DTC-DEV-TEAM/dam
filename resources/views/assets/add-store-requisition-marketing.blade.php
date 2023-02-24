@@ -249,12 +249,22 @@
                     description = $(this).val();
                     if (description == null) {
 
-                        alert("Please fill Item Description !");
+                         swal({  
+                            type: 'error',
+                            title: 'Please fill all Fields!',
+                            icon: 'error',
+                            confirmButtonColor: "#367fa9",
+                        });
                         count_fail++;
 
                     } else if (description == "") {
 
-                        alert("Please fill Item Description !");
+                         swal({  
+                            type: 'error',
+                            title: 'Please fill all Fields!',
+                            icon: 'error',
+                            confirmButtonColor: "#367fa9",
+                        });
                         count_fail++;
 
                     }else{
@@ -270,14 +280,15 @@
                     '<tr>' +
 
                         '<td >' +
-                        '  <input type="text" placeholder="Search Item ..." class="form-control finput" id="itemDesc'+ tableRow +'" data-id="'+ tableRow +'"   name="item_description[]"  required maxlength="100">' +
+                        '  <input type="text" placeholder="Search Item ..." class="form-control finput itemDesc" id="itemDesc'+ tableRow +'" data-id="'+ tableRow +'"   name="item_description[]"  required maxlength="100">' +
                           '<ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" data-id="'+ tableRow +'" id="ui-id-2'+ tableRow +'" style="display: none; top: 60px; left: 15px; width: 100%;">' +
                           '<li>Loading...</li>' +
                         '</ul>' +
                         '<div id="display-error'+ tableRow +'"></div>'+
                         '<td>' + 
                             '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control digits_code finput" data-id="'+ tableRow +'" id="digits_code'+ tableRow +'"  name="digits_code[]"   maxlength="100" readonly>' +
-                        '</td>' +
+                            '<input type="hidden" onkeyup="this.value = this.value.toUpperCase();" class="form-control fixed_description finput" data-id="'+ tableRow +'" id="fixed_description'+ tableRow +'"  name="fixed_description[]"   maxlength="100" readonly>' +
+                         '</td>' +
 
                         '<td>'+
                             '<select class="form-control drop'+ tableRow + '" name="category_id[]" data-id="' + tableRow + '" id="category_id' + tableRow + '" required style="width:100%">' +
@@ -410,6 +421,7 @@
                                 $("#digits_code"+$(this).attr("data-id")).val(e.digits_code);
                                 $("#supplies_cost"+$(this).attr("data-id")).val(e.item_cost);
                                 $('#itemDesc'+$(this).attr("data-id")).val(e.value);
+                                $('#fixed_description'+$(this).attr("data-id")).val(e.value);
                                 $('#val_item').html('');
                                 return false;
 

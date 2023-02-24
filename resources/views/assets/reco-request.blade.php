@@ -200,8 +200,7 @@
                                                                         <?php   $tableRow++; ?>
 
                                                                         <tr>
-                                                                            <td style="text-align:center" height="10">                                                                                
-                                                                                    <input type="hidden"  class="form-control"  name="item_id[]" id="item_id{{$tableRow}}"  required  value="{{$rowresult->id}}">
+                                                                            <td style="text-align:center" height="10">                                                                                                                       
                                                                                     {{$rowresult->digits_code}}
                                                                             </td>
                                                                             <td style="text-align:center" height="10">                                                                                
