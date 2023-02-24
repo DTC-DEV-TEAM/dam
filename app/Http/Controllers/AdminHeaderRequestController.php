@@ -1029,11 +1029,11 @@
 			//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
 
 			$items = DB::table('assets')
-			    ->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',1)
-				->orwhere('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',5)
-				->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',1)
-				->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',5)
-				// ->where('assets.digits_code','LIKE','%'.$search.'%')
+			    ->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',1)->where('assets.status','!=','INACTIVE')
+				->orwhere('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',5)->where('assets.status','!=','INACTIVE')
+				->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',1)->where('assets.status','!=','INACTIVE')
+				->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',5)->where('assets.status','!=','INACTIVE')
+				->where('assets.status','!=','INACTIVE')
 				// ->orWhere('assets.item_description','LIKE','%'.$search.'%')
 			
 				->join('category', 'assets.category_id','=', 'category.id')
@@ -1462,8 +1462,8 @@
 					//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
 		
 					$items = DB::table('assets')
-					->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',5)
-					->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',5)
+					->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',5)->where('assets.status','!=','INACTIVE')
+					->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',5)->where('assets.status','!=','INACTIVE')
 					
 						->join('category', 'assets.category_id','=', 'category.id')
 						//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
@@ -1522,8 +1522,8 @@
 					//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
 		
 					$items = DB::table('assets')
-					->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',1)
-					->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',1)
+					->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',1)->where('assets.status','!=','INACTIVE')
+					->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',1)->where('assets.status','!=','INACTIVE')
 					
 						->join('category', 'assets.category_id','=', 'category.id')
 						//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
@@ -1582,8 +1582,8 @@
 					//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
 		
 					$items = DB::table('assets')
-					->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',4)
-					->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',4)
+					->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',4)->where('assets.status','!=','INACTIVE')
+					->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',4)->where('assets.status','!=','INACTIVE')
 					
 						->join('category', 'assets.category_id','=', 'category.id')
 						//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
@@ -1642,8 +1642,8 @@
 					//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
 		
 					$items = DB::table('assets')
-					->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',2)
-					->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',2)
+					->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',2)->where('assets.status','!=','INACTIVE')
+					->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',2)->where('assets.status','!=','INACTIVE')
 					
 						->join('category', 'assets.category_id','=', 'category.id')
 						//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')

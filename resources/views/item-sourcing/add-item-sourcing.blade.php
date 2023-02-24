@@ -16,6 +16,53 @@
                 height: 34px !important;
             }
 
+            .firstRow {
+                border: 1px solid rgba(39, 38, 38, 0.5);
+                padding: 10px;
+                margin-left: 10px;
+                border-radius: 3px;
+                opacity: 2;
+            }
+
+            .firstRow {
+                padding: 10px;
+                margin-left: 10px;
+            }
+
+            .finput {
+                border:none;
+                border-bottom: 1px solid rgba(18, 17, 17, 0.5);
+            }
+
+            input.finput:read-only {
+                background-color: #fff;
+            }
+
+            input.sinput:read-only {
+                background-color: #fff;
+            }
+
+            input.addinput:read-only {
+                background-color: #f5f5f5;
+            }
+
+            .input-group-addon {
+                background-color: #f5f5f5 !important;
+            }
+
+            ::-webkit-input-placeholder {
+            font-style: italic;
+            }
+            :-moz-placeholder {
+            font-style: italic;  
+            }
+            ::-moz-placeholder {
+            font-style: italic;  
+            }
+            :-ms-input-placeholder {  
+            font-style: italic; 
+            }
+
         </style>
     @endpush
 @section('content')
@@ -41,13 +88,13 @@
                     <div class="form-group">
                         <label class="control-label require">{{ trans('message.form-label.employee_name') }}</label>
                          
-                        <input type="text" class="form-control"  id="employee_name" name="employee_name"  required readonly value="{{$employeeinfos->bill_to}}"> 
+                        <input type="text" class="form-control finput"  id="employee_name" name="employee_name"  required readonly value="{{$employeeinfos->bill_to}}"> 
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label require">{{ trans('message.form-label.company_name') }}</label>
-                        <input type="text" class="form-control"  id="company_name" name="company_name"  required readonly value="{{$employeeinfos->company_name_id}}">                                   
+                        <input type="text" class="form-control finput"  id="company_name" name="company_name"  required readonly value="{{$employeeinfos->company_name_id}}">                                   
                     </div>
                 </div>
             </div>
@@ -56,14 +103,14 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label require">{{ trans('message.form-label.department') }}</label>
-                        <input type="text" class="form-control"  id="department" name="department"  required readonly value="{{$employeeinfos->department_name}}">
+                        <input type="text" class="form-control finput"  id="department" name="department"  required readonly value="{{$employeeinfos->department_name}}">
                     </div>
                 </div>
 
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label require">{{ trans('message.form-label.position') }}</label>
-                        <input type="text" class="form-control"  id="position" name="position"  required readonly value="{{$employeeinfos->position_id}}">                                   
+                        <input type="text" class="form-control finput"  id="position" name="position"  required readonly value="{{$employeeinfos->position_id}}">                                   
                     </div>
                 </div>
             </div>
@@ -99,7 +146,7 @@
                                                     <tfoot>
                                                         <tr id="tr-table1" class="bottom">
                                                             <td colspan="3">
-                                                                <input type="button" id="add-Row" name="add-Row" class="btn btn-info add" value='Add Item' />
+                                                                <input type="button" id="add-Row" name="add-Row" class="btn btn-primary add" value='Add Item' />
                                                             </td>
                                                             <td align="left" colspan="1">
                                                                 <input type='number' name="quantity_total" class="form-control text-center" id="quantity_total" readonly>
@@ -145,7 +192,7 @@
                 <div class="col-md-12">
                     <div class="form-group">
                         <label>{{ trans('message.table.note') }}</label>
-                        <textarea placeholder="{{ trans('message.table.comments') }} ..." rows="5" class="form-control" name="requestor_comments"></textarea>
+                        <textarea placeholder="{{ trans('message.table.comments') }} ..." rows="3" class="form-control finput" name="requestor_comments"></textarea>
                     </div>
                 </div>
          
@@ -230,13 +277,21 @@
             $('.itemDesc').each(function() {
                 description = $(this).val();
                 if (description == null) {
-
-                    alert("Please fill Item Description !");
+                    swal({  
+                        type: 'error',
+                        title: 'Please fill up fields!',
+                        icon: 'error',
+                        confirmButtonColor: "#367fa9",
+                    });
                     count_fail++;
 
                 } else if (description == "") {
-
-                    alert("Please fill Item Description !");
+                    swal({  
+                        type: 'error',
+                        title: 'Please fill up fields!',
+                        icon: 'error',
+                        confirmButtonColor: "#367fa9",
+                    });
                     count_fail++;
 
                 }else{
@@ -252,7 +307,7 @@
                 '<tr>' +
 
                     '<td >' +
-                    '  <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control finput itemDesc" data-id="' + tableRow + '" id="itemDesc' + tableRow + '"  name="item_description[]"  required maxlength="100">' +
+                    '  <input type="text" placeholder="Item Description..." onkeyup="this.value = this.value.toUpperCase();" class="form-control finput itemDesc" data-id="' + tableRow + '" id="itemDesc' + tableRow + '"  name="item_description[]"  required maxlength="100">' +
                     '</td>' +  
 
                     '<td>'+

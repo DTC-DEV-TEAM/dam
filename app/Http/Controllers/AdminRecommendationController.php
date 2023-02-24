@@ -571,8 +571,8 @@
 			//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
 
 			$items = DB::table('assets')
-				->where('assets.digits_code','LIKE','%'.$search.'%')
-				->orWhere('assets.item_description','LIKE','%'.$search.'%')
+				->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.status','!=','INACTIVE')
+				->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.status','!=','INACTIVE')
 				->join('category', 'assets.category_id','=', 'category.id')
 				//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
 				->select(	'assets.*',
