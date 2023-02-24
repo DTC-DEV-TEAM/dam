@@ -245,13 +245,21 @@
                 $('.itemDesc').each(function() {
                     description = $(this).val();
                     if (description == null) {
-
-                        alert("Please fill Item Description !");
+                        swal({  
+                            type: 'error',
+                            title: 'Please fill all Fields!',
+                            icon: 'error',
+                            confirmButtonColor: "#367fa9",
+                        });
                         count_fail++;
 
                     } else if (description == "") {
-
-                        alert("Please fill Item Description !");
+                        swal({  
+                            type: 'error',
+                            title: 'Please fill all Fields!',
+                            icon: 'error',
+                            confirmButtonColor: "#367fa9",
+                        });
                         count_fail++;
 
                     }else{
@@ -274,6 +282,7 @@
                         '<div id="display-error'+ tableRow +'"></div>'+
                         '<td>' + 
                             '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control digits_code finput" data-id="'+ tableRow +'" id="digits_code'+ tableRow +'"  name="digits_code[]"   maxlength="100" readonly>' +
+                            '<input type="hidden" onkeyup="this.value = this.value.toUpperCase();" class="form-control fixed_description finput" data-id="'+ tableRow +'" id="fixed_description'+ tableRow +'"  name="fixed_description[]"   maxlength="100" readonly>' +                       
                         '</td>' +
 
                         '<td>'+
@@ -410,6 +419,8 @@
                                 $("#digits_code"+$(this).attr("data-id")).val(e.digits_code);
                                 $("#supplies_cost"+$(this).attr("data-id")).val(e.item_cost);
                                 $('#itemDesc'+$(this).attr("data-id")).val(e.value);
+                                $('#itemDesc'+$(this).attr("data-id")).attr('readonly','readonly');
+                                $('#fixed_description'+$(this).attr("data-id")).val(e.value);
                                 $('#val_item').html('');
                                 return false;
 
