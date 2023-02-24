@@ -4,6 +4,9 @@
 	use Request;
 	use DB;
 	use CRUDBooster;
+	use App\StatusMatrix;
+	use App\Models\ItemHeaderSourcing;
+	use App\Models\ItemBodySourcing;
 
 	class AdminItemSourcingHeaderController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -259,9 +262,8 @@
 	    */
 	    public function hook_before_add(&$postdata) {        
 	        $fields = Request::all();
-
+            dd($fields);
 			$dataLines = array();
-			$digits_code 		= $fields['digits_code'];
 			$supplies_cost 		= $fields['supplies_cost'];
 			$employee_name 		= $fields['employee_name'];
 			$company_name 		= $fields['company_name'];
@@ -339,8 +341,8 @@
 	    public function hook_after_add($id) {        
 	        $fields = Request::all();
 			$dataLines = array();
-			$arf_header = DB::table('header_request')->where(['created_by' => CRUDBooster::myId()])->orderBy('id','desc')->first();
-			$digits_code 		= $fields['digits_code'];
+			$arf_header = DB::table('item_sourcing_header')->where(['created_by' => CRUDBooster::myId()])->orderBy('id','desc')->first();
+	
 			$supplies_cost 		= $fields['supplies_cost'];
 			$item_description 	= $fields['item_description'];
 			$category_id 		= $fields['category_id'];
@@ -374,7 +376,7 @@
 
 				if(in_array(CRUDBooster::myPrivilegeId(), [4,11,12,14,15])){ 
 					if($category_id[$x] == "IT ASSETS"){
-						HeaderRequest::where('id', $arf_header->id)->update([
+						ItemHeaderSourcing::where('id', $arf_header->id)->update([
 							'to_reco'=> 1
 						]);
 						
@@ -405,6 +407,15 @@
 
 				}
 
+				if($category_id[$x] == "IT ASSETS"){
+					$dataLines[$x]['request_type_id'] = 1;
+					
+				}else if($category_id[$x] == "FIXED ASSETS"){
+					$dataLines[$x]['request_type_id'] = 5;
+				}else{
+					$dataLines[$x]['request_type_id'] = 7;
+				}
+
 				if (!empty($image[$x])) {
 					$dataLines[$x]['image'] 			= 'vendor/crudbooster/'.$filename;
 				}else{
@@ -417,7 +428,7 @@
 			DB::beginTransaction();
 	
 			try {
-				BodyRequest::insert($dataLines);
+				ItemBodySourcing::insert($dataLines);
 				DB::commit();
 				//CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_pullout_data_success",['mps_reference'=>$pullout_header->reference]), 'success');
 			} catch (\Exception $e) {

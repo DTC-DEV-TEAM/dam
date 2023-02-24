@@ -82,7 +82,7 @@
 			if(CRUDBooster::getCurrentMethod() == 'getEdit' || CRUDBooster::getCurrentMethod() == 'postEditSave' || CRUDBooster::getCurrentMethod() == 'getDetail') {
 			$this->form[] = ['label'=>'Digits Code','name'=>'digits_code','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5', 'readonly'=>true];
 			$this->form[] = ['label'=>'Item Description','name'=>'item_description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
-			$this->form[] = ['label'=>'Category','name'=>'category_id','type'=>'select','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'category,category_description','datatable_where'=>"category_status = 'ACTIVE' && id = 1 || id = 5"];
+			$this->form[] = ['label'=>'Category','name'=>'category_id','type'=>'select','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'category,category_description','datatable_where'=>"category_status = 'ACTIVE' && id = 1 || id = 5 || id = 2 || id = 4"];
 			$this->form[] = ['label'=>'Class','name'=>'class_id','type'=>'select','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'class,class_description','datatable_where'=>"class_status = 'ACTIVE'"];
 
 			$this->form[] = ['label'=>'Cost','name'=>'item_cost','type'=>'text','validation'=>'required','width'=>'col-sm-5'];
@@ -300,7 +300,7 @@
 				}
                 
 				//updated item master data
-				setInterval(getItemMasterUpdatedData, 60*60*1000);
+				setInterval(getItemMasterUpdatedData, 10000);
 				function getItemMasterUpdatedData(){
 					$.ajax({
 						type: 'POST',
@@ -733,7 +733,7 @@
             curl_close ($ch);
     
             $response = json_decode($server_output, true);
-          
+            
             $data = [];
             $count = 0;
             if(!empty($response["data"])) {
@@ -747,7 +747,7 @@
 						DB::beginTransaction();
 						try {
 							Assets::updateOrcreate([
-								'digits_code' => $row['digits_code'] 
+								'digits_code' => $value['digits_code'] 
 							],
 							[
 								'digits_code' => $value['digits_code'],
@@ -814,7 +814,7 @@
             curl_close ($ch);
     
             $response = json_decode($server_output, true);
-    
+			// dd($response);
             $data = [];
             $count = 0;
             if(!empty($response["data"])) {
@@ -828,7 +828,7 @@
 						DB::beginTransaction();
 						try {
 							Assets::updateOrcreate([
-								'digits_code' => $row['digits_code'] 
+								'digits_code' => $value['digits_code'] 
 							],
 							[
 								'digits_code' => $value['digits_code'],

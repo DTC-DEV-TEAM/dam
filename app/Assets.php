@@ -20,7 +20,7 @@ class Assets extends Model
         'created_by',
         'created_at',
         'asset_tag',
-        'status_id',
+        'status',
         'quantity',
         'add_quantity',
         'total+quantity',
