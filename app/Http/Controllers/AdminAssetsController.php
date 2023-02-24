@@ -813,7 +813,7 @@
             curl_close ($ch);
     
             $response = json_decode($server_output, true);
-            dd($response);
+    
             $data = [];
             $count = 0;
             if(!empty($response["data"])) {
