@@ -394,7 +394,7 @@
                          '</td>' +
 
                         '<td>'+
-                            '<select class="form-control drop'+ tableRow + '" name="category_id[]" data-id="' + tableRow + '" id="category_id' + tableRow + '" required>' +
+                            '<select class="form-control drop'+ tableRow + '" name="category_id[]" data-id="' + tableRow + '" id="category_id' + tableRow + '" required required style="width:100%">' +
                             //'  <option value="">- Select Category -</option>' +
                             '        @foreach($categories as $data)'+
                             '        <option value="{{$data->category_description}}">{{$data->category_description}}</option>'+
@@ -470,11 +470,14 @@
                             },
                             success: function (data) {
                                 if(data.items === null){
-                                    $('#display-error'+tableRow).html("<span id='notif' class='label label-danger'> Item Not Found!</span>")
+                                    swal({  
+                                        type: 'error',
+                                        title: 'No Found Item',
+                                        icon: 'error',
+                                        confirmButtonColor: "#367fa9",
+                                    });
                                 }else{ 
-                                //var rowCount = $('#asset-items tr').length;
-                                //myStr = data.sample;   
-                                $('#display-error'+tableRow).html("")
+                                
                                 if (data.status_no == 1) {
 
                                     $("#val_item").html();

@@ -410,9 +410,14 @@
                                         },
                                         success: function (data) {
                                             if(data.items === null){
-                                                $('#display-error'+tableRow).html("<span id='notif' class='label label-danger'> Item Not Found!</span>")
+                                                swal({  
+                                                    type: 'error',
+                                                    title: 'No Found Item',
+                                                    icon: 'error',
+                                                    confirmButtonColor: "#367fa9",
+                                                });
                                             }else{  
-                                                $('#display-error'+tableRow).html("");
+                                           
                                             if (data.status_no == 1) {
 
                                                 $("#val_item").html();
