@@ -4,11 +4,12 @@
 	use Request;
 	use DB;
 	use CRUDBooster;
+	use App\Users;
 	use App\StatusMatrix;
 	use App\Models\ItemHeaderSourcing;
 	use App\Models\ItemBodySourcing;
 
-	class AdminItemSourcingHeaderController extends \crocodicstudio\crudbooster\controllers\CBController {
+	class AdminItemSourcingApprovalHistoryController extends \crocodicstudio\crudbooster\controllers\CBController {
 		private $forApproval;
 		private $forQuotation;
 		private $closed;
@@ -32,7 +33,7 @@
 			$this->button_bulk_action = false;
 			$this->button_action_style = "button_icon";
 			$this->button_add = false;
-			$this->button_edit = false;
+			$this->button_edit = true;
 			$this->button_delete = false;
 			$this->button_detail = true;
 			$this->button_show = true;
@@ -64,6 +65,70 @@
 			$this->form = [];
 
 			# END FORM DO NOT REMOVE THIS LINE
+
+			# OLD START FORM
+			//$this->form = [];
+			//$this->form[] = ["label"=>"Reference Number","name"=>"reference_number","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Mo Reference Number","name"=>"mo_reference_number","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Status Id","name"=>"status_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"status,id"];
+			//$this->form[] = ["label"=>"Employee Name","name"=>"employee_name","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Company Name","name"=>"company_name","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Position","name"=>"position","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Department","name"=>"department","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Store Branch","name"=>"store_branch","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Purpose","name"=>"purpose","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Conditions","name"=>"conditions","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Quantity Total","name"=>"quantity_total","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Cost Total","name"=>"cost_total","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Total","name"=>"total","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Approved By","name"=>"approved_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Approved At","name"=>"approved_at","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
+			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Updated By","name"=>"updated_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Rejected At","name"=>"rejected_at","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
+			//$this->form[] = ["label"=>"Requestor Comments","name"=>"requestor_comments","type"=>"textarea","required"=>TRUE,"validation"=>"required|string|min:5|max:5000"];
+			//$this->form[] = ["label"=>"Request Type Id","name"=>"request_type_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"request_type,id"];
+			//$this->form[] = ["label"=>"Privilege Id","name"=>"privilege_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"privilege,id"];
+			//$this->form[] = ["label"=>"Approver Comments","name"=>"approver_comments","type"=>"textarea","required"=>TRUE,"validation"=>"required|string|min:5|max:5000"];
+			//$this->form[] = ["label"=>"To Reco","name"=>"to_reco","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"It Comments","name"=>"it_comments","type"=>"textarea","required"=>TRUE,"validation"=>"required|string|min:5|max:5000"];
+			//$this->form[] = ["label"=>"Recommended By","name"=>"recommended_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Recommended At","name"=>"recommended_at","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
+			//$this->form[] = ["label"=>"Cancelled By","name"=>"cancelled_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Cancelled At","name"=>"cancelled_at","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
+			//$this->form[] = ["label"=>"Purchased1 By","name"=>"purchased1_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Purchased1 At","name"=>"purchased1_at","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
+			//$this->form[] = ["label"=>"Purchased2 By","name"=>"purchased2_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Purchased2 At","name"=>"purchased2_at","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
+			//$this->form[] = ["label"=>"Ac Comments","name"=>"ac_comments","type"=>"textarea","required"=>TRUE,"validation"=>"required|string|min:5|max:5000"];
+			//$this->form[] = ["label"=>"Mo By","name"=>"mo_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Mo At","name"=>"mo_at","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
+			//$this->form[] = ["label"=>"Print By","name"=>"print_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Print At","name"=>"print_at","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
+			//$this->form[] = ["label"=>"Picked By","name"=>"picked_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Picked At","name"=>"picked_at","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
+			//$this->form[] = ["label"=>"Print By Form","name"=>"print_by_form","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Print At Form","name"=>"print_at_form","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
+			//$this->form[] = ["label"=>"Received By","name"=>"received_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Received At","name"=>"received_at","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
+			//$this->form[] = ["label"=>"Closed By","name"=>"closed_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Closed At","name"=>"closed_at","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
+			//$this->form[] = ["label"=>"Quote Date","name"=>"quote_date","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Po Date","name"=>"po_date","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Po Number","name"=>"po_number","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Employee Dr Date","name"=>"employee_dr_date","type"=>"date","required"=>TRUE,"validation"=>"required|date"];
+			//$this->form[] = ["label"=>"Dr Number","name"=>"dr_number","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Application","name"=>"application","type"=>"textarea","required"=>TRUE,"validation"=>"required|string|min:5|max:5000"];
+			//$this->form[] = ["label"=>"Application Others","name"=>"application_others","type"=>"textarea","required"=>TRUE,"validation"=>"required|string|min:5|max:5000"];
+			//$this->form[] = ["label"=>"Mo Plug","name"=>"mo_plug","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Closing Plug","name"=>"closing_plug","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"To Print","name"=>"to_print","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Location Id","name"=>"location_id","type"=>"select2","required"=>TRUE,"validation"=>"required|string|min:5|max:5000","datatable"=>"location,id"];
+			//$this->form[] = ["label"=>"To Mo","name"=>"to_mo","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Mo So Num","name"=>"mo_so_num","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"If From Erf","name"=>"if_from_erf","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			# OLD END FORM
+
 			/* 
 	        | ---------------------------------------------------------------------- 
 	        | Sub Module
@@ -91,11 +156,7 @@
 	        | 
 	        */
 	        $this->addaction = array();
-			if(CRUDBooster::isUpdate()) {
-		
-				//$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('detail-sourcing'),'icon'=>'fa fa-eye'];
 
-			}
 
 	        /* 
 	        | ---------------------------------------------------------------------- 
@@ -132,9 +193,7 @@
 	        | 
 	        */
 	        $this->index_button = array();
-			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
-				$this->index_button[] = ["label"=>"Request Item Sourcing","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-item-sourcing'),"color"=>"success"];
-			}
+
 
 
 	        /* 
@@ -203,7 +262,7 @@
 	        |
 	        */
 	        $this->load_js = array();
-			$this->load_js[] = asset("datetimepicker/bootstrap-datetimepicker.min.js");
+	        
 	        
 	        
 	        /*
@@ -227,7 +286,7 @@
 	        |
 	        */
 	        $this->load_css = array();
-	        $this->load_css[] = asset("datetimepicker/bootstrap-datetimepicker.min.css");
+	        
 	        
 	    }
 
@@ -255,34 +314,9 @@
 	    */
 	    public function hook_query_index(&$query) {
 			if(CRUDBooster::isSuperadmin()){
-
-				$released  = 		DB::table('statuses')->where('id', 12)->value('id');
-
-				$query->whereNull('item_sourcing_header.deleted_at')
-					  ->orderBy('item_sourcing_header.status_id', 'ASC')
-					  ->orderBy('item_sourcing_header.id', 'DESC');
-
+				$query->whereNull('item_sourcing_header.deleted_at')->orderBy('item_sourcing_header.status_id', 'DESC')->orderBy('item_sourcing_header.id', 'DESC');
 			}else{
-
-				$user = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-
-				$query->where(function($sub_query){
-
-					$user = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-
-					$released  = 		DB::table('statuses')->where('id', 12)->value('id');
-
-					$sub_query->where('item_sourcing_header.created_by', CRUDBooster::myId())
-	
-							  ->whereNull('item_sourcing_header.deleted_at'); 
-					// $sub_query->orwhere('item_sourcing_header.employee_name', $user->id)
-	
-					// 		  ->whereNull('item_sourcing_header.deleted_at');
-
-				});
-
-				$query->orderBy('item_sourcing_header.status_id', 'asc')->orderBy('item_sourcing_header.id', 'DESC');
-				//$query->orderByRaw('FIELD( item_sourcing_header.status_id, "For Approval")');
+				$query->whereNotNull('item_sourcing_header.approved_by')->where('item_sourcing_header.approved_by', CRUDBooster::myId())->whereNull('item_sourcing_header.deleted_at')->orderBy('item_sourcing_header.id', 'DESC');
 			}
 	            
 	    }
@@ -294,7 +328,7 @@
 	    |
 	    */    
 	    public function hook_row_index($column_index,&$column_value) {	        
-			$forApproval        = DB::table('statuses')->where('id', $this->forApproval)->value('status_description');        
+	    	$forApproval        = DB::table('statuses')->where('id', $this->forApproval)->value('status_description');        
 			$forQuotation       = DB::table('statuses')->where('id', $this->forQuotation)->value('status_description');  
 			$closed             = DB::table('statuses')->where('id', $this->closed)->value('status_description');
 			$rejected           = DB::table('statuses')->where('id', $this->rejected)->value('status_description');  
@@ -320,67 +354,7 @@
 	    |
 	    */
 	    public function hook_before_add(&$postdata) {        
-	        $fields = Request::all();
-
-			$dataLines = array();
-			$supplies_cost 		= $fields['supplies_cost'];
-			$employee_name 		= $fields['employee_name'];
-			$company_name 		= $fields['company_name'];
-			$position 			= $fields['position'];
-			$department 		= $fields['department'];
-			$store_branch 		= $fields['store_branch'];
-			$store_branch_id    = $fields['store_branch_id'];
-			$purpose 			= $fields['purpose'];
-			$condition 			= $fields['condition'];
-			$quantity_total 	= $fields['quantity_total'];
-			$cost_total 		= $fields['cost_total'];
-			$total 				= $fields['total'];
-			$request_type_id 	= $fields['request_type_id'];
-			$requestor_comments = $fields['requestor_comments'];
-			$application 		= $fields['application'];
-			$application_others = $fields['application_others'];
-			$count_header       = DB::table('item_sourcing_header')->count();
-			$header_ref         = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);			
-			$reference_number	= "NIS-".$header_ref;
-			$employees          = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-			$pending            = DB::table('statuses')->where('id', 1)->value('id');
-			$approved           = DB::table('statuses')->where('id', 4)->value('id');
-
-			if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15])){ 
-
-				$postdata['status_id']		 			= 37;
-			}else{
-				$postdata['status_id']		 			= 1;
-	
-			}
-				
-			$postdata['reference_number']		 	= $reference_number;
-			$postdata['employee_name'] 				= $employees->id;
-			$postdata['company_name'] 				= $employees->company_name_id;
-			$postdata['position'] 					= $employees->position_id;
-			$postdata['department'] 				= $employees->department_id;
-			if(CRUDBooster::myPrivilegeId() == 8){
-				$postdata['store_branch'] 			= $employees->location_id;
-			}else{
-				$postdata['store_branch'] 			= NULL;
-			}
-			
-			$postdata['purpose'] 					= $purpose;
-			$postdata['conditions'] 				= $condition;
-			$postdata['quantity_total'] 			= $quantity_total;
-			$postdata['cost_total'] 				= $cost_total;
-			$postdata['total'] 						= $total;
-			$postdata['requestor_comments'] 		= $requestor_comments;
-			$postdata['created_by'] 				= CRUDBooster::myId();
-			$postdata['created_at'] 				= date('Y-m-d H:i:s');
-			$postdata['request_type_id']		 	= $request_type_id;
-			$postdata['privilege_id']		 		= CRUDBooster::myPrivilegeId();
-
-			if(!empty($application)){
-				$postdata['application'] 				= implode(", ",$application);
-
-				$postdata['application_others'] 		= $application_others;
-			}
+	        //Your code here
 
 	    }
 
@@ -392,141 +366,7 @@
 	    | 
 	    */
 	    public function hook_after_add($id) {        
-	        $fields = Request::all();
-			$dataLines = array();
-			$arf_header = DB::table('item_sourcing_header')->where(['created_by' => CRUDBooster::myId()])->orderBy('id','desc')->first();
-	
-			$supplies_cost 		= $fields['supplies_cost'];
-			$item_description 	= $fields['item_description'];
-			$category_id 		= $fields['category_id'];
-			$sub_category_id 	= $fields['sub_category_id'];
-			$app_id_others 		= $fields['app_id_others'];
-			$quantity 			= $fields['quantity'];
-			$image 				= $fields['image'];
-			$request_type_id 	= $fields['request_type_id'];
-			
-			$app_count = 2;
-
-         
-			for($x=0; $x < count((array)$item_description); $x++) {
-				$apps_array = array();
-				$app_no = 'app_id'.$app_count;
-				$app_id 			= $fields[$app_no];
-				for($xxx=0; $xxx < count((array)$app_id); $xxx++) {
-					array_push($apps_array,$app_id[$xxx]); 
-				}
-	
-				$app_count++;
-
-				if(in_array(CRUDBooster::myPrivilegeId(), [4,11,12,14,15])){ 
-					if($category_id[$x] == "IT ASSETS"){
-						ItemHeaderSourcing::where('id', $arf_header->id)->update([
-							'to_reco'=> 1
-						]);
-						
-					}
-					
-				}
-
-				$dataLines[$x]['header_request_id'] = $arf_header->id;
-				$dataLines[$x]['digits_code'] 	    = $digits_code[$x];
-				$dataLines[$x]['item_description'] 	= $item_description[$x];
-				$dataLines[$x]['category_id'] 		= $category_id[$x];
-				$dataLines[$x]['sub_category_id'] 	= $sub_category_id[$x];
-				$dataLines[$x]['app_id'] 			= implode(", ",$apps_array);
-				$dataLines[$x]['app_id_others'] 	= $app_id_others[$x];
-				$dataLines[$x]['quantity'] 			= $quantity[$x];
-				$dataLines[$x]['unit_cost'] 		= $supplies_cost[$x];
-
-				if($request_type_id == 5){
-					$dataLines[$x]['to_reco'] = 0;
-					
-				}else{
-
-					if (str_contains($sub_category_id[$x], 'LAPTOP') || str_contains($sub_category_id[$x], 'DESKTOP')) {
-						$dataLines[$x]['to_reco'] = 1;
-					}else{
-						$dataLines[$x]['to_reco'] = 0;
-					}
-
-				}
-
-				if($category_id[$x] == "IT ASSETS"){
-					$dataLines[$x]['request_type_id'] = 1;
-					
-				}else if($category_id[$x] == "FIXED ASSETS"){
-					$dataLines[$x]['request_type_id'] = 5;
-				}else if($category_id[$x] == "SUPPLIES"){
-					$dataLines[$x]['request_type_id'] = 7;
-				}else{
-					$dataLines[$x]['request_type_id'] = 6;
-				}
-
-				$dataLines[$x]['created_at'] 		= date('Y-m-d H:i:s');
-				unset($apps_array);
-			}
-
-			//make array base on general quantity
-			$itAssets = [];
-			foreach($dataLines as $itItem){
-				if($itItem['category_id'] == "IT ASSETS"){
-					for($i = 0; $i < $itItem['quantity']; $i++){
-						// make sure the quantity is now 1 and not the original > 1 value
-						$it = $itItem;
-						$it['quantity'] = 1;
-						$itAssets[] = $it;
-					}
-				}
-			}
-			$faAssets = [];
-			foreach($dataLines as $faItem){
-				if($faItem['category_id'] == "FIXED ASSETS"){
-					for($j = 0; $j < $faItem['quantity']; $j++){
-						// make sure the quantity is now 1 and not the original > 1 value
-						$fa = $faItem;
-						$fa['quantity'] = 1;
-						$faAssets[] = $fa;
-					}
-				}
-			}
-
-			$suppAssets = [];
-			foreach($dataLines as $suppItem){
-				if($suppItem['category_id'] == "SUPPLIES"){
-					// make sure the quantity is now 1 and not the original > 1 value
-					$sp = $suppItem;
-					$sp['quantity'] = $suppItem['quantity'];
-					$suppAssets[] = $sp;
-					
-				}
-			}
-
-			$mktAssets = [];
-			foreach($dataLines as $mktItem){
-				if($mktItem['category_id'] == "MARKETING"){
-					// make sure the quantity is now 1 and not the original > 1 value
-					$mkt = $mktItem;
-					$mkt['quantity'] = $mktItem['quantity'];
-					$mktAssets[] = $mkt;
-					
-				}
-			}
-
-			$insertData = array_merge($itAssets, $faAssets,$suppAssets, $mktAssets);
-        
-			DB::beginTransaction();
-	
-			try {
-				ItemBodySourcing::insert($insertData);
-				DB::commit();
-				//CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_pullout_data_success",['mps_reference'=>$pullout_header->reference]), 'success');
-			} catch (\Exception $e) {
-				DB::rollback();
-				CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_database_error",['database_error'=>$e]), 'danger');
-			}
-			
-			CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_add_success",['reference_number'=>$arf_header->reference_number]), 'success');
-
+	        //Your code here
 
 	    }
 
@@ -578,49 +418,6 @@
 	        //Your code here
 
 	    }
-        
-		public function getAddItemSourcing() {
-
-			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
-				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
-			}
-
-			$this->cbLoader();
-			$data['page_title'] = 'Create Item Sourcing Request';
-			$data['conditions'] = DB::table('condition_type')->where('status', 'ACTIVE')->get();
-			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
-			$data['stores'] = DB::table('stores')->where('status', 'ACTIVE')->get();
-			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
-			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-			$data['employeeinfos'] = DB::table('cms_users')
-										 ->leftjoin('positions', 'cms_users.position_id', '=', 'positions.id')
-										 ->leftjoin('departments', 'cms_users.department_id', '=', 'departments.id')
-										 ->select( 'cms_users.*', 'positions.position_description as position_description', 'departments.department_name as department_name')
-										 ->where('cms_users.id', $data['user']->id)->first();
-										 $data['categories'] = DB::table('category')->where('category_status', 'ACTIVE')->whereIn('id', [5,1,2,4])->orderby('category_description', 'asc')->get();
-			$data['sub_categories'] = DB::table('class')->where('class_status', 'ACTIVE')->where('category_id', 5)->orderby('class_description', 'asc')->get();
-			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();
-			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
-			
-			$privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
-			$privileges_array = array();
-			foreach($privilegesMatrix as $matrix){
-				array_push($privileges_array, $matrix->id);
-			}
-			$privileges_string = implode(",",$privileges_array);
-			$privilegeslist = array_map('intval',explode(",",$privileges_string));
-
-			if(in_array(CRUDBooster::myPrivilegeId(), $privilegeslist)){ 
-				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
-				return $this->view("item-sourcing.add-item-sourcing", $data);
-
-			}else{ 
-				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
-				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
-				return $this->view("item-sourcing.add-store-item-sourcing", $data);
-			}
-				
-		}
 
 		public function getDetail($id){
 			$this->cbLoader();
@@ -629,7 +426,7 @@
             }
 
 			$data = array();
-			$data['page_title'] = 'Item Sourcing Detail';
+			$data['page_title'] = 'Item Sourcing Detail History';
 			$data['Header'] = ItemHeaderSourcing::
 				  leftjoin('request_type', 'item_sourcing_header.purpose', '=', 'request_type.id')
 				->leftjoin('condition_type', 'item_sourcing_header.conditions', '=', 'condition_type.id')
@@ -673,6 +470,8 @@
 				->where('item_sourcing_body.header_request_id', $id)
 				->get();
 	
-			return $this->view("item-sourcing.item-sourcing-detail", $data);
+			return $this->view("item-sourcing.item-sourcing-detail-history", $data);
 		}
+
+
 	}

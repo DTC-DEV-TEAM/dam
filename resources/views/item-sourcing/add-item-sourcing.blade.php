@@ -115,6 +115,15 @@
                 </div>
             </div>
 
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="control-label"><span style="color:red">*</span> Date Needed</label>
+                        <input class="form-control finput date" type="text" placeholder="Select Needed Date" name="date_needed" id="date_needed">
+                    </div>
+                </div> 
+            </div>
+
             <hr/>
 
             <div class="row">
@@ -129,9 +138,10 @@
                                                 <table class="table table-bordered" id="asset-items">
                                                     <tbody id="bodyTable">
                                                         <tr class="tbl_header_color dynamicRows">
-                                                            <th width="30%" class="text-center">*{{ trans('message.table.item_description') }}</th>
+                                                            <th width="25%" class="text-center">*{{ trans('message.table.item_description') }}</th>
                                                             <th width="25%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                                                                                    
                                                             <th width="20%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th>                                                       
+                                                            <th width="10%" class="text-center">*Budget</th> 
                                                             <th width="7%" class="text-center">*{{ trans('message.table.quantity_text') }}</th>                                                    
                                                             <th width="5%" class="text-center">{{ trans('message.table.action') }}</th>
                                                         </tr>
@@ -145,7 +155,7 @@
                                                     </tbody>
                                                     <tfoot>
                                                         <tr id="tr-table1" class="bottom">
-                                                            <td colspan="3">
+                                                            <td colspan="4">
                                                                 <input type="button" id="add-Row" name="add-Row" class="btn btn-primary add" value='Add Item' />
                                                             </td>
                                                             <td align="left" colspan="1">
@@ -195,6 +205,12 @@
                         <textarea placeholder="{{ trans('message.table.comments') }} ..." rows="3" class="form-control finput" name="requestor_comments"></textarea>
                     </div>
                 </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>Suggested Supplier</label>
+                        <textarea placeholder="Suggested Supplier ..." rows="3" class="form-control finput" name="suggested_supplier"></textarea>
+                    </div>
+                </div>
          
             </div>
 
@@ -237,7 +253,12 @@
         $("#application_others").removeAttr('required');
         $(".application").removeAttr('required');
 
-
+        $(".date").datetimepicker({
+            minDate:new Date(), // Current year from transactions
+            viewMode: "days",
+            format: "YYYY-MM-DD",
+            dayViewHeaderFormat: "MMMM YYYY",
+        });
         $('#OTHERS').change(function() {
 
 		    var ischecked= $(this).is(':checked');
@@ -333,7 +354,13 @@
                         '</select>'+
                     '</td>' +
 
-                    '<td><input class="form-control text-center quantity_item" type="number" required name="quantity[]" id="quantity' + tableRow + '" data-id="' + tableRow  + '"  value="1" min="0" max="9999999999" step="any" onKeyPress="if(this.value.length==4) return false;" oninput="validity.valid;" readonly></td>' +
+                    '<td>' +
+                    '<input class="form-control budget" type="text" required name="budget[]" id="budget' + tableRow + '" data-id="' + tableRow  + '" min="0" max="9999999999" step="any" oninput="validity.valid;">' + 
+                    '</td>' +
+
+                    '<td>' +
+                    '<input class="form-control text-center quantity_item" type="number" required name="quantity[]" id="quantity' + tableRow + '" data-id="' + tableRow  + '"  value="1" min="0" max="9999999999" step="any" onKeyPress="if(this.value.length==11) return false;" oninput="validity.valid;">' + 
+                    '</td>' +
 
                     '<td>' +
                         '<button id="deleteRow" name="removeRow" data-id="' + tableRow + '" class="btn btn-danger removeRow"><i class="glyphicon glyphicon-trash"></i></button>' +
@@ -721,6 +748,42 @@
                         } 
                 
                     } 
+
+                    //quantity validation
+                    var v = $("input[name^='quantity']").length;
+                    var value = $("input[name^='quantity']");
+                    var reg = /^0/gi;
+                        for(i=0;i<v;i++){
+                            if(value.eq(i).val() == 0){
+                                swal({  
+                                        type: 'error',
+                                        title: 'Quantity cannot be empty or zero!',
+                                        icon: 'error',
+                                        confirmButtonColor: "#367fa9",
+                                    });
+                                    event.preventDefault();
+                                    return false;
+                            }else if(value.eq(i).val() < 0){
+                                swal({
+                                    type: 'error',
+                                    title: 'Negative Value is not allowed!',
+                                    icon: 'error',
+                                    confirmButtonColor: "#367fa9",
+                                }); 
+                                event.preventDefault(); // cancel default behavior
+                                return false;
+                            }else if(value.eq(i).val().match(reg)){
+                                swal({
+                                    type: 'error',
+                                    title: 'Invalid Quantity Value!',
+                                    icon: 'error',
+                                    confirmButtonColor: "#367fa9",
+                                }); 
+                                event.preventDefault(); // cancel default behavior
+                                return false;     
+                            }  
+                    
+                        } 
               
                     $(".sub_category_id :selected").each(function() {
                         if(app_count == 0 && $.inArray($(this).val().toLowerCase().replace(/\s/g, ''),['laptop','desktop']) > -1){

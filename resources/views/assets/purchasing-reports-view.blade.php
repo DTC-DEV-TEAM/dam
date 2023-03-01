@@ -168,8 +168,7 @@
                         extend: "excel",
                         title: "Request and Return/Transfer Assets Report",
                         exportOptions: {
-                        columns: ":not(.not-export-column)",
-                        columns: ":gt(0)",
+            
                             modifier: {
                             page: "current",
                         }
