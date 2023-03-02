@@ -11,6 +11,10 @@
                 border-bottom: 1px solid rgba(18, 17, 17, 0.5);
             }
 
+            input.finput:read-only {
+                background-color: #fff;
+            }
+
         </style>
     @endpush
 @section('content')
@@ -129,11 +133,17 @@
                                     <table class="table table-bordered" id="item-sourcing">
                                         <tbody id="bodyTable">
                                             <tr class="tbl_header_color dynamicRows">
-                                                <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
+                                                <th width="10%" class="text-center">Item Code</th> 
+                                                <th width="10%" class="text-center">PO Number</th>
+                                                <th width="10%" class="text-center">PO Date</th> 
+                                                <th width="10%" class="text-center">Quote Date</th> 
+                                                <th width="10%" class="text-center">Supplier</th> 
+                                                <th width="10%" class="text-center">{{ trans('message.table.item_description') }}</th>
                                                 <th width="9%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
-                                                <th width="15%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
-                                                <th width="15%" class="text-center">Budget</th> 
-                                                <th width="15%" class="text-center">Quantity</th> 
+                                                <th width="10%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
+                                                <th width="5%" class="text-center">Budget</th> 
+                                                <th width="5%" class="text-center">Quantity</th> 
+                                                <th width="10%" class="text-center">Value</th> 
                                             </tr>
                                             <tr id="tr-table">
                                                 <?php   $tableRow = 1; ?>
@@ -142,9 +152,23 @@
                                                         <?php   $tableRow++; ?>
                                                                                             
                                                         <tr>
-                                                
+                                                            <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}">        
                                                             <td style="text-align:center" height="10">
-                                                                    <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}">                               
+                                                                    <input type="text"  class="form-control finput digits_code"  name="item_code[]" id="digits_code{{$tableRow}}" data-id="{{$tableRow1}}" value="{{$rowresult->digits_code}}" required >                                
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    <input type="text"  class="form-control finput"  name="po_number[]" id="po_number{{$tableRow}}" data-id="{{$tableRow1}}" value="{{$rowresult->po_number}}" required >                                
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    <input type="text"  class="form-control finput po_date{{$tableRow}}"  name="po_date[]" id="po_date{{$tableRow}}" value="{{$rowresult->po_date}}" data-id="{{$tableRow1}}"  required >                                
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    <input type="text"  class="form-control finput qoute_date"  name="qoute_date[]" id="qoute_date{{$tableRow}}" data-id="{{$tableRow1}}" value="{{$rowresult->qoute_date}}" required >                                
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    <input type="text"  class="form-control finput"  name="supplier[]" id="supplier{{$tableRow}}" value="{{$rowresult->supplier}}" required >                                
+                                                            </td>
+                                                            <td style="text-align:center" height="10">                                                             
                                                                     {{$rowresult->item_description}}
                                                             </td>
                                                             <td style="text-align:center" height="10">
@@ -159,6 +183,9 @@
                                                             <td style="text-align:center" height="10" class="qty">
                                                                     {{$rowresult->quantity}}
                                                           
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    <input type="text"  class="form-control finput"  name="value[]" id="value{{$tableRow}}" value="{{$rowresult->value}}" required >                                
                                                             </td>
                                                               
                                                       </tr>
@@ -177,25 +204,47 @@
                 </div>
             </div>
 
-            @if( $Header->processedby != null )
-                <div class="row">
+            <div class="row">
                     <div class="col-md-6">
                         <table style="width:100%">
                             <tbody>
+                            @if($Header->approvedby != null)
+                               @if($Header->rejected_at == null)
+                                <tr>
+                                    <th class="control-label col-md-2">{{ trans('message.form-label.approved_by') }}:</th>
+                                    <td class="col-md-4">{{$Header->approvedby}} / {{$Header->approved_at}}</td>   
+                                </tr>
+                                @else
+                                <tr>
+                                    <th class="control-label col-md-2">Rejected By:</th>
+                                    <td class="col-md-4">{{$Header->approvedby}} / {{$Header->rejected_at}}</td>   
+                                </tr>
+                                @endif
+                            @endif
+                                @if($Header->approver_comments != null)
+                                    <tr>
+                                        <th class="control-label col-md-2">{{ trans('message.table.approver_comments') }}:</th>
+                                        <td class="col-md-4">{{$Header->approver_comments}}</td>
+                                    </tr>
+                                @endif
+                                @if($Header->po_number != null)
                                 <tr>
                                     <th class="control-label col-md-2">{{ trans('message.form-label.po_number') }}:</th>
                                     <td class="col-md-4">{{$Header->po_number}}</td>     
                                 </tr>
-
+                                @endif
+                                @if($Header->po_date != null)
                                 <tr>
                                     <th class="control-label col-md-2">{{ trans('message.form-label.po_date') }}:</th>
                                     <td class="col-md-4">{{$Header->po_date}}</td>
                                 </tr>
-
+                                @endif
+                                @if($Header->quote_date != null)
                                 <tr>
                                     <th class="control-label col-md-2">{{ trans('message.form-label.quote_date') }}:</th>
                                     <td class="col-md-4">{{$Header->quote_date}}</td>
                                 </tr>
+                                @endif
                                 @if( $Header->processedby != null )
                                     <tr>
                                         <th class="control-label col-md-2">{{ trans('message.form-label.processed_by') }}:</th>
@@ -215,18 +264,6 @@
                                         <td class="col-md-4">{{$Header->ac_comments}}</td>
                                     </tr>
                                 @endif
-                                @if( $Header->pickedby != null )
-                                    <tr>
-                                        <th class="control-label col-md-2">{{ trans('message.form-label.picked_by') }}:</th>
-                                        <td class="col-md-4">{{$Header->pickedby}} / {{$Header->picked_at}}</td>
-                                    </tr>
-                                @endif
-                                @if( $Header->receivedby != null )
-                                    <tr>
-                                        <th class="control-label col-md-2">{{ trans('message.form-label.received_by') }}:</th>
-                                        <td class="col-md-4">{{$Header->receivedby}} / {{$Header->received_at}}</td>
-                                    </tr>
-                                @endif
                                 @if( $Header->closedby != null )
                                     <tr>
                                         <th class="control-label col-md-2">{{ trans('message.form-label.closed_by') }}:</th>
@@ -237,8 +274,8 @@
                         </table>
                     </div>
                 </div>
-            @endif
             <hr>
+   
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group">
@@ -252,8 +289,8 @@
         <div class='panel-footer'>
 
             <a href="{{ CRUDBooster::mainpath() }}" id="btn-cancel" class="btn btn-default">{{ trans('message.form.back') }}</a>
-            <button class="btn btn-danger pull-right" type="button" id="btnReject" style="margin-left: 5px;"><i class="fa fa-thumbs-down" ></i> Reject</button>
-            <button class="btn btn-success pull-right" type="button" id="btnApprove"><i class="fa fa-thumbs-up" ></i> Approve</button>
+            <button class="btn btn-success pull-right" type="button" id="btnClose" style="margin-left: 5px;"><i class="fa fa-times-circle" ></i> Close</button>
+            <button class="btn btn-primary pull-right" type="button" id="btnUpdate"><i class="fa fa-refresh" ></i> Update</button>
         </div>
 
     </form>
@@ -265,7 +302,9 @@
 @endsection
 @push('bottom')
 <script type="text/javascript">
-
+    $(function(){
+        $('body').addClass("sidebar-collapse");
+    });
     function preventBack() {
         window.history.forward();
     }
@@ -273,8 +312,92 @@
         null;
     };
     setTimeout("preventBack()", 0);
+    var searchcount = <?php echo json_encode($tableRow); ?>;
 
-    $('#btnApprove').click(function(event) {
+    let countrow = 1;
+
+    $(function(){
+
+        for (let i = 0; i < searchcount; i++) {
+            countrow++;
+            $('#po_date'+countrow).datetimepicker({
+                minDate:new Date(), // Current year from transactions
+                viewMode: "days",
+                format: "YYYY-MM-DD",
+                dayViewHeaderFormat: "MMMM YYYY",
+            });
+            $('#qoute_date'+countrow).datetimepicker({
+                minDate:new Date(), // Current year from transactions
+                viewMode: "days",
+                format: "YYYY-MM-DD",
+                dayViewHeaderFormat: "MMMM YYYY",
+            });
+
+            $('#digits_code'+countrow).each(function() {
+                description = $(this).val();
+                if(description !== "") {
+                    $('#digits_code'+countrow).attr('readonly', true);
+
+                }else{
+                    $('#digits_code'+countrow).removeAttr('readonly');
+                }
+            });
+
+            $('#po_number'+countrow).each(function() {
+                description = $(this).val();
+                if(description !== "") {
+                    $('#po_number'+countrow).attr('readonly', true);
+
+                }else{
+                    $('#po_number'+countrow).removeAttr('readonly');
+                }
+            });
+
+            $('#po_date'+countrow).each(function() {
+                description = $(this).val();
+                if(description !== "") {
+                    $('#po_date'+countrow).attr('readonly', true);
+
+                }else{
+                    $('#po_date'+countrow).removeAttr('readonly');
+                }
+            });
+
+            $('#qoute_date'+countrow).each(function() {
+                description = $(this).val();
+                if(description !== "") {
+                    $('#qoute_date'+countrow).attr('readonly', true);
+
+                }else{
+                    $('#qoute_date'+countrow).removeAttr('readonly');
+                }
+            });
+
+            $('#supplier'+countrow).each(function() {
+                description = $(this).val();
+                if(description !== "") {
+                    $('#supplier'+countrow).attr('readonly', true);
+
+                }else{
+                    $('#supplier'+countrow).removeAttr('readonly');
+                }
+            });
+
+            $('#value'+countrow).each(function() {
+                description = $(this).val();
+                if(description !== "") {
+                    $('#value'+countrow).attr('readonly', true);
+
+                }else{
+                    $('#value'+countrow).removeAttr('readonly');
+                }
+            });
+        }
+    });
+
+   
+
+    $('#btnUpdate').click(function(event) {
         event.preventDefault();
         swal({
             title: "Are you sure?",
@@ -282,7 +405,7 @@
             showCancelButton: true,
             confirmButtonColor: "#41B314",
             cancelButtonColor: "#F9354C",
-            confirmButtonText: "Yes, approve it!",
+            confirmButtonText: "Yes, update it!",
             width: 450,
             height: 200
             }, function () {
@@ -292,16 +415,15 @@
         });
     });
 
-    $('#btnReject').click(function(event) {
+    $('#btnClose').click(function(event) {
         event.preventDefault();
         swal({
             title: "Are you sure?",
             type: "warning",
-            text: "You won't be able to revert this!",
             showCancelButton: true,
             confirmButtonColor: "#41B314",
             cancelButtonColor: "#F9354C",
-            confirmButtonText: "Yes, reject it!",
+            confirmButtonText: "Yes, close it!",
             width: 450,
             height: 200
             }, function () {
@@ -309,8 +431,8 @@
                 $('#approval_action').val('0');
                 $("#myform").submit();                   
         });
-        
     });
+
 
     $("#btn-cancel").click(function(event) {
        event.preventDefault();
@@ -340,14 +462,14 @@
     var sumqty = 0;
     var sumcost = 0;
     for (var i = 0; i < tds.length; i++) {
-        if (tds[i].className == "qty") {
-            sumqty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-        }else if(tds[i].className == "cost"){
-            sumcost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-        }
+    if (tds[i].className == "qty") {
+        sumqty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+    }else if(tds[i].className == "cost"){
+        sumcost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+    }
     }
     document.getElementById("item-sourcing").innerHTML +=
-    "<tr style='text-align:center'><td colspan=3><strong>TOTAL</strong></td><td><strong>" +
+    "<tr style='text-align:center'><td colspan=8><strong>TOTAL</strong></td><td><strong>" +
     thousands_separators(sumcost.toFixed(2)) +
     "</strong></td><td><strong>" +
                          sumqty +

@@ -258,7 +258,7 @@
                                                             <!-- <th width="10%" class="text-center">{{ trans('message.table.item_type') }}</th>      -->
                                                             <th width="15%" class="text-center">{{ trans('message.table.quantity_text') }}</th>
                                                             <!-- <th width="15%" class="text-center"> Serial No</th>                                                                                                   -->
-                                                            <th width="15%" class="text-center"> Warranty Coverage(Year)</th>                                                     
+                                                            <th width="15%" class="text-center"> Warranty Expiration</th>                                                     
                                                             <!-- <th width="10%" class="text-center">{{ trans('message.table.image') }}</th>  -->
                                                             <th width="8%" class="text-center">Action</th>
                                                         </tr>
@@ -831,7 +831,7 @@
                                                 //'<td><select required selected data-placeholder="-- Select Type --" id="item_type' + e.id + '" name="item_type[]" class="select2 item_type" style="width:150px;"><option value=""></option><option value="Serial" data-id="' + e.digits_code + '">Serial</option><option value="General" data-id="' + e.digits_code + '">GENERAL</option></select></td>' +
                                                 '<td><input class="form-control text-center add_quantity" placeholder="Quantity" style="width:160px;" type="text" value="1" readonly name="add_quantity[]" id="add_quantity' + e.id  + '" data-id="' + e.id  + '"  min="0" max="9999999999" step="1" onkeypress="return event.charCode >= 48 && event.charCode <= 57" oninput="validity.valid||(value=1);"></td>' +   
                                                 // '<td><input class="form-control serial_no" type="text" placeholder="Serial No (Optional)" name="serial_no[]" value="" style="width:150px;" data-index="1"></td>' + 
-                                                '<td><input class="form-control" type="text" placeholder="(Year)" name="warranty_coverage[]" style="width:160px;" id="warranty_coverage" min="1" max="9999999999" step="1" onkeypress="return event.charCode <= 57"></td>' +                                                                           
+                                                '<td><input class="form-control date" type="text" placeholder="(Year)" name="warranty_coverage[]" style="width:160px;" id="warranty_coverage"></td>' +                                                                           
                                                 //'<td class="images_flex"><input type="file" class="form-control body_image" onchange="readURL(this);" id="body_image_body' + e.id + '" name="item_photo[]" style="width:200px;" accept="image/png, image/gif, image/jpeg"><br><div class="body_gallery_image' + e.id + '"></div></td>' + 
                                                 //'<td><img width="50px"; height="50px"; src="{{URL::to('+e.image+')}}" alt="" data-action="zoom"></td>' +
                                                 '<td class="text-center" style="width:20px;"><a id="delete_item' +e.id + '" class="btn btn-xs btn-danger delete_item" style="margin-right:100px;margin-top:5px;" ><i class="fa fa-remove"></i> remove</a></td>' +
@@ -858,7 +858,11 @@
                                         $('#rowid').load('#rowid');
                                        
                                     });
-                                    
+                                    $(".date").datetimepicker({
+                                            viewMode: "days",
+                                            format: "YYYY-MM-DD",
+                                            dayViewHeaderFormat: "MMMM YYYY",
+                                    });
                                     // $(function() {
                                     // // single images preview in browser
                                     // var imagesPreview = function(input, placeToInsertImagePreview) {

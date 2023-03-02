@@ -139,8 +139,8 @@
                                                     <tbody id="bodyTable">
                                                         <tr class="tbl_header_color dynamicRows">
                                                             <th width="25%" class="text-center">*{{ trans('message.table.item_description') }}</th>
-                                                            <th width="25%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                                                                                    
-                                                            <th width="20%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th>                                                       
+                                                            <th width="17%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                                                                                    
+                                                            <th width="17%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th>                                                       
                                                             <th width="10%" class="text-center">*Budget</th> 
                                                             <th width="7%" class="text-center">*{{ trans('message.table.quantity_text') }}</th>                                                    
                                                             <th width="5%" class="text-center">{{ trans('message.table.action') }}</th>
@@ -319,7 +319,7 @@
                     count_fail = 0;
                 }
             });
-            
+ 
             tableRow++;
 
             if(count_fail == 0){
@@ -332,7 +332,7 @@
                     '</td>' +  
 
                     '<td>'+
-                        '<select selected data-placeholder="- Select Category -" class="form-control drop'+ tableRow + '" name="category_id[]" data-id="' + tableRow + '" id="category_id' + tableRow + '" required style="width:100%">' +
+                        '<select selected data-placeholder="- Select Category -" class="form-control category" name="category_id[]" data-id="' + tableRow + '" id="category_id' + tableRow + '" required style="width:100%">' +
                         '  <option value=""></option>' +
                         '        @foreach($categories as $data)'+
                         '        <option value="{{$data->category_description}}">{{$data->category_description}}</option>'+

@@ -60,8 +60,6 @@
             </div>
 
             <div class="row">                           
-
-
                 <label class="control-label col-md-2">{{ trans('message.form-label.department') }}:</label>
                 <div class="col-md-4">
                         <p>{{$Header->department}}</p>
@@ -73,6 +71,12 @@
                 </div>
 
             </div>
+            <div class="row">                          
+                <label class="control-label col-md-2">Date Needed:</label>
+                <div class="col-md-4">
+                        <p>{{$Header->date_needed}}</p>
+                </div>
+            </div>
 
             @if(CRUDBooster::myPrivilegeId() == 8 || CRUDBooster::isSuperadmin())
                 <div class="row">                           
@@ -83,14 +87,7 @@
                 </div>
             @endif
 
-            @if($Header->if_from_erf != null || $Header->if_from_erf != "")
-                <div class="row">                           
-                    <label class="control-label col-md-2">Erf Number:</label>
-                    <div class="col-md-4">
-                            <p>{{$Header->if_from_erf}}</p>
-                    </div>
-                </div>
-            @endif
+      
 
             @if($Header->requestor_comments != null || $Header->requestor_comments != "")
                 <hr/>
@@ -98,6 +95,17 @@
                     <label class="control-label col-md-2">{{ trans('message.table.requestor_comments') }}:</label>
                     <div class="col-md-10">
                             <p>{{$Header->requestor_comments}}</p>
+                    </div>
+
+            
+                </div>
+            @endif  
+            @if($Header->suggested_supplier != null || $Header->suggested_supplier != "")
+                <hr/>
+                <div class="row">                           
+                    <label class="control-label col-md-2">Suggested Supplier:</label>
+                    <div class="col-md-10">
+                            <p>{{$Header->suggested_supplier}}</p>
                     </div>
 
             
@@ -113,12 +121,13 @@
                         <div class="table-responsive">
                             <div class="pic-container">
                                 <div class="pic-row">
-                                    <table class="table table-bordered" id="asset-items1">
+                                    <table class="table table-bordered" id="item-sourcing">
                                         <tbody id="bodyTable">
                                             <tr class="tbl_header_color dynamicRows">
                                                 <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
                                                 <th width="9%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
                                                 <th width="15%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
+                                                <th width="15%" class="text-center">Budget</th> 
                                                 <th width="15%" class="text-center">Quantity</th> 
                                             </tr>
                                             <tr id="tr-table">
@@ -139,11 +148,12 @@
                                                             <td style="text-align:center" height="10">
                                                                     {{$rowresult->sub_category_id}}
                                                             </td>
-                                                         
-                                                            <td style="text-align:center" height="10">
+                                                            <td style="text-align:center" height="10" class="cost">
+                                                                    {{$rowresult->budget}}
+                                                            </td>
+                                                            <td style="text-align:center" height="10" class="qty">
                                                                     {{$rowresult->quantity}}
-                                                                    <input type='hidden' name="quantity" class="form-control text-center quantity_item" id="quantity" readonly value="{{$rowresult->quantity}}">
-                                                                    <input type='hidden' name="quantity_body" id="quantity{{$tableRow}}" readonly value="{{$rowresult->quantity}}">
+                
                                                             </td>
                                                               
                                                       </tr>
@@ -168,6 +178,7 @@
                     <div class="col-md-6">
                         <table style="width:100%">
                             <tbody>
+                            @if($Header->approvedby != null)
                                @if($Header->rejected_at == null)
                                 <tr>
                                     <th class="control-label col-md-2">{{ trans('message.form-label.approved_by') }}:</th>
@@ -179,6 +190,7 @@
                                     <td class="col-md-4">{{$Header->approvedby}} / {{$Header->rejected_at}}</td>   
                                 </tr>
                                 @endif
+                            @endif
                                 @if($Header->approver_comments != null)
                                     <tr>
                                         <th class="control-label col-md-2">{{ trans('message.table.approver_comments') }}:</th>
@@ -344,6 +356,31 @@
             return totalQuantity;
     
         }
+
+        function thousands_separators(num) {
+        var num_parts = num.toString().split(".");
+        num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return num_parts.join(".");
+        }
+
+        var tds = document
+        .getElementById("item-sourcing")
+        .getElementsByTagName("td");
+        var sumqty = 0;
+        var sumcost = 0;
+        for (var i = 0; i < tds.length; i++) {
+            if (tds[i].className == "qty") {
+                sumqty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+            }else if(tds[i].className == "cost"){
+                sumcost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+            }
+        }
+        document.getElementById("item-sourcing").innerHTML +=
+        "<tr style='text-align:center'><td colspan=3><strong>TOTAL</strong></td><td><strong>" +
+        thousands_separators(sumcost.toFixed(2)) +
+        "</strong></td><td><strong>" +
+                            sumqty +
+        "</strong></td></tr>";
     
 </script>
 @endpush

@@ -337,31 +337,34 @@
 			$sub_category = array();
 
 			if($approval_action  == 1){
-				// $postdata['status_id']		    = 37;
-				// $postdata['approver_comments'] 	= $approver_comments;
-				// $postdata['approved_by'] 		= CRUDBooster::myId();
-				// $postdata['approved_at'] 		= date('Y-m-d H:i:s');
+				$postdata['status_id']		    = 37;
+				$postdata['approver_comments'] 	= $approver_comments;
+				$postdata['approved_by'] 		= CRUDBooster::myId();
+				$postdata['approved_at'] 		= date('Y-m-d H:i:s');
 
 				foreach($arf_body as $body_arf){
-					// if($body_arf->category_id == "IT ASSETS"){
-					// 	$postdata['to_reco'] 	= 1;
-					// }
+					if($body_arf->category_id == "IT ASSETS"){
+						$postdata['to_reco'] 	= 1;
+					}
 					array_push($item_description, $body_arf->item_description);
 					array_push($item_category, $body_arf->category_id);
 					array_push($sub_category, $body_arf->sub_category_id);
 				}
 				$employee_name = DB::table('cms_users')->where('id', $arf_header->employee_name)->first();
 				$approver_name = DB::table('cms_users')->where('id', $employee_name->approver_id)->first();
+				$department_name = DB::table('departments')->where('id', $employee_name->department_id)->first();
 				//$purchasing = "purchasing@digits.ph";
 				$fhil = "fhilipacosta@digits.ph";
-				$marvs = "marvsmosico@gmail.com";
 
 				$infos['assign_to'] = $employee_name->bill_to;
 				$infos['reference_number'] = $arf_header->reference_number;
+				$infos['date_needed'] = $arf_header->date_needed;
+				$infos['suggested_supplier'] = $arf_header->suggested_supplier;
+				$infos['department'] = $department_name->department_name;
 				$infos['items'] = $arf_body;
 			
 				Mail::to($employee_name->email)
-						//->cc([$fhil, $marvs])
+						//->cc([$fhil])
 	                    ->send(new EMail($infos));
 			}else{
 				$postdata['status_id'] 			= 5;

@@ -323,28 +323,30 @@
 	        $fields = Request::all();
 
 			$dataLines = array();
-			$supplies_cost 		= $fields['supplies_cost'];
-			$employee_name 		= $fields['employee_name'];
-			$company_name 		= $fields['company_name'];
-			$position 			= $fields['position'];
-			$department 		= $fields['department'];
-			$store_branch 		= $fields['store_branch'];
-			$store_branch_id    = $fields['store_branch_id'];
-			$purpose 			= $fields['purpose'];
-			$condition 			= $fields['condition'];
-			$quantity_total 	= $fields['quantity_total'];
-			$cost_total 		= $fields['cost_total'];
-			$total 				= $fields['total'];
-			$request_type_id 	= $fields['request_type_id'];
-			$requestor_comments = $fields['requestor_comments'];
-			$application 		= $fields['application'];
-			$application_others = $fields['application_others'];
-			$count_header       = DB::table('item_sourcing_header')->count();
-			$header_ref         = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);			
-			$reference_number	= "NIS-".$header_ref;
-			$employees          = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-			$pending            = DB::table('statuses')->where('id', 1)->value('id');
-			$approved           = DB::table('statuses')->where('id', 4)->value('id');
+			$supplies_cost 		     = $fields['supplies_cost'];
+			$employee_name 		     = $fields['employee_name'];
+			$company_name 		     = $fields['company_name'];
+			$position 			     = $fields['position'];
+			$date_needed             = $fields['date_needed'];
+			$department 		     = $fields['department'];
+			$store_branch 		     = $fields['store_branch'];
+			$store_branch_id         = $fields['store_branch_id'];
+			$purpose 			     = $fields['purpose'];
+			$condition 			     = $fields['condition'];
+			$quantity_total 	     = $fields['quantity_total'];
+			$cost_total 		     = $fields['cost_total'];
+			$total 				     = $fields['total'];
+			$request_type_id 	     = $fields['request_type_id'];
+			$requestor_comments      = $fields['requestor_comments'];
+			$suggested_supplier      = $fields['suggested_supplier'];
+			$application 		     = $fields['application'];
+			$application_others      = $fields['application_others'];
+			$count_header            = DB::table('item_sourcing_header')->count();
+			$header_ref              = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);			
+			$reference_number	     = "NIS-".$header_ref;
+			$employees               = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
+			$pending                 = DB::table('statuses')->where('id', 1)->value('id');
+			$approved                = DB::table('statuses')->where('id', 4)->value('id');
 
 			if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15])){ 
 
@@ -358,6 +360,7 @@
 			$postdata['employee_name'] 				= $employees->id;
 			$postdata['company_name'] 				= $employees->company_name_id;
 			$postdata['position'] 					= $employees->position_id;
+			$postdata['date_needed'] 				= $date_needed;
 			$postdata['department'] 				= $employees->department_id;
 			if(CRUDBooster::myPrivilegeId() == 8){
 				$postdata['store_branch'] 			= $employees->location_id;
@@ -371,6 +374,7 @@
 			$postdata['cost_total'] 				= $cost_total;
 			$postdata['total'] 						= $total;
 			$postdata['requestor_comments'] 		= $requestor_comments;
+			$postdata['suggested_supplier'] 		= $suggested_supplier;
 			$postdata['created_by'] 				= CRUDBooster::myId();
 			$postdata['created_at'] 				= date('Y-m-d H:i:s');
 			$postdata['request_type_id']		 	= $request_type_id;
@@ -404,6 +408,7 @@
 			$quantity 			= $fields['quantity'];
 			$image 				= $fields['image'];
 			$request_type_id 	= $fields['request_type_id'];
+			$budget 	        = $fields['budget'];
 			
 			$app_count = 2;
 
@@ -437,6 +442,7 @@
 				$dataLines[$x]['app_id_others'] 	= $app_id_others[$x];
 				$dataLines[$x]['quantity'] 			= $quantity[$x];
 				$dataLines[$x]['unit_cost'] 		= $supplies_cost[$x];
+				$dataLines[$x]['budget'] 		    = $budget[$x];
 
 				if($request_type_id == 5){
 					$dataLines[$x]['to_reco'] = 0;
@@ -466,58 +472,10 @@
 				unset($apps_array);
 			}
 
-			//make array base on general quantity
-			$itAssets = [];
-			foreach($dataLines as $itItem){
-				if($itItem['category_id'] == "IT ASSETS"){
-					for($i = 0; $i < $itItem['quantity']; $i++){
-						// make sure the quantity is now 1 and not the original > 1 value
-						$it = $itItem;
-						$it['quantity'] = 1;
-						$itAssets[] = $it;
-					}
-				}
-			}
-			$faAssets = [];
-			foreach($dataLines as $faItem){
-				if($faItem['category_id'] == "FIXED ASSETS"){
-					for($j = 0; $j < $faItem['quantity']; $j++){
-						// make sure the quantity is now 1 and not the original > 1 value
-						$fa = $faItem;
-						$fa['quantity'] = 1;
-						$faAssets[] = $fa;
-					}
-				}
-			}
-
-			$suppAssets = [];
-			foreach($dataLines as $suppItem){
-				if($suppItem['category_id'] == "SUPPLIES"){
-					// make sure the quantity is now 1 and not the original > 1 value
-					$sp = $suppItem;
-					$sp['quantity'] = $suppItem['quantity'];
-					$suppAssets[] = $sp;
-					
-				}
-			}
-
-			$mktAssets = [];
-			foreach($dataLines as $mktItem){
-				if($mktItem['category_id'] == "MARKETING"){
-					// make sure the quantity is now 1 and not the original > 1 value
-					$mkt = $mktItem;
-					$mkt['quantity'] = $mktItem['quantity'];
-					$mktAssets[] = $mkt;
-					
-				}
-			}
-
-			$insertData = array_merge($itAssets, $faAssets,$suppAssets, $mktAssets);
-        
 			DB::beginTransaction();
 	
 			try {
-				ItemBodySourcing::insert($insertData);
+				ItemBodySourcing::insert($dataLines);
 				DB::commit();
 				//CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_pullout_data_success",['mps_reference'=>$pullout_header->reference]), 'success');
 			} catch (\Exception $e) {

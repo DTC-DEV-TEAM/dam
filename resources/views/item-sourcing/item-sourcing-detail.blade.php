@@ -6,6 +6,10 @@
             padding: 8px;
             border-radius: 5px 0 0 5px;
             }
+            .finput {
+                border:none;
+                border-bottom: 1px solid rgba(18, 17, 17, 0.5);
+            }
         </style>
     @endpush
 @section('content')
@@ -39,7 +43,6 @@
                         <p>{{$Header->created}}</p>
                 </div>
 
-
             </div>
 
 
@@ -60,8 +63,6 @@
             </div>
 
             <div class="row">                           
-
-
                 <label class="control-label col-md-2">{{ trans('message.form-label.department') }}:</label>
                 <div class="col-md-4">
                         <p>{{$Header->department}}</p>
@@ -74,20 +75,18 @@
 
             </div>
 
+            <div class="row">                          
+                <label class="control-label col-md-2">Date Needed:</label>
+                <div class="col-md-4">
+                        <p>{{$Header->date_needed}}</p>
+                </div>
+            </div>
+
             @if(CRUDBooster::myPrivilegeId() == 8 || CRUDBooster::isSuperadmin())
                 <div class="row">                           
                     <label class="control-label col-md-2">{{ trans('message.form-label.store_branch') }}:</label>
                     <div class="col-md-4">
                             <p>{{$Header->store_branch}}</p>
-                    </div>
-                </div>
-            @endif
-
-            @if($Header->if_from_erf != null || $Header->if_from_erf != "")
-                <div class="row">                           
-                    <label class="control-label col-md-2">Erf Number:</label>
-                    <div class="col-md-4">
-                            <p>{{$Header->if_from_erf}}</p>
                     </div>
                 </div>
             @endif
@@ -103,6 +102,18 @@
             
                 </div>
             @endif  
+            @if($Header->suggested_supplier != null || $Header->suggested_supplier != "")
+                <hr/>
+                <div class="row">                           
+                    <label class="control-label col-md-2">Suggested Supplier:</label>
+                    <div class="col-md-10">
+                            <p>{{$Header->suggested_supplier}}</p>
+                    </div>
+
+            
+                </div>
+            @endif  
+            
             <hr/>                
             <div class="row">
                 <div class="col-md-12">
@@ -113,13 +124,21 @@
                         <div class="table-responsive">
                             <div class="pic-container">
                                 <div class="pic-row">
-                                    <table class="table table-bordered" id="asset-items1">
+                                    <table class="table table-bordered" id="item-sourcing">
                                         <tbody id="bodyTable">
                                             <tr class="tbl_header_color dynamicRows">
-                                                <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
+                                                <th width="2%" class="text-center"></th> 
+                                                <th width="10%" class="text-center">Item Code</th> 
+                                                <th width="10%" class="text-center">PO Number</th>
+                                                <th width="10%" class="text-center">PO Date</th> 
+                                                <th width="10%" class="text-center">Quote Date</th> 
+                                                <th width="10%" class="text-center">Supplier</th> 
+                                                <th width="10%" class="text-center">Value</th> 
+                                                <th width="10%" class="text-center">{{ trans('message.table.item_description') }}</th>
                                                 <th width="9%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
-                                                <th width="15%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
-                                                <th width="15%" class="text-center">Quantity</th> 
+                                                <th width="10%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
+                                                <th width="5%" class="text-center">Budget</th> 
+                                                <th width="5%" class="text-center">Quantity</th>                                                
                                             </tr>
                                             <tr id="tr-table">
                                                 <?php   $tableRow = 1; ?>
@@ -128,9 +147,33 @@
                                                         <?php   $tableRow++; ?>
                                                                                             
                                                         <tr>
-                                                
+                                                           
+                                                            <td >
+                                                            @if($rowresult->digits_code != NULL && $rowresult->po_number != NULL && $rowresult->po_date != NULL && $rowresult->qoute_date != NULL && $rowresult->supplier != NULL && $rowresult->value != NULL)
+                                                                <input type="checkbox" name="mo_id[]" id="mo_id{{$tableRow1}}" class="id" required data-id="{{$tableRow1}}" value="{{$res->mo_id}}"/>
+                                                            @endif
+                                                            </td>
+                                                          
+                                                            <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}">        
                                                             <td style="text-align:center" height="10">
-                                                                    <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}">                               
+                                                                    <input type="text"  class="form-control finput"  name="item_code[]" id="ids{{$tableRow}}" value="{{$rowresult->digits_code}}"  required >                                
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    <input type="text"  class="form-control finput"  name="po_number[]" id="ids{{$tableRow}}" value="{{$rowresult->po_number}}" required >                                
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    <input type="text"  class="form-control finput po_date{{$tableRow}}"  name="po_date[]" id="po_date{{$tableRow}}" value="{{$rowresult->po_date}}" data-id="{{$tableRow1}}"  required >                                
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    <input type="text"  class="form-control finput qoute_date"  name="qoute_date[]" id="qoute_date{{$tableRow}}" value="{{$rowresult->qoute_date}}" data-id="{{$tableRow1}}"  required >                                
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    <input type="text"  class="form-control finput"  name="supplier[]" id="ids{{$tableRow}}" value="{{$rowresult->supplier}}" required >                                
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    <input type="text"  class="form-control finput"  name="value[]" id="ids{{$tableRow}}" value="{{$rowresult->value}}" required >                                
+                                                            </td>
+                                                            <td style="text-align:center" height="10">                                                             
                                                                     {{$rowresult->item_description}}
                                                             </td>
                                                             <td style="text-align:center" height="10">
@@ -139,12 +182,14 @@
                                                             <td style="text-align:center" height="10">
                                                                     {{$rowresult->sub_category_id}}
                                                             </td>
-                                                         
-                                                            <td style="text-align:center" height="10">
-                                                                    {{$rowresult->quantity}}
-                                                                    <input type='hidden' name="quantity" class="form-control text-center quantity_item" id="quantity" readonly value="{{$rowresult->quantity}}">
-                                                                    <input type='hidden' name="quantity_body" id="quantity{{$tableRow}}" readonly value="{{$rowresult->quantity}}">
+                                                            <td style="text-align:center" height="10" class="cost">
+                                                                    {{$rowresult->budget}}
                                                             </td>
+                                                            <td style="text-align:center" height="10" class="qty">
+                                                                    {{$rowresult->quantity}}
+                                                          
+                                                            </td>
+                                                            
                                                               
                                                       </tr>
                                                                                                                          
@@ -168,6 +213,7 @@
                     <div class="col-md-6">
                         <table style="width:100%">
                             <tbody>
+                            @if($Header->approvedby != null)
                                @if($Header->rejected_at == null)
                                 <tr>
                                     <th class="control-label col-md-2">{{ trans('message.form-label.approved_by') }}:</th>
@@ -179,6 +225,7 @@
                                     <td class="col-md-4">{{$Header->approvedby}} / {{$Header->rejected_at}}</td>   
                                 </tr>
                                 @endif
+                            @endif
                                 @if($Header->approver_comments != null)
                                     <tr>
                                         <th class="control-label col-md-2">{{ trans('message.table.approver_comments') }}:</th>
@@ -336,14 +383,38 @@
             });
     });
 
-        function calculateTotalQuantity(...body_qty) {
-            var totalQuantity = 0;  
-            $('.quantity_item').each(function() {
-             totalQuantity = parseInt($("#quantity_total").val()) - parseInt(body_qty);
-            });
-            return totalQuantity;
-    
+    function calculateTotalQuantity(...body_qty) {
+        var totalQuantity = 0;  
+        $('.quantity_item').each(function() {
+        totalQuantity = parseInt($("#quantity_total").val()) - parseInt(body_qty);
+        });
+        return totalQuantity;
+
+    }
+    function thousands_separators(num) {
+    var num_parts = num.toString().split(".");
+    num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return num_parts.join(".");
+    }
+
+    var tds = document
+    .getElementById("item-sourcing")
+    .getElementsByTagName("td");
+    var sumqty = 0;
+    var sumcost = 0;
+    for (var i = 0; i < tds.length; i++) {
+        if (tds[i].className == "qty") {
+            sumqty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+        }else if(tds[i].className == "cost"){
+            sumcost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
         }
+    }
+    document.getElementById("item-sourcing").innerHTML +=
+    "<tr style='text-align:center'><td colspan=9><strong>TOTAL</strong></td><td><strong>" +
+    thousands_separators(sumcost.toFixed(2)) +
+    "</strong></td><td><strong>" +
+                         sumqty +
+    "</strong></td></tr>";
     
 </script>
 @endpush

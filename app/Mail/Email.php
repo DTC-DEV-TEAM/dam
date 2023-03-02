@@ -28,7 +28,7 @@ class Email extends Mailable
      */
     public function build()
     {
-        return $this->subject('Mail from Digits Asset Management')
+        return $this->subject('DAM Item Sourcing')
         ->view('emails.send-eMail');
     }
 }

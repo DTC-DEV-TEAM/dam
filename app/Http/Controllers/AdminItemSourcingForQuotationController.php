@@ -4,18 +4,25 @@
 	use Request;
 	use DB;
 	use CRUDBooster;
+	use App\StatusMatrix;
+	use App\Models\ItemHeaderSourcing;
+	use App\Models\ItemBodySourcing;
+	use App\HeaderRequest;
+	use App\BodyRequest;
 
 	class AdminItemSourcingForQuotationController extends \crocodicstudio\crudbooster\controllers\CBController {
-		private $forApproval;
-		private $forQuotation;
+		private $forItReco;
+		private $forTagging;
 		private $closed;
+		private $forPO;
 	
 		
 		public function __construct() {
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
-			$this->forApproval      =  1;        
-			$this->forQuotation     =  37;  
-			$this->closed           =  13;   
+			$this->forItReco        =  4;        
+			$this->forTagging       =  7;  
+			$this->closed           =  13; 
+			$this->forPO            =  37;   
 		}
 	    public function cbInit() {
 
@@ -190,7 +197,7 @@
 	        |
 	        */
 	        $this->load_js = array();
-	        
+	        $this->load_js[] = asset("datetimepicker/bootstrap-datetimepicker.min.js");
 	        
 	        
 	        /*
@@ -214,7 +221,7 @@
 	        |
 	        */
 	        $this->load_css = array();
-	        
+			$this->load_css[] = asset("datetimepicker/bootstrap-datetimepicker.min.css");
 	        
 	    }
 
@@ -250,7 +257,7 @@
 			}else{
 
 				$query->where(function($sub_query){
-					$forQuotation =  $this->forQuotation;
+					$forQuotation =  $this->forPO;
 					$sub_query->where('item_sourcing_header.status_id', $forQuotation)->whereNull('item_sourcing_header.deleted_at'); 
 				});
 
@@ -267,7 +274,7 @@
 	    |
 	    */    
 	    public function hook_row_index($column_index,&$column_value) {	        
-	    	$forQuotation        = DB::table('statuses')->where('id', $this->forQuotation)->value('status_description');        
+	    	$forQuotation        = DB::table('statuses')->where('id', $this->forPO)->value('status_description');        
 	
 			if($column_index == 1){
 				if($column_value == $forQuotation){
@@ -309,7 +316,33 @@
 	    | 
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
-	        //Your code here
+	        $fields             = Request::all();
+			//dd($fields);
+			$ids                = $fields['ids'];
+			$digits_code        = $fields['item_code'];
+			$po_number          = $fields['po_number'];
+			$po_date            = $fields['po_date'];
+			$qoute_date         = $fields['qoute_date'];
+			$supplier           = $fields['supplier'];
+			$value              = $fields['value'];
+			$ac_comments 		= $fields['additional_notess'];
+			$approval_action 	= $fields['approval_action'];
+             
+			for ($i = 0; $i < count($ids); $i++) {
+				ItemBodySourcing::where(['id' => $ids[$i]])
+				   ->update([
+					       'digits_code'   => $digits_code[$i], 
+						   'po_number'     => $po_number[$i],
+						   'po_date'       => $po_date[$i],
+						   'qoute_date'    => $qoute_date[$i],
+						   'supplier'      => $supplier[$i],
+						   'supplier'      => $supplier[$i],
+					       'value'         => $value[$i]
+				           ]);
+			}
+			
+			CRUDBooster::redirect(CRUDBooster::mainpath(), trans('Successfully Added!'), 'success');
+		    
 
 	    }
 
@@ -349,9 +382,59 @@
 
 	    }
 
+		public function getEdit($id){
+			$this->cbLoader();
+            if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
+                CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+            }
 
-
-	    //By the way, you can still create your own method in here... :) 
+			$data = array();
+			$data['page_title'] = 'Item Sourcing For PO';
+			$data['Header'] = ItemHeaderSourcing::
+				  leftjoin('request_type', 'item_sourcing_header.purpose', '=', 'request_type.id')
+				->leftjoin('condition_type', 'item_sourcing_header.conditions', '=', 'condition_type.id')
+				->leftjoin('cms_users as employees', 'item_sourcing_header.employee_name', '=', 'employees.id')
+				->leftjoin('companies', 'item_sourcing_header.company_name', '=', 'companies.id')
+				->leftjoin('departments', 'item_sourcing_header.department', '=', 'departments.id')
+				->leftjoin('locations', 'employees.location_id', '=', 'locations.id')
+				->leftjoin('cms_users as requested', 'item_sourcing_header.created_by','=', 'requested.id')
+				->leftjoin('cms_users as approved', 'item_sourcing_header.approved_by','=', 'approved.id')
+				->leftjoin('cms_users as recommended', 'item_sourcing_header.recommended_by','=', 'recommended.id')
+				->leftjoin('cms_users as processed', 'item_sourcing_header.purchased2_by','=', 'processed.id')
+				->leftjoin('cms_users as picked', 'item_sourcing_header.picked_by','=', 'picked.id')
+				->leftjoin('cms_users as received', 'item_sourcing_header.received_by','=', 'received.id')
+				->leftjoin('cms_users as closed', 'item_sourcing_header.closed_by','=', 'closed.id')
+				->select(
+						'item_sourcing_header.*',
+						'item_sourcing_header.id as requestid',
+						'item_sourcing_header.created_at as created',
+						'request_type.*',
+						'condition_type.*',
+						'requested.name as requestedby',
+						'employees.bill_to as employee_name',
+						'item_sourcing_header.employee_name as header_emp_name',
+						'item_sourcing_header.created_by as header_created_by',
+						'departments.department_name as department',
+						'locations.store_name as store_branch',
+						'approved.name as approvedby',
+						'recommended.name as recommendedby',
+						'picked.name as pickedby',
+						'received.name as receivedby',
+						'processed.name as processedby',
+						'closed.name as closedby',
+						'item_sourcing_header.created_at as created_at'
+						)
+				->where('item_sourcing_header.id', $id)->first();
+		
+			$data['Body'] = ItemBodySourcing::
+				select(
+				  'item_sourcing_body.*'
+				)
+				->where('item_sourcing_body.header_request_id', $id)
+				->get();
+	
+			return $this->view("item-sourcing.item-sourcing-for-po", $data);
+		}
 
 
 	}

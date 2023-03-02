@@ -33,4 +33,12 @@ class ItemHeaderSourcing extends Model
        'to_reco',
        'if_from_erf'
     ];
+
+    public static function boot(){
+        parent::boot();
+        static::creating(function($model){
+            $model->created_by = CRUDBooster::myId();
+        });
+        
+    }
 }
