@@ -14,13 +14,15 @@
 		private $forQuotation;
 		private $closed;
 		private $rejected;
+		private $processing;
 		
 		public function __construct() {
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
 			$this->forApproval      =  1;        
 			$this->forQuotation     =  37;  
 			$this->closed           =  13;   
-			$this->rejected         =  5;   
+			$this->rejected         =  5;
+			$this->processing       =  11;   
 		}
 	    public function cbInit() {
 
@@ -315,7 +317,10 @@
 	    public function hook_query_index(&$query) {
 			if(CRUDBooster::isSuperadmin()){
 				$query->whereNull('item_sourcing_header.deleted_at')->orderBy('item_sourcing_header.status_id', 'DESC')->orderBy('item_sourcing_header.id', 'DESC');
-			}else{
+			}else if(CRUDBooster::myPrivilegeId() == 6){
+				$query->whereNotNull('item_sourcing_header.closed_by')->where('item_sourcing_header.closed_by', CRUDBooster::myId())->whereNull('item_sourcing_header.deleted_at')->orderBy('item_sourcing_header.id', 'DESC');
+			}
+			else{
 				$query->whereNotNull('item_sourcing_header.approved_by')->where('item_sourcing_header.approved_by', CRUDBooster::myId())->whereNull('item_sourcing_header.deleted_at')->orderBy('item_sourcing_header.id', 'DESC');
 			}
 	            
@@ -332,6 +337,7 @@
 			$forQuotation       = DB::table('statuses')->where('id', $this->forQuotation)->value('status_description');  
 			$closed             = DB::table('statuses')->where('id', $this->closed)->value('status_description');
 			$rejected           = DB::table('statuses')->where('id', $this->rejected)->value('status_description');  
+			$processing         = DB::table('statuses')->where('id', $this->processing)->value('status_description');  
 			
 			if($column_index == 1){
 				if($column_value == $forApproval){
@@ -342,6 +348,8 @@
 					$column_value = '<span class="label label-success">'.$closed.'</span>';
 				}else if($column_value == $rejected){
 					$column_value = '<span class="label label-danger">'.$rejected.'</span>';
+				}else if($column_value == $processing){
+					$column_value = '<span class="label label-info">'.$processing.'</span>';
 				}
 			}
 	    }
@@ -452,7 +460,7 @@
 						'item_sourcing_header.employee_name as header_emp_name',
 						'item_sourcing_header.created_by as header_created_by',
 						'departments.department_name as department',
-						'locations.store_name as store_branch',
+						'item_sourcing_header.store_branch as store_branch',
 						'approved.name as approvedby',
 						'recommended.name as recommendedby',
 						'picked.name as pickedby',

@@ -364,7 +364,7 @@
 				$infos['items'] = $arf_body;
 			
 				Mail::to($employee_name->email)
-						//->cc([$fhil])
+						->cc([$fhil,$approver_name->email])
 	                    ->send(new EMail($infos));
 			}else{
 				$postdata['status_id'] 			= 5;
@@ -445,7 +445,7 @@
 						'item_sourcing_header.employee_name as header_emp_name',
 						'item_sourcing_header.created_by as header_created_by',
 						'departments.department_name as department',
-						'locations.store_name as store_branch',
+						'item_sourcing_header.store_branch as store_branch',
 						'approved.name as approvedby',
 						'recommended.name as recommendedby',
 						'picked.name as pickedby',

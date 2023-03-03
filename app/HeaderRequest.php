@@ -31,6 +31,7 @@ class HeaderRequest extends Model
        'application',
        'application_others',
        'to_reco',
-       'if_from_erf'
+       'if_from_erf',
+       'if_from_item_source'
     ];
 }

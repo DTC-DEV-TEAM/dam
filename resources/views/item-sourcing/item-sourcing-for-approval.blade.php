@@ -347,9 +347,8 @@
         }
     }
     document.getElementById("item-sourcing").innerHTML +=
-    "<tr style='text-align:center'><td colspan=3><strong>TOTAL</strong></td><td><strong>" +
-    thousands_separators(sumcost.toFixed(2)) +
-    "</strong></td><td><strong>" +
+    "<tr style='text-align:center'><td colspan=4><strong>TOTAL</strong></td><td><strong>" +
+    
                          sumqty +
     "</strong></td></tr>";
     

@@ -15,6 +15,7 @@
 		private $forTagging;
 		private $closed;
 		private $forPO;
+		private $processing;
 	
 		
 		public function __construct() {
@@ -22,7 +23,8 @@
 			$this->forItReco        =  4;        
 			$this->forTagging       =  7;  
 			$this->closed           =  13; 
-			$this->forPO            =  37;   
+			$this->forPO            =  37; 
+			$this->processing       =  11;   
 		}
 	    public function cbInit() {
 
@@ -258,7 +260,8 @@
 
 				$query->where(function($sub_query){
 					$forQuotation =  $this->forPO;
-					$sub_query->where('item_sourcing_header.status_id', $forQuotation)->whereNull('item_sourcing_header.deleted_at'); 
+					$processing   =  $this->processing;
+					$sub_query->whereIn('item_sourcing_header.status_id', [$forQuotation, $processing])->whereNull('item_sourcing_header.deleted_at'); 
 				});
 
 				$query->orderBy('item_sourcing_header.status_id', 'asc')->orderBy('item_sourcing_header.id', 'desc');
@@ -274,11 +277,14 @@
 	    |
 	    */    
 	    public function hook_row_index($column_index,&$column_value) {	        
-	    	$forQuotation        = DB::table('statuses')->where('id', $this->forPO)->value('status_description');        
+	    	$forQuotation        = DB::table('statuses')->where('id', $this->forPO)->value('status_description'); 
+			$processing        = DB::table('statuses')->where('id', $this->processing)->value('status_description');        
 	
 			if($column_index == 1){
 				if($column_value == $forQuotation){
 					$column_value = '<span class="label label-info">'.$forQuotation.'</span>';
+				}else if($column_value == $processing){
+					$column_value = '<span class="label label-info">'.$processing.'</span>';
 				}
 			}
 	    }
@@ -336,11 +342,25 @@
 						   'po_date'       => $po_date[$i],
 						   'qoute_date'    => $qoute_date[$i],
 						   'supplier'      => $supplier[$i],
-						   'supplier'      => $supplier[$i],
-					       'value'         => $value[$i]
+					       'value'         => number_format((float)str_replace(',', '', $value[$i]),2,'.','')
 				           ]);
 			}
-			
+			if($approval_action  == 1){
+				ItemHeaderSourcing::where(['id' => $id])
+				   ->update([
+					       'status_id'          => $this->processing, 
+						   'purchased2_by'		=> CRUDBooster::myId(),
+						   'purchased2_at'		=> date('Y-m-d H:i:s'),
+				           ]);
+			}else{
+				ItemHeaderSourcing::where(['id' => $id])
+				   ->update([
+					       'status_id'   => $this->closed, 
+						   'approver_comments'	=> $approver_comments,
+					       'closed_by'		    => CRUDBooster::myId(),
+						   'closed_at'		    => date('Y-m-d H:i:s'),
+				           ]);		
+			}
 			CRUDBooster::redirect(CRUDBooster::mainpath(), trans('Successfully Added!'), 'success');
 		    
 
@@ -415,7 +435,7 @@
 						'item_sourcing_header.employee_name as header_emp_name',
 						'item_sourcing_header.created_by as header_created_by',
 						'departments.department_name as department',
-						'locations.store_name as store_branch',
+						'item_sourcing_header.store_branch as store_branch',
 						'approved.name as approvedby',
 						'recommended.name as recommendedby',
 						'picked.name as pickedby',

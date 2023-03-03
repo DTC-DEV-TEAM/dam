@@ -6,6 +6,18 @@
             padding: 8px;
             border-radius: 5px 0 0 5px;
             }
+            .finput {
+                border:none;
+                border-bottom: 1px solid rgba(18, 17, 17, 0.5);
+            }
+
+            input.finput:read-only {
+                background-color: #fff;
+            }
+            .green-color {
+                color:green;
+                margin-top:12px;
+            }
         </style>
     @endpush
 @section('content')
@@ -78,7 +90,7 @@
                 </div>
             </div>
 
-            @if(CRUDBooster::myPrivilegeId() == 8 || CRUDBooster::isSuperadmin())
+            @if($Header->store_branch != null || $Header->store_branch != "")
                 <div class="row">                           
                     <label class="control-label col-md-2">{{ trans('message.form-label.store_branch') }}:</label>
                     <div class="col-md-4">
@@ -124,11 +136,18 @@
                                     <table class="table table-bordered" id="item-sourcing">
                                         <tbody id="bodyTable">
                                             <tr class="tbl_header_color dynamicRows">
-                                                <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
+                                                <th width="2%" class="text-center"></th> 
+                                                <th width="10%" class="text-center">Item Code</th> 
+                                                <th width="10%" class="text-center">PO Number</th>
+                                                <th width="10%" class="text-center">PO Date</th> 
+                                                <th width="10%" class="text-center">Quote Date</th> 
+                                                <th width="10%" class="text-center">Supplier</th> 
+                                                <th width="10%" class="text-center">Value</th> 
+                                                <th width="10%" class="text-center">{{ trans('message.table.item_description') }}</th>
                                                 <th width="9%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
-                                                <th width="15%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
-                                                <th width="15%" class="text-center">Budget</th> 
-                                                <th width="15%" class="text-center">Quantity</th> 
+                                                <th width="10%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
+                                                <th width="5%" class="text-center">Budget</th> 
+                                                <th width="5%" class="text-center">Quantity</th>  
                                             </tr>
                                             <tr id="tr-table">
                                                 <?php   $tableRow = 1; ?>
@@ -136,10 +155,33 @@
                                                     @foreach($Body as $rowresult)
                                                         <?php   $tableRow++; ?>
                                                                                             
-                                                        <tr>
-                                                
+                                                        <tr>       
+                                                               
+                                                            <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}" readonly>        
                                                             <td style="text-align:center" height="10">
-                                                                    <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}">                               
+                                                                @if($rowresult->if_arf_created != NULL)
+                                                                <i class="fa fa-check-circle green-color fa-lg" aria-hidden="true"></i>
+                                                                @endif
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    <input type="text"  class="form-control finput"  name="item_code[]" id="ids{{$tableRow}}" value="{{$rowresult->digits_code}}"  required readonly>                                
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    <input type="text"  class="form-control finput"  name="po_number[]" id="ids{{$tableRow}}" value="{{$rowresult->po_number}}" required readonly>                                
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    <input type="text"  class="form-control finput po_date{{$tableRow}}"  name="po_date[]" id="po_date{{$tableRow}}" value="{{$rowresult->po_date}}" data-id="{{$tableRow1}}"  required readonly>                                
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    <input type="text"  class="form-control finput qoute_date"  name="qoute_date[]" id="qoute_date{{$tableRow}}" value="{{$rowresult->qoute_date}}" data-id="{{$tableRow1}}"  required readonly>                                
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    <input type="text"  class="form-control finput"  name="supplier[]" id="ids{{$tableRow}}" value="{{$rowresult->supplier}}" required readonly>                                
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    <input type="text"  class="form-control finput"  name="value[]" id="ids{{$tableRow}}" value="{{$rowresult->value}}" required readonly>                                
+                                                            </td>
+                                                            <td style="text-align:center" height="10">                                                             
                                                                     {{$rowresult->item_description}}
                                                             </td>
                                                             <td style="text-align:center" height="10">
@@ -153,7 +195,7 @@
                                                             </td>
                                                             <td style="text-align:center" height="10" class="qty">
                                                                     {{$rowresult->quantity}}
-                
+                                                          
                                                             </td>
                                                               
                                                       </tr>
@@ -174,88 +216,51 @@
 
             <br><br>
            
-                <div class="row">
-                    <div class="col-md-6">
-                        <table style="width:100%">
-                            <tbody>
-                            @if($Header->approvedby != null)
-                               @if($Header->rejected_at == null)
-                                <tr>
-                                    <th class="control-label col-md-2">{{ trans('message.form-label.approved_by') }}:</th>
-                                    <td class="col-md-4">{{$Header->approvedby}} / {{$Header->approved_at}}</td>   
-                                </tr>
-                                @else
-                                <tr>
-                                    <th class="control-label col-md-2">Rejected By:</th>
-                                    <td class="col-md-4">{{$Header->approvedby}} / {{$Header->rejected_at}}</td>   
-                                </tr>
-                                @endif
+            <div class="row">
+                <div class="col-md-6">
+                    <table style="width:100%">
+                        <tbody>
+                        @if($Header->approvedby != null)
+                            @if($Header->rejected_at == null)
+                            <tr>
+                                <th class="control-label col-md-2">{{ trans('message.form-label.approved_by') }}:</th>
+                                <td class="col-md-4">{{$Header->approvedby}} / {{$Header->approved_at}}</td>   
+                            </tr>
+                            @else
+                            <tr>
+                                <th class="control-label col-md-2">Rejected By:</th>
+                                <td class="col-md-4">{{$Header->approvedby}} / {{$Header->rejected_at}}</td>   
+                            </tr>
                             @endif
-                                @if($Header->approver_comments != null)
-                                    <tr>
-                                        <th class="control-label col-md-2">{{ trans('message.table.approver_comments') }}:</th>
-                                        <td class="col-md-4">{{$Header->approver_comments}}</td>
-                                    </tr>
-                                @endif
-                                @if($Header->po_number != null)
+                        @endif
+                            @if($Header->approver_comments != null)
                                 <tr>
-                                    <th class="control-label col-md-2">{{ trans('message.form-label.po_number') }}:</th>
-                                    <td class="col-md-4">{{$Header->po_number}}</td>     
+                                    <th class="control-label col-md-2">{{ trans('message.table.approver_comments') }}:</th>
+                                    <td class="col-md-4">{{$Header->approver_comments}}</td>
                                 </tr>
-                                @endif
-                                @if($Header->po_date != null)
+                            @endif
+                            @if( $Header->processedby != null )
                                 <tr>
-                                    <th class="control-label col-md-2">{{ trans('message.form-label.po_date') }}:</th>
-                                    <td class="col-md-4">{{$Header->po_date}}</td>
+                                    <th class="control-label col-md-2">{{ trans('message.form-label.processed_by') }}:</th>
+                                    <td class="col-md-4">{{$Header->processedby}} / {{$Header->purchased2_at}}</td>
                                 </tr>
-                                @endif
-                                @if($Header->quote_date != null)
+                            @endif
+                            @if($Header->ac_comments != null)
                                 <tr>
-                                    <th class="control-label col-md-2">{{ trans('message.form-label.quote_date') }}:</th>
-                                    <td class="col-md-4">{{$Header->quote_date}}</td>
+                                    <th class="control-label col-md-2">{{ trans('message.table.ac_comments') }}:</th>
+                                    <td class="col-md-4">{{$Header->ac_comments}}</td>
                                 </tr>
-                                @endif
-                                @if( $Header->processedby != null )
-                                    <tr>
-                                        <th class="control-label col-md-2">{{ trans('message.form-label.processed_by') }}:</th>
-                                        <td class="col-md-4">{{$Header->processedby}} / {{$Header->purchased2_at}}</td>
-                                    </tr>
-                                @endif
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="col-md-6">
-                        <table style="width:100%">
-                            <tbody>
-                                @if($Header->ac_comments != null)
-                                    <tr>
-                                        <th class="control-label col-md-2">{{ trans('message.table.ac_comments') }}:</th>
-                                        <td class="col-md-4">{{$Header->ac_comments}}</td>
-                                    </tr>
-                                @endif
-                                @if( $Header->pickedby != null )
-                                    <tr>
-                                        <th class="control-label col-md-2">{{ trans('message.form-label.picked_by') }}:</th>
-                                        <td class="col-md-4">{{$Header->pickedby}} / {{$Header->picked_at}}</td>
-                                    </tr>
-                                @endif
-                                @if( $Header->receivedby != null )
-                                    <tr>
-                                        <th class="control-label col-md-2">{{ trans('message.form-label.received_by') }}:</th>
-                                        <td class="col-md-4">{{$Header->receivedby}} / {{$Header->received_at}}</td>
-                                    </tr>
-                                @endif
-                                @if( $Header->closedby != null )
-                                    <tr>
-                                        <th class="control-label col-md-2">{{ trans('message.form-label.closed_by') }}:</th>
-                                        <td class="col-md-4">{{$Header->closedby}} / {{$Header->closed_at}}</td>
-                                    </tr>
-                                @endif
-                            </tbody>
-                        </table>
-                    </div>
+                            @endif
+                            @if( $Header->closedby != null )
+                                <tr>
+                                    <th class="control-label col-md-2">{{ trans('message.form-label.closed_by') }}:</th>
+                                    <td class="col-md-4">{{$Header->closedby}} / {{$Header->closed_at}}</td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
                 </div>
+            </div>
      
         </div>
 
@@ -376,9 +381,8 @@
             }
         }
         document.getElementById("item-sourcing").innerHTML +=
-        "<tr style='text-align:center'><td colspan=3><strong>TOTAL</strong></td><td><strong>" +
-        thousands_separators(sumcost.toFixed(2)) +
-        "</strong></td><td><strong>" +
+        "<tr style='text-align:center'><td colspan=11><strong>TOTAL</strong></td><td><strong>" +
+       
                             sumqty +
         "</strong></td></tr>";
     

@@ -7,19 +7,27 @@
 	use App\StatusMatrix;
 	use App\Models\ItemHeaderSourcing;
 	use App\Models\ItemBodySourcing;
+	use App\HeaderRequest;
+	use App\BodyRequest;
 
 	class AdminItemSourcingHeaderController extends \crocodicstudio\crudbooster\controllers\CBController {
 		private $forApproval;
 		private $forQuotation;
 		private $closed;
 		private $rejected;
-		
+		private $processing;
+		private $forItReco;
+		private $forTagging;
+
 		public function __construct() {
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
 			$this->forApproval      =  1;        
 			$this->forQuotation     =  37;  
 			$this->closed           =  13;   
-			$this->rejected         =  5;   
+			$this->rejected         =  5;
+			$this->processing       =  11;   
+			$this->forItReco        =  4;        
+			$this->forTagging       =  7;
 		}
 	    public function cbInit() {
 
@@ -273,15 +281,17 @@
 					$released  = 		DB::table('statuses')->where('id', 12)->value('id');
 
 					$sub_query->where('item_sourcing_header.created_by', CRUDBooster::myId())
-	
-							  ->whereNull('item_sourcing_header.deleted_at'); 
+					         
+							  ->whereNull('item_sourcing_header.deleted_at')
+							  ->orderBy('item_sourcing_header.reference_number', 'DESC')
+					          ->orderBy('item_sourcing_header.id', 'DESC');
 					// $sub_query->orwhere('item_sourcing_header.employee_name', $user->id)
 	
 					// 		  ->whereNull('item_sourcing_header.deleted_at');
 
 				});
 
-				$query->orderBy('item_sourcing_header.status_id', 'asc')->orderBy('item_sourcing_header.id', 'DESC');
+				$query->orderBy('item_sourcing_header.status_id', 'desc')->orderBy('item_sourcing_header.id', 'ASC');
 				//$query->orderByRaw('FIELD( item_sourcing_header.status_id, "For Approval")');
 			}
 	            
@@ -298,6 +308,7 @@
 			$forQuotation       = DB::table('statuses')->where('id', $this->forQuotation)->value('status_description');  
 			$closed             = DB::table('statuses')->where('id', $this->closed)->value('status_description');
 			$rejected           = DB::table('statuses')->where('id', $this->rejected)->value('status_description');  
+			$processing         = DB::table('statuses')->where('id', $this->processing)->value('status_description');  
 			
 			if($column_index == 1){
 				if($column_value == $forApproval){
@@ -308,6 +319,8 @@
 					$column_value = '<span class="label label-success">'.$closed.'</span>';
 				}else if($column_value == $rejected){
 					$column_value = '<span class="label label-danger">'.$rejected.'</span>';
+				}else if($column_value == $processing){
+					$column_value = '<span class="label label-info">'.$processing.'</span>';
 				}
 			}
 	    }
@@ -559,7 +572,7 @@
 			$data['sub_categories'] = DB::table('class')->where('class_status', 'ACTIVE')->where('category_id', 5)->orderby('class_description', 'asc')->get();
 			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();
 			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
-			
+			$data['budget_range'] = DB::table('sub_masterfile_budget_range')->where('status', 'ACTIVE')->get();
 			$privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
 			$privileges_array = array();
 			foreach($privilegesMatrix as $matrix){
@@ -613,7 +626,7 @@
 						'item_sourcing_header.employee_name as header_emp_name',
 						'item_sourcing_header.created_by as header_created_by',
 						'departments.department_name as department',
-						'locations.store_name as store_branch',
+						'item_sourcing_header.store_branch as store_branch',
 						'approved.name as approvedby',
 						'recommended.name as recommendedby',
 						'picked.name as pickedby',
@@ -630,7 +643,203 @@
 				)
 				->where('item_sourcing_body.header_request_id', $id)
 				->get();
-	
+		  
 			return $this->view("item-sourcing.item-sourcing-detail", $data);
 		}
+
+		public function createArf(Request $request){
+			$fields = Request::all();
+			
+		    $headerId        = $fields['header_id'];
+			$bodyIds         = $fields['body_ids'];
+			$request_type_id = array_unique($fields['request_type_id']);
+			$ids = implode(',',$bodyIds);
+			$bodyIdLists = array_map('intval',explode(",",$ids));
+			$item_sourcing_header = ItemHeaderSourcing::where(['id' => $headerId])->first();
+			$item_sourcing_body = ItemBodySourcing::whereIn('id',$bodyIdLists)->get();
+
+			$latestRequest = DB::table('header_request')->select('id')->orderBy('id','DESC')->first();
+			$latestRequestId = $latestRequest->id != NULL ? $latestRequest->id : 0;
+			
+			//add in arf heaader request table
+			$count_header       = DB::table('header_request')->count();
+		
+			$arfHeaderSave = [];
+			$arfHeaderContainer = [];
+			foreach($request_type_id as $arfHeadKey => $arfHeadVal){
+				if($arfHeadVal == 1){
+					$arfHeaderContainer['status_id']              = $this->forItReco;
+					$arfHeaderContainer['application'] 			  = $item_sourcing_header->application;
+					$arfHeaderContainer['application_others'] 	  = $item_sourcing_header->application_others;
+					$arfHeaderContainer['to_reco']                = 1;
+				}else{
+					$arfHeaderContainer['status_id']              = $this->forTagging;
+					$arfHeaderContainer['application'] 			  = NULL;
+					$arfHeaderContainer['application_others'] 	  = NULL;  
+					$arfHeaderContainer['to_reco']                = 0;
+				}
+				$arfHeaderContainer['reference_number']		      = "ARF-".str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);
+				$count_header ++;
+				$arfHeaderContainer['employee_name' ]		      = $item_sourcing_header->employee_name;
+				$arfHeaderContainer['company_name'] 			  = $item_sourcing_header->company_name;
+				$arfHeaderContainer['position'] 				  = $item_sourcing_header->position;
+				$arfHeaderContainer['department' ]				  = $item_sourcing_header->department;
+				$arfHeaderContainer['store_branch']		          = $item_sourcing_header->store_branch;
+				$arfHeaderContainer['purpose'] 				      = 2;
+				$arfHeaderContainer['conditions'] 				  = $item_sourcing_header->conditions;
+				$arfHeaderContainer['quantity_total'] 			  = $item_sourcing_header->quantity_total;
+				$arfHeaderContainer['cost_total'] 				  = $item_sourcing_header->cost_total;
+				$arfHeaderContainer['total'] 					  = $item_sourcing_header->total;
+				$arfHeaderContainer['requestor_comments'] 		  = $item_sourcing_header->requestor_comments;
+				$arfHeaderContainer['created_by'] 				  = CRUDBooster::myId();
+				$arfHeaderContainer['created_at'] 				  = date('Y-m-d H:i:s');
+				$arfHeaderContainer['approved_by'] 		          = $item_sourcing_header->approver_by;
+				$arfHeaderContainer['approved_at'] 		          = date('Y-m-d H:i:s');
+				$arfHeaderContainer['request_type_id']		 	  = $arfHeadVal;
+				$arfHeaderContainer['privilege_id']		 	      = NULL;
+				$arfHeaderContainer['if_from_item_source' ]		  = $item_sourcing_header->reference_number;
+			
+				$arfHeaderSave[] = $arfHeaderContainer;
+			}
+			HeaderRequest::insert($arfHeaderSave);
+			$itId = DB::table('header_request')->select('*')->where('id','>', $latestRequestId)->where('request_type_id',1)->first();
+			$faId = DB::table('header_request')->select('*')->where('id','>', $latestRequestId)->where('request_type_id',5)->first();
+			$SuppliesId = DB::table('header_request')->select('*')->where('id','>', $latestRequestId)->where('request_type_id',7)->first();
+			$MarketingId = DB::table('header_request')->select('*')->where('id','>', $latestRequestId)->where('request_type_id',6)->first();
+	
+			$resultArrforIT = [];
+			foreach($item_sourcing_body as $item){
+				if($item['request_type_id'] == 1){
+					for($i = 0; $i < $item['request_type_id']; $i++){
+						$t = $item;
+						$t['header_request_id'] = $itId->id;
+						$resultArrforIT[] = $t;
+					}
+				}
+			}
+
+			$resultArrforFA = [];
+			foreach($item_sourcing_body as $itemFa){
+				if($itemFa['request_type_id'] == 5){
+					for($x = 0; $x < $itemFa['request_type_id']; $x++){
+						$fa = $itemFa;
+						$fa['header_request_id'] = $faId->id;
+						$resultArrforFA[] = $fa;
+					}
+				}
+			}
+
+			$resultArrforSu = [];	
+			foreach($item_sourcing_body as $itemSu){
+				if($itemSu['request_type_id'] == 7){
+					for($s = 0; $s < $itemSu['request_type_id']; $s++){
+						$su = $itemSu;
+						$su['header_request_id'] = $SuppliesId->id;
+						$resultArrforSu[] = $su;
+					}
+				}
+			}
+
+			$resultArrforMarketing = [];	
+			foreach($item_sourcing_body as $itemMkt){
+				if($itemMkt['request_type_id'] == 6){
+					for($m = 0; $m < $itemMkt['request_type_id']; $m++){
+						$mkt = $itemMkt;
+						$mkt['header_request_id'] = $MarketingId->id;
+						$resultArrforMarketing[] = $mkt;
+					}
+				}
+			}
+
+
+			//save items in Body Request
+			$insertData = [];
+			$insertContainer = [];
+			foreach($item_sourcing_body as $key => $val){
+				$insertContainer['header_request_id']   = $val['header_request_id'];
+				$insertContainer['digits_code'] 	    = $val['digits_code'];
+				$insertContainer['item_description'] 	= $val['item_description'];
+				$insertContainer['category_id'] 		= $val['category_id'];
+				$insertContainer['sub_category_id'] 	= $val['sub_category_id'];
+				$insertContainer['app_id'] 			    = NULL;
+				$insertContainer['app_id_others'] 	    = NULL;
+				$insertContainer['quantity'] 			= $val['quantity'];
+				$insertContainer['unit_cost'] 		    = NULL;
+				if($request_type_id == 5){
+					$insertContainer['to_reco'] = 0;
+				}else{
+					if (str_contains($val['sub_category_id'], 'LAPTOP') || str_contains($val['sub_category_id'], 'DESKTOP')) {
+						$insertContainer['to_reco'] = 1;
+					}else{
+						$insertContainer['to_reco'] = 0;
+					}
+				}
+				$insertContainer['created_at'] 		= date('Y-m-d H:i:s');
+				$insertData[] = $insertContainer;
+			}
+
+			//make array base on general quantity
+			$itAssets = [];
+			foreach($insertData as $itItem){
+				if($itItem['category_id'] == "IT ASSETS"){
+					for($i = 0; $i < $itItem['quantity']; $i++){
+						// make sure the quantity is now 1 and not the original > 1 value
+						$it = $itItem;
+						$it['quantity'] = 1;
+						$itAssets[] = $it;
+					}
+				}
+			}
+			$faAssets = [];
+			foreach($insertData as $faItem){
+				if($faItem['category_id'] == "FIXED ASSETS"){
+					for($j = 0; $j < $faItem['quantity']; $j++){
+						// make sure the quantity is now 1 and not the original > 1 value
+						$fa = $faItem;
+						$fa['quantity'] = 1;
+						$faAssets[] = $fa;
+					}
+				}
+			}
+
+			$suppAssets = [];
+			foreach($insertData as $suppItem){
+				if($suppItem['category_id'] == "SUPPLIES"){
+					// make sure the quantity is now 1 and not the original > 1 value
+					$sp = $suppItem;
+					$sp['quantity'] = $suppItem['quantity'];
+					$suppAssets[] = $sp;
+					
+				}
+			}
+
+			$mktAssets = [];
+			foreach($insertData as $mktItem){
+				if($mktItem['category_id'] == "MARKETING"){
+					// make sure the quantity is now 1 and not the original > 1 value
+					$mkt = $mktItem;
+					$mkt['quantity'] = $mktItem['quantity'];
+					$mktAssets[] = $mkt;
+					
+				}
+			}
+			$insertData = array_merge($itAssets, $faAssets,$suppAssets, $mktAssets);
+            
+			//update flag in item sourcing body
+			for ($i = 0; $i < count($bodyIds); $i++) {
+				ItemBodySourcing::where(['id' => $bodyIds[$i]])
+				   ->update([
+					       'if_arf_created'   => 1, 
+				           ]);
+			}
+
+			BodyRequest::insert($insertData);
+
+			$message = ['status'=>'success', 'message' => 'Created Successfully!'];
+			echo json_encode($message);
+			
+		}
+
 	}
+
+?>

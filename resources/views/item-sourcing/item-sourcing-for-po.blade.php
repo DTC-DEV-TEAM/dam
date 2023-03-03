@@ -14,7 +14,10 @@
             input.finput:read-only {
                 background-color: #fff;
             }
-
+            .green-color {
+                color:green;
+                margin-top:12px;
+            }
         </style>
     @endpush
 @section('content')
@@ -90,7 +93,7 @@
                 </div>
             </div>
 
-            @if(CRUDBooster::myPrivilegeId() == 8 || CRUDBooster::isSuperadmin())
+            @if($Header->store_branch != null || $Header->store_branch != "")
                 <div class="row">                           
                     <label class="control-label col-md-2">{{ trans('message.form-label.store_branch') }}:</label>
                     <div class="col-md-4">
@@ -133,6 +136,7 @@
                                     <table class="table table-bordered" id="item-sourcing">
                                         <tbody id="bodyTable">
                                             <tr class="tbl_header_color dynamicRows">
+                                                <th width="2%" class="text-center"></th> 
                                                 <th width="10%" class="text-center">Item Code</th> 
                                                 <th width="10%" class="text-center">PO Number</th>
                                                 <th width="10%" class="text-center">PO Date</th> 
@@ -152,18 +156,27 @@
                                                         <?php   $tableRow++; ?>
                                                                                             
                                                         <tr>
+                                                            <td style="text-align:center" height="10">
+                                                                @if($rowresult->if_arf_created != NULL)
+                                                                <i class="fa fa-check-circle green-color fa-lg" aria-hidden="true"></i>
+                                                                @endif
+                                                            </td>
                                                             <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}">        
                                                             <td style="text-align:center" height="10">
-                                                                    <input type="text"  class="form-control finput digits_code"  name="item_code[]" id="digits_code{{$tableRow}}" data-id="{{$tableRow1}}" value="{{$rowresult->digits_code}}" required >                                
+                                                                <input type="text"  class="form-control finput digits_code"  name="item_code[]" id="digits_code{{$tableRow}}" data-id="{{$tableRow}}" value="{{$rowresult->digits_code}}" required >                                
+                                                                <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" data-id="{{$tableRow}}" id="ui-id-2{{$tableRow}}" style="display: none; top: 60px; left: 15px; width: 100%;">
+                                                                    <li>Loading...</li>
+                                                                </ul>
+                                                            </td>
+                                                            
+                                                            <td style="text-align:center" height="10">
+                                                                    <input type="text"  class="form-control finput"  name="po_number[]" id="po_number{{$tableRow}}" data-id="{{$tableRow}}" value="{{$rowresult->po_number}}" required >                                
                                                             </td>
                                                             <td style="text-align:center" height="10">
-                                                                    <input type="text"  class="form-control finput"  name="po_number[]" id="po_number{{$tableRow}}" data-id="{{$tableRow1}}" value="{{$rowresult->po_number}}" required >                                
+                                                                    <input type="text"  class="form-control finput po_date{{$tableRow}}"  name="po_date[]" id="po_date{{$tableRow}}" value="{{$rowresult->po_date}}" data-id="{{$tableRow}}"  required >                                
                                                             </td>
                                                             <td style="text-align:center" height="10">
-                                                                    <input type="text"  class="form-control finput po_date{{$tableRow}}"  name="po_date[]" id="po_date{{$tableRow}}" value="{{$rowresult->po_date}}" data-id="{{$tableRow1}}"  required >                                
-                                                            </td>
-                                                            <td style="text-align:center" height="10">
-                                                                    <input type="text"  class="form-control finput qoute_date"  name="qoute_date[]" id="qoute_date{{$tableRow}}" data-id="{{$tableRow1}}" value="{{$rowresult->qoute_date}}" required >                                
+                                                                    <input type="text"  class="form-control finput qoute_date"  name="qoute_date[]" id="qoute_date{{$tableRow}}" data-id="{{$tableRow}}" value="{{$rowresult->qoute_date}}" required >                                
                                                             </td>
                                                             <td style="text-align:center" height="10">
                                                                     <input type="text"  class="form-control finput"  name="supplier[]" id="supplier{{$tableRow}}" value="{{$rowresult->supplier}}" required >                                
@@ -184,8 +197,8 @@
                                                                     {{$rowresult->quantity}}
                                                           
                                                             </td>
-                                                            <td style="text-align:center" height="10">
-                                                                    <input type="text"  class="form-control finput"  name="value[]" id="value{{$tableRow}}" value="{{$rowresult->value}}" required >                                
+                                                            <td style="text-align:center" height="10" class="value">
+                                                                    <input type="text" style="text-align:center"  class="form-control finput item_source_value"  name="value[]" id="value{{$tableRow}}" value="{{$rowresult->value}}" onkeyup="item_source_value();" required >                                
                                                             </td>
                                                               
                                                       </tr>
@@ -197,6 +210,7 @@
                                             </tr>          
                                         </tbody>
                                     </table>
+
                                 </div>
                             </div>
                         </div>
@@ -301,9 +315,17 @@
 
 @endsection
 @push('bottom')
+    <script src=
+    "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" >
+        </script>
+        
+        <script src=
+    "https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" >
+        </script>
 <script type="text/javascript">
     $(function(){
         $('body').addClass("sidebar-collapse");
+        item_source_value();
     });
     function preventBack() {
         window.history.forward();
@@ -313,90 +335,142 @@
     };
     setTimeout("preventBack()", 0);
     var searchcount = <?php echo json_encode($tableRow); ?>;
-
     let countrow = 1;
 
     $(function(){
-
         for (let i = 0; i < searchcount; i++) {
             countrow++;
-            $('#po_date'+countrow).datetimepicker({
-                minDate:new Date(), // Current year from transactions
-                viewMode: "days",
-                format: "YYYY-MM-DD",
-                dayViewHeaderFormat: "MMMM YYYY",
-            });
-            $('#qoute_date'+countrow).datetimepicker({
-                minDate:new Date(), // Current year from transactions
-                viewMode: "days",
-                format: "YYYY-MM-DD",
-                dayViewHeaderFormat: "MMMM YYYY",
-            });
 
-            $('#digits_code'+countrow).each(function() {
-                description = $(this).val();
-                if(description !== "") {
-                    $('#digits_code'+countrow).attr('readonly', true);
-
-                }else{
-                    $('#digits_code'+countrow).removeAttr('readonly');
-                }
+            $('#po_date'+countrow).datepicker({
+                constrainInput: false,  
+                dateFormat: 'yy-mm-dd'
+              
+            });
+            $('#qoute_date'+countrow).datepicker({
+                constrainInput: false,  
+                dateFormat: 'yy-mm-dd'
+               
+            });
+            $('#po_date'+countrow).keyup(function() {
+                    this.value = this.value.toLocaleUpperCase();
+            });
+            $('#qoute_date'+countrow).keyup(function() {
+                    this.value = this.value.toLocaleUpperCase();
             });
 
-            $('#po_number'+countrow).each(function() {
-                description = $(this).val();
-                if(description !== "") {
-                    $('#po_number'+countrow).attr('readonly', true);
+             //cost fields validation
+             $(document).on("keyup","#value"+countrow, function (e) {
+                if (e.which >= 37 && e.which <= 40) return;
+                        if (this.value.charAt(0) == ".") {
+                            this.value = this.value.replace(
+                            /\.(.*?)(\.+)/,
+                            function (match, g1, g2) {
+                                return "." + g1;
+                            }
+                            );
+                        }
+                        if (e.key == "." && this.value.split(".").length > 2) {
+                            this.value =
+                            this.value.replace(/([\d,]+)([\.]+.+)/, "$1") +
+                            "." +
+                            this.value.replace(/([\d,]+)([\.]+.+)/, "$2").replace(/\./g, "");
+                            return;
+                        }
+                    $(this).val(function (index, value) {
+                        value = value.replace(/[^-0-9.]+/g, "");
+                        let parts = value.toString().split(".");
+                        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                        return parts.join(".");
+                    });
+            });  
 
-                }else{
-                    $('#po_number'+countrow).removeAttr('readonly');
-                }
-            });
-
-            $('#po_date'+countrow).each(function() {
-                description = $(this).val();
-                if(description !== "") {
-                    $('#po_date'+countrow).attr('readonly', true);
-
-                }else{
-                    $('#po_date'+countrow).removeAttr('readonly');
-                }
-            });
-
-            $('#qoute_date'+countrow).each(function() {
-                description = $(this).val();
-                if(description !== "") {
-                    $('#qoute_date'+countrow).attr('readonly', true);
-
-                }else{
-                    $('#qoute_date'+countrow).removeAttr('readonly');
-                }
-            });
-
-            $('#supplier'+countrow).each(function() {
-                description = $(this).val();
-                if(description !== "") {
-                    $('#supplier'+countrow).attr('readonly', true);
-
-                }else{
-                    $('#supplier'+countrow).removeAttr('readonly');
-                }
-            });
-
-            $('#value'+countrow).each(function() {
-                description = $(this).val();
-                if(description !== "") {
-                    $('#value'+countrow).attr('readonly', true);
-
-                }else{
-                    $('#value'+countrow).removeAttr('readonly');
-                }
-            });
+            
         }
+
+        
     });
 
-   
+  
+    var stack = [];
+    var token = $("#token").val();
+    var tableRow1 = <?php echo json_encode($tableRow); ?>;
+    let countrow1 = 1;
+    $(function(){
+            for (let j = 0; j < tableRow1; j++) {
+                countrow1++;
+                $("#digits_code"+countrow1).autocomplete({
 
+                    source: function (request, response) {
+                    $.ajax({
+                        url: "{{ route('it.item.search') }}",
+                        dataType: "json",
+                        type: "POST",
+                        data: {
+                            "_token": token,
+                            "search": request.term
+                        },
+                        success: function (data) {
+                            //var rowCount = $('#asset-items tr').length;
+                            //myStr = data.sample;   
+                            if (data.status_no == 1) {
+
+                                $("#val_item").html();
+                                var data = data.items;
+                                $('#ui-id-2'+countrow1).css('display', 'none');
+
+                                response($.map(data, function (item) {
+                                    return {
+                                        id:                         item.id,
+                                        asset_code:                 item.asset_code,
+                                        digits_code:                item.digits_code,
+                                        asset_tag:                  item.asset_tag,
+                                        serial_no:                  item.serial_no,
+                                        value:                      item.item_description,
+                                        category_description:       item.category_description,
+                                        item_cost:                  item.item_cost,
+                                    
+                                    }
+
+                                }));
+
+                            } else {
+
+                                $('.ui-menu-item').remove();
+                                $('.addedLi').remove();
+                                $("#ui-id-2"+countrow1).append($("<li class='addedLi'>").text(data.message));
+                                var searchVal = $("#search"+countrow1).val();
+                                if (searchVal.length > 0) {
+                                    $("#ui-id-2"+countrow1).css('display', 'block');
+                                } else {
+                                    $("#ui-id-2"+countrow1).css('display', 'none');
+                                }
+                            }
+                        }
+                    })
+                    },
+                    select: function (event, ui) {
+                        var e = ui.item;
+
+                        if (e.id) {
+                            
+                            $("#digits_code"+$(this).attr("data-id")).val(e.digits_code);
+                            return false;
+
+                        }
+                    },
+
+                    minLength: 1,
+                    autoFocus: true
+                    });
+
+
+            }
+
+
+        });
+    
+
+    
     $('#btnUpdate').click(function(event) {
         event.preventDefault();
         swal({
@@ -417,6 +491,97 @@
 
     $('#btnClose').click(function(event) {
         event.preventDefault();
+
+        var item = $("input[name^='item_code']").length;
+        var item_value = $("input[name^='item_code']");
+        for(i=0;i<item;i++){
+            if(item_value.eq(i).val() == 0 || item_value.eq(i).val() == null){
+                swal({  
+                        type: 'error',
+                        title: 'Item Code Fields cannot be empty!(put N/A if not available)',
+                        icon: 'error',
+                        confirmButtonColor: "#367fa9",
+                    });
+                    event.preventDefault();
+                    return false;
+            } 
+    
+        } 
+        var po = $("input[name^='po_number']").length;
+        var po_value = $("input[name^='po_number']");
+        for(i=0;i<po;i++){
+            if(po_value.eq(i).val() == 0 || po_value.eq(i).val() == null){
+                swal({  
+                        type: 'error',
+                        title: 'PO Number Fields cannot be empty!(put N/A if not available)',
+                        icon: 'error',
+                        confirmButtonColor: "#367fa9",
+                    });
+                    event.preventDefault();
+                    return false;
+            } 
+    
+        } 
+        var po_date = $("input[name^='po_date']").length;
+        var po_date_value = $("input[name^='po_date']");
+        for(i=0;i<po_date;i++){
+            if(po_date_value.eq(i).val() == 0 || po_date_value.eq(i).val() == null){
+                swal({  
+                        type: 'error',
+                        title: 'PO Date Fields cannot be empty!(put N/A if not available)',
+                        icon: 'error',
+                        confirmButtonColor: "#367fa9",
+                    });
+                    event.preventDefault();
+                    return false;
+            } 
+    
+        } 
+        var qoute_date = $("input[name^='qoute_date']").length;
+        var qoute_date_value = $("input[name^='qoute_date']");
+        for(i=0;i<qoute_date;i++){
+            if(qoute_date_value.eq(i).val() == 0 || qoute_date_value.eq(i).val() == null){
+                swal({  
+                        type: 'error',
+                        title: 'Quote Date Fields cannot be empty!(put N/A if not available)',
+                        icon: 'error',
+                        confirmButtonColor: "#367fa9",
+                    });
+                    event.preventDefault();
+                    return false;
+            } 
+    
+        } 
+        var supplier = $("input[name^='supplier']").length;
+        var supplier_value = $("input[name^='supplier']");
+        for(i=0;i<supplier;i++){
+            if(supplier_value.eq(i).val() == 0 || supplier_value.eq(i).val() == null){
+                swal({  
+                        type: 'error',
+                        title: 'Supplier Fields cannot be empty!(put N/A if not available)',
+                        icon: 'error',
+                        confirmButtonColor: "#367fa9",
+                    });
+                    event.preventDefault();
+                    return false;
+            } 
+    
+        } 
+        var value = $("input[name^='value']").length;
+        var value_value = $("input[name^='value']");
+        for(i=0;i<value;i++){
+            if(value_value.eq(i).val() == null){
+                swal({  
+                        type: 'error',
+                        title: 'Value Fields cannot be empty!(put 0 if not available)',
+                        icon: 'error',
+                        confirmButtonColor: "#367fa9",
+                    });
+                    event.preventDefault();
+                    return false;
+            } 
+    
+        } 
         swal({
             title: "Are you sure?",
             type: "warning",
@@ -450,6 +615,15 @@
         });
     });
 
+    function item_source_value(){
+        var total = 0;
+        $('.item_source_value').each(function(){
+            total += $(this).val() === "" ? 0 : parseFloat($(this).val());
+        })
+    
+        $('#item-source-value-total').text(thousands_separators(total.toFixed(2)));
+    }
+
     function thousands_separators(num) {
     var num_parts = num.toString().split(".");
     num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -462,18 +636,24 @@
     var sumqty = 0;
     var sumcost = 0;
     for (var i = 0; i < tds.length; i++) {
-    if (tds[i].className == "qty") {
-        sumqty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-    }else if(tds[i].className == "cost"){
-        sumcost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-    }
+        if (tds[i].className == "qty") {
+            sumqty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+        }else if(tds[i].className == "cost"){
+            sumcost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+        }
     }
     document.getElementById("item-sourcing").innerHTML +=
-    "<tr style='text-align:center'><td colspan=8><strong>TOTAL</strong></td><td><strong>" +
-    thousands_separators(sumcost.toFixed(2)) +
-    "</strong></td><td><strong>" +
-                         sumqty +
-    "</strong></td></tr>";
-    
+    "<tr style='text-align:center'>"+
+    "<td colspan=10><strong>TOTAL</strong></td>"+
+
+    "<td><strong>" +
+        sumqty + 
+    "</strong></td>"+
+                                      
+    "<td style='text-align:center'><strong><span id='item-source-value-total'>" + 
+   
+    "</span></strong></td>"+
+
+    "</tr>";
 </script>
 @endpush

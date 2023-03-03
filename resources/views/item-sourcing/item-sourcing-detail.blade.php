@@ -10,6 +10,14 @@
                 border:none;
                 border-bottom: 1px solid rgba(18, 17, 17, 0.5);
             }
+
+            input.finput:read-only {
+                background-color: #fff;
+            }
+            .green-color {
+                color:green;
+                margin-top:12px;
+            }
         </style>
     @endpush
 @section('content')
@@ -22,7 +30,7 @@
     <div class='panel-heading'>
         History Detail View
     </div>
-
+    <form method='post' id="myform" name="myform">
         <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
         <input type="hidden" value="0" name="action" id="action">
 
@@ -82,7 +90,7 @@
                 </div>
             </div>
 
-            @if(CRUDBooster::myPrivilegeId() == 8 || CRUDBooster::isSuperadmin())
+            @if($Header->store_branch != null || $Header->store_branch != "")
                 <div class="row">                           
                     <label class="control-label col-md-2">{{ trans('message.form-label.store_branch') }}:</label>
                     <div class="col-md-4">
@@ -133,12 +141,13 @@
                                                 <th width="10%" class="text-center">PO Date</th> 
                                                 <th width="10%" class="text-center">Quote Date</th> 
                                                 <th width="10%" class="text-center">Supplier</th> 
-                                                <th width="10%" class="text-center">Value</th> 
                                                 <th width="10%" class="text-center">{{ trans('message.table.item_description') }}</th>
                                                 <th width="9%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
                                                 <th width="10%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
                                                 <th width="5%" class="text-center">Budget</th> 
-                                                <th width="5%" class="text-center">Quantity</th>                                                
+                                                <th width="5%" class="text-center">Quantity</th>    
+                                                <th width="10%" class="text-center">Value</th>    
+                                                <th width="2%" class="text-center"></th>                                          
                                             </tr>
                                             <tr id="tr-table">
                                                 <?php   $tableRow = 1; ?>
@@ -149,30 +158,32 @@
                                                         <tr>
                                                            
                                                             <td >
-                                                            @if($rowresult->digits_code != NULL && $rowresult->po_number != NULL && $rowresult->po_date != NULL && $rowresult->qoute_date != NULL && $rowresult->supplier != NULL && $rowresult->value != NULL)
-                                                                <input type="checkbox" name="mo_id[]" id="mo_id{{$tableRow1}}" class="id" required data-id="{{$tableRow1}}" value="{{$res->mo_id}}"/>
+                                                            @if($rowresult->digits_code != NULL && $rowresult->po_number != NULL && $rowresult->po_date != NULL && $rowresult->qoute_date != NULL && $rowresult->supplier != NULL && $rowresult->value != NULL && $rowresult->if_arf_created == NULL)
+                                                                <input style="margin-top:10px" type="checkbox" name="body_id[]" id="body_id{{$tableRow}}" class="id" required data-id="{{$tableRow}}" value="{{$rowresult->id}}"/>
+                                                            @elseif($rowresult->if_arf_created != NULL)
+                                                            <i class="fa fa-check-circle green-color fa-lg" aria-hidden="true"></i>
                                                             @endif
+                                                                <input type="hidden" name="request_type_id[]" id="request_type_id{{$tableRow}}" class="id" required data-id="{{$tableRow}}" value="{{$rowresult->request_type_id}}"/>
+                                                                <input type="hidden" name="if_arf_created[]" id="if_arf_created" class="id" required data-id="{{$tableRow}}" value="{{$rowresult->if_arf_created}}"/>
                                                             </td>
                                                           
-                                                            <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}">        
+                                                            <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}" readonly>        
                                                             <td style="text-align:center" height="10">
-                                                                    <input type="text"  class="form-control finput"  name="item_code[]" id="ids{{$tableRow}}" value="{{$rowresult->digits_code}}"  required >                                
+                                                                    <input type="text"  class="form-control finput"  name="item_code[]" id="ids{{$tableRow}}" value="{{$rowresult->digits_code}}"  required readonly>                                
                                                             </td>
                                                             <td style="text-align:center" height="10">
-                                                                    <input type="text"  class="form-control finput"  name="po_number[]" id="ids{{$tableRow}}" value="{{$rowresult->po_number}}" required >                                
+                                                                    <input type="text"  class="form-control finput"  name="po_number[]" id="ids{{$tableRow}}" value="{{$rowresult->po_number}}" required readonly>                                
                                                             </td>
                                                             <td style="text-align:center" height="10">
-                                                                    <input type="text"  class="form-control finput po_date{{$tableRow}}"  name="po_date[]" id="po_date{{$tableRow}}" value="{{$rowresult->po_date}}" data-id="{{$tableRow1}}"  required >                                
+                                                                    <input type="text"  class="form-control finput po_date{{$tableRow}}"  name="po_date[]" id="po_date{{$tableRow}}" value="{{$rowresult->po_date}}" data-id="{{$tableRow1}}"  required readonly>                                
                                                             </td>
                                                             <td style="text-align:center" height="10">
-                                                                    <input type="text"  class="form-control finput qoute_date"  name="qoute_date[]" id="qoute_date{{$tableRow}}" value="{{$rowresult->qoute_date}}" data-id="{{$tableRow1}}"  required >                                
+                                                                    <input type="text"  class="form-control finput qoute_date"  name="qoute_date[]" id="qoute_date{{$tableRow}}" value="{{$rowresult->qoute_date}}" data-id="{{$tableRow1}}"  required readonly>                                
                                                             </td>
                                                             <td style="text-align:center" height="10">
-                                                                    <input type="text"  class="form-control finput"  name="supplier[]" id="ids{{$tableRow}}" value="{{$rowresult->supplier}}" required >                                
+                                                                    <input type="text"  class="form-control finput"  name="supplier[]" id="ids{{$tableRow}}" value="{{$rowresult->supplier}}" required readonly>                                
                                                             </td>
-                                                            <td style="text-align:center" height="10">
-                                                                    <input type="text"  class="form-control finput"  name="value[]" id="ids{{$tableRow}}" value="{{$rowresult->value}}" required >                                
-                                                            </td>
+                                                            
                                                             <td style="text-align:center" height="10">                                                             
                                                                     {{$rowresult->item_description}}
                                                             </td>
@@ -189,8 +200,13 @@
                                                                     {{$rowresult->quantity}}
                                                           
                                                             </td>
-                                                            
-                                                              
+                                                            <td style="text-align:center" height="10">
+                                                                    <input type="text" style="text-align:center" class="form-control finput item_source_value"  name="value[]" id="ids{{$tableRow}}" value="{{$rowresult->value}}" required readonly>                                
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow btn-sm" disabled><i class="fa fa-trash"></i></button>
+                                                            </td>   
+                                                                                                                          
                                                       </tr>
                                                                                                                          
                                                     @endforeach     
@@ -232,53 +248,16 @@
                                         <td class="col-md-4">{{$Header->approver_comments}}</td>
                                     </tr>
                                 @endif
-                                @if($Header->po_number != null)
-                                <tr>
-                                    <th class="control-label col-md-2">{{ trans('message.form-label.po_number') }}:</th>
-                                    <td class="col-md-4">{{$Header->po_number}}</td>     
-                                </tr>
-                                @endif
-                                @if($Header->po_date != null)
-                                <tr>
-                                    <th class="control-label col-md-2">{{ trans('message.form-label.po_date') }}:</th>
-                                    <td class="col-md-4">{{$Header->po_date}}</td>
-                                </tr>
-                                @endif
-                                @if($Header->quote_date != null)
-                                <tr>
-                                    <th class="control-label col-md-2">{{ trans('message.form-label.quote_date') }}:</th>
-                                    <td class="col-md-4">{{$Header->quote_date}}</td>
-                                </tr>
-                                @endif
                                 @if( $Header->processedby != null )
                                     <tr>
                                         <th class="control-label col-md-2">{{ trans('message.form-label.processed_by') }}:</th>
                                         <td class="col-md-4">{{$Header->processedby}} / {{$Header->purchased2_at}}</td>
                                     </tr>
                                 @endif
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="col-md-6">
-                        <table style="width:100%">
-                            <tbody>
                                 @if($Header->ac_comments != null)
                                     <tr>
                                         <th class="control-label col-md-2">{{ trans('message.table.ac_comments') }}:</th>
                                         <td class="col-md-4">{{$Header->ac_comments}}</td>
-                                    </tr>
-                                @endif
-                                @if( $Header->pickedby != null )
-                                    <tr>
-                                        <th class="control-label col-md-2">{{ trans('message.form-label.picked_by') }}:</th>
-                                        <td class="col-md-4">{{$Header->pickedby}} / {{$Header->picked_at}}</td>
-                                    </tr>
-                                @endif
-                                @if( $Header->receivedby != null )
-                                    <tr>
-                                        <th class="control-label col-md-2">{{ trans('message.form-label.received_by') }}:</th>
-                                        <td class="col-md-4">{{$Header->receivedby}} / {{$Header->received_at}}</td>
                                     </tr>
                                 @endif
                                 @if( $Header->closedby != null )
@@ -297,15 +276,27 @@
         <div class='panel-footer'>
 
             <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.back') }}</a>
-
+            <button class="btn btn-success pull-right" type="button" id="btnSubmit"><i class="fa fa-plus-circle" ></i> Create ARF</button>
         </div>
-
+    </form>
 </div>
 
 @endsection
 @push('bottom')
 <script type="text/javascript">
-
+    $(function(){
+        item_source_value();
+      
+        var w = $("input[name^='if_arf_created']").length;
+        var if_arf_created = $("input[name^='if_arf_created']");
+        for(i=0;i<w;i++){
+            if(if_arf_created.eq(i).val() == 1){
+                $('#btnSubmit').hide();
+            }else{
+                $('#btnSubmit').show();
+            }
+        }
+    });
     function preventBack() {
         window.history.forward();
     }
@@ -313,19 +304,77 @@
         null;
     };
     setTimeout("preventBack()", 0);
+    var token = $("#token").val();
+     function item_source_value(){
+        var total = 0;
+        $('.item_source_value').each(function(){
+            total += $(this).val() === "" ? 0 : parseFloat($(this).val());
+        })
 
+        $('#item-source-value-total').text(thousands_separators(total.toFixed(2)));
+    }
+
+  
+
+    
     $('#btnSubmit').click(function() {
+        var body_ids = [];
+        var request_type_id = [];
+        $.each($("input[name='body_id[]']:checked"), function(){
+            body_ids.push($(this).val());
+            request_type_id.push($("#request_type_id"+$(this).attr("data-id")).val());
+        });
 
-        var strconfirm = confirm("Are you sure you want to close this request?");
-        if (strconfirm == true) {
-
-            $(this).attr('disabled','disabled');
-
-            $('#myform').submit(); 
-            
+        var check = $('input:checkbox:checked').length;
+        event.preventDefault();
+        if (check == 0) {
+            swal({
+                type: 'error',
+                title: 'Please select to create ARF!',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            }); 
+            event.preventDefault(); // cancel default behavior
         }else{
-            return false;
-            window.stop();
+            swal({
+                title: "Are you sure?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#41B314",
+                cancelButtonColor: "#F9354C",
+                confirmButtonText: "Yes, send it!",
+                width: 450,
+                height: 200
+                }, function () {
+                    $.ajax({
+                        url: "{{ route('create-arf') }}",
+                        type: "POST",
+                        dataType: 'json',
+            
+                        data: {
+                            "_token": token,
+                            "body_ids": body_ids,
+                            "request_type_id": request_type_id,
+                            "header_id" : $('#headerID').val(),
+                        },
+                        success: function (data) {
+                            if (data.status == "success") {
+                                swal({
+                                    type: data.status,
+                                    title: data.message,
+                                });
+                                setTimeout(function(){
+                                    location.reload();
+                                    }, 1000);
+                                } else if (data.status == "error") {
+                                swal({
+                                    type: data.status,
+                                    title: data.message,
+                                });
+                            }
+                        }
+                    });                                                
+            });
         }
 
     });
@@ -410,11 +459,18 @@
         }
     }
     document.getElementById("item-sourcing").innerHTML +=
-    "<tr style='text-align:center'><td colspan=9><strong>TOTAL</strong></td><td><strong>" +
-    thousands_separators(sumcost.toFixed(2)) +
-    "</strong></td><td><strong>" +
-                         sumqty +
-    "</strong></td></tr>";
+    "<tr style='text-align:center'>"+
+    "<td colspan=10><strong>TOTAL</strong></td>"+
+
+    "<td><strong>" +
+        sumqty + 
+    "</strong></td>"+
+                                      
+    "<td style='text-align:center'><strong><span id='item-source-value-total'>" + 
+   
+    "</span></strong></td>"+
+
+    "</tr>";
     
 </script>
 @endpush

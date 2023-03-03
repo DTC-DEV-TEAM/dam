@@ -1514,6 +1514,15 @@
 										 </div>';
 				} 
 
+				if($data['Header']->if_from_item_source != null || $data['Header']->if_from_item_source != ""){ 
+					$data['ARFHeader'] .= ' <div class="row">                           
+											<label class="control-label col-md-2">Item Sourcing Number:</label>
+											<div class="col-md-4">
+													<p>'. $data['Header']->if_from_item_source .'</p>
+											</div>
+										 </div>';
+				} 
+
 			$data['ARFHeader'] .= '
 				<hr/>
 				<div class="row">                           

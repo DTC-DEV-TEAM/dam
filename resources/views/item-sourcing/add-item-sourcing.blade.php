@@ -141,7 +141,7 @@
                                                             <th width="25%" class="text-center">*{{ trans('message.table.item_description') }}</th>
                                                             <th width="17%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                                                                                    
                                                             <th width="17%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th>                                                       
-                                                            <th width="10%" class="text-center">*Budget</th> 
+                                                            <th width="10%" class="text-center">*Budget Range</th> 
                                                             <th width="7%" class="text-center">*{{ trans('message.table.quantity_text') }}</th>                                                    
                                                             <th width="5%" class="text-center">{{ trans('message.table.action') }}</th>
                                                         </tr>
@@ -332,7 +332,7 @@
                     '</td>' +  
 
                     '<td>'+
-                        '<select selected data-placeholder="- Select Category -" class="form-control category" name="category_id[]" data-id="' + tableRow + '" id="category_id' + tableRow + '" required style="width:100%">' +
+                        '<select selected data-placeholder="Select Category" class="form-control category" name="category_id[]" data-id="' + tableRow + '" id="category_id' + tableRow + '" required style="width:100%">' +
                         '  <option value=""></option>' +
                         '        @foreach($categories as $data)'+
                         '        <option value="{{$data->category_description}}">{{$data->category_description}}</option>'+
@@ -346,7 +346,7 @@
                     //     '</select>'+
                     // '</td>' +   
                     '<td>'+
-                        '<select selected data-placeholder="- Select Sub Category -" class="form-control sub_category_id" name="sub_category_id[]" data-id="' + tableRow + '" id="sub_category_id' + tableRow + '" required style="width:100%">' +
+                        '<select selected data-placeholder="Select Sub Category" class="form-control sub_category_id" name="sub_category_id[]" data-id="' + tableRow + '" id="sub_category_id' + tableRow + '" required style="width:100%">' +
                         '  <option value=""></option>' +
                         '        @foreach($sub_categories as $data)'+
                         '        <option value="{{$data->class_description}}">{{$data->class_description}}</option>'+
@@ -355,7 +355,12 @@
                     '</td>' +
 
                     '<td>' +
-                    '<input class="form-control budget" type="text" required name="budget[]" id="budget' + tableRow + '" data-id="' + tableRow  + '" min="0" max="9999999999" step="any" oninput="validity.valid;">' + 
+                    '<select selected data-placeholder="Choose" class="form-control budget" name="budget[]" data-id="' + tableRow + '" id="budget' + tableRow + '" required style="width:100%">' +
+                        '  <option value=""></option>' +
+                        '        @foreach($budget_range as $data)'+
+                        '        <option value="{{$data->description}}">{{$data->description}}</option>'+
+                        '         @endforeach'+
+                        '</select>'+
                     '</td>' +
 
                     '<td>' +
@@ -370,6 +375,7 @@
                 $(newrow).insertBefore($('table tr#tr-table1:last'));
                 $('#sub_category_id'+tableRow).attr('disabled', true);
                 $('#category_id'+tableRow).select2({});
+                $('#budget'+tableRow).select2({});
                 $('.js-example-basic-multiple').select2();
                 $('.sub_category_id').select2({
                 placeholder_text_single : "- Select Sub Category -"});
@@ -443,6 +449,32 @@
 
                     }
 
+                });
+
+                //cost fields validation
+                $(document).on("keyup","#"+tableRow, function (e) {
+                    if (e.which >= 37 && e.which <= 40) return;
+                            if (this.value.charAt(0) == ".") {
+                                this.value = this.value.replace(
+                                /\.(.*?)(\.+)/,
+                                function (match, g1, g2) {
+                                    return "." + g1;
+                                }
+                                );
+                            }
+                            if (e.key == "." && this.value.split(".").length > 2) {
+                                this.value =
+                                this.value.replace(/([\d,]+)([\.]+.+)/, "$1") +
+                                "." +
+                                this.value.replace(/([\d,]+)([\.]+.+)/, "$2").replace(/\./g, "");
+                                return;
+                            }
+                        $(this).val(function (index, value) {
+                            value = value.replace(/[^-0-9.]+/g, "");
+                            let parts = value.toString().split(".");
+                            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                            return parts.join(".");
+                        });
                 });
 
                 $('#category_id'+tableRow).change(function(){
@@ -815,6 +847,8 @@
                 }
             
         });
+
+       
 
     </script>
 @endpush

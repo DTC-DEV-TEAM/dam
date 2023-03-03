@@ -19,6 +19,7 @@ class Email extends Mailable
     public function __construct($infos)
     {
         $this->infos = $infos;
+        $this->ref = $infos['reference_number'];
     }
 
     /**
@@ -28,7 +29,7 @@ class Email extends Mailable
      */
     public function build()
     {
-        return $this->subject('DAM Item Sourcing')
+        return $this->subject('DAM'.' '.$this->ref)
         ->view('emails.send-eMail');
     }
 }
