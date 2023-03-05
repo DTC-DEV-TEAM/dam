@@ -274,9 +274,11 @@
                                                                 <td style="text-align:center" height="10">
                                                                         <input type="text" style="text-align:center" class="form-control finput item_source_value"  name="value[]" id="ids{{$tableRow}}" value="{{$rowresult->value}}" required readonly>                                
                                                                 </td>
+                                                                @if($Header->closed_by == null)
                                                                 <td style="text-align:center" height="10">
                                                                     <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow btn-sm"><i class="fa fa-trash"></i></button>
-                                                                </td>                                                             
+                                                                </td>     
+                                                                @endif                                                        
                                                             </tr>
                                                       @endif
                                                                                                                          
