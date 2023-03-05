@@ -186,6 +186,7 @@ Route::group(['middleware' => ['web']], function() {
 
     //Item Sourcing Routes
     Route::post(config('crudbooster.ADMIN_PATH').'/item-sourcing-header/create-arf','AdminItemSourcingHeaderController@createArf')->name('create-arf');
+    Route::get('admin/item-sourcing-header/RemoveItemSource','AdminItemSourcingHeaderController@RemoveItemSource');
 
     Route::get('/admin/clear-view', function() {
         Artisan::call('view:clear');

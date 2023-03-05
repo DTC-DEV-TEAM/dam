@@ -18,6 +18,7 @@
 		private $processing;
 		private $forItReco;
 		private $forTagging;
+		private $cancelled;
 
 		public function __construct() {
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
@@ -28,6 +29,7 @@
 			$this->processing       =  11;   
 			$this->forItReco        =  4;        
 			$this->forTagging       =  7;
+			$this->cancelled        =  8;
 		}
 	    public function cbInit() {
 
@@ -308,7 +310,8 @@
 			$forQuotation       = DB::table('statuses')->where('id', $this->forQuotation)->value('status_description');  
 			$closed             = DB::table('statuses')->where('id', $this->closed)->value('status_description');
 			$rejected           = DB::table('statuses')->where('id', $this->rejected)->value('status_description');  
-			$processing         = DB::table('statuses')->where('id', $this->processing)->value('status_description');  
+			$processing         = DB::table('statuses')->where('id', $this->processing)->value('status_description');
+			$cancelled          = DB::table('statuses')->where('id', $this->cancelled)->value('status_description');  
 			
 			if($column_index == 1){
 				if($column_value == $forApproval){
@@ -321,6 +324,8 @@
 					$column_value = '<span class="label label-danger">'.$rejected.'</span>';
 				}else if($column_value == $processing){
 					$column_value = '<span class="label label-info">'.$processing.'</span>';
+				}else if($column_value == $cancelled){
+					$column_value = '<span class="label label-danger">'.$cancelled.'</span>';
 				}
 			}
 	    }
@@ -836,6 +841,42 @@
 			BodyRequest::insert($insertData);
 
 			$message = ['status'=>'success', 'message' => 'Created Successfully!'];
+			echo json_encode($message);
+			
+		}
+
+		public function RemoveItemSource(Request $request)
+		{
+	       
+			$data = 				Request::all();	
+			$headerID = 			$data['headerID'];
+			$bodyID = 				$data['bodyID'];
+			$quantity_total = 		$data['quantity_total']; 
+       
+			ItemHeaderSourcing::where('id', $headerID)
+			->update([
+				'quantity_total'=> 		$quantity_total
+			]);	
+
+
+			ItemBodySourcing::where('id', $bodyID)
+			->update([
+				'deleted_at'=> 		date('Y-m-d H:i:s'),
+				'deleted_by'=> 		CRUDBooster::myId()
+			]);	
+
+			$bodyCount = DB::table('item_sourcing_body')->where('header_request_id',$headerID)->whereNull('item_sourcing_body.deleted_at')->count();
+
+			if($bodyCount == 0){
+			ItemHeaderSourcing::where('id', $headerID)
+				->update([
+					'status_id'=> 8,
+					'cancelled_by'=> CRUDBooster::myId(),
+					'cancelled_at'=> date('Y-m-d H:i:s')
+				]);	
+			
+			}
+			$message = ['status'=>'success', 'message' => 'Cancelled Successfully!'];
 			echo json_encode($message);
 			
 		}

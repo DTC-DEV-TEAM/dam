@@ -40,7 +40,7 @@
             filter: "alpha(opacity=0)";
             opacity: 0;
             -webkit-transition:      opacity 300ms;
-                -o-transition:      opacity 300ms;
+                 -o-transition:      opacity 300ms;
                     transition:      opacity 300ms;
             }
             .zoom-overlay-open .zoom-overlay {
@@ -107,6 +107,15 @@
                     width:480px !important;
                     height:315px !important;
                 }
+
+                .finput {
+                border:none;
+                border-bottom: 1px solid rgba(18, 17, 17, 0.5);
+                }
+
+                input.finput:read-only {
+                    background-color: #fff;
+                }
         </style>
     @endpush
 @section('content')
@@ -134,13 +143,13 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label"><span style="color:red">*</span> PO NO</label>
-                            <input class="form-control" type="text"  placeholder="PO NO" name="po_no" id="po_no">
+                            <input class="form-control finput" type="text"  placeholder="PO NO" name="po_no" id="po_no">
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label"><span style="color:red">*</span> Location</label>
-                            <select required selected data-placeholder="-- Please Select Location --" id="location" name="location" class="form-select select2" style="width:100%;">
+                            <select required selected data-placeholder="Choose Location" id="location" name="location" class="form-select select2" style="width:100%;">
                             @foreach($warehouse_location as $res)
                                 <option value=""></option>
                                 <option value="{{ $res->id }}">{{ $res->location }}</option>
@@ -228,7 +237,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label"><span style="color:red">*</span> {{ trans('message.form-label.add_item') }}</label>
-                            <input class="form-control auto" placeholder="Search Item" id="search">
+                            <input class="form-control auto finput" placeholder="Search Item..." id="search">
                             <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" id="ui-id-2" style="display: none; top: 60px; left: 15px; width: 520px;">
                                 <li>Loading...</li>
                             </ul>
@@ -254,13 +263,15 @@
                                                         <tr class="tbl_header_color dynamicRows">
                                                             <th width="10%" class="text-center">{{ trans('message.table.digits_code') }}</th>
                                                             <th width="30%" class="text-center">{{ trans('message.table.item_description') }}</th>
-                                                            <th width="8%" class="text-center">Value</th>
+                                                           
+                                                            <th width="10%" class="text-center">Category</th>
                                                             <!-- <th width="10%" class="text-center">{{ trans('message.table.item_type') }}</th>      -->
                                                             <th width="15%" class="text-center">{{ trans('message.table.quantity_text') }}</th>
-                                                            <!-- <th width="15%" class="text-center"> Serial No</th>                                                                                                   -->
-                                                            <th width="15%" class="text-center"> Warranty Expiration</th>                                                     
+                                                            <!-- <th width="15%" class="text-center"> Serial No</th>  -->
+                                                            <th width="10%" class="text-center">Value</th>
+                                                            <th width="15%" class="text-center"> Warranty Month Expiration</th>                                                     
                                                             <!-- <th width="10%" class="text-center">{{ trans('message.table.image') }}</th>  -->
-                                                            <th width="8%" class="text-center">Action</th>
+                                                            <th width="3%" class="text-center">Action</th>
                                                         </tr>
                                                 
                                                         <!--tr class="tableInfo">
@@ -429,7 +440,7 @@
                             type: 'error',
                             title: 'PO No required!',
                             icon: 'error',
-                            customClass: 'swal-wide'
+                             confirmButtonColor: "#367fa9",
                         });
                         event.preventDefault();
             }else if($('#rr_date').val() === ""){
@@ -437,7 +448,7 @@
                     type: 'error',
                     title: 'RR Date required!',
                     icon: 'error',
-                    customClass: 'swal-wide'
+                     confirmButtonColor: "#367fa9",
                 });
                 event.preventDefault();
             }else if($('#invoice_date').val() === ""){
@@ -445,7 +456,7 @@
                     type: 'error',
                     title: 'Invoice Date required!',
                     icon: 'error',
-                    customClass: 'swal-wide'
+                     confirmButtonColor: "#367fa9",
                 });
                 event.preventDefault();
             }else if($('#invoice_no').val() === ""){
@@ -453,7 +464,7 @@
                     type: 'error',
                     title: 'Invoice No required!',
                     icon: 'error',
-                    customClass: 'swal-wide'
+                     confirmButtonColor: "#367fa9",
                 });
                 event.preventDefault();
             }else if($('#expiration_date').val() === ""){
@@ -461,7 +472,7 @@
                     type: 'error',
                     title: 'Warranty Coverage Date required!',
                     icon: 'error',
-                    customClass: 'swal-wide'
+                     confirmButtonColor: "#367fa9",
                 });
                 event.preventDefault();
             }else if($('#si_dr').val() === ""){
@@ -469,7 +480,7 @@
                     type: 'error',
                     title: 'Upload SR/DR required!',
                     icon: 'error',
-                    customClass: 'swal-wide'
+                     confirmButtonColor: "#367fa9",
                 });
                 event.preventDefault();
             }else if (countRow == 3) {
@@ -477,7 +488,7 @@
                     type: 'error',
                     title: 'Please add an item!',
                     icon: 'error',
-                    customClass: 'swal-wide'
+                     confirmButtonColor: "#367fa9",
                 });
                 event.preventDefault(); // cancel default behavior
             }else{
@@ -539,26 +550,43 @@
                         //     }
                         // }
 
+                        //location
+                        var sub_cat = $("#location option").length;
+                            var sub_cat_value = $('#location').find(":selected");
+                            for(i=0;i<sub_cat;i++){
+                                if(sub_cat_value.eq(i).val() == ""){
+                                    swal({  
+                                            type: 'error',
+                                            title: 'Please choose Location!',
+                                            icon: 'error',
+                                            confirmButtonColor: "#367fa9",
+                                        });
+                                        event.preventDefault();
+                                        return false;
+                                } 
+                        
+                            } 
+
                         //each value validation
                         var v = $("input[name^='value']").length;
                         var value = $("input[name^='value']");
                         for(i=0;i<v;i++){
-                            // if(value.eq(i).val() == 0){
-                            //     swal({
-                            //             type: 'error',
-                            //             title: 'Value required!',
-                            //             icon: 'error',
-                            //             customClass: 'swal-wide'
-                            //         });
-                            //         event.preventDefault();
-                            //         return false;
-                            // }else 
+                            if(value.eq(i).val() === ""){
+                                swal({
+                                        type: 'error',
+                                        title: 'Value should not be empty(put zero if n/a)',
+                                        icon: 'error',
+                                          confirmButtonColor: "#367fa9",
+                                    });
+                                    event.preventDefault();
+                                    return false;
+                            }else 
                             if(value.eq(i).val() < 0){
                                 swal({
                                     type: 'error',
                                     title: 'Value should not be negative!',
                                     icon: 'error',
-                                    customClass: 'swal-wide'
+                                      confirmButtonColor: "#367fa9",
                                 });
                                 event.preventDefault();
                                 return false;
@@ -589,9 +617,9 @@
                             if(warranty_coverage.eq(i).val() === ""){
                                 swal({
                                         type: 'error',
-                                        title: 'Warranty Coverage Year required!',
+                                        title: 'Warranty Month Expiration cannot be empty(put zero if n/a)',
                                         icon: 'error',
-                                        customClass: 'swal-wide'
+                                        confirmButtonColor: "#367fa9",
                                     });
                                     event.preventDefault();
                                     return false;
@@ -615,7 +643,7 @@
                                         type: 'error',
                                         title: 'Quantity cannot be greater than 90!',
                                         icon: 'error',
-                                        customClass: 'swal-wide'
+                                        confirmButtonColor: "#367fa9",
                                     });
                                     event.preventDefault();
                                     return false;
@@ -628,20 +656,22 @@
                                 swal({
                                         type: 'error',
                                         title: 'Digits Code and Serial Already Exist! (' + item + ')',
-                                        icon: 'error'
+                                        icon: 'error',
+                                        confirmButtonColor: "#367fa9",
                                     }); 
                                    event.preventDefault();
                                     return false;
                             }
-                            else if($('#warranty_coverage').val() === ""){
-                                swal({
-                                    type: 'error',
-                                    title: 'Warranty Coverage Year required!',
-                                    icon: 'error',
-                                    customClass: 'swal-wide'
-                                });
-                                event.preventDefault();
-                            }
+                            // else if($('#warranty_coverage').val() === ""){
+                            //     swal({
+                            //         type: 'error',
+                            //         title: 'Warranty Month Expiration cannot be empty(put zero if n/a)',
+                            //         icon: 'error',
+                            //         customClass: 'swal-wide',
+                            //         confirmButtonColor: "#367fa9",
+                            //     });
+                            //     event.preventDefault();
+                            // }
                             else{
                                 swal({
                                 title: "Are you sure?",
@@ -825,20 +855,21 @@
 
                                         // }else{
                                             var new_row = '<tr class="nr" id="rowid' + e.id + '" rows>' +
-                                                '<td><input class="form-control text-center" type="text" id="dc" name="digits_code[]" readonly value="' + e.digits_code + '" style="width:150px;"></td>' +
-                                                '<td><input class="form-control" type="text" name="item_description[]" readonly value="' + e.value + '" style="width:250px;"></td>' +
-                                                '<td><input class="form-control amount" placeholder="Value" type="text" name="value[]" id="value" style="width:160px;" required min="1" max="9999999999"></td>' +
+                                                '<td><input class="form-control text-center finput" type="text" id="dc" name="digits_code[]" readonly value="' + e.digits_code + '"></td>' +
+                                                '<td><input class="form-control finput" type="text" name="item_description[]" readonly value="' + e.value + '"></td>' +
+                                                '<td><input class="form-control finput amount" placeholder="Value" type="text" readonly value="' + e.category_description + '"></td>' +
                                                 //'<td><select required selected data-placeholder="-- Select Type --" id="item_type' + e.id + '" name="item_type[]" class="select2 item_type" style="width:150px;"><option value=""></option><option value="Serial" data-id="' + e.digits_code + '">Serial</option><option value="General" data-id="' + e.digits_code + '">GENERAL</option></select></td>' +
-                                                '<td><input class="form-control text-center add_quantity" placeholder="Quantity" style="width:160px;" type="text" value="1" readonly name="add_quantity[]" id="add_quantity' + e.id  + '" data-id="' + e.id  + '"  min="0" max="9999999999" step="1" onkeypress="return event.charCode >= 48 && event.charCode <= 57" oninput="validity.valid||(value=1);"></td>' +   
+                                                '<td><input class="form-control text-center finput add_quantity" placeholder="Quantity" type="text" value="1" readonly name="add_quantity[]" id="add_quantity' + e.id  + '" data-id="' + e.id  + '"  min="0" max="9999999999" step="1" onkeypress="return event.charCode >= 48 && event.charCode <= 57" oninput="validity.valid||(value=1);"></td>' +   
                                                 // '<td><input class="form-control serial_no" type="text" placeholder="Serial No (Optional)" name="serial_no[]" value="" style="width:150px;" data-index="1"></td>' + 
-                                                '<td><input class="form-control date" type="text" placeholder="(Year)" name="warranty_coverage[]" style="width:160px;" id="warranty_coverage"></td>' +                                                                           
+                                                '<td><input class="form-control finput amount text-center" placeholder="Value" type="text" name="value[]" id="value" required min="1" min="0" max="9999999999"  value="0"></td>' +                                           
+                                                '<td><input class="form-control finput text-center" type="text" placeholder="(Month)" name="warranty_coverage[]" id="warranty_coverage" min="1" max="9999999999" step="1" onkeypress="return event.charCode <= 57" value="0"></td>' +                                                                                                                                       
                                                 //'<td class="images_flex"><input type="file" class="form-control body_image" onchange="readURL(this);" id="body_image_body' + e.id + '" name="item_photo[]" style="width:200px;" accept="image/png, image/gif, image/jpeg"><br><div class="body_gallery_image' + e.id + '"></div></td>' + 
                                                 //'<td><img width="50px"; height="50px"; src="{{URL::to('+e.image+')}}" alt="" data-action="zoom"></td>' +
-                                                '<td class="text-center" style="width:20px;"><a id="delete_item' +e.id + '" class="btn btn-xs btn-danger delete_item" style="margin-right:100px;margin-top:5px;" ><i class="fa fa-remove"></i> remove</a></td>' +
+                                                '<td style="text-align:center"><a id="delete_item' +e.id + '" class="btn btn-xs btn-danger delete_item btn-lg" style="margin-top:5px;" ><i class="fa fa-trash"></i></a></td>' +
                                                 '<input type="hidden" name="item_id[]" readonly value="' +e.id + '">' +
-                                                '<td><input type="hidden" id="checkImage" value="' + e.image + '" readonly></td>' +
-                                                '<td><input type="hidden" name="item_category[]" id="item_cat" value="' + e.category_description + '"></td>' +
-                                                '<td><input type="hidden" name="category_id[]" id="catid" value="' + e.category_id + '"></td>' +
+                                                '<input type="hidden" id="checkImage" value="' + e.image + '" readonly>' +
+                                                '<input type="hidden" name="item_category[]" id="item_cat" value="' + e.category_description + '">' +
+                                                '<input type="hidden" name="category_id[]" id="catid" value="' + e.category_id + '">' +
                                                 '</tr>';
                                            
                                         //}

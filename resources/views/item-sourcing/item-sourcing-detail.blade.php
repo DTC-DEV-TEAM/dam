@@ -18,6 +18,28 @@
                 color:green;
                 margin-top:12px;
             }
+
+            table { border-collapse: collapse; empty-cells: show; }
+
+            td { position: relative; }
+
+            tr.strikeout td:before {
+            content: " ";
+            position: absolute;
+            top: 25%;
+            left: 0;
+            border-bottom: 1px solid #111;
+            width: 100%;
+            }
+
+            tr.strikeout td:after {
+            content: "\00B7";
+            font-size: 1px;
+            }
+
+            /* Extra styling */
+            td { width: 100px; }
+            th { text-align: left; }
         </style>
     @endpush
 @section('content')
@@ -154,9 +176,8 @@
                                                 <tr>
                                                     @foreach($Body as $rowresult)
                                                         <?php   $tableRow++; ?>
-                                                                                            
-                                                        <tr>
-                                                           
+                                                      @if($rowresult->deleted_at != null || $rowresult->deleted_at != "")                                    
+                                                        <tr class="strikeout">
                                                             <td >
                                                             @if($rowresult->digits_code != NULL && $rowresult->po_number != NULL && $rowresult->po_date != NULL && $rowresult->qoute_date != NULL && $rowresult->supplier != NULL && $rowresult->value != NULL && $rowresult->if_arf_created == NULL)
                                                                 <input style="margin-top:10px" type="checkbox" name="body_id[]" id="body_id{{$tableRow}}" class="id" required data-id="{{$tableRow}}" value="{{$rowresult->id}}"/>
@@ -203,11 +224,61 @@
                                                             <td style="text-align:center" height="10">
                                                                     <input type="text" style="text-align:center" class="form-control finput item_source_value"  name="value[]" id="ids{{$tableRow}}" value="{{$rowresult->value}}" required readonly>                                
                                                             </td>
-                                                            <td style="text-align:center" height="10">
-                                                                <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow btn-sm" disabled><i class="fa fa-trash"></i></button>
-                                                            </td>   
-                                                                                                                          
-                                                      </tr>
+                                                            <td  style="text-align:center; color:#dd4b39"><i class="fa fa-times-circle"></i></td>                                                          
+                                                        </tr>
+                                                      @else
+                                                        <tr>
+                                                                <td >
+                                                                @if($rowresult->digits_code != NULL && $rowresult->po_number != NULL && $rowresult->po_date != NULL && $rowresult->qoute_date != NULL && $rowresult->supplier != NULL && $rowresult->value != NULL && $rowresult->if_arf_created == NULL)
+                                                                    <input style="margin-top:10px" type="checkbox" name="body_id[]" id="body_id{{$tableRow}}" class="id" required data-id="{{$tableRow}}" value="{{$rowresult->id}}"/>
+                                                                @elseif($rowresult->if_arf_created != NULL)
+                                                                <i class="fa fa-check-circle green-color fa-lg" aria-hidden="true"></i>
+                                                                @endif
+                                                                    <input type="hidden" name="request_type_id[]" id="request_type_id{{$tableRow}}" class="id" required data-id="{{$tableRow}}" value="{{$rowresult->request_type_id}}"/>
+                                                                    <input type="hidden" name="if_arf_created[]" id="if_arf_created" class="id" required data-id="{{$tableRow}}" value="{{$rowresult->if_arf_created}}"/>
+                                                                </td>
+                                                            
+                                                                <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}" readonly>        
+                                                                <td style="text-align:center" height="10">
+                                                                        <input type="text"  class="form-control finput"  name="item_code[]" id="ids{{$tableRow}}" value="{{$rowresult->digits_code}}"  required readonly>                                
+                                                                </td>
+                                                                <td style="text-align:center" height="10">
+                                                                        <input type="text"  class="form-control finput"  name="po_number[]" id="ids{{$tableRow}}" value="{{$rowresult->po_number}}" required readonly>                                
+                                                                </td>
+                                                                <td style="text-align:center" height="10">
+                                                                        <input type="text"  class="form-control finput po_date{{$tableRow}}"  name="po_date[]" id="po_date{{$tableRow}}" value="{{$rowresult->po_date}}" data-id="{{$tableRow1}}"  required readonly>                                
+                                                                </td>
+                                                                <td style="text-align:center" height="10">
+                                                                        <input type="text"  class="form-control finput qoute_date"  name="qoute_date[]" id="qoute_date{{$tableRow}}" value="{{$rowresult->qoute_date}}" data-id="{{$tableRow1}}"  required readonly>                                
+                                                                </td>
+                                                                <td style="text-align:center" height="10">
+                                                                        <input type="text"  class="form-control finput"  name="supplier[]" id="ids{{$tableRow}}" value="{{$rowresult->supplier}}" required readonly>                                
+                                                                </td>
+                                                                
+                                                                <td style="text-align:center" height="10">                                                             
+                                                                        {{$rowresult->item_description}}
+                                                                </td>
+                                                                <td style="text-align:center" height="10">
+                                                                        {{$rowresult->category_id}}
+                                                                </td>
+                                                                <td style="text-align:center" height="10">
+                                                                        {{$rowresult->sub_category_id}}
+                                                                </td>
+                                                                <td style="text-align:center" height="10" class="cost">
+                                                                        {{$rowresult->budget}}
+                                                                </td>
+                                                                <td style="text-align:center" height="10" class="qty">
+                                                                        {{$rowresult->quantity}}
+                                                            
+                                                                </td>
+                                                                <td style="text-align:center" height="10">
+                                                                        <input type="text" style="text-align:center" class="form-control finput item_source_value"  name="value[]" id="ids{{$tableRow}}" value="{{$rowresult->value}}" required readonly>                                
+                                                                </td>
+                                                                <td style="text-align:center" height="10">
+                                                                    <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow btn-sm"><i class="fa fa-trash"></i></button>
+                                                                </td>                                                             
+                                                            </tr>
+                                                      @endif
                                                                                                                          
                                                     @endforeach     
                                                     
@@ -402,9 +473,10 @@
                     }, function () {
                     $.ajax
                         ({ 
-                            url:  '{{ url('admin/header_request/RemoveItem') }}',
+                            url:  '{{ url('admin/item-sourcing-header/RemoveItemSource') }}',
                             type: "GET",
                             data: data,
+                            dataType: 'json',
                             success: function(data){    
                                 if (data.status == "success") {
                                     swal({
@@ -412,7 +484,7 @@
                                         title: data.message,
                                     });
                                     setTimeout(function(){
-                                        window.location.replace(document.referrer);
+                                        location.reload();
                                     }, 1000); 
                                     } else if (data.status == "error") {
                                     swal({
@@ -425,8 +497,8 @@
                     });
                     $("#deleteRow"+id_data).attr('disabled', true);
                     tableRow--;
-                    $(this).closest('tr').css('background-color','#d9534f');
-                    $(this).closest('tr').css('color','white'); 
+                    $(this).closest('tr').addClass("strikeout" );
+                    $(this).closest('tr').css('color','black'); 
                     return false;   
                }
             });
