@@ -142,7 +142,7 @@
                                                 <th>Item Description</th> 
                                                 <th>Value</th>                                           
                                                 <th>Quantity</th>     
-                                                <th>Warranty Expiry Date</th>                                           
+                                                <th>Warranty Expiry Month</th>                                           
                                                 <th>Item Photo</th>      
                                                 <th>Updated By</th>   
                                                 <th>Date Updated</th>                                                              

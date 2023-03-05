@@ -1,6 +1,23 @@
 @extends('crudbooster::admin_template')
 @push('head')
 <style type="text/css">   
+    .select2-selection__choice{
+            font-size:14px !important;
+            /* color:black !important; */
+            color: #fff !important;
+    }
+    .select2-selection__rendered {
+        line-height: 31px !important;
+        background-color: #fff !important;
+    }
+    .select2-container .select2-selection--single {
+        height: 35px !important;
+        background-color: #fff !important;
+    }
+    .select2-selection__arrow {
+        height: 34px !important;
+        background-color: #fff !important;
+    }
     img[data-action="zoom"] {
         z-index: 1000;
     cursor: pointer;
@@ -97,6 +114,15 @@
             width:480px !important;
             height:315px !important;
         }
+        .finput {
+        border:none;
+        border-bottom: 1px solid rgba(18, 17, 17, 0.5);
+        }
+
+        input.finput:read-only {
+            background-color: #fff;
+        }
+      
 </style>
 @endpush
 @section('content')
@@ -123,13 +149,13 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label"><span style="color:red">*</span> PO NO</label>
-                            <input class="form-control" type="text" value="{{$Header->po_no}}" placeholder="PO NO" name="po_no" id="po_no" readonly>
+                            <input class="form-control finput" type="text" value="{{$Header->po_no}}" placeholder="PO NO" name="po_no" id="po_no" readonly>
                         </div>
                     </div>
                     <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label"><span style="color:red">*</span> Location</label>
-                        <select required selected data-placeholder="-- Please Select Location --" id="location" name="location" class="form-select select2" style="width:100%;" disabled>
+                        <select required selected data-placeholder="-- Please Select Location --" id="location" name="location" class="form-select select2 white" style="width:100%;" disabled>
                             @foreach($warehouse_location as $res)
                             <option value="{{ $res->location }}"
                                 {{ isset($Header->location) && $Header->location == $res->id ? 'selected' : '' }}>
@@ -146,14 +172,14 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label"><span style="color:red">*</span>  Invoice Date</label>
-                            <input type="text" class="form-control date" placeholder="Select Date" name="invoice_date" id="invoice_date">
+                            <input type="text" class="form-control date finput" placeholder="Select Date" name="invoice_date" id="invoice_date">
                         
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label"><span style="color:red">*</span>  Invoice No.</label>
-                            <input type="text" class="form-control" style="" placeholder="Invoice NO" name="invoice_no" id="invoice_no">
+                            <input type="text" class="form-control finput" style="" placeholder="Invoice NO" name="invoice_no" id="invoice_no">
                         </div>
                     </div>
                     
@@ -165,13 +191,13 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label"><span style="color:red">*</span> RR Date</label>
-                            <input class="form-control date" type="text" placeholder="Select Date" name="rr_date" id="rr_date">
+                            <input class="form-control date finput" type="text" placeholder="Select Date" name="rr_date" id="rr_date">
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label"><span style="color:red">*</span> Upload SI/DR</label>
-                            <input type="file" class="form-control" style="" name="si_dr[]" id="si_dr" multiple accept="image/png, image/gif, image/jpeg">
+                            <input type="file" class="form-control finput" style="" name="si_dr[]" id="si_dr" multiple accept="image/png, image/gif, image/jpeg">
                             <div class="gallery" style="margin-bottom:5px; margin-top:15px"></div>
                             <a class="btn btn-xs btn-danger" style="display:none; margin-left:10px" id="removeImageHeader" href="#"><i class="fa fa-remove"></i></a>
                             @foreach($header_images as $res_header_images)                                    
@@ -205,7 +231,7 @@
                             <th>Value</th>                                            
                             <th>Quantity</th> 
                             <th>Serial No</th>   
-                            <th>Warranty Expiry Date</th>                                            
+                            <th>Warranty Expiry Month</th>                                            
                             
                         </tr>
                     </thead>
@@ -221,7 +247,7 @@
                             <td>{{$res->value}}</td>
                             <td>{{$res->quantity}}</td> 
                             <th>
-                                <input class="form-control serial_no"  type="text" placeholder="Serial No (Put N/A if not applicable)" name="serial_no[]" style="width:100%" data-index="1" value="{{ $res->serial_no ? $res->serial_no : "" }}">
+                                <input class="form-control serial_no finput"  type="text" placeholder="Serial No (Put N/A if not applicable)" name="serial_no[]" style="width:100%" data-index="1" value="{{ $res->serial_no ? $res->serial_no : "" }}">
                             </th>    
                             <td>{{$res->warranty_coverage}}</td>                                                                                                                  
                             </tr>
@@ -236,7 +262,7 @@
                 <span style="color:red; font-style: italic">*Put remarks when Receiving or Cancelling</span>
                 <div class="form-group">
                     <label class="control-label"> Remarks</label>
-                    <input class="form-control" type="text" placeholder="Remarks" name="remarks" id="remarks">
+                    <input class="form-control finput" type="text" placeholder="Remarks" name="remarks" id="remarks">
                 </div>
                 </div>
         </div> 

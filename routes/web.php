@@ -10,6 +10,7 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+use App\Http\Controllers\AdminReportsv2Controller;
 
 Route::get('/', function () {
     return redirect('admin/login');
@@ -184,6 +185,13 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/header_request/item-marketing-search','AdminHeaderRequestController@itemMarketingSearch')->name('item.marketing.search');
     Route::post(config('crudbooster.ADMIN_PATH').'/header_request/item-supplies-search','AdminHeaderRequestController@itemSuppliesSearch')->name('item.supplies.search');
 
+    //Item Sourcing Routes
+    Route::post(config('crudbooster.ADMIN_PATH').'/item-sourcing-header/create-arf','AdminItemSourcingHeaderController@createArf')->name('create-arf');
+    Route::get('admin/item-sourcing-header/RemoveItemSource','AdminItemSourcingHeaderController@RemoveItemSource');
+
+    //reports
+    //Route::get('/admin/reports/getIndex','AdminReportsController@getIndex')->name('get-report');
+    //Route::get('/admin/get-reports/getIndex', [AdminReportsv2Controller::class, 'getIndex'])->name('get-report');
     Route::get('/admin/clear-view', function() {
         Artisan::call('view:clear');
         return "View cache is cleared!";

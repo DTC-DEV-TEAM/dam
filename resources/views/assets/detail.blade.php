@@ -6,6 +6,27 @@
             padding: 8px;
             border-radius: 5px 0 0 5px;
             }
+            table { border-collapse: collapse; empty-cells: show; }
+
+            td { position: relative; }
+
+            tr.strikeout td:before {
+            content: " ";
+            position: absolute;
+            top: 50%;
+            left: 0;
+            border-bottom: 1px solid #111;
+            width: 100%;
+            }
+
+            tr.strikeout td:after {
+            content: "\00B7";
+            font-size: 1px;
+            }
+
+            /* Extra styling */
+            td { width: 100px; }
+            th { text-align: left; }
         </style>
     @endpush
 @section('content')
@@ -89,6 +110,15 @@
                     <label class="control-label col-md-2">Erf Number:</label>
                     <div class="col-md-4">
                             <p>{{$Header->if_from_erf}}</p>
+                    </div>
+                </div>
+            @endif
+
+            @if($Header->if_from_item_source != null || $Header->if_from_item_source != "")
+                <div class="row">                           
+                    <label class="control-label col-md-2">Item Sourcing Number:</label>
+                    <div class="col-md-4">
+                            <p>{{$Header->if_from_item_source}}</p>
                     </div>
                 </div>
             @endif
@@ -207,7 +237,7 @@
                                                   
                                                         
                                                                         @if($rowresult->deleted_at != null || $rowresult->deleted_at != "")
-                                                                            <tr style="background-color: #d9534f; color: white;">
+                                                                            <tr class="strikeout">
                                                                                <td style="text-align:center" height="10">
                                                                                         <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}">                               
                                                                                         {{$rowresult->digits_code}}
@@ -259,11 +289,12 @@
                                                                                         {{$rowresult->reco_item_description}}
                                                                                     </td>
                                                                                 @endif
-                                                                                @if($Header->closed_by == null)
-                                                                                    <td style="text-align:center" height="10">
-                                                                                        <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow" disabled><i class="glyphicon glyphicon-remove"></i></button>
+                                                                                <td  style="text-align:center; color:#dd4b39"><i class="fa fa-times-circle"></i></td>
+                                                                                <!-- @if($Header->closed_by == null)
+                                                                                    <td style="text-align:center">
+                                                                                        <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow btn-sm" disabled><i class="fa fa-trash"></i></button>
                                                                                     </td>   
-                                                                                @endif              
+                                                                                @endif               -->
                                                                             </tr>
                                                                         @else
                                                                             <tr>
@@ -320,12 +351,12 @@
                                                                                 @if(!CRUDBooster::isSuperadmin())
                                                                                     @if($Header->po_number == null || $Header->po_number == "")    
                                                                                             <td style="text-align:center" height="10">
-                                                                                                <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow"><i class="glyphicon glyphicon-remove"></i></button>
+                                                                                                <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow btn-sm"><i class="fa fa-trash"></i></button>
                                                                                             </td>
                                                                                         @else
                                                                                         @if($Header->closed_by == null)
                                                                                             <td style="text-align:center" height="10">
-                                                                                                <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow" disabled><i class="glyphicon glyphicon-remove"></i></button>
+                                                                                                <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow btn-sm" disabled><i class="fa fa-trash"></i></button>
                                                                                             </td>
                                                                                         @endif
                                                                                     @endif
@@ -645,8 +676,8 @@
                     });
                     $("#deleteRow"+id_data).attr('disabled', true);
                     tableRow--;
-                    $(this).closest('tr').css('background-color','#d9534f');
-                    $(this).closest('tr').css('color','white'); 
+                    $(this).closest('tr').addClass("strikeout" );
+                    $(this).closest('tr').css('color','black'); 
                     return false;   
                }
             });

@@ -1,12 +1,12 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class HeaderRequest extends Model
+class ItemHeaderSourcing extends Model
 {
-    protected $table = 'header_request';
+    protected $table = 'item_sourcing_header';
 
     protected $fillable = [
        'status_id',	
@@ -31,7 +31,14 @@ class HeaderRequest extends Model
        'application',
        'application_others',
        'to_reco',
-       'if_from_erf',
-       'if_from_item_source'
+       'if_from_erf'
     ];
+
+    public static function boot(){
+        parent::boot();
+        static::creating(function($model){
+            $model->created_by = CRUDBooster::myId();
+        });
+        
+    }
 }

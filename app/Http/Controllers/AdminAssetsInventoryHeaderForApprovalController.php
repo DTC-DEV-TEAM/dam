@@ -422,7 +422,7 @@
 				$container['item_id'] = $item_id[$key];
 				$container['header_id'] = $header->id;
 				$container['serial_no'] = $serial_no[$key];
-				$container['statuses_id'] = 20;
+				$container['statuses_id'] = 20;	
 				$container['digits_code'] = $val;
 				$container['item_description'] = $item_desc[$key];
 				$container['value'] = $value[$key];
@@ -438,11 +438,11 @@
 			//SAVE FINAL DATA
 			$saveData = [];
 			foreach($allData as $frKey => $frData){		
-					$setWarrantyDate = date('Y-m-d', strtotime($rr_date. '+' . $frData['warranty_coverage'] .'Years'));
+					//$setWarrantyDate = date('Y-m-d', strtotime($rr_date. '+' . $frData['warranty_coverage'] .'Years'));
 					$value = str_replace(',', '', $frData['value']);
 					$frData['value'] = $value;	
 					$frData['quantity'] = 1;	
-					$frData['warranty_coverage'] = $setWarrantyDate;
+					$frData['warranty_coverage'] = $frData['warranty_coverage'];
 					$frData['item_condition'] = "Good";
 					$frData['transaction_per_asset'] = "Inventory";
 					$frData['location'] = $location;

@@ -24,10 +24,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->call('\App\Http\Controllers\AdminItemsController@getItemsUpdatedAPI')->hourly()->between('9:00', '21:00');
-        $schedule->call('\App\Http\Controllers\AdminItemsController@getItemsCreatedAPI')->hourly()->between('9:00', '21:00');
-        $schedule->call('\App\Http\Controllers\AdminOrderSchedulesController@deactivateSchedule')->dailyAt('04:00');
-        $schedule->call('\App\Http\Controllers\AdminPurchaseOrderController@closeHeaders')->everyMinute();
         $schedule->command('mysql:backup')->daily()->at('20:00');
     }
 
