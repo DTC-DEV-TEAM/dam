@@ -12,10 +12,12 @@ use App\Http\Controllers\AdminAssetsInventoryBodyController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
+Route::get('/admin/reports/request-reports', 'AdminReportsController@getReports')->name('api.reports.index');
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
     Route::apiResources([
      'inventory' => AdminAssetsInventoryBodyController::class, 'getInventory'
     ]);
+
+    
 });

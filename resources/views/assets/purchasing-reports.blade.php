@@ -28,6 +28,7 @@
             .select2-selection__arrow {
                 height: 34px !important;
             }
+    
         </style>
     @endpush
 @section('content')
@@ -75,7 +76,7 @@
             
                 <thead>
                     <tr class="active">
-                        <th width="auto">Action</th>
+                        <th width="auto" style="text-align:center">Action</th>
                         <th width="auto">Status</th>
                         <th width="auto">Reference No.</th>
                         <th width="auto">Description</th>
@@ -96,45 +97,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                @foreach($finalData as $val)
-                    <tr>
-                    <td style="text-align:center">   
-                     <a class='btn btn-primary btn-xs' href='{{CRUDBooster::adminpath("request_history/detail/".$val["id"])."?return_url=".urlencode(Request::fullUrl())}}'><i class='fa fa-eye'></i></a>                                         
-                    </td> 
-                    @if($val['status'] == "FOR APPROVAL")
-                    <td style="text-align:center">
-                     <label class="label label-warning" style="align:center">{{$val['status']}}</label>
-                    </td>
-                    @elseif($val['status'] == "CLOSED")
-                    <td style="text-align:center">
-                     <label class="label label-success" style="align:center">{{$val['status']}}</label>
-                    </td>
-                    @elseif($val['status'] == "CANCELLED" || $val['status'] == "REJECTED")
-                    <td style="text-align:center">
-                     <label class="label label-danger" style="align:center">{{$val['status']}}</label>
-                    </td>
-                    @else
-                    <td style="text-align:center">
-                     <label class="label label-info" style="align:center">{{$val['status']}}</label>
-                    </td>
-                    @endif
-                    <td>{{$val['reference_number']}}</td>
-                    <td>{{$val['description']}}</td>  
-                    <td>{{$val['request_quantity']}}</td>
-                    <td>{{$val['transaction_type']}}</td>  
-                    <td>{{$val['request_type']}}</td>
-                    <td>{{$val['requested_by']}}</td>     
-                    <td>{{$val['department']}}</td>                                                                
-                    <td>{{$val['store_branch']}}</td>  
-                    <td>{{$val['mo_reference']}}</td>  
-                    <td>{{$val['mo_item_code']}}</td>  
-                    <td>{{$val['mo_item_description']}}</td>  
-                    <td>{{$val['mo_qty_serve_qty']}}</td>  
-                    <td>{{$val['requested_date']}}</td> 
-                    <td>{{$val['transacted_by']}}</td>  
-                    <td>{{$val['transacted_date']}}</td>  
-                    </tr>
-                @endforeach
+                
                 </tbody>
             </table>
         </div>                 
@@ -208,6 +171,7 @@
         <script src=
 "https://cdn.datatables.net/buttons/2.3.2/js/buttons.html5.min.js" >
     </script>
+
     <script type="text/javascript">
         $(function(){
             $('body').addClass("sidebar-collapse");
@@ -216,7 +180,6 @@
        $(document).ready(function() {
            table = $("#table_dashboard").DataTable({
                 ordering:false,
-                pageLength:25,
                 language: {
                     searchPlaceholder: "Search"
                 },
@@ -237,6 +200,53 @@
                         },
                     },
                     ],
+
+                    processing: true,
+                    serverSide: true,
+                    ajax: '{{ route("api.reports.index") }}',
+                    columns : [
+                        {data: 'action'},
+                        {data: 'status'},
+                        {data: 'reference_number'},
+                        {data: 'description'},  
+                        {data: 'request_quantity'},
+                        {data: 'transaction_type'},  
+                        {data: 'request_type'},
+                        {data: 'requested_by'},     
+                        {data: 'department'},                                                                
+                        {data: 'store_branch'},  
+                        {data: 'mo_reference'},  
+                        {data: 'mo_item_code'},  
+                        {data: 'mo_item_description'},  
+                        {data: 'mo_qty_serve_qty'},  
+                        {
+                            data: 'requested_date',
+                            type: 'num',
+                            render: {
+                                _: 'display',
+                            }
+                        }, 
+                        {data: 'transacted_by'},  
+                        {data: 'transacted_date'},  
+                ],
+                columnDefs: [{
+                    targets: [1],
+                            render : function (data, type, row) {
+                              	if(row.status == "FOR APPROVAL"){
+                                    return '<label class="label label-warning" style="align:center">'+row.status+'</label>';
+                                }else if(row.status == "CLOSED"){
+                                    return '<label class="label label-success" style="align:center">'+row.status+'</label';
+                                }else if(row.status == "CANCELLED" || row.status == "REJECTED"){
+                                    return '<label class="label label-danger" style="align:center">'+row.status+'</label';
+                                }else{
+                                    return '<label class="label label-info" style="align:center">'+row.status+'</label';
+                                }
+                    
+                    },
+        
+                }]
+     
+                
             });
             // $("#btn-export").on("click", function () {
             //     table.button(".buttons-excel").trigger();
