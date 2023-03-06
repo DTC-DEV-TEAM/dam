@@ -17,7 +17,7 @@
 	use Illuminate\Support\Facades\Redirect;
 	use Illuminate\Contracts\Cache\LockTimeoutException;
 	use App\Exports\ExportMultipleByApprover;
-	use DataTables;
+	//use DataTables;
 
 	class AdminReportsController extends \crocodicstudio\crudbooster\controllers\CBController {
 

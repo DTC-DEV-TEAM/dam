@@ -285,7 +285,7 @@
 					$sub_query->where('item_sourcing_header.created_by', CRUDBooster::myId())
 					         
 							  ->whereNull('item_sourcing_header.deleted_at')
-							  ->orderBy('item_sourcing_header.reference_number', 'DESC')
+							  ->orderBy('item_sourcing_header.reference_number', 'ASC')
 					          ->orderBy('item_sourcing_header.id', 'DESC');
 					// $sub_query->orwhere('item_sourcing_header.employee_name', $user->id)
 	
@@ -293,7 +293,7 @@
 
 				});
 
-				$query->orderBy('item_sourcing_header.status_id', 'desc')->orderBy('item_sourcing_header.id', 'ASC');
+				$query->orderBy('item_sourcing_header.status_id', 'ASC')->orderBy('item_sourcing_header.id', 'DESC');
 				//$query->orderByRaw('FIELD( item_sourcing_header.status_id, "For Approval")');
 			}
 	            
@@ -763,7 +763,7 @@
 			foreach($item_sourcing_body as $key => $val){
 				$insertContainer['header_request_id']   = $val['header_request_id'];
 				$insertContainer['digits_code'] 	    = $val['digits_code'];
-				$insertContainer['item_description'] 	= $val['item_description'];
+				$insertContainer['item_description'] 	= $val['reco_item_description'];
 				$insertContainer['category_id'] 		= $val['category_id'];
 				$insertContainer['sub_category_id'] 	= $val['sub_category_id'];
 				$insertContainer['app_id'] 			    = NULL;

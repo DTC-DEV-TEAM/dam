@@ -229,7 +229,7 @@
                                                       @else
                                                         <tr>
                                                                 <td >
-                                                                @if($rowresult->digits_code != NULL && $rowresult->po_number != NULL && $rowresult->po_date != NULL && $rowresult->qoute_date != NULL && $rowresult->supplier != NULL && $rowresult->value != NULL && $rowresult->if_arf_created == NULL)
+                                                                @if($rowresult->digits_code != NULL && is_numeric($rowresult->digits_code) && $rowresult->po_number != NULL && $rowresult->po_date != NULL && $rowresult->qoute_date != NULL && $rowresult->supplier != NULL && $rowresult->value != NULL && $rowresult->if_arf_created == NULL)
                                                                     <input style="margin-top:10px" type="checkbox" name="body_id[]" id="body_id{{$tableRow}}" class="id" required data-id="{{$tableRow}}" value="{{$rowresult->id}}"/>
                                                                 @elseif($rowresult->if_arf_created != NULL)
                                                                 <i class="fa fa-check-circle green-color fa-lg" aria-hidden="true"></i>
@@ -274,7 +274,7 @@
                                                                 <td style="text-align:center" height="10">
                                                                         <input type="text" style="text-align:center" class="form-control finput item_source_value"  name="value[]" id="ids{{$tableRow}}" value="{{$rowresult->value}}" required readonly>                                
                                                                 </td>
-                                                                @if($Header->closed_by == null)
+                                                                @if($rowresult->digits_code == NULL || $rowresult->po_number == NULL || $rowresult->po_date == NULL || $rowresult->qoute_date == NULL || $rowresult->supplier == NULL || $rowresult->value == NULL)
                                                                 <td style="text-align:center" height="10">
                                                                     <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow btn-sm"><i class="fa fa-trash"></i></button>
                                                                 </td>     
