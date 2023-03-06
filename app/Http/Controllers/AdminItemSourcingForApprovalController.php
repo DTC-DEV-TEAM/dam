@@ -364,7 +364,7 @@
 				$infos['items'] = $arf_body;
 			
 				Mail::to($employee_name->email)
-						->cc([$fhil,$approver_name->email])
+						//->cc([$fhil,$approver_name->email])
 	                    ->send(new EMail($infos));
 			}else{
 				$postdata['status_id'] 			= 5;

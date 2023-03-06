@@ -324,25 +324,27 @@
 	    public function hook_before_edit(&$postdata,$id) {        
 	        $fields             = Request::all();
 			//dd($fields);
-			$ids                = $fields['ids'];
-			$digits_code        = $fields['item_code'];
-			$po_number          = $fields['po_number'];
-			$po_date            = $fields['po_date'];
-			$qoute_date         = $fields['qoute_date'];
-			$supplier           = $fields['supplier'];
-			$value              = $fields['value'];
-			$ac_comments 		= $fields['additional_notess'];
-			$approval_action 	= $fields['approval_action'];
+			$ids                         = $fields['ids'];
+			$digits_code                 = $fields['item_code'];
+			$po_number                   = $fields['po_number'];
+			$po_date                     = $fields['po_date'];
+			$qoute_date                  = $fields['qoute_date'];
+			$supplier                    = $fields['supplier'];
+			$value                       = $fields['value'];
+			$reco_item_description       = $fields['reco_item_description'];
+			$ac_comments 		         = $fields['additional_notess'];
+			$approval_action 	         = $fields['approval_action'];
              
 			for ($i = 0; $i < count($ids); $i++) {
 				ItemBodySourcing::where(['id' => $ids[$i]])
 				   ->update([
-					       'digits_code'   => $digits_code[$i], 
-						   'po_number'     => $po_number[$i],
-						   'po_date'       => $po_date[$i],
-						   'qoute_date'    => $qoute_date[$i],
-						   'supplier'      => $supplier[$i],
-					       'value'         => number_format((float)str_replace(',', '', $value[$i]),2,'.','')
+					       'digits_code'                => $digits_code[$i], 
+						   'po_number'                  => $po_number[$i],
+						   'po_date'                    => $po_date[$i],
+						   'qoute_date'                 => $qoute_date[$i],
+						   'supplier'                   => $supplier[$i],
+						   'reco_item_description'      => $reco_item_description[$i],
+					       'value'                      => number_format((float)str_replace(',', '', $value[$i]),2,'.','')
 				           ]);
 			}
 			if($approval_action  == 1){

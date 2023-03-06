@@ -167,8 +167,9 @@
                                                                 <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" data-id="{{$tableRow}}" id="ui-id-2{{$tableRow}}" style="display: none; top: 60px; left: 15px; width: 100%;">
                                                                     <li>Loading...</li>
                                                                 </ul>
+                                                                <input type="hidden"  name="reco_item_description[]" id="reco_item_description{{$tableRow}}" data-id="{{$tableRow}}" value="{{$rowresult->reco_item_description}}">  
                                                             </td>
-                                                            
+                                                           
                                                             <td style="text-align:center" height="10">
                                                                     <input type="text"  class="form-control finput"  name="po_number[]" id="po_number{{$tableRow}}" data-id="{{$tableRow}}" value="{{$rowresult->po_number}}" required >                                
                                                             </td>
@@ -452,8 +453,8 @@
                         var e = ui.item;
 
                         if (e.id) {
-                            
                             $("#digits_code"+$(this).attr("data-id")).val(e.digits_code);
+                            $("#reco_item_description"+$(this).attr("data-id")).val(e.value);
                             return false;
 
                         }
