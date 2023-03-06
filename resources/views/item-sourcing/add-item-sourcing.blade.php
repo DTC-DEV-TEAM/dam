@@ -138,11 +138,11 @@
                                                 <table class="table table-bordered" id="asset-items">
                                                     <tbody id="bodyTable">
                                                         <tr class="tbl_header_color dynamicRows">
-                                                            <th width="25%" class="text-center">*{{ trans('message.table.item_description') }}</th>
-                                                            <th width="17%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                                                                                    
-                                                            <th width="17%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th>                                                       
-                                                            <th width="10%" class="text-center">*Budget Range</th> 
-                                                            <th width="7%" class="text-center">*{{ trans('message.table.quantity_text') }}</th>                                                    
+                                                            <th width="25%" class="text-center"><span style="color:red">*</span> {{ trans('message.table.item_description') }}</th>
+                                                            <th width="17%" class="text-center"><span style="color:red">*</span> {{ trans('message.table.category_id_text') }}</th>                                                                                                                    
+                                                            <th width="17%" class="text-center"><span style="color:red">*</span> {{ trans('message.table.sub_category_id_text') }}</th>                                                       
+                                                            <th width="10%" class="text-center"><span style="color:red">*</span> Budget Range</th> 
+                                                            <th width="7%" class="text-center"><span style="color:red">*</span> {{ trans('message.table.quantity_text') }}</th>                                                    
                                                             <th width="5%" class="text-center">{{ trans('message.table.action') }}</th>
                                                         </tr>
                                                         
@@ -159,7 +159,7 @@
                                                                 <input type="button" id="add-Row" name="add-Row" class="btn btn-primary add" value='Add Item' />
                                                             </td>
                                                             <td align="left" colspan="1">
-                                                                <input type='number' name="quantity_total" class="form-control text-center" id="quantity_total" readonly>
+                                                                <input type='text' name="quantity_total" class="form-control text-center" id="quantity_total" readonly>
                                                             </td>
                                                         </tr>
                                                     </tfoot>
@@ -364,7 +364,7 @@
                     '</td>' +
 
                     '<td>' +
-                    '<input class="form-control text-center quantity_item" type="number" required name="quantity[]" id="quantity' + tableRow + '" data-id="' + tableRow  + '"  value="1" min="0" max="9999999999" step="any" onKeyPress="if(this.value.length==11) return false;" oninput="validity.valid;">' + 
+                    '<input class="form-control text-center quantity_item" type="text" required name="quantity[]" id="quantity' + tableRow + '" data-id="' + tableRow  + '"  value="1" min="0" max="9999999999" step="any" onkeypress="return event.charCode <= 57">' + 
                     '</td>' +
 
                     '<td>' +
@@ -616,7 +616,7 @@
                                                 '</tr>';
                                     $(new_row).insertAfter($('table tr.dynamicRows:last'));
    
-                                    $("#total").val(calculateTotalValue2());
+                                    $("#quantity_total").val(calculateTotalValue2());
 
                                     $(this).val('');
                                     $('#val_item').html('');

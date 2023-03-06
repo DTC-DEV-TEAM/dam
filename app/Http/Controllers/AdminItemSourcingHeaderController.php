@@ -102,7 +102,7 @@
 	        */
 	        $this->addaction = array();
 			if(CRUDBooster::isUpdate()) {
-		
+				$this->addaction[] = ['title'=>'Cancel Request','url'=>CRUDBooster::mainpath('getRequestCancelNis/[id]'),'icon'=>'fa fa-times', "showIf"=>"[status_id] == $this->forApproval"];
 				//$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('detail-sourcing'),'icon'=>'fa fa-eye'];
 
 			}
@@ -177,7 +177,18 @@
 	        | $this->script_js = "function() { ... }";
 	        |
 	        */
-	        $this->script_js = NULL;
+	        $this->script_js = "
+			
+			    $('.fa.fa-times').click(function(){
+				var strconfirm = confirm('Are you sure you want to cancel this request?');
+				if (strconfirm == true) {
+					return true;
+				}else{
+					return false;
+					window.stop();
+				}
+
+			});";
 
 
             /*
@@ -879,6 +890,23 @@
 			$message = ['status'=>'success', 'message' => 'Cancelled Successfully!'];
 			echo json_encode($message);
 			
+		}
+
+		public function getRequestCancelNis($id) {
+
+			ItemHeaderSourcing::where('id',$id)
+			->update([
+					'status_id'=> 8,
+					'cancelled_by'=> CRUDBooster::myId(),
+					'cancelled_at'=> date('Y-m-d H:i:s')	
+			]);	
+			ItemBodySourcing::where('header_request_id', $id)
+			->update([
+				'deleted_at'=> 		date('Y-m-d H:i:s'),
+				'deleted_by'=> 		CRUDBooster::myId()
+			]);	
+			
+			CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Request has been cancelled successfully!"), 'success');
 		}
 
 	}

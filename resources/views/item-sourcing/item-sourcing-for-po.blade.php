@@ -18,6 +18,7 @@
                 color:green;
                 margin-top:12px;
             }
+           
         </style>
     @endpush
 @section('content')
@@ -154,8 +155,54 @@
                                                 <tr>
                                                     @foreach($Body as $rowresult)
                                                         <?php   $tableRow++; ?>
-                                                                                            
-                                                        <tr>
+                                                    @if($rowresult->deleted_at != null || $rowresult->deleted_at != "")                                       
+                                                        <tr class="strikeout">
+                                                            <td style="text-align:center" height="10">
+                                                                @if($rowresult->if_arf_created != NULL)
+                                                                <i class="fa fa-check-circle green-color fa-lg" aria-hidden="true"></i>
+                                                                @endif
+                                                            </td>
+                                                            <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"   value="{{$rowresult->id}}">        
+                                                            <td style="text-align:center" height="10">
+                                                                <!-- <input type="text"  class="form-control finput"  value="{{$rowresult->digits_code}}" readonly>                                 -->
+                                                                {{$rowresult->digits_code}}
+                                                            </td>
+                                                           
+                                                            <td style="text-align:center" height="10">
+                                                                    <!-- <input type="text"  class="form-control finput" value="{{$rowresult->po_number}}" readonly>                                 -->
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    <!-- <input type="text"  class="form-control finput" readonly>                                 -->
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    <!-- <input type="text"  class="form-control finput" value="{{$rowresult->qoute_date}}" readonly>                                 -->
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    <!-- <input type="text"  class="form-control finput" value="{{$rowresult->supplier}}" readonly>                                 -->
+                                                            </td>
+                                                            <td style="text-align:center" height="10">                                                             
+                                                                    {{$rowresult->item_description}}
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    {{$rowresult->category_id}}
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    {{$rowresult->sub_category_id}}
+                                                            </td>
+                                                            <td style="text-align:center" height="10" class="cost">
+                                                                    {{$rowresult->budget}}
+                                                            </td>
+                                                            <td style="text-align:center" height="10" class="qty">
+                                                                    {{$rowresult->quantity}}
+                                                          
+                                                            </td>
+                                                            <td style="text-align:center" height="10" class="value">
+                                                                    <input type="text" style="text-align:center"  class="form-control finput item_source_value" value="{{$rowresult->value}}" readonly>                                
+                                                            </td>   
+                                                            <td  style="text-align:center; color:#dd4b39"><i class="fa fa-times-circle"></i></td>    
+                                                      </tr>
+                                                    @else
+                                                    <tr>
                                                             <td style="text-align:center" height="10">
                                                                 @if($rowresult->if_arf_created != NULL)
                                                                 <i class="fa fa-check-circle green-color fa-lg" aria-hidden="true"></i>
@@ -200,10 +247,9 @@
                                                             </td>
                                                             <td style="text-align:center" height="10" class="value">
                                                                     <input type="text" style="text-align:center"  class="form-control finput item_source_value"  name="value[]" id="value{{$tableRow}}" value="{{$rowresult->value}}" onkeyup="item_source_value();" required >                                
-                                                            </td>
-                                                              
+                                                            </td>   
                                                       </tr>
-                                                                                                                         
+                                                    @endif                                                                     
                                                     @endforeach     
                                                     
                                                     <input type='hidden' name="quantity_total" class="form-control text-center" id="quantity_total" readonly value="{{$Header->quantity_total}}">
