@@ -214,10 +214,10 @@
                                                             <td style="text-align:center" height="10">
                                                                     {{$rowresult->sub_category_id}}
                                                             </td>
-                                                            <td style="text-align:center" height="10" class="cost">
+                                                            <td style="text-align:center" height="10">
                                                                     {{$rowresult->budget}}
                                                             </td>
-                                                            <td style="text-align:center" height="10" class="qty">
+                                                            <td style="text-align:center" height="10">
                                                                     {{$rowresult->quantity}}
                                                           
                                                             </td>
