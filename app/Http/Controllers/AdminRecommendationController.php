@@ -382,9 +382,9 @@
 
 			$fields = Request::all();
 			$cont = (new static)->apiContext;
-
+      
 			$dataLines = array();
-
+			$form_erf               = $fields['form_erf'];
 			$it_comments 			= $fields['it_comments'];
 			$item_id 				= $fields['item_id'];
 			$recommendation 		= $fields['recommendation'];
@@ -407,7 +407,7 @@
 			$postdata['recommended_at'] 		= date('Y-m-d H:i:s');
 
 
-
+            
 
 			for($x=0; $x < count((array)$item_id); $x++) {
 
@@ -418,6 +418,18 @@
 					'reco_item_description' => $reco_item_description[$x]
 				]);
 				
+			}
+
+			if($form_erf !== ""){
+				for($x=0; $x < count((array)$item_id); $x++) {
+
+					BodyRequest::where('id', $item_id[$x])
+					->update([
+						'digits_code' 		    => $reco_digits_code[$x],
+						'item_description' 		=> $reco_item_description[$x],
+					]);
+					
+				}
 			}
 
 

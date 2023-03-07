@@ -258,10 +258,12 @@
 	    */
 	    public function hook_before_add(&$postdata) {       
 			$fields = Request::all();
-			$erf_number  = $fields['erf_number'];
-			$screen_date = $fields['screen_date'];
-			$first_name  = $fields['first_name'];
-			$last_name   = $fields['last_name'];
+			$erf_number   = $fields['erf_number'];
+			$screen_date  = $fields['screen_date'];
+			$first_name   = $fields['first_name'];
+			$last_name    = $fields['last_name'];
+			$job_portal   = $fields['job_portal'];
+			$remarks      = $fields['remarks'];
 
 			//Jo Done
 			$checkRowDbJoDone = DB::table('applicant_table')->select(DB::raw("(full_name) AS fullname"))->where('status', 31)->get()->toArray();
@@ -280,6 +282,8 @@
 				$postdata['screen_date'] = $screen_date;
 				$postdata['first_name']  = $first_name;
 				$postdata['last_name']   = $last_name;
+				$postdata['job_portal']  = $job_portal;
+				$postdata['remarks']     = $remarks;
 				$postdata['full_name']   = strtolower(trim($postdata['first_name'])).''.strtolower(trim($postdata['last_name']));
 				$postdata['created_by']  = CRUDBooster::myId();
 
@@ -315,14 +319,17 @@
 			$erf_number = $fields['erf_number'];
 			// dd($fields);
 			$status = $fields['status'];
+			$update_remarks = $fields['update_remarks'];
 			if($status == 36){
 				ErfHeaderRequest::where('reference_number',$erf_number)
 				->update([
 					'status_id'		 => 31
 				]);	
-			    $postdata['status']      = 31;
+			    $postdata['status']              = 31;
+				$postdata['update_remarks']      = $update_remarks;
 			}else{
-				$postdata['status']      = $status;
+				$postdata['status']              = $status;
+				$postdata['update_remarks']      = $update_remarks;
 			}
 			
 			$postdata['updated_by']  = CRUDBooster::myId();

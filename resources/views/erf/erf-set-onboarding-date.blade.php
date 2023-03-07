@@ -158,6 +158,14 @@
                     </div>
                 </div>
                 @endif
+                @if($Header->absorption != NULL || $Header->absorption != "")
+                <div class="row"> 
+                    <div class="col-md-6">
+                        <label class="require control-label"> Absorption</label><br>
+                        <input type="text" class="form-control finput" value="{{$Header->absorption}}" aria-describedby="basic-addon1" readonly>                                                                                    
+                    </div>
+                </div>
+                @endif
             </div>
             <!-- 3rd row -->
             <div class="card">
@@ -198,6 +206,14 @@
                         <input type="text" class="form-control finput" value="{{$Header->email_domain}}" aria-describedby="basic-addon1" readonly>                                                                                      
                     </div>
                 </div>
+                @if($Header->other_email_domain != NULL || $Header->other_email_domain != "")
+                <div class="row"> 
+                    <div class="col-md-6">
+                        <label class="require control-label"> Other Email</label><br>
+                        <input type="text" class="form-control finput" value="{{$Header->other_email_domain}}" aria-describedby="basic-addon1" readonly>                                                                                    
+                    </div>
+                </div>
+                @endif
             </div>
             <div class="card">
                 <div class="row">

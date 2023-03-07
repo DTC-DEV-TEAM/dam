@@ -71,7 +71,7 @@
                     </div>
                 </div>
             @endif
-
+            <input type="hidden" name="from_erf" value="{{$Header->if_from_erf}}">
             @if($Header->if_from_erf != null || $Header->if_from_erf != "")
                 <div class="row">                           
                     <label class="control-label col-md-2">Erf Number:</label>
@@ -86,6 +86,7 @@
                     <label class="control-label col-md-2">Item Sourcing Number:</label>
                     <div class="col-md-4">
                             <p>{{$Header->if_from_item_source}}</p>
+                          
                     </div>
                 </div>
             @endif
