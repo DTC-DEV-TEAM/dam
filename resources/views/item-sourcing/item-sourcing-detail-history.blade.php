@@ -18,6 +18,28 @@
                 color:green;
                 margin-top:12px;
             }
+
+            table { border-collapse: collapse; empty-cells: show; }
+
+            td { position: relative; }
+
+            tr.strikeout td:before {
+            content: " ";
+            position: absolute;
+            top: 25%;
+            left: 0;
+            border-bottom: 1px solid #111;
+            width: 100%;
+            }
+
+            tr.strikeout td:after {
+            content: "\00B7";
+            font-size: 1px;
+            }
+
+            /* Extra styling */
+            td { width: 100px; }
+            th { text-align: left; }
         </style>
     @endpush
 @section('content')
@@ -142,11 +164,11 @@
                                                 <th width="10%" class="text-center">PO Date</th> 
                                                 <th width="10%" class="text-center">Quote Date</th> 
                                                 <th width="10%" class="text-center">Supplier</th> 
-                                                <th width="10%" class="text-center">Value</th> 
                                                 <th width="10%" class="text-center">{{ trans('message.table.item_description') }}</th>
                                                 <th width="9%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
                                                 <th width="10%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
                                                 <th width="5%" class="text-center">Budget</th> 
+                                                <th width="10%" class="text-center">Value</th> 
                                                 <th width="5%" class="text-center">Quantity</th>  
                                             </tr>
                                             <tr id="tr-table">
@@ -154,9 +176,59 @@
                                                 <tr>
                                                     @foreach($Body as $rowresult)
                                                         <?php   $tableRow++; ?>
-                                                                                            
-                                                        <tr>       
-                                                               
+                                                        @if($rowresult->deleted_at != null || $rowresult->deleted_at != "")                                    
+                                                        <tr class="strikeout">
+                                                            <td >
+                                                            @if($rowresult->digits_code != NULL && $rowresult->po_number != NULL && $rowresult->po_date != NULL && $rowresult->qoute_date != NULL && $rowresult->supplier != NULL && $rowresult->value != NULL && $rowresult->if_arf_created == NULL)
+                                                                <input style="margin-top:10px" type="checkbox" name="body_id[]" id="body_id{{$tableRow}}" class="id" required data-id="{{$tableRow}}" value="{{$rowresult->id}}"/>
+                                                            @elseif($rowresult->if_arf_created != NULL)
+                                                            <i class="fa fa-check-circle green-color fa-lg" aria-hidden="true"></i>
+                                                            @endif
+                                                                <input type="hidden" name="request_type_id[]" id="request_type_id{{$tableRow}}" class="id" required data-id="{{$tableRow}}" value="{{$rowresult->request_type_id}}"/>
+                                                                <input type="hidden" name="if_arf_created[]" id="if_arf_created" class="id" required data-id="{{$tableRow}}" value="{{$rowresult->if_arf_created}}"/>
+                                                            </td>
+                                                          
+                                                            <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}" readonly>        
+                                                            <td style="text-align:center" height="10">
+                                                                    <input type="text"  class="form-control finput"  name="item_code[]" id="ids{{$tableRow}}" value="{{$rowresult->digits_code}}"  required readonly>                                
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    <input type="text"  class="form-control finput"  name="po_number[]" id="ids{{$tableRow}}" value="{{$rowresult->po_number}}" required readonly>                                
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    <input type="text"  class="form-control finput po_date{{$tableRow}}"  name="po_date[]" id="po_date{{$tableRow}}" value="{{$rowresult->po_date}}" data-id="{{$tableRow1}}"  required readonly>                                
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    <input type="text"  class="form-control finput qoute_date"  name="qoute_date[]" id="qoute_date{{$tableRow}}" value="{{$rowresult->qoute_date}}" data-id="{{$tableRow1}}"  required readonly>                                
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    <input type="text"  class="form-control finput"  name="supplier[]" id="ids{{$tableRow}}" value="{{$rowresult->supplier}}" required readonly>                                
+                                                            </td>
+                                                            
+                                                            <td style="text-align:center" height="10">                                                             
+                                                                    {{$rowresult->item_description}}
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    {{$rowresult->category_id}}
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    {{$rowresult->sub_category_id}}
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    {{$rowresult->budget}}
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    <input type="text" style="text-align:center" class="form-control finput item_source_value"  name="value[]" id="ids{{$tableRow}}" value="{{$rowresult->value}}" required readonly>                                
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    {{$rowresult->quantity}}
+                                                          
+                                                            </td>
+                                                          
+                                                            <td  style="text-align:center; color:#dd4b39"><i class="fa fa-times-circle"></i></td>                                                          
+                                                        </tr>
+                                                      @else                                    
+                                                        <tr>                                                                     
                                                             <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}" readonly>        
                                                             <td style="text-align:center" height="10">
                                                                 @if($rowresult->if_arf_created != NULL)
@@ -178,9 +250,7 @@
                                                             <td style="text-align:center" height="10">
                                                                     <input type="text"  class="form-control finput"  name="supplier[]" id="ids{{$tableRow}}" value="{{$rowresult->supplier}}" required readonly>                                
                                                             </td>
-                                                            <td style="text-align:center" height="10">
-                                                                    <input type="text"  class="form-control finput"  name="value[]" id="ids{{$tableRow}}" value="{{$rowresult->value}}" required readonly>                                
-                                                            </td>
+                                                           
                                                             <td style="text-align:center" height="10">                                                             
                                                                     {{$rowresult->item_description}}
                                                             </td>
@@ -193,13 +263,16 @@
                                                             <td style="text-align:center" height="10" class="cost">
                                                                     {{$rowresult->budget}}
                                                             </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    <input type="text"  class="form-control finput item_source_value"  name="value[]" id="ids{{$tableRow}}" value="{{$rowresult->value}}" required readonly>                                
+                                                            </td>   
                                                             <td style="text-align:center" height="10" class="qty">
                                                                     {{$rowresult->quantity}}
                                                           
-                                                            </td>
-                                                              
+                                                            </td>      
+                                                                                                               
                                                       </tr>
-                                                                                                                         
+                                                      @endif                                                                   
                                                     @endforeach     
                                                     
                                                     <input type='hidden' name="quantity_total" class="form-control text-center" id="quantity_total" readonly value="{{$Header->quantity_total}}">
@@ -284,6 +357,10 @@
     };
     setTimeout("preventBack()", 0);
 
+    $(function(){
+        item_source_value();
+    });
+    
     $('#btnSubmit').click(function() {
 
         var strconfirm = confirm("Are you sure you want to close this request?");
@@ -300,67 +377,16 @@
 
     });
 
-    var tableRow = <?php echo json_encode($tableRow); ?>;
 
-    $(document).ready(function() {
-            $(document).on('click', '.removeRow', function() {
-                
-                event.preventDefault();
-                if ($('#asset-items1 tbody tr').length != 1) { //check if not the first row then delete the other rows
-                var id_data = $(this).attr("data-id");    
-                $("#quantity_total").val(calculateTotalQuantity($("#quantity"+id_data).val()));
-                item_id = $("#ids"+id_data).val();
-                $("#bodyID").val(item_id);
-                var data = $('#myform').serialize();
-                swal({
-                    title: "Are you sure?",
-                    type: "warning",
-                    text: "You won't be able to revert this!",
-                    showCancelButton: true,
-                    confirmButtonColor: "#41B314",
-                    cancelButtonColor: "#F9354C",
-                    confirmButtonText: "Yes, cancel it!"
-                    }, function () {
-                    $.ajax
-                        ({ 
-                            url:  '{{ url('admin/header_request/RemoveItem') }}',
-                            type: "GET",
-                            data: data,
-                            success: function(data){    
-                                if (data.status == "success") {
-                                    swal({
-                                        type: data.status,
-                                        title: data.message,
-                                    });
-                                    setTimeout(function(){
-                                        window.location.replace(document.referrer);
-                                    }, 1000); 
-                                    } else if (data.status == "error") {
-                                    swal({
-                                        type: data.status,
-                                        title: data.message,
-                                    });
-                                }
-                            }
-                        });                            
-                    });
-                    $("#deleteRow"+id_data).attr('disabled', true);
-                    tableRow--;
-                    $(this).closest('tr').css('background-color','#d9534f');
-                    $(this).closest('tr').css('color','white'); 
-                    return false;   
-               }
-            });
-    });
-
-        function calculateTotalQuantity(...body_qty) {
-            var totalQuantity = 0;  
-            $('.quantity_item').each(function() {
-             totalQuantity = parseInt($("#quantity_total").val()) - parseInt(body_qty);
-            });
-            return totalQuantity;
+    function item_source_value(){
+        var total = 0;
+        $('.item_source_value').each(function(){
+            total += $(this).val() === "" ? 0 : parseFloat($(this).val().trim().replace(/,/g, ''));
+        })
     
-        }
+        $('#item-source-value-total').text(thousands_separators(total.toFixed(2)));
+    }
+
 
         function thousands_separators(num) {
         var num_parts = num.toString().split(".");
@@ -381,10 +407,17 @@
             }
         }
         document.getElementById("item-sourcing").innerHTML +=
-        "<tr style='text-align:center'><td colspan=11><strong>TOTAL</strong></td><td><strong>" +
+        "<tr style='text-align:center'>"+
+        "<td colspan=10><strong>TOTAL</strong></td>"+
+        "<td style='text-align:center'><strong><span id='item-source-value-total'>" + 
+        "<td><strong>" +
+            sumqty + 
+        "</strong></td>"+
+                                        
        
-                            sumqty +
-        "</strong></td></tr>";
+    
+        "</span></strong></td>"+
+        "</tr>";
     
 </script>
 @endpush
