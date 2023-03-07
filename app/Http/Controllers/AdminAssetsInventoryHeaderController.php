@@ -740,7 +740,8 @@
 				  'assets.item_type as itemType',
 				  'assets.image as itemImage',
 				  'assets_inventory_body.updated_at as date_updated',
-				  'cms_users_updated_by.name as updated_by'
+				  'cms_users_updated_by.name as updated_by',
+				  'assets_inventory_body.asset_code as final_asset_code'
 				)
 				->where('assets_inventory_body.header_id', $id)
 				->get();
