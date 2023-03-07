@@ -188,7 +188,7 @@ Route::group(['middleware' => ['web']], function() {
     //Item Sourcing Routes
     Route::post(config('crudbooster.ADMIN_PATH').'/item-sourcing-header/create-arf','AdminItemSourcingHeaderController@createArf')->name('create-arf');
     Route::get('admin/item-sourcing-header/RemoveItemSource','AdminItemSourcingHeaderController@RemoveItemSource');
-
+    Route::get('admin/item-sourcing-header/getRequestCancelNis/{id}','AdminItemSourcingHeaderController@getRequestCancelNis')->name('getRequestCancelNis');
     //reports
     //Route::get('/admin/reports/getIndex','AdminReportsController@getIndex')->name('get-report');
     //Route::get('/admin/get-reports/getIndex', [AdminReportsv2Controller::class, 'getIndex'])->name('get-report');

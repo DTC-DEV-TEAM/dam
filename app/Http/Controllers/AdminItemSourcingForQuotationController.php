@@ -199,7 +199,7 @@
 	        |
 	        */
 	        $this->load_js = array();
-	        $this->load_js[] = asset("datetimepicker/bootstrap-datetimepicker.min.js");
+	        //$this->load_js[] = asset("datetimepicker/bootstrap-datetimepicker.min.js");
 	        
 	        
 	        /*
@@ -223,7 +223,7 @@
 	        |
 	        */
 	        $this->load_css = array();
-			$this->load_css[] = asset("datetimepicker/bootstrap-datetimepicker.min.css");
+			//$this->load_css[] = asset("datetimepicker/bootstrap-datetimepicker.min.css");
 	        
 	    }
 
@@ -460,3 +460,5 @@
 
 
 	}
+
+	?>

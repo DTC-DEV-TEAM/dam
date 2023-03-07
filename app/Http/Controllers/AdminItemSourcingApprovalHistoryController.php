@@ -15,7 +15,10 @@
 		private $closed;
 		private $rejected;
 		private $processing;
-		
+		private $forItReco;
+		private $forTagging;
+		private $cancelled;
+
 		public function __construct() {
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
 			$this->forApproval      =  1;        
@@ -23,6 +26,9 @@
 			$this->closed           =  13;   
 			$this->rejected         =  5;
 			$this->processing       =  11;   
+			$this->forItReco        =  4;        
+			$this->forTagging       =  7;
+			$this->cancelled        =  8;
 		}
 	    public function cbInit() {
 
@@ -315,11 +321,12 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-			if(CRUDBooster::isSuperadmin()){
+			if(CRUDBooster::isSuperadmin() || CRUDBooster::myPrivilegeId() == 6){
 				$query->whereNull('item_sourcing_header.deleted_at')->orderBy('item_sourcing_header.status_id', 'DESC')->orderBy('item_sourcing_header.id', 'DESC');
-			}else if(CRUDBooster::myPrivilegeId() == 6){
-				$query->whereNotNull('item_sourcing_header.closed_by')->where('item_sourcing_header.closed_by', CRUDBooster::myId())->whereNull('item_sourcing_header.deleted_at')->orderBy('item_sourcing_header.id', 'DESC');
 			}
+			// else if(CRUDBooster::myPrivilegeId() == 6){
+			// 	$query->whereNotNull('item_sourcing_header.closed_by')->where('item_sourcing_header.closed_by', CRUDBooster::myId())->whereNull('item_sourcing_header.deleted_at')->orderBy('item_sourcing_header.id', 'DESC');
+			// }
 			else{
 				$query->whereNotNull('item_sourcing_header.approved_by')->where('item_sourcing_header.approved_by', CRUDBooster::myId())->whereNull('item_sourcing_header.deleted_at')->orderBy('item_sourcing_header.id', 'DESC');
 			}
@@ -337,7 +344,8 @@
 			$forQuotation       = DB::table('statuses')->where('id', $this->forQuotation)->value('status_description');  
 			$closed             = DB::table('statuses')->where('id', $this->closed)->value('status_description');
 			$rejected           = DB::table('statuses')->where('id', $this->rejected)->value('status_description');  
-			$processing         = DB::table('statuses')->where('id', $this->processing)->value('status_description');  
+			$processing         = DB::table('statuses')->where('id', $this->processing)->value('status_description');
+			$cancelled          = DB::table('statuses')->where('id', $this->cancelled)->value('status_description');  
 			
 			if($column_index == 1){
 				if($column_value == $forApproval){
@@ -350,6 +358,8 @@
 					$column_value = '<span class="label label-danger">'.$rejected.'</span>';
 				}else if($column_value == $processing){
 					$column_value = '<span class="label label-info">'.$processing.'</span>';
+				}else if($column_value == $cancelled){
+					$column_value = '<span class="label label-danger">'.$cancelled.'</span>';
 				}
 			}
 	    }

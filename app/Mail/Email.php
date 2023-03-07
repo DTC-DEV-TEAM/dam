@@ -30,6 +30,6 @@ class Email extends Mailable
     public function build()
     {
         return $this->subject('DAM'.' '.$this->ref)
-        ->view('emails.send-eMail');
+        ->view('emails.send-email');
     }
 }

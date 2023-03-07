@@ -10,7 +10,6 @@
                 border:none;
                 border-bottom: 1px solid rgba(18, 17, 17, 0.5);
             }
-
             input.finput:read-only {
                 background-color: #fff;
             }
@@ -18,6 +17,27 @@
                 color:green;
                 margin-top:12px;
             }
+            table { border-collapse: collapse; empty-cells: show; }
+
+            td { position: relative; }
+
+            tr.strikeout td:before {
+            content: " ";
+            position: absolute;
+            top: 25%;
+            left: 0;
+            border-bottom: 1px solid #111;
+            width: 100%;
+            }
+
+            tr.strikeout td:after {
+            content: "\00B7";
+            font-size: 1px;
+            }
+
+            /* Extra styling */
+            td { width: 100px; }
+            th { text-align: left; }
         </style>
     @endpush
 @section('content')
@@ -151,10 +171,52 @@
                                             </tr>
                                             <tr id="tr-table">
                                                 <?php   $tableRow = 1; ?>
-                                                <tr>
+                                                <tr> 
                                                     @foreach($Body as $rowresult)
                                                         <?php   $tableRow++; ?>
-                                                                                            
+                                                        @if($rowresult->deleted_at != null || $rowresult->deleted_at != "")                                        
+                                                        <tr class="strikeout">
+                                                            <td style="text-align:center" height="10">
+                                                                @if($rowresult->if_arf_created != NULL)
+                                                                <i class="fa fa-check-circle green-color fa-lg" aria-hidden="true"></i>
+                                                                @endif
+                                                            </td>
+                                                          
+                                                            <td style="text-align:center" height="10">
+                                                                <input type="text"  class="form-control finput"value="{{$rowresult->digits_code}}"  readonly>                                                                                                        
+                                                            </td>
+                                                           
+                                                            <td style="text-align:center" height="10">
+                                                                    <input type="text"  class="form-control finput" value="{{$rowresult->po_number}}" readonly>                                
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    <input type="text"  class="form-control finput" value="{{$rowresult->po_date}}" readonly>                                
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    <input type="text"  class="form-control finput" value="{{$rowresult->qoute_date}}" readonly>                                
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    <input type="text"  class="form-control finput" value="{{$rowresult->supplier}}" readonly>                                
+                                                            </td>
+                                                            <td style="text-align:center" height="10">                                                             
+                                                                    {{$rowresult->item_description}}
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    {{$rowresult->category_id}}
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    {{$rowresult->sub_category_id}}
+                                                            </td>
+                                                            <td style="text-align:center" height="10" class="cost">
+                                                                    {{$rowresult->budget}}
+                                                            </td>
+                                                            <td style="text-align:center" height="10" class="qty">
+                                                                    {{$rowresult->quantity}}
+                                                          
+                                                            </td>
+                                                            <td  style="text-align:center; color:#dd4b39"><i class="fa fa-times-circle"></i></td>                                                   
+                                                      </tr>
+                                                      @else
                                                         <tr>
                                                             <td style="text-align:center" height="10">
                                                                 @if($rowresult->if_arf_created != NULL)
@@ -169,7 +231,7 @@
                                                                 </ul>
                                                                 <input type="hidden"  name="reco_item_description[]" id="reco_item_description{{$tableRow}}" data-id="{{$tableRow}}" value="{{$rowresult->reco_item_description}}">  
                                                             </td>
-                                                           
+                                                        
                                                             <td style="text-align:center" height="10">
                                                                     <input type="text"  class="form-control finput"  name="po_number[]" id="po_number{{$tableRow}}" data-id="{{$tableRow}}" value="{{$rowresult->po_number}}" required >                                
                                                             </td>
@@ -196,13 +258,13 @@
                                                             </td>
                                                             <td style="text-align:center" height="10" class="qty">
                                                                     {{$rowresult->quantity}}
-                                                          
+                                                        
                                                             </td>
                                                             <td style="text-align:center" height="10" class="value">
                                                                     <input type="text" style="text-align:center"  class="form-control finput item_source_value"  name="value[]" id="value{{$tableRow}}" value="{{$rowresult->value}}" onkeyup="item_source_value();" required >                                
-                                                            </td>
-                                                              
-                                                      </tr>
+                                                            </td>                                                  
+                                                        </tr>
+                                                      @endif
                                                                                                                          
                                                     @endforeach     
                                                     
@@ -316,7 +378,7 @@
 
 @endsection
 @push('bottom')
-    <script src=
+<script src=
     "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" >
         </script>
         
@@ -324,6 +386,7 @@
     "https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" >
         </script>
 <script type="text/javascript">
+    
     $(function(){
         $('body').addClass("sidebar-collapse");
         item_source_value();
@@ -337,11 +400,9 @@
     setTimeout("preventBack()", 0);
     var searchcount = <?php echo json_encode($tableRow); ?>;
     let countrow = 1;
-
     $(function(){
         for (let i = 0; i < searchcount; i++) {
             countrow++;
-
             $('#po_date'+countrow).datepicker({
                 constrainInput: false,  
                 dateFormat: 'yy-mm-dd'
@@ -358,7 +419,6 @@
             $('#qoute_date'+countrow).keyup(function() {
                     this.value = this.value.toLocaleUpperCase();
             });
-
              //cost fields validation
              $(document).on("keyup","#value"+countrow, function (e) {
                 if (e.which >= 37 && e.which <= 40) return;
@@ -384,13 +444,10 @@
                         return parts.join(".");
                     });
             });  
-
             
         }
-
         
     });
-
   
     var stack = [];
     var token = $("#token").val();
@@ -400,7 +457,6 @@
             for (let j = 0; j < tableRow1; j++) {
                 countrow1++;
                 $("#digits_code"+countrow1).autocomplete({
-
                     source: function (request, response) {
                     $.ajax({
                         url: "{{ route('it.item.search') }}",
@@ -414,11 +470,9 @@
                             //var rowCount = $('#asset-items tr').length;
                             //myStr = data.sample;   
                             if (data.status_no == 1) {
-
                                 $("#val_item").html();
                                 var data = data.items;
                                 $('#ui-id-2'+countrow1).css('display', 'none');
-
                                 response($.map(data, function (item) {
                                     return {
                                         id:                         item.id,
@@ -431,11 +485,8 @@
                                         item_cost:                  item.item_cost,
                                     
                                     }
-
                                 }));
-
                             } else {
-
                                 $('.ui-menu-item').remove();
                                 $('.addedLi').remove();
                                 $("#ui-id-2"+countrow1).append($("<li class='addedLi'>").text(data.message));
@@ -451,26 +502,18 @@
                     },
                     select: function (event, ui) {
                         var e = ui.item;
-
                         if (e.id) {
                             $("#digits_code"+$(this).attr("data-id")).val(e.digits_code);
                             $("#reco_item_description"+$(this).attr("data-id")).val(e.value);
                             return false;
-
                         }
                     },
-
                     minLength: 1,
                     autoFocus: true
                     });
-
-
             }
-
-
         });
     
-
     
     $('#btnUpdate').click(function(event) {
         event.preventDefault();
@@ -489,10 +532,8 @@
                 $("#myform").submit();                   
         });
     });
-
     $('#btnClose').click(function(event) {
         event.preventDefault();
-
         var item = $("input[name^='item_code']").length;
         var item_value = $("input[name^='item_code']");
         for(i=0;i<item;i++){
@@ -571,10 +612,10 @@
         var value = $("input[name^='value']").length;
         var value_value = $("input[name^='value']");
         for(i=0;i<value;i++){
-            if(value_value.eq(i).val() == null){
+            if(value_value.eq(i).val() == null || value_value.eq(i).val() == 0 ){
                 swal({  
                         type: 'error',
-                        title: 'Value Fields cannot be empty!(put 0 if not available)',
+                        title: 'Value Fields cannot be empty',
                         icon: 'error',
                         confirmButtonColor: "#367fa9",
                     });
@@ -598,8 +639,6 @@
                 $("#myform").submit();                   
         });
     });
-
-
     $("#btn-cancel").click(function(event) {
        event.preventDefault();
        swal({
@@ -615,22 +654,19 @@
                 window.history.back();                                                  
         });
     });
-
     function item_source_value(){
         var total = 0;
         $('.item_source_value').each(function(){
-            total += $(this).val() === "" ? 0 : parseFloat($(this).val());
+            total += $(this).val() === "" ? 0 : parseFloat($(this).val().trim().replace(/,/g, ''));
         })
     
         $('#item-source-value-total').text(thousands_separators(total.toFixed(2)));
     }
-
     function thousands_separators(num) {
     var num_parts = num.toString().split(".");
     num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     return num_parts.join(".");
     }
-
     var tds = document
     .getElementById("item-sourcing")
     .getElementsByTagName("td");
@@ -646,7 +682,6 @@
     document.getElementById("item-sourcing").innerHTML +=
     "<tr style='text-align:center'>"+
     "<td colspan=10><strong>TOTAL</strong></td>"+
-
     "<td><strong>" +
         sumqty + 
     "</strong></td>"+
@@ -654,7 +689,6 @@
     "<td style='text-align:center'><strong><span id='item-source-value-total'>" + 
    
     "</span></strong></td>"+
-
     "</tr>";
 </script>
 @endpush

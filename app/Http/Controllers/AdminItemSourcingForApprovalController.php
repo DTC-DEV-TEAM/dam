@@ -8,7 +8,7 @@
 	use App\StatusMatrix;
 	use App\Models\ItemHeaderSourcing;
 	use App\Models\ItemBodySourcing;
-	use App\Mail\EMail;
+	use App\Mail\Email;
 	use Mail;
 
 	class AdminItemSourcingForApprovalController extends \crocodicstudio\crudbooster\controllers\CBController {
@@ -364,8 +364,8 @@
 				$infos['items'] = $arf_body;
 			
 				Mail::to($employee_name->email)
-						->cc([$fhil,$approver_name->email])
-	                    ->send(new EMail($infos));
+						//->cc([$fhil,$approver_name->email])
+	                    ->send(new Email($infos));
 			}else{
 				$postdata['status_id'] 			= 5;
 				$postdata['approver_comments'] 	= $approver_comments;
