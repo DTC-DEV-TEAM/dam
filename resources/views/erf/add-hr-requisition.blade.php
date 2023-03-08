@@ -159,16 +159,18 @@
                         <div class="col-md-6">
                             <label class="require control-label"><span style="color:red">*</span> Manpower</label><br>
                                 @foreach($manpower as $data)
-                                <div class="col-md-6" style="margin-bottom:20px">
+                                <div class="col-md-6">
                                     <label class="checkbox-inline control-label col-md-6" ><br>
                                     <input type="checkbox" required   class="manpower" name="manpower" value="{{$data->description}}" >{{$data->description}}
                                     </label>
                                 </div>
                                 @endforeach
+
                                 <div class="form-group" id="show_replacement_of" style="display:none;">
-                              
-                                <label class="control-label"> Replacement Of</label>
-                                    <input type="text" class="form-control finput"  id="replacement_of" name="replacement_of">   
+                                    <input type="text" class="form-control finput"  id="replacement_of" name="replacement_of" placeholder="Replacement Of">   
+                                </div>
+                                <div class="form-group" id="absorption_div" style="display:none;">
+                                    <input type="text" class="form-control finput"  id="absorption" name="absorption" placeholder="Absorption">   
                                 </div>
                         </div>
                         <div class="col-md-6">
@@ -186,7 +188,7 @@
             <div class="card4">
                 <div class="row"> 
                     <div class="col-md-6">
-                        <label class="require control-label"><span style="color:red">*</span> Required Exams</label><br>
+                        <label class="require control-label"> Required Exams</label><br>
                             @foreach($required_exams as $data)
                             <div class="col-md-6">
                                 <label class="checkbox-inline control-label col-md-12" ><br>
@@ -243,6 +245,10 @@
                             </label>
                         </div>
                         @endforeach
+                       
+                        <div class="form-group" id="other_email_domain" style="display:none;">
+                            <input type="text" class="form-control finput"  id="other_email" name="other_email" placeholder="Other Email">   
+                        </div>
                     </div>
                     <div class="col-md-6">
                         <label class="require control-label"> Required System</label><br>
@@ -421,6 +427,33 @@
         }else{
             $("#show_replacement_of").hide();
             $('#replacement_of').val("");
+        }
+
+    });
+
+    //checkbox validations
+    $(".manpower").change(function() {
+        var rep = $(this);
+        console.log($(this).val());
+        if(rep.val() === "ABSORPTION"){
+            $("#absorption_div").show();
+        }else{
+            $("#absorption_div").hide();
+            $('#absorption').val("");
+        }
+
+    });
+
+    //other email domain
+      //checkbox validations
+      $(".email_domain").change(function() {
+        var rep = $(this);
+        console.log($(this).val());
+        if(rep.val() === "OTHERS"){
+            $("#other_email_domain").show();
+        }else{
+            $("#other_email_domain").hide();
+            $('#other_email').val("");
         }
 
     });
@@ -816,15 +849,6 @@
                 swal({
                     type: 'error',
                     title: 'Please choose Manpower Type!',
-                    icon: 'error',
-                    confirmButtonColor: "#367fa9",
-                }); 
-                event.preventDefault(); // cancel default behavior
-                return false;
-        }else if(!$(".required_exams").is(':checked')){
-                swal({
-                    type: 'error',
-                    title: 'Please choose Required Exams!',
                     icon: 'error',
                     confirmButtonColor: "#367fa9",
                 }); 

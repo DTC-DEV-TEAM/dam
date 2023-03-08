@@ -338,6 +338,7 @@
 			$allow_wfh                 = $fields['allow_wfh'];
 			$manpower                  = $fields['manpower'];
 			$replacement_of            = $fields['replacement_of'];
+			$absorption                = $fields['absorption'];
 			$manpower_type             = $fields['manpower_type'];
 			$required_exams            = $fields['required_exams'];
 			$qualifications            = $fields['qualifications'];
@@ -350,6 +351,7 @@
 			$employee_interaction      = $fields['employee_interaction'];
 			$asset_usage               = $fields['asset_usage'];
 			$email_domain              = $fields['email_domain'];
+			$other_email_domain        = $fields['other_email'];
 			$required_system           = $fields['required_system'];
 			$count_header              = DB::table('erf_header_request')->count();
 			$header_ref                = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);			
@@ -370,6 +372,7 @@
 			$postdata['allow_wfh'] 		            = $allow_wfh;
 			$postdata['manpower'] 		            = $manpower;
 			$postdata['replacement_of'] 		    = $replacement_of;
+			$postdata['absorption'] 		        = $absorption;
 			$postdata['manpower_type'] 		        = $manpower_type;
 			if(!empty($required_exams)){
 				$postdata['required_exams'] 	    = implode(", ",$required_exams);
@@ -389,6 +392,7 @@
 				$postdata['required_system'] 	    = implode(", ",$required_system);
 			}
 			$postdata['email_domain'] 		        = $email_domain;
+			$postdata['other_email_domain'] 		= $other_email_domain;
 			$postdata['created_by'] 				= CRUDBooster::myId();
 			$postdata['created_at'] 				= date('Y-m-d H:i:s');
 			$postdata['request_type_id'] 		    = NULL;

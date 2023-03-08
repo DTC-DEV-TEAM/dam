@@ -162,7 +162,7 @@
                                                 <a id="getHistory" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#demoModal" data-id="{{ $res->aib_id }}"><i class='fa fa-history'></i> </a>
                                              <a class='btn btn-success btn-xs' href='{{CRUDBooster::mainpath("generate-barcode-single/".$res->aib_id)."?return_url=".urlencode(Request::fullUrl())}}'><i class='fa fa-barcode'></i></a>                                      
                                                 </td>   -->
-                                                <td>{{$res->asset_code}}</td> 
+                                                <td>{{$res->final_asset_code}}</td> 
                                                 <td>{{$res->digits_code}}</td>
                                                 <td>{{$res->serial_no}}</td>  
                                                 <td>{{$res->body_location}}</td>  

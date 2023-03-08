@@ -96,7 +96,6 @@
                 </div>
 
                 <div class="row"> 
-                    
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label"><span style="color:red">*</span> First Name</label>
@@ -107,6 +106,21 @@
                         <div class="form-group">
                             <label class="control-label"><span style="color:red">*</span> Last Name</label>
                             <input type="text" class="form-control finput"  id="last_name" name="last_name"  required>                                   
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row"> 
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label"> Job Portal</label>
+                            <input type="text" class="form-control finput"  id="job_portal" name="job_portal"  required>                                   
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label"><span style="color:red">*</span> Remarks</label>
+                            <input type="text" class="form-control finput"  id="remarks" name="remarks"  required>                                   
                         </div>
                     </div>
                 </div>
