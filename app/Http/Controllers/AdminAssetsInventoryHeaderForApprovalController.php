@@ -664,25 +664,24 @@
 				->where('assets_header_images.header_id', $id)
 				->get();
 	        //Body details
-			$data['Body'] = AssetsInventoryBodyForApproval::leftjoin('statuses', 'assets_inventory_body_for_approval.statuses_id','=','statuses.id')
-			    ->leftjoin('assets_inventory_header_for_approval', 'assets_inventory_body_for_approval.header_id', '=', 'assets_inventory_header_for_approval.id')
-			    ->leftjoin('assets_inventory_body', 'assets_inventory_body_for_approval.id', '=', 'assets_inventory_body.body_approval_id')
-				->leftjoin('assets', 'assets_inventory_body_for_approval.item_id', '=', 'assets.id')
-				->leftjoin('cms_users as cms_users_updated_by', 'assets_inventory_body_for_approval.updated_by', '=', 'cms_users_updated_by.id')
-				->leftjoin('warehouse_location_model', 'assets_inventory_body_for_approval.location', '=', 'warehouse_location_model.id')
+			$data['Body'] = AssetsInventoryBody::leftjoin('statuses', 'assets_inventory_body.statuses_id','=','statuses.id')
+			    ->leftjoin('assets_inventory_header', 'assets_inventory_body.header_id', '=', 'assets_inventory_header.id')
+				->leftjoin('assets', 'assets_inventory_body.item_id', '=', 'assets.id')
+				->leftjoin('cms_users as cms_users_updated_by', 'assets_inventory_body.updated_by', '=', 'cms_users_updated_by.id')
+				->leftjoin('warehouse_location_model', 'assets_inventory_body.location', '=', 'warehouse_location_model.id')
 				->select(
-				  'assets_inventory_body_for_approval.*',
-				  'assets_inventory_body_for_approval.id as aib_id',
+				  'assets_inventory_body.*',
+				  'assets_inventory_body.id as aib_id',
 				  'statuses.*',
-				  'assets_inventory_header_for_approval.location as location',
+				  'assets_inventory_header.location as location',
 				  'warehouse_location_model.location as body_location',
 				  'assets.item_type as itemType',
 				  'assets.image as itemImage',
-				  'assets_inventory_body_for_approval.updated_at as date_updated',
+				  'assets_inventory_body.updated_at as date_updated',
 				  'cms_users_updated_by.name as updated_by',
 				  'assets_inventory_body.asset_code as final_asset_code'
 				)
-				->where('assets_inventory_body_for_approval.header_id', $id)
+				->where('assets_inventory_body.header_approval_id', $id)
 				->get();
 
 				return $this->view("assets.inventory_list", $data);
@@ -930,7 +929,7 @@
 			$saveContainerData = [];
 			foreach($finalDataofSplittingArray as $frKey => $frData){		
 				$saveContainerData['header_id'] = $frData['header_id'];
-				$saveContainerData['body_approval_id'] = $frData['body_approval_id'];
+				$saveContainerData['header_approval_id'] = $id;
 				$saveContainerData['item_id'] = $frData['item_id'];
 				$saveContainerData['statuses_id'] = 6;
 				$saveContainerData['location'] = $frData['location'];
