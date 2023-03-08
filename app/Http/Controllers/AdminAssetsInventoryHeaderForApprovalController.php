@@ -681,7 +681,7 @@
 				  'cms_users_updated_by.name as updated_by',
 				  'assets_inventory_body.asset_code as final_asset_code'
 				)
-				->where('assets_inventory_body.header_approval_id', $id)
+				->where('assets_inventory_body.header_id', $id)
 				->get();
 
 				return $this->view("assets.inventory_list", $data);
