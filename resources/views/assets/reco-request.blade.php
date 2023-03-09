@@ -538,7 +538,7 @@
                                 $("#item_description"+$(this).attr("data-id")).val(e.value);
 
                                 $("#search"+$(this).attr("data-id")).val(e.digits_code);
-                                
+                                $("#search"+$(this).attr("data-id")).attr('readonly',true);
                                 $('#val_item').html('');
                                 return false;
     

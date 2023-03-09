@@ -113,7 +113,7 @@
                 <div class="row"> 
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="control-label"> Job Portal</label>
+                            <label class="control-label"><span style="color:red">*</span> Job Portal</label>
                             <input type="text" class="form-control finput"  id="job_portal" name="job_portal"  required>                                   
                         </div>
                     </div>
@@ -192,6 +192,15 @@
                 swal({
                     type: 'error',
                     title: 'Last Name Required!',
+                    icon: 'error',
+                    confirmButtonColor: "#367fa9",
+                }); 
+                event.preventDefault(); // cancel default behavior
+                return false;
+            }else if($("#job_portal").val() === ""){
+                swal({
+                    type: 'error',
+                    title: 'Job Portal Required!',
                     icon: 'error',
                     confirmButtonColor: "#367fa9",
                 }); 

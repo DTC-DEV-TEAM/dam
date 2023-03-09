@@ -17,6 +17,7 @@ use Maatwebsite\Excel\Concerns\WithConditionalSheets;
 use DB;
 use CRUDBooster;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, WithValidation
 {
     /**
@@ -26,8 +27,21 @@ class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
      */
     public function collection(Collection $rows)
     {
+        $assoc_array = array();
         foreach ($rows->toArray() as $row){
-            $getStatus =  DB::table('statuses')->where(DB::raw('LOWER(TRIM(status_description))'), strtolower(trim($row['status'])))->value('id');
+            $getStatus =  DB::table('statuses')->where(DB::raw('LOWER(REPLACE(`status_description`," ",""))'), strtolower(str_replace(' ', '', $row['status'])))->value('id');
+            if($getStatus === 36){
+                $new_key = $row['erf_number'] . $row['status'];
+                // Presence of combination of company_code and clerk_code in the assoc_array indicates that
+                // there is duplicate entry in the Excel being imported. So, abort the process and report this to user.
+                if (array_key_exists($new_key, $assoc_array)) {
+                    return CRUDBooster::redirect(CRUDBooster::mainpath(),"Duplicate Jo in more than 1 Applicant not allowed!","danger");
+                }
+    
+                $assoc_array[$new_key] = $value;
+            }
+            
+       
             if($getStatus == 36){
                 $status = 31;
                 ErfHeaderRequest::where('reference_number',$row['erf_number'])
@@ -37,19 +51,28 @@ class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
             }else{
                 $status = $getStatus;
             }
-            Applicant::updateOrcreate([
-                'full_name' => strtolower(trim($row['first_name'])).''.strtolower(trim($row['last_name']))
+            $save = Applicant::updateOrcreate([
+                'full_name'   => strtolower(str_replace(' ', '', $row['first_name'])).''.strtolower(str_replace(' ', '', $row['last_name'])),
             ],
             [
                 'erf_number'  => $row['erf_number'],
                 'status'      => $status,
                 'first_name'  => $row['first_name'],
                 'last_name'   => $row['last_name'],
-                'full_name'   => strtolower(trim($row['first_name'])).''.strtolower(trim($row['last_name'])),
+                'full_name'   => strtolower(str_replace(' ', '', $row['first_name'])).''.strtolower(str_replace(' ', '', $row['last_name'])),
                 'screen_date' => Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['screen_date'])),
-                'created_by'  => CRUDBooster::myId(),
-                'updated_at'  => CRUDBooster::myId(),
+          
+                
             ]);
+            if ($save->wasRecentlyCreated) {
+                $save->created_by = CRUDBooster::myId();
+                $save->created_at = date('Y-m-d H:i:s');
+                $save->updated_at = NULL;
+            }else{
+                $save->updated_by = CRUDBooster::myId();
+                $save->updated_at = date('Y-m-d H:i:s');
+            }
+            $save->save();
         }
     }
 
@@ -57,11 +80,11 @@ class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
     {
         //Statuses
         $data['status_exist']['check'] = false;
-        $checkRowDb = DB::table('statuses')->select(DB::raw("LOWER(TRIM(status_description)) AS status"))->whereIn('id', [8,34,35,36])->get()->toArray();
+        $checkRowDb = DB::table('statuses')->select(DB::raw("LOWER(REPLACE(`status_description`,' ','')) AS status"))->whereIn('id', [8,34,35,36])->get()->toArray();
         $checkRowDbColumn = array_column($checkRowDb, 'status');
 
         if(!empty($data['status'])){
-            if(in_array(strtolower(trim($data['status'])), $checkRowDbColumn)){
+            if(in_array(strtolower(str_replace(' ', '', $data['status'])), $checkRowDbColumn)){
                 $data['status_exist']['check'] = true;
             }
         }else{
@@ -87,7 +110,7 @@ class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
           $checkRowDbColumnJoDone = array_column($checkRowDbJoDone, 'fullname');
 
           if(!empty($data['first_name']) && !empty($data['last_name'])){
-              if(in_array(strtolower(trim($data['first_name'])).''.strtolower(trim($data['last_name'])), $checkRowDbColumnJoDone)){
+              if(in_array(strtolower(str_replace(' ', '', $data['first_name'])).''.strtolower(str_replace(' ', '', $data['last_name'])), $checkRowDbColumnJoDone)){
                   $data['check_jo_done_exist']['check'] = true;
               }
           }else{
@@ -100,7 +123,7 @@ class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
            $checkRowDbColumnCancelled = array_column($checkRowDbCancelled, 'fullname');
  
            if(!empty($data['first_name']) && !empty($data['last_name'])){
-               if(in_array(strtolower(trim($data['first_name'])).''.strtolower(trim($data['last_name'])), $checkRowDbColumnCancelled)){
+               if(in_array(strtolower(str_replace(' ', '', $data['first_name'])).''.strtolower(str_replace(' ', '', $data['last_name'])), $checkRowDbColumnCancelled)){
                    $data['check_cancelled_exist']['check'] = true;
                }
            }else{
@@ -113,6 +136,8 @@ class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
     public function rules(): array
     {
         return [
+            '*.first_name'   => 'required',
+            '*.last_name'    => 'required',
             '*.status_exist' => function($attribute, $value, $onFailure) {
                 if ($value['check'] === false) {
                     $onFailure('Invalid Status! Please refer to valid status in system');
@@ -135,8 +160,6 @@ class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
             },
             '*.status'       => 'required',
             '*.erf_number'   => 'required',
-            '*.first_name'   => 'required',
-            '*.last_name'    => 'required',
             '*.screen_date'  => 'required',
         ];
     }

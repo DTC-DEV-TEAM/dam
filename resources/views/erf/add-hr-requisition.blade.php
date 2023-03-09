@@ -267,7 +267,7 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label><span style="color:red">*</span> QUALIFICATIONS</label>
-                            <textarea placeholder=" Qualifications ..." rows="3" class="form-control finput" name="qualifications"></textarea>
+                            <textarea placeholder=" Qualifications ..." rows="3" class="form-control finput" name="qualifications" id="qualifications"></textarea>
                         </div>
                     </div>
                 </div>
@@ -275,7 +275,7 @@
                     <div class="col-md-12">
                         <div class="form-group">
                             <label><span style="color:red">*</span> JOB DESCRIPTIONS</label>
-                            <textarea placeholder=" Job Descriptions ..." rows="3" class="form-control finput" name="job_descriptions"></textarea>
+                            <textarea placeholder=" Job Descriptions ..." rows="3" class="form-control finput" name="job_descriptions" id="job_descriptions"></textarea>
                         </div>
                     </div>
                 </div>
@@ -890,12 +890,28 @@
                 }); 
                 event.preventDefault(); // cancel default behavior
                 return false;
+        }else if($('#qualifications').val() === ""){
+            swal({
+                type: 'error',
+                title: 'Qualifications required!',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            });
+            event.preventDefault();
+        }else if($('#job_descriptions').val() === ""){
+            swal({
+                type: 'error',
+                title: 'Job Description required!',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            });
+            event.preventDefault();
         }else if($('#documents').val() === ""){
             swal({
                 type: 'error',
                 title: 'Upload file documents required!',
                 icon: 'error',
-                customClass: 'swal-wide'
+                confirmButtonColor: "#367fa9",
             });
             event.preventDefault();
         }
@@ -909,7 +925,46 @@
         //     event.preventDefault(); // cancel default behavior
         // }
         else{
-           
+
+            if($('#show_replacement_of').is(":visible")){
+                if($('#replacement_of')){
+                    swal({
+                        type: 'error',
+                        title: 'Replacement Of required!',
+                        icon: 'error',
+                        confirmButtonColor: "#367fa9",
+                    });
+                    event.preventDefault();
+                    return false;
+                }
+            }
+                
+            if($('#absorption_div').is(":visible")){
+                if($('#absorption').val() === ""){
+                    swal({
+                        type: 'error',
+                        title: 'Absorption required!',
+                        icon: 'error',
+                        confirmButtonColor: "#367fa9",
+                    });
+                    event.preventDefault();
+                    return false;
+                }
+            }
+
+            if($('#other_email_domain').is(":visible")){
+                if($('#other_email').val() === ""){
+                    swal({
+                        type: 'error',
+                        title: 'Other Email Domain required!',
+                        icon: 'error',
+                        confirmButtonColor: "#367fa9",
+                    });
+                    event.preventDefault();
+                    return false;
+                }
+            }
+            
              //header image validation
              for (var i = 0; i < $("#documents").get(0).files.length; ++i) {
                 var file1=$("#documents").get(0).files[i].name;
