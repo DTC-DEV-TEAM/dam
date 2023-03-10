@@ -266,15 +266,15 @@
 			$remarks      = $fields['remarks'];
 
 			//Jo Done
-			$checkRowDbJoDone = DB::table('applicant_table')->select(DB::raw("(full_name) AS fullname"))->where('status', 31)->get()->toArray();
+			$checkRowDbJoDone = DB::table('applicant_table')->select(DB::raw("(full_name) AS fullname"))->get()->toArray();
 			$checkRowDbColumnJoDone = array_column($checkRowDbJoDone, 'fullname');
 			//Cancelled
 			$checkRowDbCancelled = DB::table('applicant_table')->select(DB::raw("(full_name) AS fullname"))->where('status', 8)->get()->toArray();
 			$checkRowDbColumnCancelled = array_column($checkRowDbCancelled, 'fullname');
-		
-			if (in_array(strtolower(trim($first_name)).''.strtolower(trim($last_name)), $checkRowDbColumnJoDone)) {
+	
+			if (in_array(strtolower(str_replace(' ', '', trim($first_name))).''.strtolower(str_replace(' ', '', trim($last_name))), $checkRowDbColumnJoDone)) {
 				return CRUDBooster::redirect(CRUDBooster::mainpath("add-applicant"),"Applicant Already Exist!","danger");
-			}else if(in_array(strtolower(trim($first_name)).''.strtolower(trim($last_name)), $checkRowDbColumnCancelled)){
+			}else if(in_array(strtolower(str_replace(' ', '', trim($first_name))).''.strtolower(str_replace(' ', '', trim($last_name))), $checkRowDbColumnCancelled)){
 				return CRUDBooster::redirect(CRUDBooster::mainpath("add-applicant"),"Applicant Already Exist!/Cancelled","danger");
 			}else{
 				$postdata['status']      = 34;
@@ -284,7 +284,7 @@
 				$postdata['last_name']   = $last_name;
 				$postdata['job_portal']  = $job_portal;
 				$postdata['remarks']     = $remarks;
-				$postdata['full_name']   = strtolower(trim($postdata['first_name'])).''.strtolower(trim($postdata['last_name']));
+				$postdata['full_name']   = strtolower(str_replace(' ', '', trim($postdata['first_name']))).''.strtolower(str_replace(' ', '', trim($postdata['last_name'])));
 				$postdata['created_by']  = CRUDBooster::myId();
 
 			}

@@ -929,7 +929,7 @@
 			$saveContainerData = [];
 			foreach($finalDataofSplittingArray as $frKey => $frData){		
 				$saveContainerData['header_id'] = $frData['header_id'];
-				$saveContainerData['header_approval_id'] = $id;
+				//$saveContainerData['header_approval_id'] = $id;
 				$saveContainerData['item_id'] = $frData['item_id'];
 				$saveContainerData['statuses_id'] = 6;
 				$saveContainerData['location'] = $frData['location'];
@@ -1160,3 +1160,4 @@
 		}
 
 	}
+	?>

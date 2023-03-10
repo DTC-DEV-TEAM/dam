@@ -305,11 +305,11 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-			//if(CRUDBooster::isSuperadmin()){
+			if(CRUDBooster::isSuperadmin()){
 				$query->whereNull('erf_header_request.deleted_at')->orderBy('erf_header_request.status_id', 'DESC')->orderBy('erf_header_request.id', 'DESC');
-			//}else{
-				//$query->whereNull('erf_header_request.deleted_at')->whereIn('status_id',[29,30,31,32,33])->orderBy('erf_header_request.id', 'DESC');
-			//}
+			}else{
+				$query->whereNull('erf_header_request.deleted_at')->whereIn('status_id',[29,30,31,33])->orderBy('erf_header_request.id', 'DESC');
+			}
 	            
 	            
 	    }

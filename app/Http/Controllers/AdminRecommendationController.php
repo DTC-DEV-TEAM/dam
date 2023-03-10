@@ -384,7 +384,7 @@
 			$cont = (new static)->apiContext;
       
 			$dataLines = array();
-			$form_erf               = $fields['form_erf'];
+			$from_erf               = $fields['from_erf'];
 			$it_comments 			= $fields['it_comments'];
 			$item_id 				= $fields['item_id'];
 			$recommendation 		= $fields['recommendation'];
@@ -420,9 +420,8 @@
 				
 			}
 
-			if($form_erf !== ""){
+			if($from_erf !== NULL){
 				for($x=0; $x < count((array)$item_id); $x++) {
-
 					BodyRequest::where('id', $item_id[$x])
 					->update([
 						'digits_code' 		    => $reco_digits_code[$x],
