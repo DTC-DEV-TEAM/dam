@@ -308,7 +308,7 @@
 			if(CRUDBooster::isSuperadmin()){
 				$query->whereNull('erf_header_request.deleted_at')->orderBy('erf_header_request.status_id', 'DESC')->orderBy('erf_header_request.id', 'DESC');
 			}else{
-				$query->whereNull('erf_header_request.deleted_at')->whereIn('status_id',[29,30,31,33])->orderBy('erf_header_request.id', 'DESC');
+				$query->whereNull('erf_header_request.deleted_at')->whereIn('status_id',[13,29,30,31,33])->orderBy('erf_header_request.id', 'DESC');
 			}
 	            
 	            

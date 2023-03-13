@@ -233,6 +233,25 @@
                         </tr>
 
                         <tr>
+                        
+                            <td width="20%">
+                            
+                                <label><strong>Received By:<strong></label>
+                            </td>
+                            <td width="40%">
+                                <p></p>
+                            </td>
+                            <td width="20%">
+                            
+                                <label><strong>Received Date:<strong></label>
+                            </td>
+                            <td>
+                                <p></p>
+                            </td>
+
+                        </tr>
+
+                        <tr>
                         @if($Header->if_from_erf != null || $Header->if_from_erf != "")
                         <td width="20%"> <br>
                                <h3>____________________________</h3>
