@@ -192,6 +192,10 @@ Route::group(['middleware' => ['web']], function() {
     //reports
     //Route::get('/admin/reports/getIndex','AdminReportsController@getIndex')->name('get-report');
     //Route::get('/admin/get-reports/getIndex', [AdminReportsv2Controller::class, 'getIndex'])->name('get-report');
+
+    //location api
+    Route::post(config('crudbooster.ADMIN_PATH').'/get-location-data','AdminLocationsController@getLocationDataApi')->name('get-location-data');
+    Route::post(config('crudbooster.ADMIN_PATH').'/get-location-updated-data','AdminLocationsController@getLocationUpdatedDataApi')->name('get-location-updated-data');
     Route::get('/admin/clear-view', function() {
         Artisan::call('view:clear');
         return "View cache is cleared!";

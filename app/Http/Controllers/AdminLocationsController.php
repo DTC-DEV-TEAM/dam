@@ -4,6 +4,7 @@
 	use Request;
 	use DB;
 	use CRUDBooster;
+	use App\Models\Locations;
 
 	class AdminLocationsController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -137,7 +138,7 @@
 	        | 
 	        */
 	        $this->index_button = array();
-
+			$this->index_button[] = ["label"=>"Sync","icon"=>"fa fa-files-o","color"=>"success"];
 
 
 	        /* 
@@ -177,6 +178,65 @@
 					$('#location_name').keyup(function() {
 						this.value = this.value.toLocaleUpperCase();
 					});
+
+				setInterval(getLocationData, 60*60*1000);
+				function getLocationData(){
+					$.ajax({
+						type: 'POST',
+						url: '".route('get-location-data')."',
+						dataType: 'json',
+						data: {
+							'_token': $(\"#token\").val(),
+						},
+						success: function(response) {
+							if (response.status == \"success\") {
+								swal({
+									type: response.status,
+									title: response.message,
+								});
+								location.reload();
+								} else if (response.status == \"error\") {
+								swal({
+									type: response.status,
+									title: response.message,
+								});
+								}
+						},
+						error: function(e) {
+							console.log(e);
+						}
+					});
+				}
+                
+				//updated item master data
+				setInterval(getLocationUpdatedData, 10000);
+				function getLocationUpdatedData(){
+					$.ajax({
+						type: 'POST',
+						url: '".route('get-location-updated-data')."',
+						dataType: 'json',
+						data: {
+							'_token': $(\"#token\").val(),
+						},
+						success: function(response) {
+							if (response.status == \"success\") {
+								swal({
+									type: response.status,
+									title: response.message,
+								});
+								location.reload();
+								} else if (response.status == \"error\") {
+								swal({
+									type: response.status,
+									title: response.message,
+								});
+								}
+						},
+						error: function(e) {
+							console.log(e);
+						}
+					});
+				}
 					
 				});
 			";
@@ -354,9 +414,138 @@
 
 	    }
 
+		public function getLocationDataApi(Request $request) {
+			$secretKey = "f612d3c09aa2b628f210b896c888172a"; 
+            $uniqueString = time(); 
+            $userAgent = $_SERVER['HTTP_USER_AGENT']; 
+            $userAgent = $_SERVER['HTTP_USER_AGENT']; 
+            if($userAgent == '' || is_null($userAgent)){
+                $userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36';    
+            }
+            $xAuthorizationToken = md5( $secretKey . $uniqueString . $userAgent);
+            $xAuthorizationTime = $uniqueString;
+            $vars = [
+                "your_param"=>1
+            ];
+    
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL,"https://dprs.digitstrading.ph/public/api/location_created");
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+            curl_setopt($ch, CURLOPT_POST, FALSE);
+            curl_setopt($ch, CURLOPT_POSTFIELDS,null);
+            curl_setopt($ch, CURLOPT_HTTPGET, TRUE);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 300);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT , 30);
+    
+            $headers = [
+            'X-Authorization-Token: ' . $xAuthorizationToken,
+            'X-Authorization-Time: ' . $xAuthorizationTime,
+            'User-Agent: '.$userAgent
+            ];
+    
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            $server_output = curl_exec ($ch);
+            curl_close ($ch);
+    
+            $response = json_decode($server_output, true);
+            dd($response);
+            $data = [];
+            $count = 0;
+            if(!empty($response["data"])) {
+				foreach ($response["data"] as $key => $value) {
+					$count++;
+						DB::beginTransaction();
+						try {
+							Locations::updateOrcreate([
+								'coa_id'          => $value['coa_id'] 
+							],
+							[
+								'channels_id'     => $value['channels_id'],
+								'store_name'      => $value['store_name'],
+								'coa_id'          => $value['coa_id'],
+								'store_status'    => $value['store_status'],
+								'created_by'      => CRUDBooster::myId(),
+								'created_at'      => date('Y-m-d H:i:s'),
+							]);
+							DB::commit();
+						} catch (\Exception $e) {
+							\Log::debug($e);
+							DB::rollback();
+						}
+					
+				}
+            }
+            \Log::info('Location Create: executed! locations');
+		}
 
-
-	    //By the way, you can still create your own method in here... :) 
-
+		public function getLocationUpdatedData(Request $request) {
+			$secretKey = "f612d3c09aa2b628f210b896c888172a"; 
+            $uniqueString = time(); 
+            $userAgent = $_SERVER['HTTP_USER_AGENT']; 
+            $userAgent = $_SERVER['HTTP_USER_AGENT']; 
+            if($userAgent == '' || is_null($userAgent)){
+                $userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36';    
+            }
+            $xAuthorizationToken = md5( $secretKey . $uniqueString . $userAgent);
+            $xAuthorizationTime = $uniqueString;
+            $vars = [
+                "your_param"=>1
+            ];
+    
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL,"https://dprs.digitstrading.ph/public/api/location_updated");
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+            curl_setopt($ch, CURLOPT_POST, FALSE);
+            curl_setopt($ch, CURLOPT_POSTFIELDS,null);
+            curl_setopt($ch, CURLOPT_HTTPGET, TRUE);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 300);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT , 30);
+    
+            $headers = [
+            'X-Authorization-Token: ' . $xAuthorizationToken,
+            'X-Authorization-Time: ' . $xAuthorizationTime,
+            'User-Agent: '.$userAgent
+            ];
+    
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            $server_output = curl_exec ($ch);
+            curl_close ($ch);
+    
+            $response = json_decode($server_output, true);
+            dd($response);
+            $data = [];
+            $count = 0;
+            if(!empty($response["data"])) {
+				foreach ($response["data"] as $key => $value) {
+					$count++;
+						DB::beginTransaction();
+						try {
+							Locations::updateOrcreate([
+								'coa_id'          => $value['coa_id'] 
+							],
+							[
+								'channels_id'     => $value['channels_id'],
+								'store_name'      => $value['store_name'],
+								'coa_id'          => $value['coa_id'],
+								'store_status'    => $value['store_status'],
+								'created_by'      => CRUDBooster::myId(),
+								'created_at'      => date('Y-m-d H:i:s'),
+							]);
+							DB::commit();
+						} catch (\Exception $e) {
+							\Log::debug($e);
+							DB::rollback();
+						}
+					
+				}
+            }
+            \Log::info('Location Create: executed! locations');
+		}
 
 	}
