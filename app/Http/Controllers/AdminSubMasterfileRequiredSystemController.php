@@ -5,12 +5,8 @@
 	use DB;
 	use CRUDBooster;
 
-	class AdminSubMasterfileAllowWfhController extends \crocodicstudio\crudbooster\controllers\CBController {
-		public function __construct() {
-			// Register ENUM type
-			//$this->request = $request;
-			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
-		}
+	class AdminSubMasterfileRequiredSystemController extends \crocodicstudio\crudbooster\controllers\CBController {
+
 	    public function cbInit() {
 
 			# START CONFIGURATION DO NOT REMOVE THIS LINE
@@ -29,7 +25,7 @@
 			$this->button_filter = true;
 			$this->button_import = false;
 			$this->button_export = false;
-			$this->table = "sub_masterfile_allow_wfh";
+			$this->table = "sub_masterfile_required_system";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
@@ -37,7 +33,7 @@
 			$this->col[] = ["label"=>"Description","name"=>"description"];
 			$this->col[] = ["label"=>"Status","name"=>"status"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by", "join" => "cms_users,name"];
-			$this->col[] = ["label"=>"Created At","name"=>"created_at", "join" => "cms_users,name"];
+			$this->col[] = ["label"=>"Updated By","name"=>"updated_by", "join" => "cms_users,name"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
@@ -52,7 +48,8 @@
 			//$this->form = [];
 			//$this->form[] = ["label"=>"Description","name"=>"description","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
 			//$this->form[] = ["label"=>"Status","name"=>"status","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
+			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Updated By","name"=>"updated_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
 			# OLD END FORM
 
 			/* 

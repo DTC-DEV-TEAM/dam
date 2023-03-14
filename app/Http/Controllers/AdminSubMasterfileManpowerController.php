@@ -36,9 +36,9 @@
 			$this->col = [];
 			$this->col[] = ["label"=>"Description","name"=>"description"];
 			$this->col[] = ["label"=>"Status","name"=>"status"];
-			$this->col[] = ["label"=>"Created By","name"=>"created_by"];
+			$this->col[] = ["label"=>"Created By","name"=>"created_by", "join" => "cms_users,name"];
 			$this->col[] = ["label"=>"Updated By","name"=>"updated_by"];
-			$this->col[] = ["label"=>"Updated At","name"=>"updated_at"];
+			$this->col[] = ["label"=>"Updated At","name"=>"updated_at", "join" => "cms_users,name"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE

@@ -1836,10 +1836,11 @@
                     
 					if(in_array($arf_header->request_type_id, [1, 5])){
 						$email_info = 	DB::table('assets_inventory_body')->where('id', $inventory_id[$x])->first();
-						$mo_info = 		MoveOrder::where('inventory_id', $email_info->id)->first();
+						//$mo_info = 		MoveOrder::where('inventory_id', $email_info->id)->whereNull('return_flag')->first();
+						$mo_info = 		MoveOrder::where('id', $mo_id[$x])->whereNull('return_flag')->first();
 					}else{
 						$email_info = 	DB::table('assets')->where('id', $item_id[$x])->first();
-						$mo_info = 		MoveOrder::where('item_id', $email_info->id)->first();
+						$mo_info = 		MoveOrder::where('item_id', $email_info->id)->whereNull('return_flag')->first();
 					}
 					$category_id = 			DB::table('category')->where('id',	$email_info->category_id)->value('category_description');
 
