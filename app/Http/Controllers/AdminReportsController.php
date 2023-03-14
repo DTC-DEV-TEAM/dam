@@ -401,7 +401,7 @@
 			// //dd($returnTransfer);
 			// $data['finalData'] = array_merge($suppliesMarketing, $returnTransfer);
 
-			$data['categories'] = DB::table('requests')->whereIn('id', [1,2,3,5,6,7,8])->where('status', 'ACTIVE')
+			$data['categories'] = DB::table('requests')->whereIn('id', [1,5,6,7])->where('status', 'ACTIVE')
 													   ->orderby('request_name', 'asc')
 													   ->get();
 
@@ -502,6 +502,8 @@
 
 		public function getReports()
 		{
+			ini_set('memory_limit','-1');
+            ini_set('max_execution_time', 0);
 			$result_one = BodyRequest::arrayone();
 			$result_two = ReturnTransferAssets::arraytwo();
             $suppliesMarketing = [];
