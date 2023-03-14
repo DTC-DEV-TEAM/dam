@@ -7,6 +7,7 @@
 	use App\StatusMatrix;
 	use App\Models\ItemHeaderSourcing;
 	use App\Models\ItemBodySourcing;
+	use App\Models\ItemSourcingComments;
 	use App\HeaderRequest;
 	use App\BodyRequest;
 
@@ -143,7 +144,13 @@
 	        */
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
-				$this->index_button[] = ["label"=>"Request Item Sourcing","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-item-sourcing'),"color"=>"success"];
+				$this->index_button[] = ["label"=>"Supplies","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-item-sourcing-supplies'),"color"=>"success"];
+				$this->index_button[] = ["label"=>"FA","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-item-sourcing-fa'),"color"=>"success"];
+				$this->index_button[] = ["label"=>"IT","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-item-sourcing-it'),"color"=>"success"];
+				$this->index_button[] = ["label"=>"Services","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-item-sourcing-services'),"color"=>"success"];
+				$this->index_button[] = ["label"=>"Subscription","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-item-sourcing-subscription'),"color"=>"success"];
+				$this->index_button[] = ["label"=>"Mkt","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-item-sourcing-mkt'),"color"=>"success"];
+			
 			}
 
 
@@ -249,6 +256,7 @@
 	        */
 	        $this->load_css = array();
 	        $this->load_css[] = asset("datetimepicker/bootstrap-datetimepicker.min.css");
+			$this->load_css[] = asset("css/chatbox.css");
 	        
 	    }
 
@@ -352,7 +360,7 @@
 	        $fields = Request::all();
 
 			$dataLines = array();
-			$supplies_cost 		     = $fields['supplies_cost'];
+
 			$employee_name 		     = $fields['employee_name'];
 			$company_name 		     = $fields['company_name'];
 			$position 			     = $fields['position'];
@@ -360,16 +368,14 @@
 			$department 		     = $fields['department'];
 			$store_branch 		     = $fields['store_branch'];
 			$store_branch_id         = $fields['store_branch_id'];
-			$purpose 			     = $fields['purpose'];
-			$condition 			     = $fields['condition'];
+	
 			$quantity_total 	     = $fields['quantity_total'];
 			$cost_total 		     = $fields['cost_total'];
 			$total 				     = $fields['total'];
 			$request_type_id 	     = $fields['request_type_id'];
 			$requestor_comments      = $fields['requestor_comments'];
 			$suggested_supplier      = $fields['suggested_supplier'];
-			$application 		     = $fields['application'];
-			$application_others      = $fields['application_others'];
+
 			$count_header            = DB::table('item_sourcing_header')->count();
 			$header_ref              = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);			
 			$reference_number	     = "NIS-".$header_ref;
@@ -397,24 +403,14 @@
 				$postdata['store_branch'] 			= NULL;
 			}
 			
-			$postdata['purpose'] 					= $purpose;
-			$postdata['conditions'] 				= $condition;
 			$postdata['quantity_total'] 			= $quantity_total;
 			$postdata['cost_total'] 				= $cost_total;
 			$postdata['total'] 						= $total;
-			$postdata['requestor_comments'] 		= $requestor_comments;
-			$postdata['suggested_supplier'] 		= $suggested_supplier;
 			$postdata['created_by'] 				= CRUDBooster::myId();
 			$postdata['created_at'] 				= date('Y-m-d H:i:s');
 			$postdata['request_type_id']		 	= $request_type_id;
-			$postdata['privilege_id']		 		= CRUDBooster::myPrivilegeId();
 
-			if(!empty($application)){
-				$postdata['application'] 				= implode(", ",$application);
-
-				$postdata['application_others'] 		= $application_others;
-			}
-
+			
 	    }
 
 	    /* 
@@ -427,90 +423,62 @@
 	    public function hook_after_add($id) {        
 	        $fields = Request::all();
 			$dataLines = array();
-			$arf_header = DB::table('item_sourcing_header')->where(['created_by' => CRUDBooster::myId()])->orderBy('id','desc')->first();
-	
-			$supplies_cost 		= $fields['supplies_cost'];
+			$nis_header = DB::table('item_sourcing_header')->where(['created_by' => CRUDBooster::myId()])->orderBy('id','desc')->first();
+
 			$item_description 	= $fields['item_description'];
 			$category_id 		= $fields['category_id'];
 			$sub_category_id 	= $fields['sub_category_id'];
-			$app_id_others 		= $fields['app_id_others'];
+			$class_id 			= $fields['class_id'];
+			$sub_class_id 	    = $fields['sub_class_id'];
+			$brand 			    = $fields['brand'];
+			$model 		     	= $fields['model'];
+			$size 			    = $fields['size'];
+			$actual_color       = $fields['actual_color'];
 			$quantity 			= $fields['quantity'];
-			$image 				= $fields['image'];
-			$request_type_id 	= $fields['request_type_id'];
 			$budget 	        = $fields['budget'];
-			
-			$app_count = 2;
-
-         
-			for($x=0; $x < count((array)$item_description); $x++) {
-				$apps_array = array();
-				$app_no = 'app_id'.$app_count;
-				$app_id 			= $fields[$app_no];
-				for($xxx=0; $xxx < count((array)$app_id); $xxx++) {
-					array_push($apps_array,$app_id[$xxx]); 
-				}
+			$requestor_comments      = $fields['requestor_comments'];
+		 
 	
-				$app_count++;
+			ItemBodySourcing::Create([
+				'header_request_id' => $nis_header->id,
+				'item_description' 	=> $item_description,
+				'category_id' 		=> $category_id,
+				'sub_category_id' 	=> $sub_category_id,
+				'class_id' 	        => $class_id,
+				'sub_class_id' 	    => $sub_class_id,
+				'sub_category_id' 	=> $sub_category_id,
+				'brand' 	        => $brand,
+				'model' 	        => $model,
+				'size' 	            => $size,
+				'actual_color' 	    => $actual_color,
+				'quantity' 			=> $quantity,
+				'budget' 		    => $budget,
+				'created_at' 		=> date('Y-m-d H:i:s'),
+			]
+	
+			);
 
-				if(in_array(CRUDBooster::myPrivilegeId(), [4,11,12,14,15])){ 
-					if($category_id[$x] == "IT ASSETS"){
-						ItemHeaderSourcing::where('id', $arf_header->id)->update([
-							'to_reco'=> 1
-						]);
-						
-					}
-					
-				}
-
-				$dataLines[$x]['header_request_id'] = $arf_header->id;
-				$dataLines[$x]['digits_code'] 	    = $digits_code[$x];
-				$dataLines[$x]['item_description'] 	= $item_description[$x];
-				$dataLines[$x]['category_id'] 		= $category_id[$x];
-				$dataLines[$x]['sub_category_id'] 	= $sub_category_id[$x];
-				$dataLines[$x]['app_id'] 			= implode(", ",$apps_array);
-				$dataLines[$x]['app_id_others'] 	= $app_id_others[$x];
-				$dataLines[$x]['quantity'] 			= $quantity[$x];
-				$dataLines[$x]['unit_cost'] 		= $supplies_cost[$x];
-				$dataLines[$x]['budget'] 		    = $budget[$x];
-
-				if($request_type_id == 5){
-					$dataLines[$x]['to_reco'] = 0;
-					
-				}else{
-
-					if (str_contains($sub_category_id[$x], 'LAPTOP') || str_contains($sub_category_id[$x], 'DESKTOP')) {
-						$dataLines[$x]['to_reco'] = 1;
-					}else{
-						$dataLines[$x]['to_reco'] = 0;
-					}
-
-				}
-
-				if($category_id[$x] == "IT ASSETS"){
-					$dataLines[$x]['request_type_id'] = 1;
-					
-				}else if($category_id[$x] == "FIXED ASSETS"){
-					$dataLines[$x]['request_type_id'] = 5;
-				}else if($category_id[$x] == "SUPPLIES"){
-					$dataLines[$x]['request_type_id'] = 7;
-				}else{
-					$dataLines[$x]['request_type_id'] = 6;
-				}
-
-				$dataLines[$x]['created_at'] 		= date('Y-m-d H:i:s');
-				unset($apps_array);
+			if($requestor_comments){
+				ItemSourcingComments::Create(
+				    [
+					'item_header_id' => $nis_header->id,
+					'user_id'        => CRUDBooster::myId(),
+					'comments'       => $requestor_comments,
+					'created_at' 	 => date('Y-m-d H:i:s'),
+				    ]
+				);   
 			}
 
 			DB::beginTransaction();
 	
-			try {
-				ItemBodySourcing::insert($dataLines);
-				DB::commit();
-				//CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_pullout_data_success",['mps_reference'=>$pullout_header->reference]), 'success');
-			} catch (\Exception $e) {
-				DB::rollback();
-				CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_database_error",['database_error'=>$e]), 'danger');
-			}
+			// try {
+				
+			// 	DB::commit();
+			// 	//CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_pullout_data_success",['mps_reference'=>$pullout_header->reference]), 'success');
+			// } catch (\Exception $e) {
+			// 	DB::rollback();
+			// 	CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_database_error",['database_error'=>$e]), 'danger');
+			// }
 			
 			CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_add_success",['reference_number'=>$arf_header->reference_number]), 'success');
 
@@ -566,14 +534,15 @@
 
 	    }
         
-		public function getAddItemSourcing() {
+		//Supplies
+		public function getAddItemSourcingSupplies() {
 
 			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
 				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
 			}
 
 			$this->cbLoader();
-			$data['page_title'] = 'Create Item Sourcing Request';
+			$data['page_title'] = 'Create Supplies Item Sourcing';
 			$data['conditions'] = DB::table('condition_type')->where('status', 'ACTIVE')->get();
 			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
 			$data['stores'] = DB::table('stores')->where('status', 'ACTIVE')->get();
@@ -584,10 +553,7 @@
 										 ->leftjoin('departments', 'cms_users.department_id', '=', 'departments.id')
 										 ->select( 'cms_users.*', 'positions.position_description as position_description', 'departments.department_name as department_name')
 										 ->where('cms_users.id', $data['user']->id)->first();
-										 $data['categories'] = DB::table('category')->where('category_status', 'ACTIVE')->whereIn('id', [5,1,2,4])->orderby('category_description', 'asc')->get();
-			$data['sub_categories'] = DB::table('class')->where('class_status', 'ACTIVE')->where('category_id', 5)->orderby('class_description', 'asc')->get();
-			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();
-			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
+			$data['categories'] = DB::table('new_category')->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
 			$data['budget_range'] = DB::table('sub_masterfile_budget_range')->where('status', 'ACTIVE')->get();
 			$privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
 			$privileges_array = array();
@@ -909,6 +875,50 @@
 			CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Request has been cancelled successfully!"), 'success');
 		}
 
+
+		public function SubCategories(Request $request){
+			$data = Request::all();	
+			$id = $data['id'];
+			$categories = DB::table('new_category')->where('category_description', $id)->first();
+
+			$subcategories = DB::table('new_sub_category')
+							->select('new_sub_category.*')
+							->where('category_id', $id)
+							->where('sub_status', "ACTIVE")
+							->orderby('sub_category_description', 'ASC')->get();
+	
+			return($subcategories);
+		}
+
+		public function Class(Request $request){
+			$data = Request::all();	
+			$id = $data['id'];
+			$sub_categories = DB::table('new_sub_category')->where('sub_category_description', $id)->first();
+
+			$subcategories = DB::table('new_class')
+							->select('new_class.*')
+							->where('sub_category_id', $id)
+							->where('class_status', "ACTIVE")
+							->orderby('class_description', 'ASC')->get();
+	
+			return($subcategories);
+		}
+
+		public function SubClass(Request $request){
+			$data = Request::all();	
+			$id = $data['id'];
+			$class = DB::table('new_class')->where('class_description', $id)->first();
+
+			$subcategories = DB::table('new_sub_class')
+							->select('new_sub_class.*')
+							->where('class_id', $id)
+							->where('sub_class_status', "ACTIVE")
+							->orderby('sub_class_description', 'ASC')->get();
+	
+			return($subcategories);
+		}
+
 	}
+
 
 ?>

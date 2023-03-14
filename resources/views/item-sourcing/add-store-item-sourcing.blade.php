@@ -489,7 +489,7 @@
                         });
                 });
 
-                $('#category_id'+tableRow).change(function(){
+                $('#category_id').change(function(){
                 var category =  this.value;
                 var id_data = $(this).attr("data-id");
                 
@@ -508,8 +508,8 @@
                             var j = i + 1;
                             showData[j] = "<option value='"+result[i].class_description+"'>"+result[i].class_description+"</option>";
                         }
-                        $('#sub_category_id'+id_data).attr('disabled', false);
-                        jQuery('#sub_category_id'+id_data).html(showData);        
+                        $('#sub_category_id').attr('disabled', false);
+                        jQuery('#sub_category_id').html(showData);        
                     }
                 });
 
