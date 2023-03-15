@@ -8,6 +8,7 @@
 	use App\StatusMatrix;
 	use App\Models\ItemHeaderSourcing;
 	use App\Models\ItemBodySourcing;
+	use App\Models\ItemSourcingComments;
 	use App\Mail\Email;
 	use Mail;
 
@@ -224,7 +225,7 @@
 	        |
 	        */
 	        $this->load_css = array();
-	        
+	        $this->load_css[] = asset("css/chatbox.css");
 	        
 	    }
 
@@ -329,46 +330,14 @@
 
 			$arf_header = ItemHeaderSourcing::where(['id' => $id])->first();
 			$arf_body = ItemBodySourcing::where(['header_request_id' => $id])->get();
-            //dd($arf_header);
-			$email_recipients = array();
-			$reference_number = array();
-			$item_description = array();
-			$item_category = array();
-			$sub_category = array();
 
 			if($approval_action  == 1){
 				$postdata['status_id']		    = 37;
-				$postdata['approver_comments'] 	= $approver_comments;
 				$postdata['approved_by'] 		= CRUDBooster::myId();
 				$postdata['approved_at'] 		= date('Y-m-d H:i:s');
-
-				foreach($arf_body as $body_arf){
-					if($body_arf->category_id == "IT ASSETS"){
-						$postdata['to_reco'] 	= 1;
-					}
-					array_push($item_description, $body_arf->item_description);
-					array_push($item_category, $body_arf->category_id);
-					array_push($sub_category, $body_arf->sub_category_id);
-				}
-				$employee_name = DB::table('cms_users')->where('id', $arf_header->employee_name)->first();
-				$approver_name = DB::table('cms_users')->where('id', $employee_name->approver_id)->first();
-				$department_name = DB::table('departments')->where('id', $employee_name->department_id)->first();
-				//$purchasing = "purchasing@digits.ph";
-				$fhil = "fhilipacosta@digits.ph";
-
-				$infos['assign_to'] = $employee_name->bill_to;
-				$infos['reference_number'] = $arf_header->reference_number;
-				$infos['date_needed'] = $arf_header->date_needed;
-				$infos['suggested_supplier'] = $arf_header->suggested_supplier;
-				$infos['department'] = $department_name->department_name;
-				$infos['items'] = $arf_body;
-			
-				Mail::to($employee_name->email)
-						//->cc([$fhil,$approver_name->email])
-	                    ->send(new Email($infos));
+					
 			}else{
 				$postdata['status_id'] 			= 5;
-				$postdata['approver_comments'] 	= $approver_comments;
 				$postdata['approved_by'] 		= CRUDBooster::myId();
 				$postdata['rejected_at'] 		= date('Y-m-d H:i:s');
 
@@ -420,26 +389,18 @@
 
 			$data = array();
 			$data['page_title'] = 'Item Sourcing Detail';
-			$data['Header'] = ItemHeaderSourcing::
-				  leftjoin('request_type', 'item_sourcing_header.purpose', '=', 'request_type.id')
-				->leftjoin('condition_type', 'item_sourcing_header.conditions', '=', 'condition_type.id')
-				->leftjoin('cms_users as employees', 'item_sourcing_header.employee_name', '=', 'employees.id')
+			$data['Header'] = ItemHeaderSourcing::leftjoin('cms_users as employees', 'item_sourcing_header.employee_name', '=', 'employees.id')
 				->leftjoin('companies', 'item_sourcing_header.company_name', '=', 'companies.id')
 				->leftjoin('departments', 'item_sourcing_header.department', '=', 'departments.id')
 				->leftjoin('locations', 'employees.location_id', '=', 'locations.id')
 				->leftjoin('cms_users as requested', 'item_sourcing_header.created_by','=', 'requested.id')
 				->leftjoin('cms_users as approved', 'item_sourcing_header.approved_by','=', 'approved.id')
-				->leftjoin('cms_users as recommended', 'item_sourcing_header.recommended_by','=', 'recommended.id')
-				->leftjoin('cms_users as processed', 'item_sourcing_header.purchased2_by','=', 'processed.id')
-				->leftjoin('cms_users as picked', 'item_sourcing_header.picked_by','=', 'picked.id')
-				->leftjoin('cms_users as received', 'item_sourcing_header.received_by','=', 'received.id')
+				->leftjoin('cms_users as processed', 'item_sourcing_header.processed_by','=', 'processed.id')
 				->leftjoin('cms_users as closed', 'item_sourcing_header.closed_by','=', 'closed.id')
 				->select(
 						'item_sourcing_header.*',
 						'item_sourcing_header.id as requestid',
 						'item_sourcing_header.created_at as created',
-						'request_type.*',
-						'condition_type.*',
 						'requested.name as requestedby',
 						'employees.bill_to as employee_name',
 						'item_sourcing_header.employee_name as header_emp_name',
@@ -447,21 +408,33 @@
 						'departments.department_name as department',
 						'item_sourcing_header.store_branch as store_branch',
 						'approved.name as approvedby',
-						'recommended.name as recommendedby',
-						'picked.name as pickedby',
-						'received.name as receivedby',
 						'processed.name as processedby',
 						'closed.name as closedby',
 						'item_sourcing_header.created_at as created_at'
 						)
 				->where('item_sourcing_header.id', $id)->first();
 		
-			$data['Body'] = ItemBodySourcing::
-				select(
-				  'item_sourcing_body.*'
+			$data['Body'] = ItemBodySourcing::leftjoin('new_category', 'item_sourcing_body.category_id', '=', 'new_category.id')
+			    ->leftjoin('new_sub_category', 'item_sourcing_body.sub_category_id', '=', 'new_sub_category.id')
+				->leftjoin('new_class', 'item_sourcing_body.class_id', '=', 'new_class.id')
+				->leftjoin('new_sub_class', 'item_sourcing_body.sub_class_id', '=', 'new_sub_class.id')
+				->select(
+				  'item_sourcing_body.*',
+				  'new_category.*',
+				  'new_sub_category.*',
+				  'new_class.*',
+				  'new_sub_class.*',
 				)
 				->where('item_sourcing_body.header_request_id', $id)
 				->get();
+			$data['comments'] = ItemSourcingComments::
+				leftjoin('cms_users', 'item_sourcing_comments.user_id', '=', 'cms_users.id')
+				->select(
+					'item_sourcing_comments.*',
+					'cms_users.name'
+				  )
+				  ->where('item_sourcing_comments.item_header_id', $id)
+				  ->get();
 	
 			return $this->view("item-sourcing.item-sourcing-for-approval", $data);
 		}

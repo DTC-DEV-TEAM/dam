@@ -10,27 +10,30 @@
 	use App\Models\ItemSourcingComments;
 	use App\HeaderRequest;
 	use App\BodyRequest;
+	use App\Mail\Email;
+	use Mail;
 
 	class AdminItemSourcingHeaderController extends \crocodicstudio\crudbooster\controllers\CBController {
 		private $forApproval;
-		private $forQuotation;
-		private $closed;
-		private $rejected;
-		private $processing;
-		private $forItReco;
-		private $forTagging;
 		private $cancelled;
+		private $closed;
+		private $forDiscussion;
+		private $forSourcing;
+		private $forStreamlining;
+		private $forItemCreation;
+		private $forArfCreation;
 
 		public function __construct() {
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
-			$this->forApproval      =  1;        
-			$this->forQuotation     =  37;  
-			$this->closed           =  13;   
-			$this->rejected         =  5;
-			$this->processing       =  11;   
-			$this->forItReco        =  4;        
-			$this->forTagging       =  7;
+			$this->forApproval      =  1;    
 			$this->cancelled        =  8;
+			$this->closed           =  13;      
+			$this->forDiscussion    =  37;  
+			$this->forSourcing      =  38;
+			$this->forStreamlining  =  39;   
+			$this->forItemCreation  =  40;        
+			$this->forArfCreation   =  41;
+		
 		}
 	    public function cbInit() {
 
@@ -325,26 +328,33 @@
 	    |
 	    */    
 	    public function hook_row_index($column_index,&$column_value) {	        
-			$forApproval        = DB::table('statuses')->where('id', $this->forApproval)->value('status_description');        
-			$forQuotation       = DB::table('statuses')->where('id', $this->forQuotation)->value('status_description');  
-			$closed             = DB::table('statuses')->where('id', $this->closed)->value('status_description');
-			$rejected           = DB::table('statuses')->where('id', $this->rejected)->value('status_description');  
-			$processing         = DB::table('statuses')->where('id', $this->processing)->value('status_description');
-			$cancelled          = DB::table('statuses')->where('id', $this->cancelled)->value('status_description');  
+			$forApproval        = DB::table('statuses')->where('id', $this->forApproval)->value('status_description');     
+			$cancelled          = DB::table('statuses')->where('id', $this->cancelled)->value('status_description');   
+			$closed             = DB::table('statuses')->where('id', $this->closed)->value('status_description');  
+			$forDiscussion      = DB::table('statuses')->where('id', $this->forDiscussion)->value('status_description');  
+			$forSourcing        = DB::table('statuses')->where('id', $this->forSourcing)->value('status_description');  
+			$forStreamlining    = DB::table('statuses')->where('id', $this->forStreamlining)->value('status_description');
+			$forItemCreation    = DB::table('statuses')->where('id', $this->forItemCreation)->value('status_description');
+			$forArfCreation     = DB::table('statuses')->where('id', $this->forArfCreation)->value('status_description');
+		
 			
 			if($column_index == 1){
 				if($column_value == $forApproval){
 					$column_value = '<span class="label label-warning">'.$forApproval.'</span>';
-				}else if($column_value == $forQuotation){
-					$column_value = '<span class="label label-info">'.$forQuotation.'</span>';
+				}else if($column_value == $forDiscussion){
+					$column_value = '<span class="label label-info">'.$forDiscussion.'</span>';
 				}else if($column_value == $closed){
 					$column_value = '<span class="label label-success">'.$closed.'</span>';
-				}else if($column_value == $rejected){
-					$column_value = '<span class="label label-danger">'.$rejected.'</span>';
-				}else if($column_value == $processing){
-					$column_value = '<span class="label label-info">'.$processing.'</span>';
 				}else if($column_value == $cancelled){
 					$column_value = '<span class="label label-danger">'.$cancelled.'</span>';
+				}else if($column_value == $forStreamlining){
+					$column_value = '<span class="label label-info">'.$forStreamlining.'</span>';
+				}else if($column_value == $forSourcing){
+					$column_value = '<span class="label label-info">'.$forSourcing.'</span>';
+				}else if($column_value == $forItemCreation){
+					$column_value = '<span class="label label-info">'.$forItemCreation.'</span>';
+				}else if($column_value == $forArfCreation){
+					$column_value = '<span class="label label-info">'.$forArfCreation.'</span>';
 				}
 			}
 	    }
@@ -583,26 +593,18 @@
 
 			$data = array();
 			$data['page_title'] = 'Item Sourcing Detail';
-			$data['Header'] = ItemHeaderSourcing::
-				  leftjoin('request_type', 'item_sourcing_header.purpose', '=', 'request_type.id')
-				->leftjoin('condition_type', 'item_sourcing_header.conditions', '=', 'condition_type.id')
-				->leftjoin('cms_users as employees', 'item_sourcing_header.employee_name', '=', 'employees.id')
+			$data['Header'] = ItemHeaderSourcing::leftjoin('cms_users as employees', 'item_sourcing_header.employee_name', '=', 'employees.id')
 				->leftjoin('companies', 'item_sourcing_header.company_name', '=', 'companies.id')
 				->leftjoin('departments', 'item_sourcing_header.department', '=', 'departments.id')
 				->leftjoin('locations', 'employees.location_id', '=', 'locations.id')
 				->leftjoin('cms_users as requested', 'item_sourcing_header.created_by','=', 'requested.id')
 				->leftjoin('cms_users as approved', 'item_sourcing_header.approved_by','=', 'approved.id')
-				->leftjoin('cms_users as recommended', 'item_sourcing_header.recommended_by','=', 'recommended.id')
-				->leftjoin('cms_users as processed', 'item_sourcing_header.purchased2_by','=', 'processed.id')
-				->leftjoin('cms_users as picked', 'item_sourcing_header.picked_by','=', 'picked.id')
-				->leftjoin('cms_users as received', 'item_sourcing_header.received_by','=', 'received.id')
+				->leftjoin('cms_users as processed', 'item_sourcing_header.processed_by','=', 'processed.id')
 				->leftjoin('cms_users as closed', 'item_sourcing_header.closed_by','=', 'closed.id')
 				->select(
 						'item_sourcing_header.*',
 						'item_sourcing_header.id as requestid',
 						'item_sourcing_header.created_at as created',
-						'request_type.*',
-						'condition_type.*',
 						'requested.name as requestedby',
 						'employees.bill_to as employee_name',
 						'item_sourcing_header.employee_name as header_emp_name',
@@ -610,22 +612,35 @@
 						'departments.department_name as department',
 						'item_sourcing_header.store_branch as store_branch',
 						'approved.name as approvedby',
-						'recommended.name as recommendedby',
-						'picked.name as pickedby',
-						'received.name as receivedby',
 						'processed.name as processedby',
 						'closed.name as closedby',
 						'item_sourcing_header.created_at as created_at'
 						)
 				->where('item_sourcing_header.id', $id)->first();
 		
-			$data['Body'] = ItemBodySourcing::
-				select(
-				  'item_sourcing_body.*'
+			$data['Body'] = ItemBodySourcing::leftjoin('new_category', 'item_sourcing_body.category_id', '=', 'new_category.id')
+			    ->leftjoin('new_sub_category', 'item_sourcing_body.sub_category_id', '=', 'new_sub_category.id')
+				->leftjoin('new_class', 'item_sourcing_body.class_id', '=', 'new_class.id')
+				->leftjoin('new_sub_class', 'item_sourcing_body.sub_class_id', '=', 'new_sub_class.id')
+				->select(
+				  'item_sourcing_body.*',
+				  'item_sourcing_body.id as body_id',
+				  'new_category.*',
+				  'new_sub_category.*',
+				  'new_class.*',
+				  'new_sub_class.*',
 				)
 				->where('item_sourcing_body.header_request_id', $id)
 				->get();
-		  
+			$data['comments'] = ItemSourcingComments::
+				leftjoin('cms_users', 'item_sourcing_comments.user_id', '=', 'cms_users.id')
+				->select(
+					'item_sourcing_comments.*',
+					'cms_users.name'
+				  )
+				  ->where('item_sourcing_comments.item_header_id', $id)
+				  ->get();
+
 			return $this->view("item-sourcing.item-sourcing-detail", $data);
 		}
 
@@ -918,7 +933,78 @@
 			return($subcategories);
 		}
 
+		public function saveMessage(Request $request){
+            $fields   = Request::all();
+			$id       = $fields['header_id'];
+			$comments = $fields['message'];
+
+			$comment = new ItemSourcingComments();
+			
+			$comment->item_header_id = $id;
+			$comment->user_id = CRUDBooster::myId();
+			$comment->comments = $comments;
+			$comment->created_at = date('Y-m-d H:i:s');
+			$comment->save();
+
+			$item_sourcing_header = ItemHeaderSourcing::where(['id' => $id])->first();
+
+			$config['content'] = "Item Source Messages (".$item_sourcing_header->reference_number.")";
+			$config['to'] = $link = CRUDBooster::adminPath('item-sourcing-header/detail/'.$id.'');
+			$config['id_cms_users'] = [$item_sourcing_header->created_by, $item_sourcing_header->processed_by, $item_sourcing_header->approved_by]; //The Id of the user that is going to receive notification. This could be an array of id users [1,2,3,4,5]
+			CRUDBooster::sendNotification($config);
+
+			$data = array();
+			$data['status'] = 'error';
+			$data['message'] = $comment;
+			$data['comment_by'] = CRUDBooster::myName();
+			if(!empty($comment)){
+				$data['status'] = 'success';
+			}
+			return json_encode($data);
+		}
+
+		public function editItemSource(Request $request){
+			$fields           = Request::all();
+			$id               = $fields['id'];
+			$item_description = $fields['item_description'];
+			$brand            = $fields['brand'];
+			$model            = $fields['model'];
+			$size             = $fields['size'];
+			$actual_color     = $fields['actual_color'];
+			$quantity         = $fields['quantity'];
+			$header_id        = $fields['headerID'];
+     
+			ItemBodySourcing::where(['id' => $id])
+				->update([
+						'item_description'           => $item_description, 
+						'brand'                      => $brand,
+						'model'                      => $model,
+						'size'                       => $size,
+						'actual_color'               => $actual_color,
+						'quantity'                   => $quantity,
+						'updated_by'                 => CRUDBooster::myId(),
+						]);
+		    $item_source_header = ItemHeaderSourcing::where(['id' => $header_id])->first();
+			$employee_name = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
+			$approver_name = DB::table('cms_users')->where('id', $employee_name->approver_id)->first();
+			$department_name = DB::table('departments')->where('id', $employee_name->department_id)->first();
+			$fhil = "fhilipacosta@digits.ph";
+
+			$infos['assign_to'] = $employee_name->bill_to;
+			$infos['reference_number'] = $item_source_header->reference_number;
+			$infos['item_description'] = $item_description;
+			$infos['brand'] = $brand;
+			$infos['model'] = $model;
+			$infos['size'] = $size;
+			$infos['actual_color'] = $actual_color;
+			$infos['quantity'] = $quantity;
+		
+			Mail::to($employee_name->email)
+					//->cc([$fhil])
+					->send(new Email($infos));
+			$message = ['status'=>'success', 'message' => 'Update Successfully!'];
+			echo json_encode($message);
+		}
+
 	}
-
-
 ?>

@@ -129,11 +129,17 @@
                                     <table class="table table-bordered" id="item-sourcing">
                                         <tbody id="bodyTable">
                                             <tr class="tbl_header_color dynamicRows">
-                                                <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
-                                                <th width="9%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
-                                                <th width="15%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
-                                                <th width="15%" class="text-center">Budget</th> 
-                                                <th width="15%" class="text-center">Quantity</th> 
+                                                <th width="12%" class="text-center">Category</th> 
+                                                <th width="12%" class="text-center">Sub Category</th>
+                                                <th width="12%" class="text-center">Class</th> 
+                                                <th width="12%" class="text-center">Sub Class</th> 
+                                                <th width="12%" class="text-center">{{ trans('message.table.item_description') }}</th>   
+                                                <th width="7%" class="text-center">Brand</th> 
+                                                <th width="7%" class="text-center">Model</th>  
+                                                <th width="7%" class="text-center">Size</th> 
+                                                <th width="7%" class="text-center">Actual Color</th>     
+                                                <th width="2%" class="text-center">Quantity</th>                                                                                                                
+                                                <th width="10%" class="text-center">Budget</th>  
                                             </tr>
                                             <tr id="tr-table">
                                                 <?php   $tableRow = 1; ?>
@@ -142,26 +148,42 @@
                                                         <?php   $tableRow++; ?>
                                                                                             
                                                         <tr>
-                                                
+                                                            <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}" readonly>        
                                                             <td style="text-align:center" height="10">
-                                                                    <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}">                               
-                                                                    {{$rowresult->item_description}}
+                                                                {{$rowresult->category_description}}                               
                                                             </td>
                                                             <td style="text-align:center" height="10">
-                                                                    {{$rowresult->category_id}}
+                                                                {{$rowresult->sub_category_description}}                              
                                                             </td>
                                                             <td style="text-align:center" height="10">
-                                                                    {{$rowresult->sub_category_id}}
+                                                                {{$rowresult->class_description}}                               
                                                             </td>
-                                                            <td style="text-align:center" height="10" class="cost">
-                                                                    {{$rowresult->budget}}
+                                                            <td style="text-align:center" height="10">
+                                                                {{$rowresult->sub_class_description}}                               
+                                                            </td>
+                                                                                                
+                                                            <td style="text-align:center" height="10">                                                             
+                                                                {{$rowresult->item_description}} 
+                                                            </td>
+                                                            <td style="text-align:center" height="10">                                                             
+                                                                {{$rowresult->brand}} 
+                                                            </td>
+                                                            <td style="text-align:center" height="10">                                                             
+                                                                {{$rowresult->model}} 
+                                                            </td>
+                                                            <td style="text-align:center" height="10">                                                             
+                                                                {{$rowresult->size}} 
+                                                            </td>
+                                                            <td style="text-align:center" height="10">                                                             
+                                                                {{$rowresult->actual_color}}  
                                                             </td>
                                                             <td style="text-align:center" height="10" class="qty">
-                                                                    {{$rowresult->quantity}}
-                                                          
-                                                            </td>
-                                                              
-                                                      </tr>
+                                                                {{$rowresult->quantity}} 
+                                                            </td>     
+                                                            <td style="text-align:center" height="10" class="cost">
+                                                                    {{$rowresult->budget}}
+                                                            </td>                                                                                                           
+                                                        </tr>
                                                                                                                          
                                                     @endforeach     
                                                     
@@ -177,76 +199,20 @@
                 </div>
             </div>
 
-            @if( $Header->processedby != null )
-                <div class="row">
-                    <div class="col-md-6">
-                        <table style="width:100%">
-                            <tbody>
-                                <tr>
-                                    <th class="control-label col-md-2">{{ trans('message.form-label.po_number') }}:</th>
-                                    <td class="col-md-4">{{$Header->po_number}}</td>     
-                                </tr>
-
-                                <tr>
-                                    <th class="control-label col-md-2">{{ trans('message.form-label.po_date') }}:</th>
-                                    <td class="col-md-4">{{$Header->po_date}}</td>
-                                </tr>
-
-                                <tr>
-                                    <th class="control-label col-md-2">{{ trans('message.form-label.quote_date') }}:</th>
-                                    <td class="col-md-4">{{$Header->quote_date}}</td>
-                                </tr>
-                                @if( $Header->processedby != null )
-                                    <tr>
-                                        <th class="control-label col-md-2">{{ trans('message.form-label.processed_by') }}:</th>
-                                        <td class="col-md-4">{{$Header->processedby}} / {{$Header->purchased2_at}}</td>
-                                    </tr>
-                                @endif
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="col-md-6">
-                        <table style="width:100%">
-                            <tbody>
-                                @if($Header->ac_comments != null)
-                                    <tr>
-                                        <th class="control-label col-md-2">{{ trans('message.table.ac_comments') }}:</th>
-                                        <td class="col-md-4">{{$Header->ac_comments}}</td>
-                                    </tr>
-                                @endif
-                                @if( $Header->pickedby != null )
-                                    <tr>
-                                        <th class="control-label col-md-2">{{ trans('message.form-label.picked_by') }}:</th>
-                                        <td class="col-md-4">{{$Header->pickedby}} / {{$Header->picked_at}}</td>
-                                    </tr>
-                                @endif
-                                @if( $Header->receivedby != null )
-                                    <tr>
-                                        <th class="control-label col-md-2">{{ trans('message.form-label.received_by') }}:</th>
-                                        <td class="col-md-4">{{$Header->receivedby}} / {{$Header->received_at}}</td>
-                                    </tr>
-                                @endif
-                                @if( $Header->closedby != null )
-                                    <tr>
-                                        <th class="control-label col-md-2">{{ trans('message.form-label.closed_by') }}:</th>
-                                        <td class="col-md-4">{{$Header->closedby}} / {{$Header->closed_at}}</td>
-                                    </tr>
-                                @endif
-                            </tbody>
-                        </table>
-                    </div>
+           
+                    <div class="row">
+                    @include('item-sourcing.comments',['comments'=>$comments])
                 </div>
-            @endif
+          
             <hr>
-            <div class="row">
+            <!-- <div class="row">
                 <div class="col-md-12">
                     <div class="form-group">
                         <label> Additional Notes</label>
                         <textarea placeholder="Additional Notes ..." rows="3" class="form-control finput" name="additional_notess"></textarea>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
         
         <div class='panel-footer'>
@@ -264,8 +230,11 @@
 
 @endsection
 @push('bottom')
+<script src=”https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js”></script>  
 <script type="text/javascript">
-
+    $(function(){
+            $('body').addClass("sidebar-collapse");
+        });
     function preventBack() {
         window.history.forward();
     }
@@ -273,6 +242,52 @@
         null;
     };
     setTimeout("preventBack()", 0);
+    var token = $("#token").val();
+
+    $('.chat').scrollTop($('.chat')[0].scrollHeight);
+
+    //Chat
+    $('#btnChat').click(function() {
+        event.preventDefault();
+        var header_id = $('#headerID').val();
+        var message = $('#message').val();
+        if ($('#message').val() === "") {
+            swal({
+                type: 'error',
+                title: 'Message Required',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            }); 
+            event.preventDefault(); // cancel default behavior
+        }else{
+            $.ajax({
+                url: "{{ route('save-message') }}",
+                type: "POST",
+                dataType: 'json',
+
+                data: {
+                    "_token": token,
+                    "header_id" : header_id,
+                    "message": message,
+                },
+                success: function (data) {
+                    if (data.status == "success") {
+                        
+                        $('.new-body-comment').append('<strong style="margin-left:10px"> '+ data.comment_by + '</strong><span class="text-comment"> ' +
+                                            '<p><span class="comment">'+data.message.comments +'</span> </p>'+
+                                            '<p style="text-align:right; font-size:12px; font-style: italic; padding-right:5px;"> '+ new Date(data.message.created_at) +'</p></span>');
+                        $('#message').val('');
+                    }
+                }
+                 
+            });
+           
+        }
+       
+        
+    });
+
+    
 
     $('#btnApprove').click(function(event) {
         event.preventDefault();
@@ -347,7 +362,7 @@
         }
     }
     document.getElementById("item-sourcing").innerHTML +=
-    "<tr style='text-align:center'><td colspan=4><strong>TOTAL</strong></td><td><strong>" +
+    "<tr style='text-align:center'><td colspan=9><strong>TOTAL</strong></td><td><strong>" +
     
                          sumqty +
     "</strong></td></tr>";
