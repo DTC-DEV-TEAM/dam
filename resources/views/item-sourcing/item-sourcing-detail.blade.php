@@ -1,14 +1,24 @@
 @extends('crudbooster::admin_template')
     @push('head')
         <style type="text/css">   
-            table, th, td {
+           #other-detail th, td {
             border: 1px solid rgba(000, 0, 0, .5);
             padding: 8px;
-            border-radius: 5px 0 0 5px;
+
             }
+            #item-sourcing-options th, td {
+            border: 1px solid rgba(000, 0, 0, .5);
+            padding: 8px;
+            }
+        
             .finput {
                 border:none;
                 border-bottom: 1px solid rgba(18, 17, 17, 0.5);
+            }
+
+            .alink {
+                border:none;
+                /* border-bottom: 1px solid rgba(18, 17, 17, 0.5); */
             }
 
             input.finput:read-only {
@@ -26,7 +36,7 @@
             tr.strikeout td:before {
             content: " ";
             position: absolute;
-            top: 25%;
+            top: 50%;
             left: 0;
             border-bottom: 1px solid #111;
             width: 100%;
@@ -223,7 +233,71 @@
                 </div>
             </div>
 
-            <br><br>
+            <hr>
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <table class="table" id="item-sourcing-options">
+                        <tr>
+                            <th class="text-center">Option</th> 
+                            <th class="text-center">Vendor Name</th>
+                            <th class="text-center">Price</th> 
+                            <th class="text-center">File</th> 
+                            <th width="5%" class="text-center"><i class="fa fa-trash"></i></th>
+                        </tr>  
+                        <tbody id="bodyTable">
+                                                    
+                                <?php   $tableRow = 1; ?>
+                                @foreach($item_options as $res)
+                                <?php   $tableRow1++; ?>
+                                    @if($res->deleted_at != null || $res->deleted_at != "")
+                                      <tr class="strikeout" style="background-color: #dd4b39; color:#fff">                                    
+                                        <td style="text-align:center" height="10">
+                                            {{$res->options}}                               
+                                        </td>
+                                        <td style="text-align:center" height="10">
+                                            {{$res->vendor_name}}                               
+                                        </td>
+                                        <td style="text-align:center" height="10">
+                                            {{$res->price}}                               
+                                        </td>
+                                        <td style="text-align:center" height="10">
+                                            {{$res->file_name}}                              
+                                        </td>
+                                        
+                                            <td  style="text-align:center; color:white"><i class="fa fa-times-circle"></i></td>                               
+                                        
+                                    </tr>
+                                   @else
+                                    <tr id="tr-tableOption">                                    
+                                        <td style="text-align:center" height="10">
+                                            <input type="hidden"  class="form-control"  name="opt_id" id="opt_id"  required  value="{{$res->optId}}" readonly>  
+                                            {{$res->options}}                               
+                                        </td>
+                                        <td style="text-align:center" height="10">
+                                            {{$res->vendor_name}}                               
+                                        </td>
+                                        <td style="text-align:center" height="10">
+                                            {{$res->price}}                               
+                                        </td>
+                                        <td style="text-align:center" height="10">
+                                            <a  href='{{CRUDBooster::adminpath("item_sourcing_for_quotation/download/".$res->file_id)."?return_url=".urlencode(Request::fullUrl())}}' class="form-control alink">{{$res->file_name}}   <i style="color:#007bff" class="fa fa-download"></i></a>                             
+                                        </td>
+                                        <td>
+                                            <button id="deleteRow" name="removeRow" data-id="' + tableRow + '" class="btn btn-danger removeRow"><i class="glyphicon glyphicon-trash"></i></button>
+                                        
+                                        </td>
+                                    </tr>
+                                   @endif
+                                @endforeach                              
+                         
+                        
+                        </tbody>
+                    </table>
+                </div>   
+            </div>
+            <hr>
+
+            <br>
            
                 <div class="row">
                     @include('item-sourcing.comments',['comments'=>$comments])
@@ -234,7 +308,7 @@
         <div class='panel-footer'>
 
             <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.back') }}</a>
-            <button class="btn btn-success pull-right" type="button" id="btnSubmit"><i class="fa fa-plus-circle" ></i> Edit</button>
+            <button class="btn btn-primary pull-right" type="button" id="btnSubmit"><i class="fa fa-plus-circle" ></i> Edit</button>
         </div>
     </form>
 </div>
@@ -275,6 +349,17 @@
 
         $('#item-source-value-total').text(thousands_separators(total.toFixed(2)));
     }
+
+    // $(document).on('click', '.removeRow', function() {
+
+    // if ($('#asset-items tbody tr').length != 1) { //check if not the first row then delete the other rows
+    //     tableRow--;
+
+    //     $(this).closest('tr').remove();
+       
+    //     return false;
+    // }
+    // });
 
     //Chat
     $('#btnChat').click(function() {
@@ -348,10 +433,10 @@
                 
                 event.preventDefault();
                 if ($('#asset-items1 tbody tr').length != 1) { //check if not the first row then delete the other rows
-                var id_data = $(this).attr("data-id");    
-                $("#quantity_total").val(calculateTotalQuantity($("#quantity"+id_data).val()));
-                item_id = $("#ids"+id_data).val();
-                $("#bodyID").val(item_id);
+                // var id_data = $(this).attr("data-id");    
+           
+                // item_id = $("#ids"+id_data).val();
+                // $("#bodyID").val(item_id);
                 var data = $('#myform').serialize();
                 swal({
                     title: "Are you sure?",

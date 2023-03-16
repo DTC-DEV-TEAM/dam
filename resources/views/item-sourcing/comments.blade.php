@@ -16,6 +16,6 @@
             @endforeach                       
     </div>
     <div class="send">
-        <textarea class="form-control" placeholder="Message ..." name="message" id="message" style="width:100%"></textarea> <button type="button" class="btn btn-success" id="btnChat"><i class="fa fa-send icon-send"></i></button> 
+        <textarea class="form-control" placeholder="Message ..." name="message" id="message" style="width:100%"></textarea> <button type="button" class="btn btn-primary" id="btnChat"><i class="fa fa-send icon-send"></i></button> 
     </div> 
 </div>

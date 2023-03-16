@@ -8,6 +8,7 @@
 	use App\Models\ItemHeaderSourcing;
 	use App\Models\ItemBodySourcing;
 	use App\Models\ItemSourcingComments;
+	use App\Models\ItemSourcingOptions;
 	use App\HeaderRequest;
 	use App\BodyRequest;
 	use App\Mail\Email;
@@ -640,7 +641,16 @@
 				  )
 				  ->where('item_sourcing_comments.item_header_id', $id)
 				  ->get();
-
+		    $data['item_options'] = ItemSourcingOptions::
+			      leftjoin('item_sourcing_option_file', 'item_sourcing_options.id', '=', 'item_sourcing_option_file.opt_body_id')
+				  ->select(
+					  'item_sourcing_options.*',
+					  'item_sourcing_options.id as optId',
+					  'item_sourcing_option_file.file_name',
+					  'item_sourcing_option_file.id as file_id',
+					)
+					->where('item_sourcing_options.header_id', $id)
+					->get();
 			return $this->view("item-sourcing.item-sourcing-detail", $data);
 		}
 
@@ -837,37 +847,27 @@
 			
 		}
 
-		public function RemoveItemSource(Request $request)
-		{
+		public function RemoveItemSource(Request $request){
 	       
 			$data = 				Request::all();	
-			$headerID = 			$data['headerID'];
-			$bodyID = 				$data['bodyID'];
-			$quantity_total = 		$data['quantity_total']; 
-       
-			ItemHeaderSourcing::where('id', $headerID)
-			->update([
-				'quantity_total'=> 		$quantity_total
-			]);	
-
-
-			ItemBodySourcing::where('id', $bodyID)
+			$opt_id = 				$data['opt_id'];
+			ItemSourcingOptions::where('id', $opt_id)
 			->update([
 				'deleted_at'=> 		date('Y-m-d H:i:s'),
 				'deleted_by'=> 		CRUDBooster::myId()
 			]);	
 
-			$bodyCount = DB::table('item_sourcing_body')->where('header_request_id',$headerID)->whereNull('item_sourcing_body.deleted_at')->count();
+			// $bodyCount = DB::table('item_sourcing_body')->where('header_request_id',$headerID)->whereNull('item_sourcing_body.deleted_at')->count();
 
-			if($bodyCount == 0){
-			ItemHeaderSourcing::where('id', $headerID)
-				->update([
-					'status_id'=> 8,
-					'cancelled_by'=> CRUDBooster::myId(),
-					'cancelled_at'=> date('Y-m-d H:i:s')
-				]);	
+			// if($bodyCount == 0){
+			// ItemHeaderSourcing::where('id', $headerID)
+			// 	->update([
+			// 		'status_id'=> 8,
+			// 		'cancelled_by'=> CRUDBooster::myId(),
+			// 		'cancelled_at'=> date('Y-m-d H:i:s')
+			// 	]);	
 			
-			}
+			// }
 			$message = ['status'=>'success', 'message' => 'Cancelled Successfully!'];
 			echo json_encode($message);
 			

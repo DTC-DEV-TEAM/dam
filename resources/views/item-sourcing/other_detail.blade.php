@@ -1,6 +1,6 @@
 <div class="col-md-6">
     <h3 class="text-center">Other Details</h3>
-    <table style="width:100%">
+    <table style="width:100%" id="other-detail">
         <tbody>
         @if($Header->approvedby != null)
             @if($Header->rejected_at == null)
