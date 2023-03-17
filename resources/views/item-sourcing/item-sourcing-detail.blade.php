@@ -50,6 +50,11 @@
             /* Extra styling */
             td { width: 100px; }
             th { text-align: left; }
+
+            .modal .modal-body {
+                overflow-y: auto;
+                padding: 10px;
+            }
         </style>
     @endpush
 @section('content')
@@ -119,6 +124,12 @@
                 <div class="col-md-4">
                         <p>{{$Header->date_needed}}</p>
                 </div>
+                @if($versions->version != null)
+                    <label class="control-label col-md-2">Version:</label>
+                    <div class="col-md-4">
+                            <a type="button" value="{{$Header->requestid}}" id="getVersions">{{$versions->version}}</a>
+                    </div>
+                @endif
             </div>
 
             @if($Header->store_branch != null || $Header->store_branch != "")
@@ -241,7 +252,7 @@
                             <th class="text-center">Option</th> 
                             <th class="text-center">Vendor Name</th>
                             <th class="text-center">Price</th> 
-                            <th class="text-center">File</th> 
+                            <th class="text-center">Quotation</th> 
                             <th width="5%" class="text-center"><i class="fa fa-trash"></i></th>
                         </tr>  
                         <tbody id="bodyTable">
@@ -250,6 +261,7 @@
                                 @foreach($item_options as $res)
                                 <?php   $tableRow1++; ?>
                                     @if($res->deleted_at != null || $res->deleted_at != "")
+                                    <input type="hidden"  class="form-control"  name="opt_id" id="opt_id"  required  value="{{$res->optId}}" readonly>  
                                       <tr class="strikeout" style="background-color: #dd4b39; color:#fff">                                    
                                         <td style="text-align:center" height="10">
                                             {{$res->options}}                               
@@ -283,7 +295,7 @@
                                             <a  href='{{CRUDBooster::adminpath("item_sourcing_for_quotation/download/".$res->file_id)."?return_url=".urlencode(Request::fullUrl())}}' class="form-control alink">{{$res->file_name}}   <i style="color:#007bff" class="fa fa-download"></i></a>                             
                                         </td>
                                         <td>
-                                            <button id="deleteRow" name="removeRow" data-id="' + tableRow + '" class="btn btn-danger removeRow"><i class="glyphicon glyphicon-trash"></i></button>
+                                            <button id="deleteRow" name="removeRow" data-id="' + tableRow + '" class="btn btn-danger removeRow" value="{{$res->optId}}"><i class="glyphicon glyphicon-trash"></i></button>
                                         
                                         </td>
                                     </tr>
@@ -298,7 +310,7 @@
             <hr>
 
             <br>
-           
+
                 <div class="row">
                     @include('item-sourcing.comments',['comments'=>$comments])
                     @include('item-sourcing.other_detail',['Header'=>$Header])
@@ -312,6 +324,48 @@
         </div>
     </form>
 </div>
+            <!-- Modal Versions Details -->
+            <div class="modal fade modal" id="versionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                    <div class="modal-header">
+                   
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <h4 class="modal-title text-center" id="event-title">Edit Logs</h4>
+                        <div class="row" style="padding:20px">             
+                            <table class="table table-bordered overlay" style="overflow-x: scroll;">
+                                <thead>
+                                    <tr>
+                                        <th>From Description</th>
+                                        <th>To Description</th>
+                                        <th>From Brand</th>
+                                        <th>To Brand</th>
+                                        <th>From Model</th>
+                                        <th>To Model</th>
+                                        <th>From Size</th>
+                                        <th>To Size</th>
+                                        <th>From Actual Color</th>
+                                        <th>To Actual Color</th>
+                                        <th>From Quantity</th>
+                                        <th>To Quantity</th>
+                                        <th>Version</th>
+                                        <th>Update Date</th>
+                                        <th>Update By</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="appendVersions">
+                        
+                                </tbody>
+                            </table>                           
+                        </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                    </div>
+                </div>
+                </div>
 
 @endsection
 @push('bottom')
@@ -333,6 +387,7 @@
     
     $('.chat').scrollTop($('.chat')[0].scrollHeight);
     
+    
     function preventBack() {
         window.history.forward();
     }
@@ -350,19 +405,56 @@
         $('#item-source-value-total').text(thousands_separators(total.toFixed(2)));
     }
 
-    // $(document).on('click', '.removeRow', function() {
+    //GET VERSION
+    $('#getVersions').click(function(evennt) {
+        event.preventDefault();
+        var header_id = $('#headerID').val();
+        $.ajax({
+            url: "{{ route('get-versions') }}",
+            type: "GET",
+            dataType: 'json',
 
-    // if ($('#asset-items tbody tr').length != 1) { //check if not the first row then delete the other rows
-    //     tableRow--;
+            data: {
+                "_token": token,
+                "header_id" : header_id
+            },
+            success: function (data) {
+                $.each(data, function(i, item) {
+                    $('#appendVersions').append('<tr>'+
 
-    //     $(this).closest('tr').remove();
+                                                '<td>' + item.old_description + '</td>' +
+                                                '<td>' + item.new_description + '</td>' +
+                                                '<td>' + item.old_brand_value + '</td>' +
+                                                '<td>' + item.new_brand_value + '</td>' +
+                                                '<td>' + item.old_model_value + '</td>' +
+                                                '<td>' + item.new_model_value + '</td>' +
+                                                '<td>' + item.old_size_value + '</td>' +
+                                                '<td>' + item.new_size_value + '</td>' +
+                                                '<td>' + item.old_ac_value + '</td>' +
+                                                '<td>' + item.new_ac_value + '</td>' +
+                                                '<td>' + item.old_qty_value + '</td>' +
+                                                '<td>' + item.new_qty_value + '</td>' +
+                                                '<td>' + item.version + '</td>' +
+                                                '<td>' + item.updated_at + '</td>' +
+                                                '<td>' + item.name + '</td>' +
+
+                                                '</tr>');
+                });
+            }
+         
+        });
+        $('#versionModal').modal('show'); 
        
-    //     return false;
-    // }
-    // });
+    });
+
+    $("#message").keypress(function(event) {
+        if (event.which == '13') {
+            $('#btnChat').click();
+        }
+    });
 
     //Chat
-    $('#btnChat').click(function() {
+    $('#btnChat').click(function(event) {
         event.preventDefault();
         var header_id = $('#headerID').val();
         var message = $('#message').val();
@@ -378,15 +470,19 @@
             },
             success: function (data) {
                 if (data.status == "success") {
-                    $('.new-body-comment').append('<strong style="margin-left:10px"> '+ data.comment_by + '</strong><span class="text-comment"> ' +
+                    $('.body-comment').append('<span class="session-comment"> ' +
                                         '<p><span class="comment">'+data.message.comments +'</span> </p>'+
                                         '<p style="text-align:right; font-size:12px; font-style: italic; padding-right:5px;"> '+ new Date(data.message.created_at) +'</p></span>');
                     $('#message').val('');
                 }
+                var interval = setInterval(function() {
+                $('.chat').scrollTop($('.chat')[0].scrollHeight);
+                },200);
             }
-        });
-        
+        }); 
     });
+
+   
     
     $('#btnSubmit').click(function() {
         swal({
@@ -427,17 +523,19 @@
     });
 
     var tableRow = <?php echo json_encode($tableRow); ?>;
-
+    tableRow ++;
     $(document).ready(function() {
             $(document).on('click', '.removeRow', function() {
-                
+              
                 event.preventDefault();
+                var id_data = $(this).val();    
+   
                 if ($('#asset-items1 tbody tr').length != 1) { //check if not the first row then delete the other rows
-                // var id_data = $(this).attr("data-id");    
-           
+            
                 // item_id = $("#ids"+id_data).val();
                 // $("#bodyID").val(item_id);
                 var data = $('#myform').serialize();
+                var data_id = id_data;
                 swal({
                     title: "Are you sure?",
                     type: "warning",
@@ -451,7 +549,7 @@
                         ({ 
                             url:  '{{ url('admin/item-sourcing-header/RemoveItemSource') }}',
                             type: "GET",
-                            data: data,
+                            data: { opt_id: data_id},
                             dataType: 'json',
                             success: function(data){    
                                 if (data.status == "success") {

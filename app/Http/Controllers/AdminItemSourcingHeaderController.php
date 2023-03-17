@@ -9,6 +9,7 @@
 	use App\Models\ItemBodySourcing;
 	use App\Models\ItemSourcingComments;
 	use App\Models\ItemSourcingOptions;
+	use App\Models\ItemSourcingEditVersions;
 	use App\HeaderRequest;
 	use App\BodyRequest;
 	use App\Mail\Email;
@@ -236,6 +237,7 @@
 	        */
 	        $this->load_js = array();
 			$this->load_js[] = asset("datetimepicker/bootstrap-datetimepicker.min.js");
+			$this->load_js[] = asset("js/item_source/chat.js");
 	        
 	        
 	        /*
@@ -641,6 +643,7 @@
 				  )
 				  ->where('item_sourcing_comments.item_header_id', $id)
 				  ->get();
+
 		    $data['item_options'] = ItemSourcingOptions::
 			      leftjoin('item_sourcing_option_file', 'item_sourcing_options.id', '=', 'item_sourcing_option_file.opt_body_id')
 				  ->select(
@@ -651,206 +654,18 @@
 					)
 					->where('item_sourcing_options.header_id', $id)
 					->get();
+			$data['versions'] = DB::table('item_sourcing_edit_versions')->where('header_id', $id)->latest('created_at')->first();
+			$data['allOptions'] = DB::table('item_sourcing_options')->where('item_sourcing_options.header_id', $id)->count();
+
 			return $this->view("item-sourcing.item-sourcing-detail", $data);
 		}
 
-		public function createArf(Request $request){
-			$fields = Request::all();
-			
-		    $headerId        = $fields['header_id'];
-			$bodyIds         = $fields['body_ids'];
-			$request_type_id = array_unique($fields['request_type_id']);
-			$ids = implode(',',$bodyIds);
-			$bodyIdLists = array_map('intval',explode(",",$ids));
-			$item_sourcing_header = ItemHeaderSourcing::where(['id' => $headerId])->first();
-			$item_sourcing_body = ItemBodySourcing::whereIn('id',$bodyIdLists)->get();
-
-			$latestRequest = DB::table('header_request')->select('id')->orderBy('id','DESC')->first();
-			$latestRequestId = $latestRequest->id != NULL ? $latestRequest->id : 0;
-			
-			//add in arf heaader request table
-			$count_header       = DB::table('header_request')->count();
 		
-			$arfHeaderSave = [];
-			$arfHeaderContainer = [];
-			foreach($request_type_id as $arfHeadKey => $arfHeadVal){
-				if($arfHeadVal == 1){
-					$arfHeaderContainer['status_id']              = $this->forItReco;
-					$arfHeaderContainer['application'] 			  = $item_sourcing_header->application;
-					$arfHeaderContainer['application_others'] 	  = $item_sourcing_header->application_others;
-					$arfHeaderContainer['to_reco']                = 1;
-				}else{
-					$arfHeaderContainer['status_id']              = $this->forTagging;
-					$arfHeaderContainer['application'] 			  = NULL;
-					$arfHeaderContainer['application_others'] 	  = NULL;  
-					$arfHeaderContainer['to_reco']                = 0;
-				}
-				$arfHeaderContainer['reference_number']		      = "ARF-".str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);
-				$count_header ++;
-				$arfHeaderContainer['employee_name' ]		      = $item_sourcing_header->employee_name;
-				$arfHeaderContainer['company_name'] 			  = $item_sourcing_header->company_name;
-				$arfHeaderContainer['position'] 				  = $item_sourcing_header->position;
-				$arfHeaderContainer['department' ]				  = $item_sourcing_header->department;
-				$arfHeaderContainer['store_branch']		          = $item_sourcing_header->store_branch;
-				$arfHeaderContainer['purpose'] 				      = 2;
-				$arfHeaderContainer['conditions'] 				  = $item_sourcing_header->conditions;
-				$arfHeaderContainer['quantity_total'] 			  = $item_sourcing_header->quantity_total;
-				$arfHeaderContainer['cost_total'] 				  = $item_sourcing_header->cost_total;
-				$arfHeaderContainer['total'] 					  = $item_sourcing_header->total;
-				$arfHeaderContainer['requestor_comments'] 		  = $item_sourcing_header->requestor_comments;
-				$arfHeaderContainer['created_by'] 				  = CRUDBooster::myId();
-				$arfHeaderContainer['created_at'] 				  = date('Y-m-d H:i:s');
-				$arfHeaderContainer['approved_by'] 		          = $item_sourcing_header->approver_by;
-				$arfHeaderContainer['approved_at'] 		          = date('Y-m-d H:i:s');
-				$arfHeaderContainer['request_type_id']		 	  = $arfHeadVal;
-				$arfHeaderContainer['privilege_id']		 	      = NULL;
-				$arfHeaderContainer['if_from_item_source' ]		  = $item_sourcing_header->reference_number;
-			
-				$arfHeaderSave[] = $arfHeaderContainer;
-			}
-			HeaderRequest::insert($arfHeaderSave);
-			$itId = DB::table('header_request')->select('*')->where('id','>', $latestRequestId)->where('request_type_id',1)->first();
-			$faId = DB::table('header_request')->select('*')->where('id','>', $latestRequestId)->where('request_type_id',5)->first();
-			$SuppliesId = DB::table('header_request')->select('*')->where('id','>', $latestRequestId)->where('request_type_id',7)->first();
-			$MarketingId = DB::table('header_request')->select('*')->where('id','>', $latestRequestId)->where('request_type_id',6)->first();
-	
-			$resultArrforIT = [];
-			foreach($item_sourcing_body as $item){
-				if($item['request_type_id'] == 1){
-					for($i = 0; $i < $item['request_type_id']; $i++){
-						$t = $item;
-						$t['header_request_id'] = $itId->id;
-						$resultArrforIT[] = $t;
-					}
-				}
-			}
-
-			$resultArrforFA = [];
-			foreach($item_sourcing_body as $itemFa){
-				if($itemFa['request_type_id'] == 5){
-					for($x = 0; $x < $itemFa['request_type_id']; $x++){
-						$fa = $itemFa;
-						$fa['header_request_id'] = $faId->id;
-						$resultArrforFA[] = $fa;
-					}
-				}
-			}
-
-			$resultArrforSu = [];	
-			foreach($item_sourcing_body as $itemSu){
-				if($itemSu['request_type_id'] == 7){
-					for($s = 0; $s < $itemSu['request_type_id']; $s++){
-						$su = $itemSu;
-						$su['header_request_id'] = $SuppliesId->id;
-						$resultArrforSu[] = $su;
-					}
-				}
-			}
-
-			$resultArrforMarketing = [];	
-			foreach($item_sourcing_body as $itemMkt){
-				if($itemMkt['request_type_id'] == 6){
-					for($m = 0; $m < $itemMkt['request_type_id']; $m++){
-						$mkt = $itemMkt;
-						$mkt['header_request_id'] = $MarketingId->id;
-						$resultArrforMarketing[] = $mkt;
-					}
-				}
-			}
-
-
-			//save items in Body Request
-			$insertData = [];
-			$insertContainer = [];
-			foreach($item_sourcing_body as $key => $val){
-				$insertContainer['header_request_id']   = $val['header_request_id'];
-				$insertContainer['digits_code'] 	    = $val['digits_code'];
-				$insertContainer['item_description'] 	= $val['reco_item_description'];
-				$insertContainer['category_id'] 		= $val['category_id'];
-				$insertContainer['sub_category_id'] 	= $val['sub_category_id'];
-				$insertContainer['app_id'] 			    = NULL;
-				$insertContainer['app_id_others'] 	    = NULL;
-				$insertContainer['quantity'] 			= $val['quantity'];
-				$insertContainer['unit_cost'] 		    = NULL;
-				if($request_type_id == 5){
-					$insertContainer['to_reco'] = 0;
-				}else{
-					if (str_contains($val['sub_category_id'], 'LAPTOP') || str_contains($val['sub_category_id'], 'DESKTOP')) {
-						$insertContainer['to_reco'] = 1;
-					}else{
-						$insertContainer['to_reco'] = 0;
-					}
-				}
-				$insertContainer['created_at'] 		= date('Y-m-d H:i:s');
-				$insertData[] = $insertContainer;
-			}
-
-			//make array base on general quantity
-			$itAssets = [];
-			foreach($insertData as $itItem){
-				if($itItem['category_id'] == "IT ASSETS"){
-					for($i = 0; $i < $itItem['quantity']; $i++){
-						// make sure the quantity is now 1 and not the original > 1 value
-						$it = $itItem;
-						$it['quantity'] = 1;
-						$itAssets[] = $it;
-					}
-				}
-			}
-			$faAssets = [];
-			foreach($insertData as $faItem){
-				if($faItem['category_id'] == "FIXED ASSETS"){
-					for($j = 0; $j < $faItem['quantity']; $j++){
-						// make sure the quantity is now 1 and not the original > 1 value
-						$fa = $faItem;
-						$fa['quantity'] = 1;
-						$faAssets[] = $fa;
-					}
-				}
-			}
-
-			$suppAssets = [];
-			foreach($insertData as $suppItem){
-				if($suppItem['category_id'] == "SUPPLIES"){
-					// make sure the quantity is now 1 and not the original > 1 value
-					$sp = $suppItem;
-					$sp['quantity'] = $suppItem['quantity'];
-					$suppAssets[] = $sp;
-					
-				}
-			}
-
-			$mktAssets = [];
-			foreach($insertData as $mktItem){
-				if($mktItem['category_id'] == "MARKETING"){
-					// make sure the quantity is now 1 and not the original > 1 value
-					$mkt = $mktItem;
-					$mkt['quantity'] = $mktItem['quantity'];
-					$mktAssets[] = $mkt;
-					
-				}
-			}
-			$insertData = array_merge($itAssets, $faAssets,$suppAssets, $mktAssets);
-            
-			//update flag in item sourcing body
-			for ($i = 0; $i < count($bodyIds); $i++) {
-				ItemBodySourcing::where(['id' => $bodyIds[$i]])
-				   ->update([
-					       'if_arf_created'   => 1, 
-				           ]);
-			}
-
-			BodyRequest::insert($insertData);
-
-			$message = ['status'=>'success', 'message' => 'Created Successfully!'];
-			echo json_encode($message);
-			
-		}
-
 		public function RemoveItemSource(Request $request){
 	       
-			$data = 				Request::all();	
-			$opt_id = 				$data['opt_id'];
+			$data   = Request::all();	
+			$opt_id = $data['opt_id'];
+
 			ItemSourcingOptions::where('id', $opt_id)
 			->update([
 				'deleted_at'=> 		date('Y-m-d H:i:s'),
@@ -973,6 +788,34 @@
 			$actual_color     = $fields['actual_color'];
 			$quantity         = $fields['quantity'];
 			$header_id        = $fields['headerID'];
+ 
+			$item_source_body = ItemBodySourcing::where(['id' => $id])->first();
+			//dd($item_source_body, $id);
+			$countHeader = DB::table('item_sourcing_edit_versions')->where('item_sourcing_edit_versions.header_id', $id)->count();
+			$finalCountHead = ($countHeader + 1);
+
+			ItemSourcingEditVersions::Create(
+				[
+				'header_id'           => $header_id,
+				'body_id'             => $id,
+				'old_description'     => $item_source_body->item_description,
+				'new_description'     => $item_description,
+				'old_brand_value'     => $item_source_body->brand,
+				'new_brand_value'     => $brand,
+				'old_model_value'     => $item_source_body->model,
+				'new_model_value'     => $model,
+				'old_size_value'      => $item_source_body->size,
+				'new_size_value'      => $size,
+				'old_ac_value'        => $item_source_body->actual_color,
+				'new_ac_value'        => $actual_color,
+				'old_qty_value'       => $item_source_body->quantity,
+				'new_qty_value'       => $quantity,
+				'version'             => "Version"."-". $finalCountHead,
+				'updated_by'          => CRUDBooster::myId(),
+				'created_at' 	      => date('Y-m-d H:i:s'),
+				]
+			);  
+
      
 			ItemBodySourcing::where(['id' => $id])
 				->update([
@@ -999,12 +842,28 @@
 			$infos['actual_color'] = $actual_color;
 			$infos['quantity'] = $quantity;
 		
-			Mail::to($employee_name->email)
-					//->cc([$fhil])
-					->send(new Email($infos));
+			// Mail::to($employee_name->email)
+			// 		//->cc([$fhil])
+			// 		->send(new Email($infos));
 			$message = ['status'=>'success', 'message' => 'Update Successfully!'];
 			echo json_encode($message);
 		}
+
+		public function getVersions(Request $request){
+			$data = Request::all();	
+		
+			$id = $data['header_id'];
+
+			$versions = DB::table('item_sourcing_edit_versions')
+			                ->leftjoin('cms_users', 'item_sourcing_edit_versions.updated_by','=', 'cms_users.id')
+							->select('item_sourcing_edit_versions.*',
+							          'cms_users.*'
+							          )
+							->where('header_id', $id)
+							->get();
+			return($versions);
+		}
+
 
 	}
 ?>

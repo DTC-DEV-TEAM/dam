@@ -106,6 +106,8 @@
         <input type="hidden" value="{{$Header->requestid}}" name="headerID" id="headerID">
 
         <input type="hidden" value="{{$countOptions}}" name="countRow" id="countRow">
+        <input type="hidden" value="{{$allOptions}}" name="allcountOption" id="allcountOption">
+        
 
         <input type="hidden" value="" name="bodyID" id="bodyID">
 
@@ -293,7 +295,7 @@
                                 <th class="text-center">Option</th> 
                                 <th class="text-center">Vendor Name</th>
                                 <th class="text-center">Price</th> 
-                                <th class="text-center">File</th> 
+                                <th class="text-center">Quotation</th> 
                                 <th width="5%" class="text-center"><i class="fa fa-trash"></i></th>
                             </tr>       
                                 <?php   $tableRow = 1; ?>
@@ -423,7 +425,9 @@
     window.onunload = function() {
         null;
     };
+  
     $('.chat').scrollTop($('.chat')[0].scrollHeight);
+    
     $('#status').select2({})
     setTimeout("preventBack()", 0);
     var searchcount = <?php echo json_encode($tableRow); ?>;
@@ -478,9 +482,16 @@
         
     });
 
+    $("#message").keypress(function(event) {
+        if (event.which == '13') {
+            $('#btnChat').click();
+        }
+    });
+
     //Chat
     $('#btnChat').click(function() {
         event.preventDefault();
+       
         var header_id = $('#headerID').val();
         var message = $('#message').val();
         if ($('#message').val() === "") {
@@ -504,12 +515,14 @@
                 },
                 success: function (data) {
                     if (data.status == "success") {
-                        
-                        $('.new-body-comment').append('<strong style="margin-left:10px"> '+ data.comment_by + '</strong><span class="text-comment"> ' +
+                        $('.body-comment').append('<span class="session-comment"> ' +
                                             '<p><span class="comment">'+data.message.comments +'</span> </p>'+
                                             '<p style="text-align:right; font-size:12px; font-style: italic; padding-right:5px;"> '+ new Date(data.message.created_at) +'</p></span>');
                         $('#message').val('');
                     }
+                    var interval = setInterval(function() {
+                     $('.chat').scrollTop($('.chat')[0].scrollHeight);
+                    },200);
                 }
                  
             });
@@ -532,10 +545,67 @@
 
     //Add Row
     $("#add-Row").click(function() {
+        event.preventDefault();
+        var vendor_name = "";
+        var price = "";
         var count_fail = 0;
         tableRow++;
+
+        $('.vendor_name').each(function() {
+            vendor_name = $(this).val();
+            if (vendor_name == null) {
+                swal({  
+                    type: 'error',
+                    title: 'Please fill all Fields!',
+                    icon: 'error',
+                    confirmButtonColor: "#367fa9",
+                });
+                count_fail++;
+
+            } else if (vendor_name == "") {
+                swal({  
+                    type: 'error',
+                    title: 'Please fill all Fields!',
+                    icon: 'error',
+                    confirmButtonColor: "#367fa9",
+                });
+                count_fail++;
+
+            }else{
+                count_fail = 0;
+            }
+        });
+        $('.price').each(function() {
+            price = $(this).val();
+            if (price == null) {
+                swal({  
+                    type: 'error',
+                    title: 'Please fill all Fields!',
+                    icon: 'error',
+                    confirmButtonColor: "#367fa9",
+                });
+                count_fail++;
+
+            } else if (price == "") {
+                swal({  
+                    type: 'error',
+                    title: 'Please fill all Fields!',
+                    icon: 'error',
+                    confirmButtonColor: "#367fa9",
+                });
+                count_fail++;
+
+            }else{
+                count_fail = 0;
+            }
+        });
         var deleteRow = $('#countRow').val();
+        var allOptionsCount =  parseInt($('#allcountOption').val());
+       
         var rowCount = $('#item-sourcing-options tr').length - 1 - deleteRow;
+        
+        var rowCountOption = $('#item-sourcing-options tr').length - 2;
+        var finalOptCount = ((rowCountOption + 1));
     
         if(count_fail == 0){
             if(rowCount > 3){
@@ -548,15 +618,15 @@
                 '<tr>' +
 
                     '<td >' +
-                    '<input type="text" placeholder="Option..." onkeyup="this.value = this.value.toUpperCase();" class="form-control finput" data-id="' + tableRow + '" id="option' + tableRow + '"  name="option[]"  required maxlength="100" style="width:100%">' +
+                    '<input type="text" placeholder="Option..." onkeyup="this.value = this.value.toUpperCase();" class="form-control finput text-center" data-id="' + tableRow + '" id="option' + tableRow + '"  name="option[]" value="OPTION '+ finalOptCount +'"  required maxlength="100" style="width:100%" readonly>' +
                     '</td>' +  
 
                     '<td>' +
-                    '<input class="form-control finput" type="text" onkeyup="this.value = this.value.toUpperCase();" placeholder="Vendor Name..." name="vendor_name[]" id="vendor_name' + tableRow + '" data-id="' + tableRow  + '" style="width:100%">' + 
+                    '<input class="form-control text-center finput vendor_name" type="text" onkeyup="this.value = this.value.toUpperCase();" placeholder="Vendor Name..." name="vendor_name[]" id="vendor_name' + tableRow + '" data-id="' + tableRow  + '" style="width:100%">' + 
                     '</td>' +
 
                     '<td>' +
-                    '<input class="form-control text-center finput" type="text" placeholder="Price..." name="price[]" id="price' + tableRow + '" data-id="' + tableRow  + '"  max="9999999999" step="any" onkeypress="return event.charCode <= 57" style="width:100%">' +
+                    '<input class="form-control text-center finput price" type="text" placeholder="Price..." name="price[]" id="price' + tableRow + '" data-id="' + tableRow  + '"  max="9999999999" step="any" onkeypress="return event.charCode <= 57" style="width:100%">' +
                     '</td>' +
 
                     '<td>' +

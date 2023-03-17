@@ -27,15 +27,27 @@
     border:none;
     border-bottom: 1px solid rgba(18, 17, 17, 0.5);
     }
+    .session-comment{
+        display: block;
+        background: #3c8dbc;
+        color:white;
+        padding:5px;
+        border-radius: 20px;
+        box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+        margin-bottom:10px;
+        margin-left: 50%;
+    }
 
     .text-comment{
         display: block;
         background: #fff;
         padding:5px;
-        border-radius: 10px;
+        border-radius: 20px;
         box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
         margin-bottom:10px;
+        margin-right: 50%;
     }
+    
     .comment{
         margin-left:10px;
     }

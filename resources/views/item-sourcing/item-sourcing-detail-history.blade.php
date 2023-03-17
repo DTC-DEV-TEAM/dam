@@ -1,16 +1,23 @@
 @extends('crudbooster::admin_template')
     @push('head')
         <style type="text/css">   
-            table, th, td {
+             #other-detail th, td {
             border: 1px solid rgba(000, 0, 0, .5);
             padding: 8px;
-            border-radius: 5px 0 0 5px;
+
+            }
+            #item-sourcing-options th, td {
+            border: 1px solid rgba(000, 0, 0, .5);
+            padding: 8px;
             }
             .finput {
                 border:none;
                 border-bottom: 1px solid rgba(18, 17, 17, 0.5);
             }
-
+            .alink {
+                border:none;
+                /* border-bottom: 1px solid rgba(18, 17, 17, 0.5); */
+            }
             input.finput:read-only {
                 background-color: #fff;
             }
@@ -26,7 +33,7 @@
             tr.strikeout td:before {
             content: " ";
             position: absolute;
-            top: 25%;
+            top: 50%;
             left: 0;
             border-bottom: 1px solid #111;
             width: 100%;
@@ -225,7 +232,71 @@
                 </div>
             </div>
 
-            <br><br>
+            <hr>
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <table class="table" id="item-sourcing-options">
+                        <tr>
+                            <th class="text-center">Option</th> 
+                            <th class="text-center">Vendor Name</th>
+                            <th class="text-center">Price</th> 
+                            <th class="text-center">Quotation</th> 
+                            <th width="5%" class="text-center"><i class="fa fa-trash"></i></th>
+                        </tr>  
+                        <tbody id="bodyTable">
+                                                    
+                                <?php   $tableRow = 1; ?>
+                                @foreach($item_options as $res)
+                                <?php   $tableRow1++; ?>
+                                    @if($res->deleted_at != null || $res->deleted_at != "")
+                                      <tr class="strikeout" style="background-color: #dd4b39; color:#fff">                                    
+                                        <td style="text-align:center" height="10">
+                                            {{$res->options}}                               
+                                        </td>
+                                        <td style="text-align:center" height="10">
+                                            {{$res->vendor_name}}                               
+                                        </td>
+                                        <td style="text-align:center" height="10">
+                                            {{$res->price}}                               
+                                        </td>
+                                        <td style="text-align:center" height="10">
+                                            {{$res->file_name}}                              
+                                        </td>
+                                        
+                                            <td  style="text-align:center; color:white"><i class="fa fa-times-circle"></i></td>                               
+                                        
+                                    </tr>
+                                   @else
+                                    <tr id="tr-tableOption">                                    
+                                        <td style="text-align:center" height="10">
+                                            <input type="hidden"  class="form-control"  name="opt_id" id="opt_id"  required  value="{{$res->optId}}" readonly>  
+                                            {{$res->options}}                               
+                                        </td>
+                                        <td style="text-align:center" height="10">
+                                            {{$res->vendor_name}}                               
+                                        </td>
+                                        <td style="text-align:center" height="10">
+                                            {{$res->price}}                               
+                                        </td>
+                                        <td style="text-align:center" height="10">
+                                            <a  href='{{CRUDBooster::adminpath("item_sourcing_for_quotation/download/".$res->file_id)."?return_url=".urlencode(Request::fullUrl())}}' class="form-control alink">{{$res->file_name}}   <i style="color:#007bff" class="fa fa-download"></i></a>                             
+                                        </td>
+                                        <td>
+                                           
+                                        
+                                        </td>
+                                    </tr>
+                                   @endif
+                                @endforeach                              
+                         
+                        
+                        </tbody>
+                    </table>
+                </div>   
+            </div>
+            <hr>
+
+            <br>
            
             <div class="row">
                 @include('item-sourcing.comments',['comments'=>$comments])
@@ -286,12 +357,14 @@
                 },
                 success: function (data) {
                     if (data.status == "success") {
-                        
-                        $('.new-body-comment').append('<strong style="margin-left:10px"> '+ data.comment_by + '</strong><span class="text-comment"> ' +
+                        $('.body-comment').append('<span class="session-comment"> ' +
                                             '<p><span class="comment">'+data.message.comments +'</span> </p>'+
                                             '<p style="text-align:right; font-size:12px; font-style: italic; padding-right:5px;"> '+ new Date(data.message.created_at) +'</p></span>');
                         $('#message').val('');
                     }
+                    var interval = setInterval(function() {
+                        $('.chat').scrollTop($('.chat')[0].scrollHeight);
+                    },200);
                 }
                  
             });

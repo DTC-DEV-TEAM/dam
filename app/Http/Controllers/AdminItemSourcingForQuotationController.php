@@ -352,63 +352,73 @@
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
 	        $fields             = Request::all();
-			dd($fields);
+			// dd($fields);
 			$status             = $fields['status'];
+			$po_no              = $fields['po_no'];
 			$header_id          = $fields['headerID'];
 			$ids                = $fields['ids'];
 			$option             = $fields['option'];
 			$vendor_name        = $fields['vendor_name'];
 			$price              = $fields['price'];
 			$optionFile         = $fields['optionFile'];
+			$button_action      = $fields['button_action'];
 
-			ItemHeaderSourcing::where('id',$header_id)
-				->update([
-					'status_id'		 => $status
-				]);	
-			
-			if($option){
-				$latestOption = DB::table('item_sourcing_options')->select('id')->orderBy('id','DESC')->first();
-				$latestOptionId = $latestOption->id != NULL ? $latestOption->id : 0;
-				for($x=0; $x < count((array)$option); $x++) {		
-					$dataLines[$x]['header_id']         = $header_id;
-					$dataLines[$x]['options'] 	        = $option[$x];
-					$dataLines[$x]['vendor_name'] 		= $vendor_name[$x];
-					$dataLines[$x]['price'] 	        = $price[$x];
-					$dataLines[$x]['created_by']        = CRUDBooster::myId();
-					$dataLines[$x]['created_at'] 		= date('Y-m-d H:i:s');
-					
-				}
+			if($button_action == 1){
+				ItemHeaderSourcing::where('id',$header_id)
+					->update([
+						'status_id'		 => $status
+					]);	
+				
+				if($option){
+					$latestOption = DB::table('item_sourcing_options')->select('id')->orderBy('id','DESC')->first();
+					$latestOptionId = $latestOption->id != NULL ? $latestOption->id : 0;
+					for($x=0; $x < count((array)$option); $x++) {		
+						$dataLines[$x]['header_id']         = $header_id;
+						$dataLines[$x]['options'] 	        = $option[$x];
+						$dataLines[$x]['vendor_name'] 		= $vendor_name[$x];
+						$dataLines[$x]['price'] 	        = $price[$x];
+						$dataLines[$x]['created_by']        = CRUDBooster::myId();
+						$dataLines[$x]['created_at'] 		= date('Y-m-d H:i:s');
+						
+					}
 
-				ItemSourcingOptions::insert($dataLines);
-				$optId = DB::table('item_sourcing_options')->select('*')->where('id','>', $latestOptionId)->get();
+					ItemSourcingOptions::insert($dataLines);
+					$optId = DB::table('item_sourcing_options')->select('*')->where('id','>', $latestOptionId)->get();
 
-				$finalOptId = [];
-				foreach($optId as $optData){
-					array_push($finalOptId, $optData->id);
-				}
-				$item_sourcing_header = ItemHeaderSourcing::where(['id' => $header_id])->first();
-				$countHeader = DB::table('item_sourcing_options')->where('item_sourcing_options.header_id', $id)->count();
-				$finalCountHead = $countHeader;
-				$documents = [];
-				if (!empty($optionFile)) {
-					$counter = 0;
-					foreach($optionFile as $key => $file){
-						$counter++;
-						$name = $item_sourcing_header->reference_number .'-'. $finalCountHead .'-'. $file->getClientOriginalName();
-						$filename = $name;
-						$file->move('vendor/crudbooster/item_source',$filename);
-						$documents[]= $filename;
+					$finalOptId = [];
+					foreach($optId as $optData){
+						array_push($finalOptId, $optData->id);
+					}
+					$item_sourcing_header = ItemHeaderSourcing::where(['id' => $header_id])->first();
+					$countHeader = DB::table('item_sourcing_options')->where('item_sourcing_options.header_id', $id)->count();
+					$finalCountHead = $countHeader;
+					$documents = [];
+					if (!empty($optionFile)) {
+						$counter = 0;
+						foreach($optionFile as $key => $file){
+							$counter++;
+							$name = $item_sourcing_header->reference_number .'-'. $option[$key] .'.'.$file->getClientOriginalExtension();
+							$filename = $name;
+							$file->move('vendor/crudbooster/item_source',$filename);
+							$documents[]= $filename;
 
-						$header_documents = new ItemSourcingOptionsFile;
-						$header_documents->header_id 		    = $header_id;
-						$header_documents->opt_body_id          = $finalOptId[$key];
-						$header_documents->file_name 		    = $filename;
-						$header_documents->ext 		            = $file->getClientOriginalExtension();
-						$header_documents->created_by 		    = CRUDBooster::myId();
-						$header_documents->save();
+							$header_documents = new ItemSourcingOptionsFile;
+							$header_documents->header_id 		    = $header_id;
+							$header_documents->opt_body_id          = $finalOptId[$key];
+							$header_documents->file_name 		    = $filename;
+							$header_documents->ext 		            = $file->getClientOriginalExtension();
+							$header_documents->created_by 		    = CRUDBooster::myId();
+							$header_documents->save();
+						}
 					}
 				}
-		    }
+		    }else{
+				ItemHeaderSourcing::where('id',$header_id)
+					->update([
+						'status_id'		 => $status,
+						'po_number'      => $po_no
+					]);	
+			}
 
 			CRUDBooster::redirect(CRUDBooster::mainpath(), trans('Successfully Added!'), 'success');
 		    
@@ -524,6 +534,8 @@
 					->where('item_sourcing_options.header_id', $id)
 					->get();
 			$data['countOptions'] = DB::table('item_sourcing_options')->where('item_sourcing_options.header_id', $id)->whereNotNull('deleted_at')->count();
+			$data['version'] = DB::table('item_sourcing_edit_versions')->where('header_id', $id)->latest('created_at')->first();
+			$data['allOptions'] = DB::table('item_sourcing_options')->where('item_sourcing_options.header_id', $id)->count();
 
 			return $this->view("item-sourcing.item-sourcing-for-po", $data);
 		}
