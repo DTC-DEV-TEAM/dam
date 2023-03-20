@@ -264,7 +264,7 @@
                                             {{$res->vendor_name}}                               
                                         </td>
                                         <td style="text-align:center" height="10">
-                                            {{$res->price}}                               
+                                             {{number_format($res->price, 2, '.', ',')}}                               
                                         </td>
                                         <td style="text-align:center" height="10">
                                             {{$res->file_name}}                              
@@ -283,7 +283,7 @@
                                             {{$res->vendor_name}}                               
                                         </td>
                                         <td style="text-align:center" height="10">
-                                            {{$res->price}}                               
+                                             {{number_format($res->price, 2, '.', ',')}}                               
                                         </td>
                                         <td style="text-align:center" height="10">
                                             <a  href='{{CRUDBooster::adminpath("item_sourcing_for_quotation/download/".$res->file_id)."?return_url=".urlencode(Request::fullUrl())}}' class="form-control alink">{{$res->file_name}}   <i style="color:#007bff" class="fa fa-download"></i></a>                             

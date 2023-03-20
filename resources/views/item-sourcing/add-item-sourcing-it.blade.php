@@ -123,6 +123,8 @@
             dayViewHeaderFormat: "MMMM YYYY",
         });
 
+        $(".date").val('');
+
         $('#category_id').select2({});
         $('#sub_category_id').select2({});
         $('#class').select2({});

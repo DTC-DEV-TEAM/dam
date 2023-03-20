@@ -376,7 +376,7 @@
 						$dataLines[$x]['header_id']         = $header_id;
 						$dataLines[$x]['options'] 	        = $option[$x];
 						$dataLines[$x]['vendor_name'] 		= $vendor_name[$x];
-						$dataLines[$x]['price'] 	        = $price[$x];
+						$dataLines[$x]['price'] 	        = intval(str_replace(',', '', $price[$x]));
 						$dataLines[$x]['created_by']        = CRUDBooster::myId();
 						$dataLines[$x]['created_at'] 		= date('Y-m-d H:i:s');
 						

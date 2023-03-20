@@ -299,7 +299,7 @@
                                             {{$res->vendor_name}}                               
                                         </td>
                                         <td style="text-align:center" height="10">
-                                            {{$res->price}}                               
+                                            {{number_format($res->price, 2, '.', ',')}}                             
                                         </td>
                                         <td style="text-align:center" height="10">
                                             {{$res->file_name}}                               
@@ -318,7 +318,7 @@
                                             {{$res->vendor_name}}                               
                                         </td>
                                         <td style="text-align:center" height="10">
-                                            {{$res->price}}                               
+                                            {{number_format($res->price, 2, '.', ',')}}                               
                                         </td>
                                         <td style="text-align:center" height="10">
                                             <a  href='{{CRUDBooster::adminpath("item_sourcing_for_quotation/download/".$res->file_id)."?return_url=".urlencode(Request::fullUrl())}}' class="form-control alink">{{$res->file_name}}   <i style="color:#007bff" class="fa fa-download"></i></a>                             
@@ -443,32 +443,7 @@
             $('#qoute_date'+countrow).keyup(function() {
                     this.value = this.value.toLocaleUpperCase();
             });
-             //cost fields validation
-             $(document).on("keyup","#value"+countrow, function (e) {
-                if (e.which >= 37 && e.which <= 40) return;
-                        if (this.value.charAt(0) == ".") {
-                            this.value = this.value.replace(
-                            /\.(.*?)(\.+)/,
-                            function (match, g1, g2) {
-                                return "." + g1;
-                            }
-                            );
-                        }
-                        if (e.key == "." && this.value.split(".").length > 2) {
-                            this.value =
-                            this.value.replace(/([\d,]+)([\.]+.+)/, "$1") +
-                            "." +
-                            this.value.replace(/([\d,]+)([\.]+.+)/, "$2").replace(/\./g, "");
-                            return;
-                        }
-                    $(this).val(function (index, value) {
-                        value = value.replace(/[^-0-9.]+/g, "");
-                        let parts = value.toString().split(".");
-                        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                        return parts.join(".");
-                    });
-            });  
-            
+               
         }
         
     });
@@ -766,6 +741,32 @@
         }
      }
     });
+
+      //cost fields validation
+      $(document).on("keyup",".price", function (e) {
+        if (e.which >= 37 && e.which <= 40) return;
+                if (this.value.charAt(0) == ".") {
+                    this.value = this.value.replace(
+                    /\.(.*?)(\.+)/,
+                    function (match, g1, g2) {
+                        return "." + g1;
+                    }
+                    );
+                }
+                if (e.key == "." && this.value.split(".").length > 2) {
+                    this.value =
+                    this.value.replace(/([\d,]+)([\.]+.+)/, "$1") +
+                    "." +
+                    this.value.replace(/([\d,]+)([\.]+.+)/, "$2").replace(/\./g, "");
+                    return;
+                }
+            $(this).val(function (index, value) {
+                value = value.replace(/[^-0-9.]+/g, "");
+                let parts = value.toString().split(".");
+                parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                return parts.join(".");
+            });
+    });  
 
     //deleteRow
     $(document).on('click', '.removeRow', function() {

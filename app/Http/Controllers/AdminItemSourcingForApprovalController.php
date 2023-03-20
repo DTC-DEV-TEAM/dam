@@ -393,6 +393,7 @@
 			$data['Header']     = ItemHeaderSourcing::header($id);
 			$data['Body']       = ItemBodySourcing::body($id);
 			$data['comments']   = ItemSourcingComments::comments($id);
+			$data['versions']     = DB::table('item_sourcing_edit_versions')->where('header_id', $id)->latest('created_at')->first();
 	
 			return $this->view("item-sourcing.item-sourcing-for-approval", $data);
 		}

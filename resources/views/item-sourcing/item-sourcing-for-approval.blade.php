@@ -84,6 +84,12 @@
                 <div class="col-md-4">
                         <p>{{$Header->date_needed}}</p>
                 </div>
+                @if($versions->version != null)
+                    <label class="control-label col-md-2">Version:</label>
+                    <div class="col-md-4">
+                            <a type="button" value="{{$Header->requestid}}" id="getVersions"><strong>{{$versions->version}}</strong></a>
+                    </div>
+                @endif
             </div>
 
             @if(CRUDBooster::myPrivilegeId() == 8 || CRUDBooster::isSuperadmin())
@@ -94,27 +100,6 @@
                     </div>
                 </div>
             @endif
-
-            @if($Header->requestor_comments != null || $Header->requestor_comments != "")
-                <hr/>
-                <div class="row">                           
-                    <label class="control-label col-md-2">{{ trans('message.table.requestor_comments') }}:</label>
-                    <div class="col-md-10">
-                            <p>{{$Header->requestor_comments}}</p>
-                    </div>
-                </div>
-            @endif  
-
-            
-            @if($Header->suggested_supplier != null || $Header->suggested_supplier != "")
-                <hr/>
-                <div class="row">                           
-                    <label class="control-label col-md-2">Suggested Supplier:</label>
-                    <div class="col-md-10">
-                            <p>{{$Header->suggested_supplier}}</p>
-                    </div>
-                </div>
-            @endif  
 
             <hr/>                
             <div class="row">
@@ -223,10 +208,10 @@
         </div>
 
     </form>
-
-
-
 </div>
+
+            {{-- Modal Edi Version --}}
+            @include('item-sourcing.modal-edit-version')
 
 @endsection
 @push('bottom')
@@ -284,9 +269,114 @@
                  
             });
            
-        }
+        }  
+    });
+
+    //GET VERSION
+    $('#getVersions').click(function(evennt) {
+        event.preventDefault();
+        var header_id = $('#headerID').val();
+        $.ajax({
+            url: "{{ route('get-versions') }}",
+            type: "GET",
+            dataType: 'json',
+
+            data: {
+                "_token": token,
+                "header_id" : header_id
+            },
+            success: function (data) {
+                $.each(data, function(i, item) {
+                    $('#appendVersions').append(
+                '<tr>' +
+                    '<tr>' +
+            
+                        '<td colspan="4" style="background-color:#3c8dbc; color:white; font-weight:bold">' + item.version + '</td>' +
+                    '</tr>' +
+
+                    '<tr>' +
+                        '<th style="padding-top:25px" rowspan="2">Description</th>' +
+                        '<th colspan="2">' + 'From' + '</th>' +
+                        '<th colspan="2">' + 'To' + '</th>' +
+                    '</tr>' +
+
+                    '<tr>'  +
+                        '<td colspan="2">' + item.old_description + '</td>' +
+                        '<td colspan="2">' + item.new_description + '</td>' +
+                    '</tr>' +
+
+                    '<tr>' +
+                        '<th style="padding-top:25px" rowspan="2">Brand</th>' +
+                        '<th colspan="2">' + 'From' + '</th>' +
+                        '<th colspan="2">' + 'To' + '</th>' +
+                    '</tr>' +
+                    '<tr>'  +
+                        '<td colspan="2">' + item.old_brand_value + '</td>' +
+                        '<td colspan="2">' + item.new_brand_value + '</td>' +
+                    '</tr>' +
+
+                    
+                    '<tr>' +
+                        '<th style="padding-top:25px" rowspan="2">Model</th>' +
+                        '<th colspan="2">' + 'From' + '</th>' +
+                        '<th colspan="2">' + 'To' + '</th>' +
+                    '</tr>' +
+                    '<tr>'  +
+                        '<td colspan="2">' + item.old_model_value + '</td>' +
+                        '<td colspan="2">' + item.new_model_value + '</td>' +
+                    '</tr>' +
+
+                    '<tr>' +
+                        '<th style="padding-top:25px" rowspan="2">Size</th>' +
+                        '<th colspan="2">' + 'From' + '</th>' +
+                        '<th colspan="2">' + 'To' + '</th>' +
+                    '</tr>' +
+                    '<tr>'  +
+                        '<td colspan="2">' + item.old_size_value + '</td>' +
+                        '<td colspan="2">' + item.new_size_value + '</td>' +
+                    '</tr>' +
+
+                    
+                    '<tr>' +
+                        '<th style="padding-top:25px" rowspan="2">Actual Color</th>' +
+                        '<th colspan="2">' + 'From' + '</th>' +
+                        '<th colspan="2">' + 'To' + '</th>' +
+                    '</tr>' +
+                    '<tr>'  +
+                        '<td colspan="2">' + item.old_ac_value + '</td>' +
+                        '<td colspan="2">' + item.new_ac_value + '</td>' +
+                    '</tr>' +
+
+                    '<tr>' +
+                        '<th style="padding-top:25px" rowspan="2">Quantity</th>' +
+                        '<th colspan="2">' + 'From' + '</th>' +
+                        '<th colspan="2">' + 'To' + '</th>' +
+                    '</tr>' +
+                    '<tr>'  +
+                        '<td colspan="2">' + item.old_qty_value + '</td>' +
+                        '<td colspan="2">' + item.new_qty_value + '</td>' +
+                    '</tr>' +
+
+                    '<tr>' +
+                        '<th>Updated Date</th>' +
+                        '<td colspan="3">' + item.updated_at + '</td>' +
+                    '</tr>' +
+
+                    '<tr>' +
+                        '<th>Updated By</th>' +
+                        '<td colspan="3">' + item.name + '</td>' +
+                    '</tr>' +
+                '</tr>'
+                    );
+                });
+            }
+         
+        });
+        $('#versionModal').modal('show'); 
        
-        
+    });
+    $('#versionModal').on('hidden.bs.modal', function () {
+      location.reload();
     });
 
     
