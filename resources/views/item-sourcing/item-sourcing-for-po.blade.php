@@ -2,12 +2,12 @@
     @push('head')
         <style type="text/css">   
             #other-detail th, td {
-            border: 1px solid rgba(000, 0, 0, .5);
-            padding: 8px;
+                border: 1px solid rgba(000, 0, 0, .5);
+                padding: 8px;
             }
             #item-sourcing-options th, td {
-            border: 1px solid rgba(000, 0, 0, .5);
-            padding: 8px;
+                border: 1px solid rgba(000, 0, 0, .5);
+                padding: 8px;
             }
          
             .finput {
@@ -33,11 +33,11 @@
                 border:none;
                 background-color: #fff;
             }
-            .icon{
+            .iconPlus{
                 background-color: #3c8dbc: 
             }
             
-            .icon:before {
+            .iconPlus:before {
                 content: '';
                 display: flex;
                 justify-content: center;
@@ -175,7 +175,7 @@
                     </select>
                 </div>
             </div>
-
+           
             @if($Header->store_branch != null || $Header->store_branch != "")
                 <div class="row">                           
                     <label class="control-label col-md-2">{{ trans('message.form-label.store_branch') }}:</label>
@@ -185,26 +185,15 @@
                 </div>
             @endif
 
-            @if($Header->requestor_comments != null || $Header->requestor_comments != "")
-                <hr/>
-                <div class="row">                           
-                    <label class="control-label col-md-2">{{ trans('message.table.requestor_comments') }}:</label>
-                    <div class="col-md-10">
-                            <p>{{$Header->requestor_comments}}</p>
+            <div class="row">
+                @if($versions->version != null)
+                    <label class="control-label col-md-2">Version:</label>
+                    <div class="col-md-4">
+                            <a type="button" value="{{$Header->requestid}}" id="getVersions"><strong>{{$versions->version}}</strong></a>
                     </div>
-                </div>
-            @endif  
-
-            
-            @if($Header->suggested_supplier != null || $Header->suggested_supplier != "")
-                <hr/>
-                <div class="row">                           
-                    <label class="control-label col-md-2">Suggested Supplier:</label>
-                    <div class="col-md-10">
-                            <p>{{$Header->suggested_supplier}}</p>
-                    </div>
-                </div>
-            @endif  
+                @endif
+            </div>
+         
 
             <hr/>                
             <div class="row">
@@ -346,8 +335,8 @@
                         </tbody>
                         <tfoot>
                             <tr id="tr-tableOption1" class="bottom">
-                                <td colspan="5">
-                                    <button id="add-Row" name="add-Row"><div class="icon" id="bigplus"></div></button>
+                                <td style="text-align:left" colspan="5">
+                                    <button id="add-Row" name="add-Row"><div class="iconPlus" id="bigplus"></div></button>
                                     <div id="display_error" style="text-align:left"></div>
                                 </td>
                             </tr>
@@ -396,12 +385,11 @@
             {{-- <button class="btn btn-success pull-right" type="button" id="btnClose" style="margin-left: 5px;"><i class="fa fa-times-circle" ></i> Close</button> --}}
             <button class="btn btn-primary pull-right" type="button" id="btnUpdate"><i class="fa fa-refresh" ></i> Update</button>
         </div>
-
     </form>
-
-
-
 </div>
+
+  {{-- Modal Edi Version --}}
+@include('item-sourcing.modal-edit-version')
 
 @endsection
 @push('bottom')
@@ -419,6 +407,7 @@
             $('#add-Row').prop("disabled", false)
         }
     });
+
     function preventBack() {
         window.history.forward();
     }
@@ -433,6 +422,8 @@
     var searchcount = <?php echo json_encode($tableRow); ?>;
     let countrow = 1;
     var tableRow = 1;
+
+    //validation value
     $(function(){
         for (let i = 0; i < searchcount; i++) {
             countrow++;
@@ -539,7 +530,116 @@
         $("#myModal").modal('hide');
        }
     });
+
     $('#myModal').on('hidden.bs.modal', function () {
+      location.reload();
+    });
+
+    //Get Edit Verions
+    $('#getVersions').click(function(evennt) {
+        event.preventDefault();
+        var header_id = $('#headerID').val();
+        $.ajax({
+            url: "{{ route('get-versions') }}",
+            type: "GET",
+            dataType: 'json',
+
+            data: {
+                "_token": token,
+                "header_id" : header_id
+            },
+            success: function (data) {
+                $.each(data, function(i, item) {
+                    $('#appendVersions').append(
+                        '<tr>' +
+                            '<tr>' +
+                                '<td colspan="4" style="background-color:#3c8dbc; color:white; font-weight:bold">' + item.version + '</td>' +
+                            '</tr>' +
+
+                            '<tr>' +
+                                '<th style="padding-top:25px" rowspan="2">Description</th>' +
+                                '<th colspan="2">' + 'From' + '</th>' +
+                                '<th colspan="2">' + 'To' + '</th>' +
+                            '</tr>' +
+
+                            '<tr>'  +
+                                '<td colspan="2">' + item.old_description + '</td>' +
+                                '<td colspan="2">' + item.new_description + '</td>' +
+                            '</tr>' +
+
+                            '<tr>' +
+                                '<th style="padding-top:25px" rowspan="2">Brand</th>' +
+                                '<th colspan="2">' + 'From' + '</th>' +
+                                '<th colspan="2">' + 'To' + '</th>' +
+                            '</tr>' +
+                            '<tr>'  +
+                                '<td colspan="2">' + item.old_brand_value + '</td>' +
+                                '<td colspan="2">' + item.new_brand_value + '</td>' +
+                            '</tr>' +
+
+                            
+                            '<tr>' +
+                                '<th style="padding-top:25px" rowspan="2">Model</th>' +
+                                '<th colspan="2">' + 'From' + '</th>' +
+                                '<th colspan="2">' + 'To' + '</th>' +
+                            '</tr>' +
+                            '<tr>'  +
+                                '<td colspan="2">' + item.old_model_value + '</td>' +
+                                '<td colspan="2">' + item.new_model_value + '</td>' +
+                            '</tr>' +
+
+                            '<tr>' +
+                                '<th style="padding-top:25px" rowspan="2">Size</th>' +
+                                '<th colspan="2">' + 'From' + '</th>' +
+                                '<th colspan="2">' + 'To' + '</th>' +
+                            '</tr>' +
+                            '<tr>'  +
+                                '<td colspan="2">' + item.old_size_value + '</td>' +
+                                '<td colspan="2">' + item.new_size_value + '</td>' +
+                            '</tr>' +
+
+                            
+                            '<tr>' +
+                                '<th style="padding-top:25px" rowspan="2">Actual Color</th>' +
+                                '<th colspan="2">' + 'From' + '</th>' +
+                                '<th colspan="2">' + 'To' + '</th>' +
+                            '</tr>' +
+                            '<tr>'  +
+                                '<td colspan="2">' + item.old_ac_value + '</td>' +
+                                '<td colspan="2">' + item.new_ac_value + '</td>' +
+                            '</tr>' +
+
+                            '<tr>' +
+                                '<th style="padding-top:25px" rowspan="2">Quantity</th>' +
+                                '<th colspan="2">' + 'From' + '</th>' +
+                                '<th colspan="2">' + 'To' + '</th>' +
+                            '</tr>' +
+                            '<tr>'  +
+                                '<td colspan="2">' + item.old_qty_value + '</td>' +
+                                '<td colspan="2">' + item.new_qty_value + '</td>' +
+                            '</tr>' +
+
+                            '<tr>' +
+                                '<th>Updated Date</th>' +
+                                '<td colspan="3">' + item.updated_at + '</td>' +
+                            '</tr>' +
+
+                            '<tr>' +
+                                '<th>Updated By</th>' +
+                                '<td colspan="3">' + item.name + '</td>' +
+                            '</tr>' +
+                        '</tr>'
+                        
+                        );
+                });
+            }
+         
+        });
+        $('#versionModal').modal('show'); 
+       
+    });
+
+    $('#versionModal').on('hidden.bs.modal', function () {
       location.reload();
     });
 
@@ -599,6 +699,30 @@
                 count_fail = 0;
             }
         });
+        $('.optionFile').each(function() {
+            optFile = $(this).val();
+            if (optFile == null) {
+                swal({  
+                    type: 'error',
+                    title: 'Please fill all Fields!',
+                    icon: 'error',
+                    confirmButtonColor: "#367fa9",
+                });
+                count_fail++;
+
+            } else if (optFile == "") {
+                swal({  
+                    type: 'error',
+                    title: 'Please fill all Fields!',
+                    icon: 'error',
+                    confirmButtonColor: "#367fa9",
+                });
+                count_fail++;
+
+            }else{
+                count_fail = 0;
+            }
+        });
         var deleteRow = $('#countRow').val();
         var allOptionsCount =  parseInt($('#allcountOption').val());
        
@@ -630,7 +754,7 @@
                     '</td>' +
 
                     '<td>' +
-                    '<input class="form-control finput" type="file" placeholder="File..." name="optionFile[]" id="optionFile' + tableRow + '" data-id="' + tableRow  + '" style="width:100%">' + 
+                    '<input class="form-control finput optionFile" type="file" placeholder="File..." name="optionFile[]" id="optionFile' + tableRow + '" data-id="' + tableRow  + '" style="width:100%">' + 
                     '</td>' +
 
                     '<td>' +
@@ -640,15 +764,11 @@
                 '</tr>';
                 $('#item-sourcing-options tbody').append(newrow);
         }
-
-      
-    }
-
+     }
     });
 
     //deleteRow
     $(document).on('click', '.removeRow', function() {
-
         if ($('#asset-items tbody tr').length != 1) { //check if not the first row then delete the other rows
             tableRow--;
 
@@ -668,6 +788,7 @@
     var stack = [];
     var token = $("#token").val();
    
+    //Submit Request
     $('#btnUpdate').click(function(event) {
         event.preventDefault(); // cancel default behavior
         var rowCount = $('#item-sourcing-options tr').length-1;
@@ -759,9 +880,8 @@
         }
     });
 
-
+    //Closed Request
     $('#closed').click(function(event) {
-      
         event.preventDefault();
         var rowCount = $('#item-sourcing-options tr').length-1;
 
@@ -798,6 +918,7 @@
             });
         }
     });
+
     $("#btn-cancel").click(function(event) {
        event.preventDefault();
        swal({
@@ -813,6 +934,7 @@
                 window.history.back();                                                  
         });
     });
+
     function item_source_value(){
         var total = 0;
         $('.item_source_value').each(function(){
@@ -821,34 +943,12 @@
     
         $('#item-source-value-total').text(thousands_separators(total.toFixed(2)));
     }
+
     function thousands_separators(num) {
-    var num_parts = num.toString().split(".");
-    num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    return num_parts.join(".");
+        var num_parts = num.toString().split(".");
+        num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return num_parts.join(".");
     }
-    // var tds = document
-    // .getElementById("item-sourcing")
-    // .getElementsByTagName("td");
-    // var sumqty = 0;
-    // var sumcost = 0;
-    // for (var i = 0; i < tds.length; i++) {
-    //     if (tds[i].className == "qty") {
-    //         sumqty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-    //     }else if(tds[i].className == "cost"){
-    //         sumcost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-    //     }
-    // }
-    // document.getElementById("item-sourcing").innerHTML +=
-    // "<tr style='text-align:center'>"+
-    // "<td colspan=10><strong>TOTAL</strong></td>"+
-    // "<td><strong>" +
-    //     sumqty + 
-    // "</strong></td>"+
-                                      
-    // "<td style='text-align:center'><strong><span id='item-source-value-total'>" + 
-   
-    // "</span></strong></td>"+
-    // "</tr>";
     
 </script>
 @endpush

@@ -5,6 +5,7 @@
 	use DB;
 	use CRUDBooster;
 	use App\StatusMatrix;
+	use App\Users;
 	use App\Models\ItemHeaderSourcing;
 	use App\Models\ItemBodySourcing;
 	use App\Models\ItemSourcingComments;
@@ -149,12 +150,13 @@
 	        */
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
+				$this->index_button[] = ["label"=>"IT Assets","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-item-sourcing-it'),"color"=>"success"];
+				$this->index_button[] = ["label"=>"Fixed Assets","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-item-sourcing-fa'),"color"=>"success"];
+				$this->index_button[] = ["label"=>"Marketing","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-item-sourcing-mkt'),"color"=>"success"];
 				$this->index_button[] = ["label"=>"Supplies","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-item-sourcing-supplies'),"color"=>"success"];
-				$this->index_button[] = ["label"=>"FA","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-item-sourcing-fa'),"color"=>"success"];
-				$this->index_button[] = ["label"=>"IT","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-item-sourcing-it'),"color"=>"success"];
 				$this->index_button[] = ["label"=>"Services","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-item-sourcing-services'),"color"=>"success"];
 				$this->index_button[] = ["label"=>"Subscription","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-item-sourcing-subscription'),"color"=>"success"];
-				$this->index_button[] = ["label"=>"Mkt","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-item-sourcing-mkt'),"color"=>"success"];
+
 			
 			}
 
@@ -190,16 +192,22 @@
 	        |
 	        */
 	        $this->script_js = "
-			
-			    $('.fa.fa-times').click(function(){
-				var strconfirm = confirm('Are you sure you want to cancel this request?');
-				if (strconfirm == true) {
-					return true;
-				}else{
-					return false;
-					window.stop();
-				}
+				$(document).ready(function() {
+					$('#supplies').prop('title', 'Bag');
+					$('#fixed-assets').prop('title', 'Cellphone');
+					$('#it-assets').prop('title', 'Laptop');
+					$('#marketing').prop('title', 'Card');
+				
+					$('.fa.fa-times').click(function(){
+					var strconfirm = confirm('Are you sure you want to cancel this request?');
+					if (strconfirm == true) {
+						return true;
+					}else{
+						return false;
+						window.stop();
+					}
 
+		    	});	
 			});";
 
 
@@ -546,27 +554,23 @@
 	        //Your code here
 
 	    }
-        
-		//Supplies
-		public function getAddItemSourcingSupplies() {
 
+		//IT
+		public function getAddItemSourcingIt() {
 			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
 				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
 			}
-
 			$this->cbLoader();
-			$data['page_title'] = 'Create Supplies Item Sourcing';
+			$data['page_title'] = 'Create IT Item Sourcing';
 			$data['conditions'] = DB::table('condition_type')->where('status', 'ACTIVE')->get();
 			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
 			$data['stores'] = DB::table('stores')->where('status', 'ACTIVE')->get();
 			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
 			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-			$data['employeeinfos'] = DB::table('cms_users')
-										 ->leftjoin('positions', 'cms_users.position_id', '=', 'positions.id')
-										 ->leftjoin('departments', 'cms_users.department_id', '=', 'departments.id')
-										 ->select( 'cms_users.*', 'positions.position_description as position_description', 'departments.department_name as department_name')
-										 ->where('cms_users.id', $data['user']->id)->first();
-			$data['categories'] = DB::table('new_category')->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
+
+			$data['employeeinfos'] = Users::user($data['user']->id);
+
+			$data['categories'] = DB::table('new_category')->where('id',1)->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
 			$data['budget_range'] = DB::table('sub_masterfile_budget_range')->where('status', 'ACTIVE')->get();
 			$privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
 			$privileges_array = array();
@@ -578,12 +582,123 @@
 
 			if(in_array(CRUDBooster::myPrivilegeId(), $privilegeslist)){ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
-				return $this->view("item-sourcing.add-item-sourcing", $data);
+				return $this->view("item-sourcing.add-item-sourcing-it", $data);
 
 			}else{ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
 				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
-				return $this->view("item-sourcing.add-store-item-sourcing", $data);
+				return $this->view("item-sourcing.add-store-item-sourcing-it", $data);
+			}
+				
+		}
+
+		//IT
+		public function getAddItemSourcingFa() {
+			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
+				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
+			}
+			$this->cbLoader();
+			$data['page_title'] = 'Create Fixed Assets Item Sourcing';
+			$data['conditions'] = DB::table('condition_type')->where('status', 'ACTIVE')->get();
+			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
+			$data['stores'] = DB::table('stores')->where('status', 'ACTIVE')->get();
+			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
+			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
+
+			$data['employeeinfos'] = Users::user($data['user']->id);
+
+			$data['categories'] = DB::table('new_category')->where('id',3)->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
+			$data['budget_range'] = DB::table('sub_masterfile_budget_range')->where('status', 'ACTIVE')->get();
+			$privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
+			$privileges_array = array();
+			foreach($privilegesMatrix as $matrix){
+				array_push($privileges_array, $matrix->id);
+			}
+			$privileges_string = implode(",",$privileges_array);
+			$privilegeslist = array_map('intval',explode(",",$privileges_string));
+
+			if(in_array(CRUDBooster::myPrivilegeId(), $privilegeslist)){ 
+				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
+				return $this->view("item-sourcing.add-item-sourcing-fa", $data);
+
+			}else{ 
+				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
+				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
+				return $this->view("item-sourcing.add-store-item-sourcing-fa", $data);
+			}
+				
+		}
+
+		//Marketing
+		public function getAddItemSourcingMkt() {
+			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
+				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
+			}
+			$this->cbLoader();
+			$data['page_title'] = 'Create Marketing Item Sourcing';
+			$data['conditions'] = DB::table('condition_type')->where('status', 'ACTIVE')->get();
+			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
+			$data['stores'] = DB::table('stores')->where('status', 'ACTIVE')->get();
+			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
+			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
+
+			$data['employeeinfos'] = Users::user($data['user']->id);
+
+			$data['categories'] = DB::table('new_category')->where('id',3)->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
+			$data['budget_range'] = DB::table('sub_masterfile_budget_range')->where('status', 'ACTIVE')->get();
+			$privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
+			$privileges_array = array();
+			foreach($privilegesMatrix as $matrix){
+				array_push($privileges_array, $matrix->id);
+			}
+			$privileges_string = implode(",",$privileges_array);
+			$privilegeslist = array_map('intval',explode(",",$privileges_string));
+
+			if(in_array(CRUDBooster::myPrivilegeId(), $privilegeslist)){ 
+				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
+				return $this->view("item-sourcing.add-item-sourcing-mkt", $data);
+
+			}else{ 
+				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
+				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
+				return $this->view("item-sourcing.add-store-item-sourcing-mkt", $data);
+			}
+				
+		}
+        
+		//Supplies
+		public function getAddItemSourcingSupplies() {
+			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
+				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
+			}
+			$this->cbLoader();
+			$data['page_title'] = 'Create Supplies Item Sourcing';
+			$data['conditions'] = DB::table('condition_type')->where('status', 'ACTIVE')->get();
+			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
+			$data['stores'] = DB::table('stores')->where('status', 'ACTIVE')->get();
+			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
+			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
+
+			$data['employeeinfos'] = Users::user($data['user']->id);
+
+			$data['categories'] = DB::table('new_category')->whereIn('id',[2,4])->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
+			$data['budget_range'] = DB::table('sub_masterfile_budget_range')->where('status', 'ACTIVE')->get();
+			$privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
+			$privileges_array = array();
+			foreach($privilegesMatrix as $matrix){
+				array_push($privileges_array, $matrix->id);
+			}
+			$privileges_string = implode(",",$privileges_array);
+			$privilegeslist = array_map('intval',explode(",",$privileges_string));
+
+			if(in_array(CRUDBooster::myPrivilegeId(), $privilegeslist)){ 
+				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
+				return $this->view("item-sourcing.add-item-sourcing-supplies", $data);
+
+			}else{ 
+				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
+				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
+				return $this->view("item-sourcing.add-store-item-sourcing-supplies", $data);
 			}
 				
 		}
@@ -595,74 +710,20 @@
             }
 
 			$data = array();
-			$data['page_title'] = 'Item Sourcing Detail';
-			$data['Header'] = ItemHeaderSourcing::leftjoin('cms_users as employees', 'item_sourcing_header.employee_name', '=', 'employees.id')
-				->leftjoin('companies', 'item_sourcing_header.company_name', '=', 'companies.id')
-				->leftjoin('departments', 'item_sourcing_header.department', '=', 'departments.id')
-				->leftjoin('locations', 'employees.location_id', '=', 'locations.id')
-				->leftjoin('cms_users as requested', 'item_sourcing_header.created_by','=', 'requested.id')
-				->leftjoin('cms_users as approved', 'item_sourcing_header.approved_by','=', 'approved.id')
-				->leftjoin('cms_users as processed', 'item_sourcing_header.processed_by','=', 'processed.id')
-				->leftjoin('cms_users as closed', 'item_sourcing_header.closed_by','=', 'closed.id')
-				->select(
-						'item_sourcing_header.*',
-						'item_sourcing_header.id as requestid',
-						'item_sourcing_header.created_at as created',
-						'requested.name as requestedby',
-						'employees.bill_to as employee_name',
-						'item_sourcing_header.employee_name as header_emp_name',
-						'item_sourcing_header.created_by as header_created_by',
-						'departments.department_name as department',
-						'item_sourcing_header.store_branch as store_branch',
-						'approved.name as approvedby',
-						'processed.name as processedby',
-						'closed.name as closedby',
-						'item_sourcing_header.created_at as created_at'
-						)
-				->where('item_sourcing_header.id', $id)->first();
-		
-			$data['Body'] = ItemBodySourcing::leftjoin('new_category', 'item_sourcing_body.category_id', '=', 'new_category.id')
-			    ->leftjoin('new_sub_category', 'item_sourcing_body.sub_category_id', '=', 'new_sub_category.id')
-				->leftjoin('new_class', 'item_sourcing_body.class_id', '=', 'new_class.id')
-				->leftjoin('new_sub_class', 'item_sourcing_body.sub_class_id', '=', 'new_sub_class.id')
-				->select(
-				  'item_sourcing_body.*',
-				  'item_sourcing_body.id as body_id',
-				  'new_category.*',
-				  'new_sub_category.*',
-				  'new_class.*',
-				  'new_sub_class.*',
-				)
-				->where('item_sourcing_body.header_request_id', $id)
-				->get();
-			$data['comments'] = ItemSourcingComments::
-				leftjoin('cms_users', 'item_sourcing_comments.user_id', '=', 'cms_users.id')
-				->select(
-					'item_sourcing_comments.*',
-					'cms_users.name'
-				  )
-				  ->where('item_sourcing_comments.item_header_id', $id)
-				  ->get();
+			$data['page_title']   = 'Item Sourcing Detail';
 
-		    $data['item_options'] = ItemSourcingOptions::
-			      leftjoin('item_sourcing_option_file', 'item_sourcing_options.id', '=', 'item_sourcing_option_file.opt_body_id')
-				  ->select(
-					  'item_sourcing_options.*',
-					  'item_sourcing_options.id as optId',
-					  'item_sourcing_option_file.file_name',
-					  'item_sourcing_option_file.id as file_id',
-					)
-					->where('item_sourcing_options.header_id', $id)
-					->get();
-			$data['versions'] = DB::table('item_sourcing_edit_versions')->where('header_id', $id)->latest('created_at')->first();
-			$data['allOptions'] = DB::table('item_sourcing_options')->where('item_sourcing_options.header_id', $id)->count();
+			$data['Header']       = ItemHeaderSourcing::header($id);
+			$data['Body']         = ItemBodySourcing::body($id);
+			$data['comments']     = ItemSourcingComments::comments($id);
+		    $data['item_options'] = ItemSourcingOptions::options($id);
+			$data['versions']     = DB::table('item_sourcing_edit_versions')->where('header_id', $id)->latest('created_at')->first();
+			$data['allOptions']   = DB::table('item_sourcing_options')->where('item_sourcing_options.header_id', $id)->count();
 
 			return $this->view("item-sourcing.item-sourcing-detail", $data);
 		}
 
 		
 		public function RemoveItemSource(Request $request){
-	       
 			$data   = Request::all();	
 			$opt_id = $data['opt_id'];
 
@@ -672,24 +733,12 @@
 				'deleted_by'=> 		CRUDBooster::myId()
 			]);	
 
-			// $bodyCount = DB::table('item_sourcing_body')->where('header_request_id',$headerID)->whereNull('item_sourcing_body.deleted_at')->count();
-
-			// if($bodyCount == 0){
-			// ItemHeaderSourcing::where('id', $headerID)
-			// 	->update([
-			// 		'status_id'=> 8,
-			// 		'cancelled_by'=> CRUDBooster::myId(),
-			// 		'cancelled_at'=> date('Y-m-d H:i:s')
-			// 	]);	
-			
-			// }
 			$message = ['status'=>'success', 'message' => 'Cancelled Successfully!'];
 			echo json_encode($message);
 			
 		}
 
 		public function getRequestCancelNis($id) {
-
 			ItemHeaderSourcing::where('id',$id)
 			->update([
 					'status_id'=> 8,
@@ -763,10 +812,10 @@
 
 			$item_sourcing_header = ItemHeaderSourcing::where(['id' => $id])->first();
 
-			$config['content'] = "Item Source Messages (".$item_sourcing_header->reference_number.")";
-			$config['to'] = $link = CRUDBooster::adminPath('item-sourcing-header/detail/'.$id.'');
-			$config['id_cms_users'] = [$item_sourcing_header->created_by, $item_sourcing_header->processed_by, $item_sourcing_header->approved_by]; //The Id of the user that is going to receive notification. This could be an array of id users [1,2,3,4,5]
-			CRUDBooster::sendNotification($config);
+			// $config['content'] = "Item Source Messages (".$item_sourcing_header->reference_number.")";
+			// $config['to'] = $link = CRUDBooster::adminPath('item-sourcing-header/detail/'.$id.'');
+			// $config['id_cms_users'] = [$item_sourcing_header->created_by, $item_sourcing_header->processed_by, $item_sourcing_header->approved_by]; //The Id of the user that is going to receive notification. This could be an array of id users [1,2,3,4,5]
+			// CRUDBooster::sendNotification($config);
 
 			$data = array();
 			$data['status'] = 'error';
@@ -792,7 +841,7 @@
 			$item_source_body = ItemBodySourcing::where(['id' => $id])->first();
 			//dd($item_source_body, $id);
 			$countHeader = DB::table('item_sourcing_edit_versions')->where('item_sourcing_edit_versions.header_id', $id)->count();
-			$finalCountHead = ($countHeader + 1);
+			$finalCountHead = ($countHeader + 2);
 
 			ItemSourcingEditVersions::Create(
 				[
@@ -842,9 +891,12 @@
 			$infos['actual_color'] = $actual_color;
 			$infos['quantity'] = $quantity;
 		
-			// Mail::to($employee_name->email)
-			// 		//->cc([$fhil])
-			// 		->send(new Email($infos));
+			if($item_source_header->status_id != 1){
+				Mail::to($employee_name->email)
+				//->cc([$fhil])
+				->send(new Email($infos));
+			}
+			
 			$message = ['status'=>'success', 'message' => 'Update Successfully!'];
 			echo json_encode($message);
 		}
@@ -860,6 +912,7 @@
 							          'cms_users.*'
 							          )
 							->where('header_id', $id)
+							->orderBy('version','desc')
 							->get();
 			return($versions);
 		}

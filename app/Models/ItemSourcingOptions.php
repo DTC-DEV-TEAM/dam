@@ -19,4 +19,16 @@ class ItemSourcingOptions extends Model
        'updated_at',
     ];
 
+    public function scopeOptions($query,$id){
+        return $query->leftjoin('item_sourcing_option_file', 'item_sourcing_options.id', '=', 'item_sourcing_option_file.opt_body_id')
+        ->select(
+            'item_sourcing_options.*',
+            'item_sourcing_options.id as optId',
+            'item_sourcing_option_file.file_name',
+            'item_sourcing_option_file.id as file_id',
+          )
+          ->where('item_sourcing_options.header_id', $id)
+          ->get();
+    }
+
 }

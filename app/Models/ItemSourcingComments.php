@@ -16,4 +16,14 @@ class ItemSourcingComments extends Model
        'updated_at',
     ];
 
+    public function scopeComments($query,$id){
+        return $query->leftjoin('cms_users', 'item_sourcing_comments.user_id', '=', 'cms_users.id')
+        ->select(
+            'item_sourcing_comments.*',
+            'cms_users.name'
+          )
+          ->where('item_sourcing_comments.item_header_id', $id)
+          ->get();
+    }
+
 }

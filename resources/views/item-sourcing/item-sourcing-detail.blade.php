@@ -50,11 +50,8 @@
             /* Extra styling */
             td { width: 100px; }
             th { text-align: left; }
-
-            .modal .modal-body {
-                overflow-y: auto;
-                padding: 10px;
-            }
+            
+     
         </style>
     @endpush
 @section('content')
@@ -127,7 +124,7 @@
                 @if($versions->version != null)
                     <label class="control-label col-md-2">Version:</label>
                     <div class="col-md-4">
-                            <a type="button" value="{{$Header->requestid}}" id="getVersions">{{$versions->version}}</a>
+                            <a type="button" value="{{$Header->requestid}}" id="getVersions"><strong>{{$versions->version}}</strong></a>
                     </div>
                 @endif
             </div>
@@ -141,29 +138,6 @@
                 </div>
             @endif
 
-            @if($Header->requestor_comments != null || $Header->requestor_comments != "")
-                <hr/>
-                <div class="row">                           
-                    <label class="control-label col-md-2">{{ trans('message.table.requestor_comments') }}:</label>
-                    <div class="col-md-10">
-                            <p>{{$Header->requestor_comments}}</p>
-                    </div>
-
-            
-                </div>
-            @endif  
-            @if($Header->suggested_supplier != null || $Header->suggested_supplier != "")
-                <hr/>
-                <div class="row">                           
-                    <label class="control-label col-md-2">Suggested Supplier:</label>
-                    <div class="col-md-10">
-                            <p>{{$Header->suggested_supplier}}</p>
-                    </div>
-
-            
-                </div>
-            @endif  
-            
             <hr/>                
             <div class="row">
                 <div class="col-md-12">
@@ -206,25 +180,45 @@
                                                             <td style="text-align:center" height="10">
                                                                 {{$rowresult->sub_class_description}}                               
                                                             </td>
-                                                                                                
-                                                            <td style="text-align:center" height="10">                                                             
-                                                                <input type="text"  class="form-control finput"  name="item_description" id="item_description" value="{{$rowresult->item_description}}" data-id="{{$tableRow1}}"  required>  
-                                                            </td>
-                                                            <td style="text-align:center" height="10">                                                             
-                                                                <input type="text"  class="form-control finput"  name="brand" id="brand" value="{{$rowresult->brand}}" data-id="{{$tableRow1}}"  required>  
-                                                            </td>
-                                                            <td style="text-align:center" height="10">                                                             
-                                                                <input type="text"  class="form-control finput"  name="model" id="model" value="{{$rowresult->model}}" data-id="{{$tableRow1}}"  required>  
-                                                            </td>
-                                                            <td style="text-align:center" height="10">                                                             
-                                                                <input type="text"  class="form-control finput"  name="size" id="size" value="{{$rowresult->size}}" data-id="{{$tableRow1}}"  required>  
-                                                            </td>
-                                                            <td style="text-align:center" height="10">                                                             
-                                                                <input type="text"  class="form-control finput"  name="actual_color" id="actual_color" value="{{$rowresult->actual_color}}" data-id="{{$tableRow1}}"  required>  
-                                                            </td>
-                                                            <td style="text-align:center" height="10" class="qty">
-                                                                <input type="text"  class="form-control finput"  name="quantity" id="quantity" value="{{$rowresult->quantity}}" data-id="{{$tableRow1}}"  required>  
-                                                            </td>     
+                                                            @if($Header->closed_at === "" || $Header->closed_at === null &&  $Header->cancelled_at === null || $Header->cancelled_at === "")                                    
+                                                                <td style="text-align:center" height="10">                                                             
+                                                                    <input type="text"  class="form-control finput"  name="item_description" id="item_description" value="{{$rowresult->item_description}}" data-id="{{$tableRow1}}"  required>  
+                                                                </td>
+                                                                <td style="text-align:center" height="10">                                                             
+                                                                    <input type="text"  class="form-control finput"  name="brand" id="brand" value="{{$rowresult->brand}}" data-id="{{$tableRow1}}"  required>  
+                                                                </td>
+                                                                <td style="text-align:center" height="10">                                                             
+                                                                    <input type="text"  class="form-control finput"  name="model" id="model" value="{{$rowresult->model}}" data-id="{{$tableRow1}}"  required>  
+                                                                </td>
+                                                                <td style="text-align:center" height="10">                                                             
+                                                                    <input type="text"  class="form-control finput"  name="size" id="size" value="{{$rowresult->size}}" data-id="{{$tableRow1}}"  required>  
+                                                                </td>
+                                                                <td style="text-align:center" height="10">                                                             
+                                                                    <input type="text"  class="form-control finput"  name="actual_color" id="actual_color" value="{{$rowresult->actual_color}}" data-id="{{$tableRow1}}"  required>  
+                                                                </td>
+                                                                <td style="text-align:center" height="10" class="qty">
+                                                                    <input type="text"  class="form-control finput"  name="quantity" id="quantity" value="{{$rowresult->quantity}}" data-id="{{$tableRow1}}"  required>  
+                                                                </td>   
+                                                            @else
+                                                                <td style="text-align:center" height="10">
+                                                                    {{$rowresult->item_description}}                               
+                                                                </td>
+                                                                <td style="text-align:center" height="10">
+                                                                    {{$rowresult->brand}}                               
+                                                                </td>
+                                                                <td style="text-align:center" height="10">
+                                                                    {{$rowresult->model}}                               
+                                                                </td>
+                                                                <td style="text-align:center" height="10">
+                                                                    {{$rowresult->size}}                               
+                                                                </td>
+                                                                <td style="text-align:center" height="10">
+                                                                    {{$rowresult->actual_color}}                               
+                                                                </td>
+                                                                <td style="text-align:center" height="10">
+                                                                    {{$rowresult->quantity}}                               
+                                                                </td>
+                                                            @endif  
                                                             <td style="text-align:center" height="10" class="cost">
                                                                     {{$rowresult->budget}}
                                                             </td>                                                                                                           
@@ -244,10 +238,10 @@
                 </div>
             </div>
 
-            <hr>
             <div class="row">
                 <div class="col-md-8 col-md-offset-2">
                     <table class="table" id="item-sourcing-options">
+                        <tbody id="bodyTable">
                         <tr>
                             <th class="text-center">Option</th> 
                             <th class="text-center">Vendor Name</th>
@@ -255,7 +249,7 @@
                             <th class="text-center">Quotation</th> 
                             <th width="5%" class="text-center"><i class="fa fa-trash"></i></th>
                         </tr>  
-                        <tbody id="bodyTable">
+                      
                                                     
                                 <?php   $tableRow = 1; ?>
                                 @foreach($item_options as $res)
@@ -295,8 +289,9 @@
                                             <a  href='{{CRUDBooster::adminpath("item_sourcing_for_quotation/download/".$res->file_id)."?return_url=".urlencode(Request::fullUrl())}}' class="form-control alink">{{$res->file_name}}   <i style="color:#007bff" class="fa fa-download"></i></a>                             
                                         </td>
                                         <td>
+                                            @if($Header->closed_at === null || $Header->closed_at === "")
                                             <button id="deleteRow" name="removeRow" data-id="' + tableRow + '" class="btn btn-danger removeRow" value="{{$res->optId}}"><i class="glyphicon glyphicon-trash"></i></button>
-                                        
+                                            @endif
                                         </td>
                                     </tr>
                                    @endif
@@ -318,54 +313,15 @@
                 </div>
 
         <div class='panel-footer'>
-
             <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.back') }}</a>
-            <button class="btn btn-primary pull-right" type="button" id="btnSubmit"><i class="fa fa-plus-circle" ></i> Edit</button>
+            @if($Header->closed_at === "" || $Header->closed_at === null &&  $Header->cancelled_at === null || $Header->cancelled_at === "")
+             <button class="btn btn-primary pull-right" type="button" id="btnSubmit"><i class="fa fa-plus-circle" ></i> Edit</button>
+            @endif
         </div>
     </form>
 </div>
-            <!-- Modal Versions Details -->
-            <div class="modal fade modal" id="versionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                    <div class="modal-header">
-                   
-                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                    </div>
-                    <div class="modal-body">
-                        <h4 class="modal-title text-center" id="event-title">Edit Logs</h4>
-                        <div class="row" style="padding:20px">             
-                            <table class="table table-bordered overlay" style="overflow-x: scroll;">
-                                <thead>
-                                    <tr>
-                                        <th>From Description</th>
-                                        <th>To Description</th>
-                                        <th>From Brand</th>
-                                        <th>To Brand</th>
-                                        <th>From Model</th>
-                                        <th>To Model</th>
-                                        <th>From Size</th>
-                                        <th>To Size</th>
-                                        <th>From Actual Color</th>
-                                        <th>To Actual Color</th>
-                                        <th>From Quantity</th>
-                                        <th>To Quantity</th>
-                                        <th>Version</th>
-                                        <th>Update Date</th>
-                                        <th>Update By</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="appendVersions">
-                        
-                                </tbody>
-                            </table>                           
-                        </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    </div>
-                    </div>
-                </div>
-                </div>
+            {{-- Modal Edi Version --}}
+@include('item-sourcing.modal-edit-version')
 
 @endsection
 @push('bottom')
@@ -387,7 +343,6 @@
     
     $('.chat').scrollTop($('.chat')[0].scrollHeight);
     
-    
     function preventBack() {
         window.history.forward();
     }
@@ -396,6 +351,8 @@
     };
     setTimeout("preventBack()", 0);
     var token = $("#token").val();
+    
+    //total value
      function item_source_value(){
         var total = 0;
         $('.item_source_value').each(function(){
@@ -420,31 +377,96 @@
             },
             success: function (data) {
                 $.each(data, function(i, item) {
-                    $('#appendVersions').append('<tr>'+
+                    $('#appendVersions').append(
+                '<tr>' +
+                    '<tr>' +
+            
+                        '<td colspan="4" style="background-color:#3c8dbc; color:white; font-weight:bold">' + item.version + '</td>' +
+                    '</tr>' +
 
-                                                '<td>' + item.old_description + '</td>' +
-                                                '<td>' + item.new_description + '</td>' +
-                                                '<td>' + item.old_brand_value + '</td>' +
-                                                '<td>' + item.new_brand_value + '</td>' +
-                                                '<td>' + item.old_model_value + '</td>' +
-                                                '<td>' + item.new_model_value + '</td>' +
-                                                '<td>' + item.old_size_value + '</td>' +
-                                                '<td>' + item.new_size_value + '</td>' +
-                                                '<td>' + item.old_ac_value + '</td>' +
-                                                '<td>' + item.new_ac_value + '</td>' +
-                                                '<td>' + item.old_qty_value + '</td>' +
-                                                '<td>' + item.new_qty_value + '</td>' +
-                                                '<td>' + item.version + '</td>' +
-                                                '<td>' + item.updated_at + '</td>' +
-                                                '<td>' + item.name + '</td>' +
+                    '<tr>' +
+                        '<th style="padding-top:25px" rowspan="2">Description</th>' +
+                        '<th colspan="2">' + 'From' + '</th>' +
+                        '<th colspan="2">' + 'To' + '</th>' +
+                    '</tr>' +
 
-                                                '</tr>');
+                    '<tr>'  +
+                        '<td colspan="2">' + item.old_description + '</td>' +
+                        '<td colspan="2">' + item.new_description + '</td>' +
+                    '</tr>' +
+
+                    '<tr>' +
+                        '<th style="padding-top:25px" rowspan="2">Brand</th>' +
+                        '<th colspan="2">' + 'From' + '</th>' +
+                        '<th colspan="2">' + 'To' + '</th>' +
+                    '</tr>' +
+                    '<tr>'  +
+                        '<td colspan="2">' + item.old_brand_value + '</td>' +
+                        '<td colspan="2">' + item.new_brand_value + '</td>' +
+                    '</tr>' +
+
+                    
+                    '<tr>' +
+                        '<th style="padding-top:25px" rowspan="2">Model</th>' +
+                        '<th colspan="2">' + 'From' + '</th>' +
+                        '<th colspan="2">' + 'To' + '</th>' +
+                    '</tr>' +
+                    '<tr>'  +
+                        '<td colspan="2">' + item.old_model_value + '</td>' +
+                        '<td colspan="2">' + item.new_model_value + '</td>' +
+                    '</tr>' +
+
+                    '<tr>' +
+                        '<th style="padding-top:25px" rowspan="2">Size</th>' +
+                        '<th colspan="2">' + 'From' + '</th>' +
+                        '<th colspan="2">' + 'To' + '</th>' +
+                    '</tr>' +
+                    '<tr>'  +
+                        '<td colspan="2">' + item.old_size_value + '</td>' +
+                        '<td colspan="2">' + item.new_size_value + '</td>' +
+                    '</tr>' +
+
+                    
+                    '<tr>' +
+                        '<th style="padding-top:25px" rowspan="2">Actual Color</th>' +
+                        '<th colspan="2">' + 'From' + '</th>' +
+                        '<th colspan="2">' + 'To' + '</th>' +
+                    '</tr>' +
+                    '<tr>'  +
+                        '<td colspan="2">' + item.old_ac_value + '</td>' +
+                        '<td colspan="2">' + item.new_ac_value + '</td>' +
+                    '</tr>' +
+
+                    '<tr>' +
+                        '<th style="padding-top:25px" rowspan="2">Quantity</th>' +
+                        '<th colspan="2">' + 'From' + '</th>' +
+                        '<th colspan="2">' + 'To' + '</th>' +
+                    '</tr>' +
+                    '<tr>'  +
+                        '<td colspan="2">' + item.old_qty_value + '</td>' +
+                        '<td colspan="2">' + item.new_qty_value + '</td>' +
+                    '</tr>' +
+
+                    '<tr>' +
+                        '<th>Updated Date</th>' +
+                        '<td colspan="3">' + item.updated_at + '</td>' +
+                    '</tr>' +
+
+                    '<tr>' +
+                        '<th>Updated By</th>' +
+                        '<td colspan="3">' + item.name + '</td>' +
+                    '</tr>' +
+                '</tr>'
+                    );
                 });
             }
          
         });
         $('#versionModal').modal('show'); 
        
+    });
+    $('#versionModal').on('hidden.bs.modal', function () {
+      location.reload();
     });
 
     $("#message").keypress(function(event) {
@@ -483,7 +505,7 @@
     });
 
    
-    
+    //submit request
     $('#btnSubmit').click(function() {
         swal({
             title: "Are you sure?",
@@ -524,6 +546,7 @@
 
     var tableRow = <?php echo json_encode($tableRow); ?>;
     tableRow ++;
+    //remove items in options
     $(document).ready(function() {
             $(document).on('click', '.removeRow', function() {
               
@@ -571,8 +594,6 @@
                     });
                     $("#deleteRow"+id_data).attr('disabled', true);
                     tableRow--;
-                    $(this).closest('tr').addClass("strikeout" );
-                    $(this).closest('tr').css('color','black'); 
                     return false;   
                }
             });

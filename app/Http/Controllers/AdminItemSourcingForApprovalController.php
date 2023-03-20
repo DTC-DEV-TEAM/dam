@@ -389,52 +389,10 @@
 
 			$data = array();
 			$data['page_title'] = 'Item Sourcing Detail';
-			$data['Header'] = ItemHeaderSourcing::leftjoin('cms_users as employees', 'item_sourcing_header.employee_name', '=', 'employees.id')
-				->leftjoin('companies', 'item_sourcing_header.company_name', '=', 'companies.id')
-				->leftjoin('departments', 'item_sourcing_header.department', '=', 'departments.id')
-				->leftjoin('locations', 'employees.location_id', '=', 'locations.id')
-				->leftjoin('cms_users as requested', 'item_sourcing_header.created_by','=', 'requested.id')
-				->leftjoin('cms_users as approved', 'item_sourcing_header.approved_by','=', 'approved.id')
-				->leftjoin('cms_users as processed', 'item_sourcing_header.processed_by','=', 'processed.id')
-				->leftjoin('cms_users as closed', 'item_sourcing_header.closed_by','=', 'closed.id')
-				->select(
-						'item_sourcing_header.*',
-						'item_sourcing_header.id as requestid',
-						'item_sourcing_header.created_at as created',
-						'requested.name as requestedby',
-						'employees.bill_to as employee_name',
-						'item_sourcing_header.employee_name as header_emp_name',
-						'item_sourcing_header.created_by as header_created_by',
-						'departments.department_name as department',
-						'item_sourcing_header.store_branch as store_branch',
-						'approved.name as approvedby',
-						'processed.name as processedby',
-						'closed.name as closedby',
-						'item_sourcing_header.created_at as created_at'
-						)
-				->where('item_sourcing_header.id', $id)->first();
-		
-			$data['Body'] = ItemBodySourcing::leftjoin('new_category', 'item_sourcing_body.category_id', '=', 'new_category.id')
-			    ->leftjoin('new_sub_category', 'item_sourcing_body.sub_category_id', '=', 'new_sub_category.id')
-				->leftjoin('new_class', 'item_sourcing_body.class_id', '=', 'new_class.id')
-				->leftjoin('new_sub_class', 'item_sourcing_body.sub_class_id', '=', 'new_sub_class.id')
-				->select(
-				  'item_sourcing_body.*',
-				  'new_category.*',
-				  'new_sub_category.*',
-				  'new_class.*',
-				  'new_sub_class.*',
-				)
-				->where('item_sourcing_body.header_request_id', $id)
-				->get();
-			$data['comments'] = ItemSourcingComments::
-				leftjoin('cms_users', 'item_sourcing_comments.user_id', '=', 'cms_users.id')
-				->select(
-					'item_sourcing_comments.*',
-					'cms_users.name'
-				  )
-				  ->where('item_sourcing_comments.item_header_id', $id)
-				  ->get();
+
+			$data['Header']     = ItemHeaderSourcing::header($id);
+			$data['Body']       = ItemBodySourcing::body($id);
+			$data['comments']   = ItemSourcingComments::comments($id);
 	
 			return $this->view("item-sourcing.item-sourcing-for-approval", $data);
 		}

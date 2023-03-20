@@ -324,12 +324,12 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-			if(CRUDBooster::isSuperadmin() || CRUDBooster::myPrivilegeId() == 6){
+			if(CRUDBooster::isSuperadmin()){
 				$query->whereNull('item_sourcing_header.deleted_at')->orderBy('item_sourcing_header.status_id', 'DESC')->orderBy('item_sourcing_header.id', 'DESC');
 			}
-			// else if(CRUDBooster::myPrivilegeId() == 6){
-			// 	$query->whereNotNull('item_sourcing_header.closed_by')->where('item_sourcing_header.closed_by', CRUDBooster::myId())->whereNull('item_sourcing_header.deleted_at')->orderBy('item_sourcing_header.id', 'DESC');
-			// }
+			else if(CRUDBooster::myPrivilegeId() == 6){
+				$query->whereIn('item_sourcing_header.status_id', [$this->forDiscussion, $this->forSourcing,$this->forStreamlining,$this->forItemCreation,$this->forArfCreation, $this->closed])->whereNull('item_sourcing_header.deleted_at')->orderBy('item_sourcing_header.id', 'asc'); 
+			}
 			else{
 				$query->whereNotNull('item_sourcing_header.approved_by')->where('item_sourcing_header.approved_by', CRUDBooster::myId())->whereNull('item_sourcing_header.deleted_at')->orderBy('item_sourcing_header.id', 'DESC');
 			}
@@ -510,7 +510,7 @@
 					)
 					->where('item_sourcing_options.header_id', $id)
 					->get();
-		    $data['version'] = DB::table('item_sourcing_edit_versions')->where('header_id', $id)->latest('created_at')->first();
+		    $data['versions'] = DB::table('item_sourcing_edit_versions')->where('header_id', $id)->latest('created_at')->first();
 			return $this->view("item-sourcing.item-sourcing-detail-history", $data);
 		}
 
