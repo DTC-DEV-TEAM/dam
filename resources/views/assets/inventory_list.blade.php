@@ -52,6 +52,13 @@
     table-layout: fixed;
     word-wrap: break-word;
     }
+    .finput_qty{
+        border:none;
+    }
+    input.finput_qty:read-only {
+        background-color: #fff;
+    }
+
 </style>
 @endpush
 @section('content')
@@ -138,20 +145,20 @@
                                         <thead>
                                             <tr>
                                                 <!-- <th>Action</th> -->
-                                                <th>Asset Code</th>   
-                                                <th>Digits Code</th>   
-                                                <th>Serial No</th> 
-                                                <th>Location</th> 
-                                                <th>Status</th>     
-                                                <th>Deployed To</th>       
-                                                <th>Item Condition</th>                                               
-                                                <th>Item Description</th> 
-                                                <th>Value</th>                                         
+                                                <th width="5%">Asset Code</th>   
+                                                <th width="5%">Digits Code</th>   
+                                                <th width="5%">Serial No</th> 
+                                                <th width="10%">Location</th> 
+                                                <th width="10%">Status</th>     
+                                                <th width="10%">Deployed To</th>       
+                                                <th width="5%">Item Condition</th>                                               
+                                                <th width="20%">Item Description</th> 
+                                                <th width="10%">Value</th>                                         
                                                 <th>Quantity</th>    
-                                                <th>Warranty Expiry Month</th>                                           
-                                                <th>Item Photo</th>     
-                                                <th>Updated By</th>                                            
-                                                <th>Date Updated</th>  
+                                                <th width="2%">Warranty Expiry Month</th>                                           
+                                                <th width="5%">Item Photo</th>     
+                                                <th width="6%">Updated By</th>                                            
+                                                <th width="6%">Date Updated</th>  
                                               
                                             </tr>
                                         </thead>
@@ -171,7 +178,9 @@
                                                 <td>{{$res->item_condition}}</td> 
                                                 <td>{{$res->item_description}}</td>   
                                                 <td>{{$res->value}}</td>
-                                                <td>{{$res->quantity}}</td>     
+                                                <td> 
+                                                    <input class="form-control text-center finput_qty quantity"  type="number"  value="{{$res->quantity}}" readonly>
+                                                </td>     
                                                 <td>{{$res->warranty_coverage}}</td>                                                      
                                                 <td>
                                                    @if ($res->itemImage)
@@ -185,6 +194,17 @@
                                                </tr>
                                             @endforeach
                                         </tbody>
+                                        <tfoot>
+                                            <tr id="tr-table1" class="bottom">
+                    
+                                                <td colspan="9" class="text-center">
+                                                 <span ><strong>Total</strong></span>
+                                                </td>
+                                                <td align="left">
+                                                    <input type='number' name="total_quantity" class="form-control text-center finput_qty" id="total_quantity" readonly>
+                                                </td> 
+                                            </tr>
+                                        </tfoot>
                                         
                                     </table> 
                  
@@ -244,7 +264,10 @@
 @endsection
 @push('bottom')
     <script type="text/javascript">
-
+    $(function(){
+        $('body').addClass("sidebar-collapse");
+    });
+    item_source_value();
     $("#table_dashboard").DataTable({
         pageLength:10000,
         pagingType: "simple",
@@ -307,6 +330,15 @@
     });
     
     }); 
+
+    function item_source_value(){
+        var total = 0;
+        $('.quantity').each(function(){
+            total += parseInt($(this).val());
+        })
+    
+        $('#total_quantity').val(total);
+    }
 
     </script>
 @endpush
