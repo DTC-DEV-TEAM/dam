@@ -9,7 +9,7 @@ class ReturnTransferAssets extends Model
     protected $table = 'return_transfer_assets';
 
     public function scopeArraytwo($query){
-        $query->leftjoin('return_transfer_assets_header', 'return_transfer_assets.return_header_id', '=', 'return_transfer_assets_header.id')
+       return $query->leftjoin('return_transfer_assets_header', 'return_transfer_assets.return_header_id', '=', 'return_transfer_assets_header.id')
 			->leftjoin('cms_users as employees', 'return_transfer_assets_header.requestor_name', '=', 'employees.id')
             ->leftjoin('requests', 'return_transfer_assets_header.request_type_id', '=', 'requests.id')
 			->leftjoin('departments', 'employees.department_id', '=', 'departments.id')
@@ -34,6 +34,7 @@ class ReturnTransferAssets extends Model
 					'locations.store_name as store_branch',
                     'statuses.status_description as status_description',
                     'mo_body_request.quantity as quantity',
+					'return_transfer_assets_header.requested_date as requested_date'
 					)->orderBy('return_transfer_assets_header.created_at','DESC')
                     ->get();
 

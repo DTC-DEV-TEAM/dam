@@ -17,6 +17,7 @@
 	use Illuminate\Support\Facades\Redirect;
 	use Illuminate\Contracts\Cache\LockTimeoutException;
 	use App\Exports\ExportMultipleByApprover;
+	use Carbon\Carbon;
 	//use DataTables;
 
 	class AdminReportsController extends \crocodicstudio\crudbooster\controllers\CBController {
@@ -559,12 +560,14 @@
 				$returnTransferCon['mo_item_code'] = $rtVal['digits_code'];
 				$returnTransferCon['mo_item_description'] = $rtVal['description'];
 				$returnTransferCon['mo_qty_serve_qty'] = $rtVal['quantity'];
-				$returnTransferCon['requested_date'] = $rtVal['requested_date'];
+				$returnTransferCon['requested_date'] = Carbon::parse($rtVal['requested_date']);
 				$returnTransferCon['transacted_by'] = $rtVal['receivedby'];
 				$returnTransferCon['transacted_date'] = $rtVal['transacted_date'];
 				$returnTransfer[] = $returnTransferCon;
 			}
-			//dd($returnTransfer);
+
+			//dd($suppliesMarketing, $returnTransfer);
+	
 			$data['finalData'] = array_merge($suppliesMarketing, $returnTransfer);
 
 			return datatables($data['finalData'])

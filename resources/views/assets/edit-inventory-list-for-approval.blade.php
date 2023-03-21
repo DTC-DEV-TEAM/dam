@@ -118,6 +118,12 @@
         border:none;
         border-bottom: 1px solid rgba(18, 17, 17, 0.5);
         }
+        .finput_qty{
+            border:none;
+        }
+        input.finput_qty:read-only {
+            background-color: #fff;
+        }
 
         input.finput:read-only {
             background-color: #fff;
@@ -228,8 +234,8 @@
                         <tr>
                             <th>Digits Code</th>   
                             <th>Item Condition</th>    
-                            <th>Value</th>                                            
-                            <th>Quantity</th> 
+                            <th width="15%"">Value</th>                                            
+                            <th width="10%">Quantity</th> 
                             <th>Serial No</th>   
                             <th>Warranty Expiry Month</th>                                            
                             
@@ -237,7 +243,7 @@
                     </thead>
                     <tbody>
                         @foreach($Body as $res)
-                            <tr>
+                            <tr class="text-center">
                             <td style="display:none">
                                 <input class="form-control" type="text"name="body_id[]" value="{{$res->for_approval_body_id}}">
                                 <input class="form-control text-center" type="text" id="dc" name="digits_code[]" value="{{$res->digits_code}}">
@@ -245,14 +251,28 @@
                             <td>{{$res->digits_code}}</td>
                             <td>{{$res->item_description}}</td>   
                             <td>{{$res->value}}</td>
-                            <td>{{$res->quantity}}</td> 
-                            <th>
+                            <td>
+                                <input class="form-control text-center finput_qty quantity"  type="number"  value="{{$res->quantity}}" readonly>
+                            </td> 
+                            <td>
                                 <input class="form-control serial_no finput"  type="text" placeholder="Serial No (Put N/A if not applicable)" name="serial_no[]" style="width:100%" data-index="1" value="{{ $res->serial_no ? $res->serial_no : "" }}">
-                            </th>    
+                            </td>    
                             <td>{{$res->warranty_coverage}}</td>                                                                                                                  
                             </tr>
                         @endforeach
                     </tbody>
+                    <tfoot>
+
+                        <tr id="tr-table1" class="bottom">
+
+                            <td colspan="3" class="text-center">
+                             <span ><strong>Total</strong></span>
+                            </td>
+                            <td align="left">
+                                <input type='number' name="total_quantity" class="form-control text-center finput_qty" id="total_quantity" readonly>
+                            </td> 
+                        </tr>
+                    </tfoot>
                 </table> 
             </div>
         </div>
@@ -289,6 +309,7 @@
 @push('bottom')
     <script type="text/javascript">
         $(function(){
+            
             $('body').addClass("sidebar-collapse");
         });
         function preventBack() {    
@@ -299,6 +320,7 @@
         };
         setTimeout("preventBack()", 0);
     //preview image before save
+    item_source_value();
     $(function() {
     // Multiple images preview in browser
     var imagesPreview = function(input, placeToInsertImagePreview) {
@@ -651,5 +673,13 @@
 			this.value = this.value.toLocaleUpperCase();
 	});
 
+    function item_source_value(){
+        var total = 0;
+        $('.quantity').each(function(){
+            total += parseInt($(this).val());
+        })
+    
+        $('#total_quantity').val(total);
+    }
     </script>
 @endpush
