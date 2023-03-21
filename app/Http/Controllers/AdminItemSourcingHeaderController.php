@@ -759,7 +759,7 @@
 			return $this->view("item-sourcing.item-sourcing-detail", $data);
 		}
 
-		
+		//Remove row in option
 		public function RemoveItemSource(Request $request){
 			$data   = Request::all();	
 			$opt_id = $data['opt_id'];
@@ -771,6 +771,22 @@
 			]);	
 
 			$message = ['status'=>'success', 'message' => 'Cancelled Successfully!'];
+			echo json_encode($message);
+			
+		}
+
+		//Select row in option
+		public function SelectedOption(Request $request){
+			$data   = Request::all();	
+			$opt_id = $data['opt_id'];
+
+			ItemSourcingOptions::where('id', $opt_id)
+			->update([
+				'selected_at'=> 	date('Y-m-d H:i:s'),
+				'selected_by'=> 	CRUDBooster::myId()
+			]);	
+
+			$message = ['status'=>'success', 'message' => 'Selected Successfully!'];
 			echo json_encode($message);
 			
 		}

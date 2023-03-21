@@ -366,7 +366,9 @@
 			if($button_action == 1){
 				ItemHeaderSourcing::where('id',$header_id)
 					->update([
-						'status_id'		 => $status
+						'status_id'		    => $status,
+						'processed_by'      => CRUDBooster::myId(),
+						'processed_at'      => date('Y-m-d H:i:s'),
 					]);	
 				
 				if($option){
