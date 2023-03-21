@@ -1,16 +1,23 @@
 @extends('crudbooster::admin_template')
     @push('head')
         <style type="text/css">   
-            table, th, td {
+             #other-detail th, td {
             border: 1px solid rgba(000, 0, 0, .5);
             padding: 8px;
-            border-radius: 5px 0 0 5px;
+
+            }
+            #item-sourcing-options th, td {
+            border: 1px solid rgba(000, 0, 0, .5);
+            padding: 8px;
             }
             .finput {
                 border:none;
                 border-bottom: 1px solid rgba(18, 17, 17, 0.5);
             }
-
+            .alink {
+                border:none;
+                /* border-bottom: 1px solid rgba(18, 17, 17, 0.5); */
+            }
             input.finput:read-only {
                 background-color: #fff;
             }
@@ -26,7 +33,7 @@
             tr.strikeout td:before {
             content: " ";
             position: absolute;
-            top: 25%;
+            top: 50%;
             left: 0;
             border-bottom: 1px solid #111;
             width: 100%;
@@ -40,6 +47,7 @@
             /* Extra styling */
             td { width: 100px; }
             th { text-align: left; }
+            
         </style>
     @endpush
 @section('content')
@@ -52,7 +60,7 @@
     <div class='panel-heading'>
         History Detail View History
     </div>
-
+    <form method="post">
         <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
         <input type="hidden" value="0" name="action" id="action">
 
@@ -110,6 +118,12 @@
                 <div class="col-md-4">
                         <p>{{$Header->date_needed}}</p>
                 </div>
+                @if($versions->version != null)
+                <label class="control-label col-md-2">Version:</label>
+                <div class="col-md-4">
+                        <a type="button" value="{{$Header->requestid}}" id="getVersions"><strong>{{$versions->version}}</strong></a>
+                </div>
+            @endif
             </div>
 
             @if($Header->store_branch != null || $Header->store_branch != "")
@@ -121,30 +135,6 @@
                 </div>
             @endif
 
-      
-
-            @if($Header->requestor_comments != null || $Header->requestor_comments != "")
-                <hr/>
-                <div class="row">                           
-                    <label class="control-label col-md-2">{{ trans('message.table.requestor_comments') }}:</label>
-                    <div class="col-md-10">
-                            <p>{{$Header->requestor_comments}}</p>
-                    </div>
-
-            
-                </div>
-            @endif  
-            @if($Header->suggested_supplier != null || $Header->suggested_supplier != "")
-                <hr/>
-                <div class="row">                           
-                    <label class="control-label col-md-2">Suggested Supplier:</label>
-                    <div class="col-md-10">
-                            <p>{{$Header->suggested_supplier}}</p>
-                    </div>
-
-            
-                </div>
-            @endif  
             <hr/>                
             <div class="row">
                 <div class="col-md-12">
@@ -158,121 +148,59 @@
                                     <table class="table table-bordered" id="item-sourcing">
                                         <tbody id="bodyTable">
                                             <tr class="tbl_header_color dynamicRows">
-                                                <th width="2%" class="text-center"></th> 
-                                                <th width="10%" class="text-center">Item Code</th> 
-                                                <th width="10%" class="text-center">PO Number</th>
-                                                <th width="10%" class="text-center">PO Date</th> 
-                                                <th width="10%" class="text-center">Quote Date</th> 
-                                                <th width="10%" class="text-center">Supplier</th> 
-                                                <th width="10%" class="text-center">{{ trans('message.table.item_description') }}</th>
-                                                <th width="9%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
-                                                <th width="10%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
-                                                <th width="5%" class="text-center">Budget</th> 
-                                                <th width="10%" class="text-center">Value</th> 
-                                                <th width="5%" class="text-center">Quantity</th>  
+                                                <th width="12%" class="text-center">Category</th> 
+                                                <th width="12%" class="text-center">Sub Category</th>
+                                                <th width="12%" class="text-center">Class</th> 
+                                                <th width="12%" class="text-center">Sub Class</th> 
+                                                <th width="12%" class="text-center">{{ trans('message.table.item_description') }}</th>   
+                                                <th width="7%" class="text-center">Brand</th> 
+                                                <th width="7%" class="text-center">Model</th>  
+                                                <th width="7%" class="text-center">Size</th> 
+                                                <th width="7%" class="text-center">Actual Color</th>     
+                                                <th width="2%" class="text-center">Quantity</th>                                                                                                                
+                                                <th width="10%" class="text-center">Budget</th>  
                                             </tr>
                                             <tr id="tr-table">
                                                 <?php   $tableRow = 1; ?>
                                                 <tr>
                                                     @foreach($Body as $rowresult)
-                                                        <?php   $tableRow++; ?>
-                                                        @if($rowresult->deleted_at != null || $rowresult->deleted_at != "")                                    
-                                                        <tr class="strikeout">
-                                                            <td >
-                                                            @if($rowresult->digits_code != NULL && $rowresult->po_number != NULL && $rowresult->po_date != NULL && $rowresult->qoute_date != NULL && $rowresult->supplier != NULL && $rowresult->value != NULL && $rowresult->if_arf_created == NULL)
-                                                                <input style="margin-top:10px" type="checkbox" name="body_id[]" id="body_id{{$tableRow}}" class="id" required data-id="{{$tableRow}}" value="{{$rowresult->id}}"/>
-                                                            @elseif($rowresult->if_arf_created != NULL)
-                                                            <i class="fa fa-check-circle green-color fa-lg" aria-hidden="true"></i>
-                                                            @endif
-                                                                <input type="hidden" name="request_type_id[]" id="request_type_id{{$tableRow}}" class="id" required data-id="{{$tableRow}}" value="{{$rowresult->request_type_id}}"/>
-                                                                <input type="hidden" name="if_arf_created[]" id="if_arf_created" class="id" required data-id="{{$tableRow}}" value="{{$rowresult->if_arf_created}}"/>
-                                                            </td>
-                                                          
+                                                    <tr>
                                                             <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}" readonly>        
                                                             <td style="text-align:center" height="10">
-                                                                    <input type="text"  class="form-control finput"  name="item_code[]" id="ids{{$tableRow}}" value="{{$rowresult->digits_code}}"  required readonly>                                
+                                                                {{$rowresult->category_description}}                               
                                                             </td>
                                                             <td style="text-align:center" height="10">
-                                                                    <input type="text"  class="form-control finput"  name="po_number[]" id="ids{{$tableRow}}" value="{{$rowresult->po_number}}" required readonly>                                
+                                                                {{$rowresult->sub_category_description}}                              
                                                             </td>
                                                             <td style="text-align:center" height="10">
-                                                                    <input type="text"  class="form-control finput po_date{{$tableRow}}"  name="po_date[]" id="po_date{{$tableRow}}" value="{{$rowresult->po_date}}" data-id="{{$tableRow1}}"  required readonly>                                
+                                                                {{$rowresult->class_description}}                               
                                                             </td>
                                                             <td style="text-align:center" height="10">
-                                                                    <input type="text"  class="form-control finput qoute_date"  name="qoute_date[]" id="qoute_date{{$tableRow}}" value="{{$rowresult->qoute_date}}" data-id="{{$tableRow1}}"  required readonly>                                
+                                                                {{$rowresult->sub_class_description}}                               
                                                             </td>
-                                                            <td style="text-align:center" height="10">
-                                                                    <input type="text"  class="form-control finput"  name="supplier[]" id="ids{{$tableRow}}" value="{{$rowresult->supplier}}" required readonly>                                
-                                                            </td>
-                                                            
+                                                                                                
                                                             <td style="text-align:center" height="10">                                                             
-                                                                    {{$rowresult->item_description}}
+                                                                {{$rowresult->item_description}} 
                                                             </td>
-                                                            <td style="text-align:center" height="10">
-                                                                    {{$rowresult->category_id}}
-                                                            </td>
-                                                            <td style="text-align:center" height="10">
-                                                                    {{$rowresult->sub_category_id}}
-                                                            </td>
-                                                            <td style="text-align:center" height="10">
-                                                                    {{$rowresult->budget}}
-                                                            </td>
-                                                            <td style="text-align:center" height="10">
-                                                                    <input type="text" style="text-align:center" class="form-control finput item_source_value"  name="value[]" id="ids{{$tableRow}}" value="{{$rowresult->value}}" required readonly>                                
-                                                            </td>
-                                                            <td style="text-align:center" height="10">
-                                                                    {{$rowresult->quantity}}
-                                                          
-                                                            </td>
-                                                          
-                                                            <td  style="text-align:center; color:#dd4b39"><i class="fa fa-times-circle"></i></td>                                                          
-                                                        </tr>
-                                                      @else                                    
-                                                        <tr>                                                                     
-                                                            <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}" readonly>        
-                                                            <td style="text-align:center" height="10">
-                                                                @if($rowresult->if_arf_created != NULL)
-                                                                <i class="fa fa-check-circle green-color fa-lg" aria-hidden="true"></i>
-                                                                @endif
-                                                            </td>
-                                                            <td style="text-align:center" height="10">
-                                                                    <input type="text"  class="form-control finput"  name="item_code[]" id="ids{{$tableRow}}" value="{{$rowresult->digits_code}}"  required readonly>                                
-                                                            </td>
-                                                            <td style="text-align:center" height="10">
-                                                                    <input type="text"  class="form-control finput"  name="po_number[]" id="ids{{$tableRow}}" value="{{$rowresult->po_number}}" required readonly>                                
-                                                            </td>
-                                                            <td style="text-align:center" height="10">
-                                                                    <input type="text"  class="form-control finput po_date{{$tableRow}}"  name="po_date[]" id="po_date{{$tableRow}}" value="{{$rowresult->po_date}}" data-id="{{$tableRow1}}"  required readonly>                                
-                                                            </td>
-                                                            <td style="text-align:center" height="10">
-                                                                    <input type="text"  class="form-control finput qoute_date"  name="qoute_date[]" id="qoute_date{{$tableRow}}" value="{{$rowresult->qoute_date}}" data-id="{{$tableRow1}}"  required readonly>                                
-                                                            </td>
-                                                            <td style="text-align:center" height="10">
-                                                                    <input type="text"  class="form-control finput"  name="supplier[]" id="ids{{$tableRow}}" value="{{$rowresult->supplier}}" required readonly>                                
-                                                            </td>
-                                                           
                                                             <td style="text-align:center" height="10">                                                             
-                                                                    {{$rowresult->item_description}}
+                                                                {{$rowresult->brand}} 
                                                             </td>
-                                                            <td style="text-align:center" height="10">
-                                                                    {{$rowresult->category_id}}
+                                                            <td style="text-align:center" height="10">                                                             
+                                                                {{$rowresult->model}} 
                                                             </td>
-                                                            <td style="text-align:center" height="10">
-                                                                    {{$rowresult->sub_category_id}}
+                                                            <td style="text-align:center" height="10">                                                             
+                                                                {{$rowresult->size}} 
                                                             </td>
+                                                            <td style="text-align:center" height="10">                                                             
+                                                                {{$rowresult->actual_color}}  
+                                                            </td>
+                                                            <td style="text-align:center" height="10" class="qty">
+                                                                {{$rowresult->quantity}} 
+                                                            </td>     
                                                             <td style="text-align:center" height="10" class="cost">
                                                                     {{$rowresult->budget}}
-                                                            </td>
-                                                            <td style="text-align:center" height="10">
-                                                                    <input type="text"  class="form-control finput item_source_value"  name="value[]" id="ids{{$tableRow}}" value="{{$rowresult->value}}" required readonly>                                
-                                                            </td>   
-                                                            <td style="text-align:center" height="10" class="qty">
-                                                                    {{$rowresult->quantity}}
-                                                          
-                                                            </td>      
-                                                                                                               
-                                                      </tr>
-                                                      @endif                                                                   
+                                                            </td>                                                                                                           
+                                                        </tr>                                                            
                                                     @endforeach     
                                                     
                                                     <input type='hidden' name="quantity_total" class="form-control text-center" id="quantity_total" readonly value="{{$Header->quantity_total}}">
@@ -287,52 +215,76 @@
                 </div>
             </div>
 
-            <br><br>
-           
+       
             <div class="row">
-                <div class="col-md-6">
-                    <table style="width:100%">
-                        <tbody>
-                        @if($Header->approvedby != null)
-                            @if($Header->rejected_at == null)
-                            <tr>
-                                <th class="control-label col-md-2">{{ trans('message.form-label.approved_by') }}:</th>
-                                <td class="col-md-4">{{$Header->approvedby}} / {{$Header->approved_at}}</td>   
-                            </tr>
-                            @else
-                            <tr>
-                                <th class="control-label col-md-2">Rejected By:</th>
-                                <td class="col-md-4">{{$Header->approvedby}} / {{$Header->rejected_at}}</td>   
-                            </tr>
-                            @endif
-                        @endif
-                            @if($Header->approver_comments != null)
-                                <tr>
-                                    <th class="control-label col-md-2">{{ trans('message.table.approver_comments') }}:</th>
-                                    <td class="col-md-4">{{$Header->approver_comments}}</td>
-                                </tr>
-                            @endif
-                            @if( $Header->processedby != null )
-                                <tr>
-                                    <th class="control-label col-md-2">{{ trans('message.form-label.processed_by') }}:</th>
-                                    <td class="col-md-4">{{$Header->processedby}} / {{$Header->purchased2_at}}</td>
-                                </tr>
-                            @endif
-                            @if($Header->ac_comments != null)
-                                <tr>
-                                    <th class="control-label col-md-2">{{ trans('message.table.ac_comments') }}:</th>
-                                    <td class="col-md-4">{{$Header->ac_comments}}</td>
-                                </tr>
-                            @endif
-                            @if( $Header->closedby != null )
-                                <tr>
-                                    <th class="control-label col-md-2">{{ trans('message.form-label.closed_by') }}:</th>
-                                    <td class="col-md-4">{{$Header->closedby}} / {{$Header->closed_at}}</td>
-                                </tr>
-                            @endif
+                <div class="col-md-8 col-md-offset-2">
+                    <table class="table" id="item-sourcing-options">
+                        <tbody id="bodyTable">
+                        <tr>
+                            <th class="text-center">Option</th> 
+                            <th class="text-center">Vendor Name</th>
+                            <th class="text-center">Price</th> 
+                            <th class="text-center">Quotation</th> 
+                            <th width="5%" class="text-center"><i class="fa fa-trash"></i></th>
+                        </tr>  
+                      
+                                                    
+                                <?php   $tableRow = 1; ?>
+                                @foreach($item_options as $res)
+                                <?php   $tableRow1++; ?>
+                                    @if($res->deleted_at != null || $res->deleted_at != "")
+                                      <tr class="strikeout" style="background-color: #dd4b39; color:#fff">                                    
+                                        <td style="text-align:center" height="10">
+                                            {{$res->options}}                               
+                                        </td>
+                                        <td style="text-align:center" height="10">
+                                            {{$res->vendor_name}}                               
+                                        </td>
+                                        <td style="text-align:center" height="10">
+                                             {{number_format($res->price, 2, '.', ',')}}                               
+                                        </td>
+                                        <td style="text-align:center" height="10">
+                                            {{$res->file_name}}                              
+                                        </td>
+                                        
+                                            <td  style="text-align:center; color:white"><i class="fa fa-times-circle"></i></td>                               
+                                        
+                                    </tr>
+                                   @else
+                                    <tr id="tr-tableOption">                                    
+                                        <td style="text-align:center" height="10">
+                                            <input type="hidden"  class="form-control"  name="opt_id" id="opt_id"  required  value="{{$res->optId}}" readonly>  
+                                            {{$res->options}}                               
+                                        </td>
+                                        <td style="text-align:center" height="10">
+                                            {{$res->vendor_name}}                               
+                                        </td>
+                                        <td style="text-align:center" height="10">
+                                             {{number_format($res->price, 2, '.', ',')}}                               
+                                        </td>
+                                        <td style="text-align:center" height="10">
+                                            <a  href='{{CRUDBooster::adminpath("item_sourcing_for_quotation/download/".$res->file_id)."?return_url=".urlencode(Request::fullUrl())}}' class="form-control alink">{{$res->file_name}}   <i style="color:#007bff" class="fa fa-download"></i></a>                             
+                                        </td>
+                                        <td>
+                                           
+                                        
+                                        </td>
+                                    </tr>
+                                   @endif
+                                @endforeach                              
+                         
+                        
                         </tbody>
                     </table>
-                </div>
+                </div>   
+            </div>
+            <hr>
+
+            <br>
+           
+            <div class="row">
+                @include('item-sourcing.comments',['comments'=>$comments])
+                @include('item-sourcing.other_detail',['Header'=>$Header])
             </div>
      
         </div>
@@ -342,13 +294,19 @@
             <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.back') }}</a>
 
         </div>
-
+</form>
 </div>
+
+  {{-- Modal Edi Version --}}
+  @include('item-sourcing.modal-edit-version')
 
 @endsection
 @push('bottom')
 <script type="text/javascript">
-
+    $(function(){
+        item_source_value();
+        $('body').addClass("sidebar-collapse");
+    });
     function preventBack() {
         window.history.forward();
     }
@@ -357,26 +315,160 @@
     };
     setTimeout("preventBack()", 0);
 
-    $(function(){
-        item_source_value();
+    //Get Edit Verions
+    $('#getVersions').click(function(evennt) {
+        event.preventDefault();
+        var header_id = $('#headerID').val();
+        $.ajax({
+            url: "{{ route('get-versions') }}",
+            type: "GET",
+            dataType: 'json',
+
+            data: {
+                "_token": token,
+                "header_id" : header_id
+            },
+            success: function (data) {
+                $.each(data, function(i, item) {
+                    $('#appendVersions').append(
+                        '<tr>' +
+                            '<tr>' +
+                    
+                                '<td colspan="4" style="background-color:#3c8dbc; color:white; font-weight:bold">' + item.version + '</td>' +
+                            '</tr>' +
+
+                            '<tr>' +
+                                '<th style="padding-top:25px" rowspan="2">Description</th>' +
+                                '<th colspan="2">' + 'From' + '</th>' +
+                                '<th colspan="2">' + 'To' + '</th>' +
+                            '</tr>' +
+
+                            '<tr>'  +
+                                '<td colspan="2">' + item.old_description + '</td>' +
+                                '<td colspan="2">' + item.new_description + '</td>' +
+                            '</tr>' +
+
+                            '<tr>' +
+                                '<th style="padding-top:25px" rowspan="2">Brand</th>' +
+                                '<th colspan="2">' + 'From' + '</th>' +
+                                '<th colspan="2">' + 'To' + '</th>' +
+                            '</tr>' +
+                            '<tr>'  +
+                                '<td colspan="2">' + item.old_brand_value + '</td>' +
+                                '<td colspan="2">' + item.new_brand_value + '</td>' +
+                            '</tr>' +
+
+                            
+                            '<tr>' +
+                                '<th style="padding-top:25px" rowspan="2">Model</th>' +
+                                '<th colspan="2">' + 'From' + '</th>' +
+                                '<th colspan="2">' + 'To' + '</th>' +
+                            '</tr>' +
+                            '<tr>'  +
+                                '<td colspan="2">' + item.old_model_value + '</td>' +
+                                '<td colspan="2">' + item.new_model_value + '</td>' +
+                            '</tr>' +
+
+                            '<tr>' +
+                                '<th style="padding-top:25px" rowspan="2">Size</th>' +
+                                '<th colspan="2">' + 'From' + '</th>' +
+                                '<th colspan="2">' + 'To' + '</th>' +
+                            '</tr>' +
+                            '<tr>'  +
+                                '<td colspan="2">' + item.old_size_value + '</td>' +
+                                '<td colspan="2">' + item.new_size_value + '</td>' +
+                            '</tr>' +
+
+                            
+                            '<tr>' +
+                                '<th style="padding-top:25px" rowspan="2">Actual Color</th>' +
+                                '<th colspan="2">' + 'From' + '</th>' +
+                                '<th colspan="2">' + 'To' + '</th>' +
+                            '</tr>' +
+                            '<tr>'  +
+                                '<td colspan="2">' + item.old_ac_value + '</td>' +
+                                '<td colspan="2">' + item.new_ac_value + '</td>' +
+                            '</tr>' +
+
+                            '<tr>' +
+                                '<th style="padding-top:25px" rowspan="2">Quantity</th>' +
+                                '<th colspan="2">' + 'From' + '</th>' +
+                                '<th colspan="2">' + 'To' + '</th>' +
+                            '</tr>' +
+                            '<tr>'  +
+                                '<td colspan="2">' + item.old_qty_value + '</td>' +
+                                '<td colspan="2">' + item.new_qty_value + '</td>' +
+                            '</tr>' +
+
+                            '<tr>' +
+                                '<th>Updated Date</th>' +
+                                '<td colspan="3">' + item.updated_at + '</td>' +
+                            '</tr>' +
+
+                            '<tr>' +
+                                '<th>Updated By</th>' +
+                                '<td colspan="3">' + item.name + '</td>' +
+                            '</tr>' +
+                        '</tr>'
+                        );
+                });
+            }
+         
+        });
+        $('#versionModal').modal('show'); 
+       
+    });
+
+    $('#versionModal').on('hidden.bs.modal', function () {
+      location.reload();
+    });
+
+   
+    var token = $("#token").val();
+    $('.chat').scrollTop($('.chat')[0].scrollHeight);
+    //Chat
+    $('#btnChat').click(function() {
+        event.preventDefault();
+        var header_id = $('#headerID').val();
+        var message = $('#message').val();
+        if ($('#message').val() === "") {
+            swal({
+                type: 'error',
+                title: 'Message Required',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            }); 
+            event.preventDefault(); // cancel default behavior
+        }else{
+            $.ajax({
+                url: "{{ route('save-message') }}",
+                type: "POST",
+                dataType: 'json',
+
+                data: {
+                    "_token": token,
+                    "header_id" : header_id,
+                    "message": message,
+                },
+                success: function (data) {
+                    if (data.status == "success") {
+                        $('.body-comment').append('<span class="session-comment"> ' +
+                                            '<p><span class="comment">'+data.message.comments +'</span> </p>'+
+                                            '<p style="text-align:right; font-size:12px; font-style: italic; padding-right:5px;"> '+ new Date(data.message.created_at) +'</p></span>');
+                        $('#message').val('');
+                    }
+                    var interval = setInterval(function() {
+                        $('.chat').scrollTop($('.chat')[0].scrollHeight);
+                    },200);
+                }
+                 
+            });
+           
+        }
+       
+        
     });
     
-    $('#btnSubmit').click(function() {
-
-        var strconfirm = confirm("Are you sure you want to close this request?");
-        if (strconfirm == true) {
-
-            $(this).attr('disabled','disabled');
-
-            $('#myform').submit(); 
-            
-        }else{
-            return false;
-            window.stop();
-        }
-
-    });
-
 
     function item_source_value(){
         var total = 0;
@@ -408,14 +500,11 @@
         }
         document.getElementById("item-sourcing").innerHTML +=
         "<tr style='text-align:center'>"+
-        "<td colspan=10><strong>TOTAL</strong></td>"+
-        "<td style='text-align:center'><strong><span id='item-source-value-total'>" + 
+        "<td colspan=9><strong>TOTAL</strong></td>"+
         "<td><strong>" +
             sumqty + 
         "</strong></td>"+
                                         
-       
-    
         "</span></strong></td>"+
         "</tr>";
     

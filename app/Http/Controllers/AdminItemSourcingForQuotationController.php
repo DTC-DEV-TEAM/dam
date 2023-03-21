@@ -7,24 +7,35 @@
 	use App\StatusMatrix;
 	use App\Models\ItemHeaderSourcing;
 	use App\Models\ItemBodySourcing;
+	use App\Models\ItemSourcingComments;
+	use App\Models\ItemSourcingOptions;
+	use App\Models\ItemSourcingOptionsFile;
 	use App\HeaderRequest;
 	use App\BodyRequest;
+	use App\Statuses;
+	use Illuminate\Support\Facades\Response;
 
 	class AdminItemSourcingForQuotationController extends \crocodicstudio\crudbooster\controllers\CBController {
-		private $forItReco;
-		private $forTagging;
+		private $forApproval;
+		private $cancelled;
 		private $closed;
-		private $forPO;
-		private $processing;
-	
-		
+		private $forDiscussion;
+		private $forSourcing;
+		private $forStreamlining;
+		private $forItemCreation;
+		private $forArfCreation;
+
 		public function __construct() {
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
-			$this->forItReco        =  4;        
-			$this->forTagging       =  7;  
-			$this->closed           =  13; 
-			$this->forPO            =  37; 
-			$this->processing       =  11;   
+			$this->forApproval      =  1;    
+			$this->cancelled        =  8;
+			$this->closed           =  13;      
+			$this->forDiscussion    =  37;  
+			$this->forSourcing      =  38;
+			$this->forStreamlining  =  39;   
+			$this->forItemCreation  =  40;        
+			$this->forArfCreation   =  41;
+		
 		}
 	    public function cbInit() {
 
@@ -224,6 +235,7 @@
 	        */
 	        $this->load_css = array();
 			//$this->load_css[] = asset("datetimepicker/bootstrap-datetimepicker.min.css");
+			$this->load_css[] = asset("css/chatbox.css");
 	        
 	    }
 
@@ -259,9 +271,7 @@
 			}else{
 
 				$query->where(function($sub_query){
-					$forQuotation =  $this->forPO;
-					$processing   =  $this->processing;
-					$sub_query->whereIn('item_sourcing_header.status_id', [$forQuotation, $processing])->whereNull('item_sourcing_header.deleted_at'); 
+					$sub_query->whereIn('item_sourcing_header.status_id', [$this->forDiscussion, $this->forSourcing,$this->forStreamlining,$this->forItemCreation,$this->forArfCreation])->whereNull('item_sourcing_header.deleted_at'); 
 				});
 
 				$query->orderBy('item_sourcing_header.status_id', 'asc')->orderBy('item_sourcing_header.id', 'desc');
@@ -277,14 +287,33 @@
 	    |
 	    */    
 	    public function hook_row_index($column_index,&$column_value) {	        
-	    	$forQuotation        = DB::table('statuses')->where('id', $this->forPO)->value('status_description'); 
-			$processing        = DB::table('statuses')->where('id', $this->processing)->value('status_description');        
-	
+	    	$forApproval        = DB::table('statuses')->where('id', $this->forApproval)->value('status_description');     
+			$cancelled          = DB::table('statuses')->where('id', $this->cancelled)->value('status_description');   
+			$closed             = DB::table('statuses')->where('id', $this->closed)->value('status_description');  
+			$forDiscussion      = DB::table('statuses')->where('id', $this->forDiscussion)->value('status_description');  
+			$forSourcing        = DB::table('statuses')->where('id', $this->forSourcing)->value('status_description');  
+			$forStreamlining    = DB::table('statuses')->where('id', $this->forStreamlining)->value('status_description');
+			$forItemCreation    = DB::table('statuses')->where('id', $this->forItemCreation)->value('status_description');
+			$forArfCreation     = DB::table('statuses')->where('id', $this->forArfCreation)->value('status_description');
+		
+			
 			if($column_index == 1){
-				if($column_value == $forQuotation){
-					$column_value = '<span class="label label-info">'.$forQuotation.'</span>';
-				}else if($column_value == $processing){
-					$column_value = '<span class="label label-info">'.$processing.'</span>';
+				if($column_value == $forApproval){
+					$column_value = '<span class="label label-warning">'.$forApproval.'</span>';
+				}else if($column_value == $forDiscussion){
+					$column_value = '<span class="label label-info">'.$forDiscussion.'</span>';
+				}else if($column_value == $closed){
+					$column_value = '<span class="label label-success">'.$closed.'</span>';
+				}else if($column_value == $cancelled){
+					$column_value = '<span class="label label-danger">'.$cancelled.'</span>';
+				}else if($column_value == $forStreamlining){
+					$column_value = '<span class="label label-info">'.$forStreamlining.'</span>';
+				}else if($column_value == $forSourcing){
+					$column_value = '<span class="label label-info">'.$forSourcing.'</span>';
+				}else if($column_value == $forItemCreation){
+					$column_value = '<span class="label label-info">'.$forItemCreation.'</span>';
+				}else if($column_value == $forArfCreation){
+					$column_value = '<span class="label label-info">'.$forArfCreation.'</span>';
 				}
 			}
 	    }
@@ -323,47 +352,78 @@
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
 	        $fields             = Request::all();
-			//dd($fields);
-			$ids                         = $fields['ids'];
-			$digits_code                 = $fields['item_code'];
-			$po_number                   = $fields['po_number'];
-			$po_date                     = $fields['po_date'];
-			$qoute_date                  = $fields['qoute_date'];
-			$supplier                    = $fields['supplier'];
-			$value                       = $fields['value'];
-			$reco_item_description       = $fields['reco_item_description'];
-			$ac_comments 		         = $fields['additional_notess'];
-			$approval_action 	         = $fields['approval_action'];
-             
-			for ($i = 0; $i < count($ids); $i++) {
-				ItemBodySourcing::where(['id' => $ids[$i]])
-				   ->update([
-					       'digits_code'                => $digits_code[$i], 
-						   'po_number'                  => $po_number[$i],
-						   'po_date'                    => $po_date[$i],
-						   'qoute_date'                 => $qoute_date[$i],
-						   'supplier'                   => $supplier[$i],
-						   'reco_item_description'      => $reco_item_description[$i],
-					       'value'                      => number_format((float)str_replace(',', '', $value[$i]),2,'.','')
-				           ]);
+			// dd($fields);
+			$status             = $fields['status'];
+			$po_no              = $fields['po_no'];
+			$header_id          = $fields['headerID'];
+			$ids                = $fields['ids'];
+			$option             = $fields['option'];
+			$vendor_name        = $fields['vendor_name'];
+			$price              = $fields['price'];
+			$optionFile         = $fields['optionFile'];
+			$button_action      = $fields['button_action'];
+
+			if($button_action == 1){
+				ItemHeaderSourcing::where('id',$header_id)
+					->update([
+						'status_id'		 => $status
+					]);	
+				
+				if($option){
+					$latestOption = DB::table('item_sourcing_options')->select('id')->orderBy('id','DESC')->first();
+					$latestOptionId = $latestOption->id != NULL ? $latestOption->id : 0;
+					for($x=0; $x < count((array)$option); $x++) {		
+						$dataLines[$x]['header_id']         = $header_id;
+						$dataLines[$x]['options'] 	        = $option[$x];
+						$dataLines[$x]['vendor_name'] 		= $vendor_name[$x];
+						$dataLines[$x]['price'] 	        = intval(str_replace(',', '', $price[$x]));
+						$dataLines[$x]['created_by']        = CRUDBooster::myId();
+						$dataLines[$x]['created_at'] 		= date('Y-m-d H:i:s');
+						
+					}
+
+					ItemSourcingOptions::insert($dataLines);
+					$optId = DB::table('item_sourcing_options')->select('*')->where('id','>', $latestOptionId)->get();
+
+					$finalOptId = [];
+					foreach($optId as $optData){
+						array_push($finalOptId, $optData->id);
+					}
+					$item_sourcing_header = ItemHeaderSourcing::where(['id' => $header_id])->first();
+					$countHeader = DB::table('item_sourcing_options')->where('item_sourcing_options.header_id', $id)->count();
+					$finalCountHead = $countHeader;
+					$documents = [];
+					if (!empty($optionFile)) {
+						$counter = 0;
+						foreach($optionFile as $key => $file){
+							$counter++;
+							$name = $item_sourcing_header->reference_number .'-'. $option[$key] .'.'.$file->getClientOriginalExtension();
+							$filename = $name;
+							$file->move('vendor/crudbooster/item_source',$filename);
+							$documents[]= $filename;
+
+							$header_documents = new ItemSourcingOptionsFile;
+							$header_documents->header_id 		    = $header_id;
+							$header_documents->opt_body_id          = $finalOptId[$key];
+							$header_documents->file_name 		    = $filename;
+							$header_documents->ext 		            = $file->getClientOriginalExtension();
+							$header_documents->created_by 		    = CRUDBooster::myId();
+							$header_documents->save();
+						}
+					}
+				}
+		    }else{
+				ItemHeaderSourcing::where('id',$header_id)
+					->update([
+						'status_id'		 => $status,
+						'po_number'      => $po_no,
+						'closed_by'      => CRUDBooster::myId(),
+						'closed_at'      => date('Y-m-d H:i:s'),
+					]);	
+					CRUDBooster::redirect(CRUDBooster::mainpath(), trans('Successfully Added!'), 'success');
 			}
-			if($approval_action  == 1){
-				ItemHeaderSourcing::where(['id' => $id])
-				   ->update([
-					       'status_id'          => $this->processing, 
-						   'purchased2_by'		=> CRUDBooster::myId(),
-						   'purchased2_at'		=> date('Y-m-d H:i:s'),
-				           ]);
-			}else{
-				ItemHeaderSourcing::where(['id' => $id])
-				   ->update([
-					       'status_id'   => $this->closed, 
-						   'approver_comments'	=> $approver_comments,
-					       'closed_by'		    => CRUDBooster::myId(),
-						   'closed_at'		    => date('Y-m-d H:i:s'),
-				           ]);		
-			}
-			CRUDBooster::redirect(CRUDBooster::mainpath(), trans('Successfully Added!'), 'success');
+
+			CRUDBooster::redirect(CRUDBooster::mainpath('edit/'.$header_id), trans('Successfully Added!'), 'success');
 		    
 
 	    }
@@ -411,51 +471,30 @@
             }
 
 			$data = array();
-			$data['page_title'] = 'Item Sourcing For PO';
-			$data['Header'] = ItemHeaderSourcing::
-				  leftjoin('request_type', 'item_sourcing_header.purpose', '=', 'request_type.id')
-				->leftjoin('condition_type', 'item_sourcing_header.conditions', '=', 'condition_type.id')
-				->leftjoin('cms_users as employees', 'item_sourcing_header.employee_name', '=', 'employees.id')
-				->leftjoin('companies', 'item_sourcing_header.company_name', '=', 'companies.id')
-				->leftjoin('departments', 'item_sourcing_header.department', '=', 'departments.id')
-				->leftjoin('locations', 'employees.location_id', '=', 'locations.id')
-				->leftjoin('cms_users as requested', 'item_sourcing_header.created_by','=', 'requested.id')
-				->leftjoin('cms_users as approved', 'item_sourcing_header.approved_by','=', 'approved.id')
-				->leftjoin('cms_users as recommended', 'item_sourcing_header.recommended_by','=', 'recommended.id')
-				->leftjoin('cms_users as processed', 'item_sourcing_header.purchased2_by','=', 'processed.id')
-				->leftjoin('cms_users as picked', 'item_sourcing_header.picked_by','=', 'picked.id')
-				->leftjoin('cms_users as received', 'item_sourcing_header.received_by','=', 'received.id')
-				->leftjoin('cms_users as closed', 'item_sourcing_header.closed_by','=', 'closed.id')
-				->select(
-						'item_sourcing_header.*',
-						'item_sourcing_header.id as requestid',
-						'item_sourcing_header.created_at as created',
-						'request_type.*',
-						'condition_type.*',
-						'requested.name as requestedby',
-						'employees.bill_to as employee_name',
-						'item_sourcing_header.employee_name as header_emp_name',
-						'item_sourcing_header.created_by as header_created_by',
-						'departments.department_name as department',
-						'item_sourcing_header.store_branch as store_branch',
-						'approved.name as approvedby',
-						'recommended.name as recommendedby',
-						'picked.name as pickedby',
-						'received.name as receivedby',
-						'processed.name as processedby',
-						'closed.name as closedby',
-						'item_sourcing_header.created_at as created_at'
-						)
-				->where('item_sourcing_header.id', $id)->first();
-		
-			$data['Body'] = ItemBodySourcing::
-				select(
-				  'item_sourcing_body.*'
-				)
-				->where('item_sourcing_body.header_request_id', $id)
-				->get();
-	
+			$data['page_title']   = 'Item Sourcing For PO';
+			$data['Header']       = ItemHeaderSourcing::header($id);
+			$data['Body']         = ItemBodySourcing::body($id);
+			$data['comments']     = ItemSourcingComments::comments($id);
+		    $data['item_options'] = ItemSourcingOptions::options($id);
+
+			$data['statuses'] = Statuses::select('statuses.*')->whereIn('id', [37,38,39,40,41, 13, 8])->get();
+			$data['countOptions'] = DB::table('item_sourcing_options')->where('item_sourcing_options.header_id', $id)->whereNotNull('deleted_at')->count();
+			$data['versions'] = DB::table('item_sourcing_edit_versions')->where('header_id', $id)->latest('created_at')->first();
+			$data['allOptions'] = DB::table('item_sourcing_options')->where('item_sourcing_options.header_id', $id)->count();
+            
 			return $this->view("item-sourcing.item-sourcing-for-po", $data);
+		}
+
+		public function getDownload($id) {
+
+			$getFile = DB::table('item_sourcing_option_file')->where('id',$id)->first();
+			$file= public_path(). "/vendor/crudbooster/item_source/".$getFile->file_name;
+
+			$headers = array(
+					'Content-Type: application/pdf',
+					);
+
+			return Response::download($file, $getFile->file_name, $headers);
 		}
 
 

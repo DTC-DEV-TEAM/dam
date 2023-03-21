@@ -300,12 +300,12 @@
 
                                                         <tr id="tr-table1" class="bottom">
             
-                                                            <!--<td colspan="3">
-                                                                <input type="button" id="add-Row" name="add-Row" class="btn btn-info add" value='Add Item' />
+                                                            <td colspan="3" class="text-center">
+                                                             <span ><strong>Total</strong></span>
                                                             </td>
-                                                            <td align="left" colspan="1">
-                                                                <input type='number' name="quantity_total" class="form-control text-center" id="quantity_total" readonly>
-                                                            </td> -->
+                                                            <td align="left">
+                                                                <input type='number' name="quantity_total" class="form-control text-center finput" id="quantity_total" readonly>
+                                                            </td> 
                                                         </tr>
                                                     </tfoot>
 
@@ -340,6 +340,7 @@
     <script type="text/javascript">
         //preview image before save
         $(function() {
+            
         // Multiple images preview in browser
         var imagesPreview = function(input, placeToInsertImagePreview) {
 
@@ -859,7 +860,7 @@
                                                 '<td><input class="form-control finput" type="text" name="item_description[]" readonly value="' + e.value + '"></td>' +
                                                 '<td><input class="form-control finput amount" placeholder="Value" type="text" readonly value="' + e.category_description + '"></td>' +
                                                 //'<td><select required selected data-placeholder="-- Select Type --" id="item_type' + e.id + '" name="item_type[]" class="select2 item_type" style="width:150px;"><option value=""></option><option value="Serial" data-id="' + e.digits_code + '">Serial</option><option value="General" data-id="' + e.digits_code + '">GENERAL</option></select></td>' +
-                                                '<td><input class="form-control text-center finput add_quantity" placeholder="Quantity" type="text" value="1" readonly name="add_quantity[]" id="add_quantity' + e.id  + '" data-id="' + e.id  + '"  min="0" max="9999999999" step="1" onkeypress="return event.charCode >= 48 && event.charCode <= 57" oninput="validity.valid||(value=1);"></td>' +   
+                                                '<td><input class="form-control text-center finput add_quantity" placeholder="Quantity" type="number" value="1" readonly name="add_quantity[]" id="add_quantity' + e.id  + '" data-id="' + e.id  + '"  min="0" max="9999999999" step="1" onkeypress="return event.charCode >= 48 && event.charCode <= 57" oninput="validity.valid||(value=1);"></td>' +   
                                                 // '<td><input class="form-control serial_no" type="text" placeholder="Serial No (Optional)" name="serial_no[]" value="" style="width:150px;" data-index="1"></td>' + 
                                                 '<td><input class="form-control finput amount text-center" placeholder="Value" type="text" name="value[]" id="value" required min="1" min="0" max="9999999999"  value="0"></td>' +                                           
                                                 '<td><input class="form-control finput text-center" type="text" placeholder="(Month)" name="warranty_coverage[]" id="warranty_coverage" min="1" max="9999999999" step="1" onkeypress="return event.charCode <= 57" value="0"></td>' +                                                                                                                                       
@@ -887,48 +888,16 @@
                                         $("#dcqty"+e.id).val('');
                                         $(".delete_serial_row").remove();
                                         $('#rowid').load('#rowid');
+                                        $("#quantity_total").val(calculateTotalQuantity());
                                        
                                     });
+                                   
                                     $(".date").datetimepicker({
                                             viewMode: "days",
                                             format: "YYYY-MM-DD",
                                             dayViewHeaderFormat: "MMMM YYYY",
                                     });
-                                    // $(function() {
-                                    // // single images preview in browser
-                                    // var imagesPreview = function(input, placeToInsertImagePreview) {
-
-                                    //     if (input.files) {
-                                    //         var filesAmount = input.files.length;
-
-                                    //         for (i = 0; i < filesAmount; i++) {
-                                    //             var reader = new FileReader();
-
-                                    //             reader.onload = function(event) {
-                                    //                 $($.parseHTML('<img height="120px" id="body_image_id' + e.id + '" class="body_image_class" width="180px;" hspace="10"  data-action="zoom">')).attr('src', event.target.result).appendTo(placeToInsertImagePreview);
-                                    //             }
-
-                                    //             reader.readAsDataURL(input.files[i]);
-                                    //         }
-                                    //     }
-
-                                    // };
-                                    //     $('#body_image_body' + e.id).on('change', function() {
-                                    //         var imgs = $('div.body_gallery_image' + e.id).find('img').attr('src');
-                                      
-                                    //             imagesPreview(this, 'div.body_gallery_image' + e.id);
-                                                                        
-                                    //         //$("#removeImage").toggle(); 
-                                    //     });
-                                    // });
-                                    //remove image from preview
-                                    // $("#removeImage").click(function(e) {
-                                    //     e.preventDefault(); // prevent default action of link
-                                    //     $('.body_image_class').attr('src', ""); //clear image src
-                                    //     $('#body_image_body' + e.id).val(""); // clear image input value
-                                    //     $('.body_image_class').remove();
-                                    //     $("#removeImage").toggle(); // hide remove link.
-                                    // });
+                              
                                     $(document).on("keyup","#quantity, #amount, #value", function (e) {
                                         if (e.which >= 37 && e.which <= 40) return;
                                         if (this.value.charAt(0) == ".") {
@@ -953,6 +922,7 @@
                                             return parts.join(".");
                                         });
                                      });
+                                     $("#quantity_total").val(calculateTotalQuantity());
                                     $(document).ready(function() {
                                         // $('#item_type' + e.id).change(function() {
                                         // var parentTR = $(this).parents('tr');   
@@ -1035,14 +1005,15 @@
                                         });                                       
 
                                     });
+                                 
                                     //blank++;
-                                    $("#total").val(calculateTotalValue2());
+                                    
 
                                     $(this).val('');
                                     $('#val_item').html('');
 
                                     return false;
-                                
+                                  
                                 }else{
 
                                     // if(e.item_type == "SERIAL"){
@@ -1087,8 +1058,7 @@
                                         
 
                                         $("#total_quantity" + e.id).val(price);
-
-
+                                        
                                         //var subTotalQuantity = calculateTotalQuantity();
                                         //$("#totalQuantity").val(subTotalQuantity);
 
@@ -1100,150 +1070,38 @@
 
                                 }
                                 
-
+                             
                         }
+                    
                 },
+          
               
                 minLength: 1,
                 autoFocus: true
+                
                 });
             });
+          
            
         });
 
-        $('#employee_name').change(function() {
-    
-                var employee_name =  this.value;
-                
-                //var id_data = $(this).attr("data-id");
-                // $('.account'+id_data).prop("disabled", false);
-
-                $.ajax
-                ({ 
-                    url: "{{ URL::to('/employees')}}",
-                    type: "POST",
-                    data: {
-                        'employee_name': employee_name,
-                        _token: '{!! csrf_token() !!}'
-                        },
-                        
-                    
-                        
-                    success: function(result)
-                    {   
-                        //alert(result.length);
-                       
-                        //$('#company_name').val(result[0].company_name);
-                        $('#position').val(result[0].position_description);
-                        $('#department').val(result[0].department_name);
-                        
-                        if(result[0].department_name.includes("STORE")){
-
-
-                            $('#div_store_branch').show();
-                            
-                            $('#store_branch').attr('required', 'required');
-
-                        }else{
-
-                            $('#div_store_branch').hide();
-                            $('#store_branch').removeAttr('required');
-
-                        }
-
-                        /*var i;
-                        var showData = [];
-
-                        for (i = 0; i < result.length; ++i) {
-                            var j = i + 1;
-                            showData[i] = "<option value='"+result[i].id+"'>"+result[i].sub_department_name+"</option>";
-                        }
-                        //$('.account'+id_data).find('option').remove();
-                        //jQuery('.account'+id_data).html(showData);          
-                        
-                        jQuery('#sub_department_id').html(showData);*/
-                    }
-                });
-
-        });
-
-
-        $('#company_name').change(function() {
-    
-                var company_name =  this.value;
-                
-                //var id_data = $(this).attr("data-id");
-                // $('.account'+id_data).prop("disabled", false);
-
-                $.ajax
-                ({ 
-                    url: "{{ URL::to('/companies')}}",
-                    type: "POST",
-                    data: {
-                        'company_name': company_name,
-                        _token: '{!! csrf_token() !!}'
-                        },
-                        
-                    
-                        
-                    success: function(result)
-                    {   
-                        //alert(result.length);
-                    
-                        var i;
-                        var showData = [];
-
-                        showData[0] = "<option value=''>-- Select Employee Name --</option>";
-                        
-                        for (i = 0; i < result.length; ++i) {
-                            var j = i + 1;
-                            showData[j] = "<option value='"+result[i].bill_to+"'>"+result[i].bill_to+"</option>";
-                        }
-                            
-                        $('#employee_name').attr('disabled', false);
-                        
-                        jQuery('#employee_name').html(showData);        
-                        
-   
-
-                    }
-                });
-
-        });
-
-        
-        $(document).on('keyup', '.quantity_item', function(ev) {
-
-            //var id = $(this).attr("data-id");
-            //var rate = parseFloat($(this).val());
-            //var qty = $("#unit_cost" + id).val();
-
-            //var price = calculatePrice(rate, qty).toFixed(2); 
-
-           // $("#total_unit_cost" + id).val(price);
+        $(document).on('keyup', '.add_quantity', function(ev) {
             $("#quantity_total").val(calculateTotalQuantity());
-           // $("#cost_total").val(calculateTotalValue());
-           // $("#total").val(calculateTotalValue2());
+        });
+              
+        $(document).on('keyup', '.quantity_item', function(ev) {
+            $("#quantity_total").val(calculateTotalQuantity());
         });
 
         $(document).on('keyup', '.add_quantity', function(ev) {
 
-       
-
                 var id = $(this).attr("data-id");
                 var rate = parseInt($(this).val());
-
                 var qty = parseInt($("#quantity" + id).val());
-
-              
-
                 var price = calculatePrice(qty, rate); // this is for total Value in row
-
-
                 if(price == 0){
                     price = rate * 1;
                 }
-
                 $("#total_quantity" + id).val(price);
 
 
@@ -1260,7 +1118,7 @@
 
         function calculateTotalQuantity() {
             var totalQuantity = 0;
-            $('.quantity_item').each(function() {
+            $('.add_quantity').each(function() {
 
             totalQuantity += parseInt($(this).val());
             });

@@ -8,27 +8,30 @@
 	use App\StatusMatrix;
 	use App\Models\ItemHeaderSourcing;
 	use App\Models\ItemBodySourcing;
+	use App\Models\ItemSourcingComments;
+	use App\Models\ItemSourcingOptions;
 
 	class AdminItemSourcingApprovalHistoryController extends \crocodicstudio\crudbooster\controllers\CBController {
 		private $forApproval;
-		private $forQuotation;
-		private $closed;
-		private $rejected;
-		private $processing;
-		private $forItReco;
-		private $forTagging;
 		private $cancelled;
+		private $closed;
+		private $forDiscussion;
+		private $forSourcing;
+		private $forStreamlining;
+		private $forItemCreation;
+		private $forArfCreation;
 
 		public function __construct() {
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
-			$this->forApproval      =  1;        
-			$this->forQuotation     =  37;  
-			$this->closed           =  13;   
-			$this->rejected         =  5;
-			$this->processing       =  11;   
-			$this->forItReco        =  4;        
-			$this->forTagging       =  7;
+			$this->forApproval      =  1;    
 			$this->cancelled        =  8;
+			$this->closed           =  13;      
+			$this->forDiscussion    =  37;  
+			$this->forSourcing      =  38;
+			$this->forStreamlining  =  39;   
+			$this->forItemCreation  =  40;        
+			$this->forArfCreation   =  41;
+		
 		}
 	    public function cbInit() {
 
@@ -294,7 +297,7 @@
 	        |
 	        */
 	        $this->load_css = array();
-	        
+			$this->load_css[] = asset("css/chatbox.css");
 	        
 	    }
 
@@ -321,12 +324,12 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-			if(CRUDBooster::isSuperadmin() || CRUDBooster::myPrivilegeId() == 6){
+			if(CRUDBooster::isSuperadmin()){
 				$query->whereNull('item_sourcing_header.deleted_at')->orderBy('item_sourcing_header.status_id', 'DESC')->orderBy('item_sourcing_header.id', 'DESC');
 			}
-			// else if(CRUDBooster::myPrivilegeId() == 6){
-			// 	$query->whereNotNull('item_sourcing_header.closed_by')->where('item_sourcing_header.closed_by', CRUDBooster::myId())->whereNull('item_sourcing_header.deleted_at')->orderBy('item_sourcing_header.id', 'DESC');
-			// }
+			else if(CRUDBooster::myPrivilegeId() == 6){
+				$query->whereIn('item_sourcing_header.status_id', [$this->forDiscussion, $this->forSourcing,$this->forStreamlining,$this->forItemCreation,$this->forArfCreation, $this->closed])->whereNull('item_sourcing_header.deleted_at')->orderBy('item_sourcing_header.id', 'asc'); 
+			}
 			else{
 				$query->whereNotNull('item_sourcing_header.approved_by')->where('item_sourcing_header.approved_by', CRUDBooster::myId())->whereNull('item_sourcing_header.deleted_at')->orderBy('item_sourcing_header.id', 'DESC');
 			}
@@ -340,26 +343,33 @@
 	    |
 	    */    
 	    public function hook_row_index($column_index,&$column_value) {	        
-	    	$forApproval        = DB::table('statuses')->where('id', $this->forApproval)->value('status_description');        
-			$forQuotation       = DB::table('statuses')->where('id', $this->forQuotation)->value('status_description');  
-			$closed             = DB::table('statuses')->where('id', $this->closed)->value('status_description');
-			$rejected           = DB::table('statuses')->where('id', $this->rejected)->value('status_description');  
-			$processing         = DB::table('statuses')->where('id', $this->processing)->value('status_description');
-			$cancelled          = DB::table('statuses')->where('id', $this->cancelled)->value('status_description');  
+	    	$forApproval        = DB::table('statuses')->where('id', $this->forApproval)->value('status_description');     
+			$cancelled          = DB::table('statuses')->where('id', $this->cancelled)->value('status_description');   
+			$closed             = DB::table('statuses')->where('id', $this->closed)->value('status_description');  
+			$forDiscussion      = DB::table('statuses')->where('id', $this->forDiscussion)->value('status_description');  
+			$forSourcing        = DB::table('statuses')->where('id', $this->forSourcing)->value('status_description');  
+			$forStreamlining    = DB::table('statuses')->where('id', $this->forStreamlining)->value('status_description');
+			$forItemCreation    = DB::table('statuses')->where('id', $this->forItemCreation)->value('status_description');
+			$forArfCreation     = DB::table('statuses')->where('id', $this->forArfCreation)->value('status_description');
+		
 			
 			if($column_index == 1){
 				if($column_value == $forApproval){
 					$column_value = '<span class="label label-warning">'.$forApproval.'</span>';
-				}else if($column_value == $forQuotation){
-					$column_value = '<span class="label label-info">'.$forQuotation.'</span>';
+				}else if($column_value == $forDiscussion){
+					$column_value = '<span class="label label-info">'.$forDiscussion.'</span>';
 				}else if($column_value == $closed){
 					$column_value = '<span class="label label-success">'.$closed.'</span>';
-				}else if($column_value == $rejected){
-					$column_value = '<span class="label label-danger">'.$rejected.'</span>';
-				}else if($column_value == $processing){
-					$column_value = '<span class="label label-info">'.$processing.'</span>';
 				}else if($column_value == $cancelled){
 					$column_value = '<span class="label label-danger">'.$cancelled.'</span>';
+				}else if($column_value == $forStreamlining){
+					$column_value = '<span class="label label-info">'.$forStreamlining.'</span>';
+				}else if($column_value == $forSourcing){
+					$column_value = '<span class="label label-info">'.$forSourcing.'</span>';
+				}else if($column_value == $forItemCreation){
+					$column_value = '<span class="label label-info">'.$forItemCreation.'</span>';
+				}else if($column_value == $forArfCreation){
+					$column_value = '<span class="label label-info">'.$forArfCreation.'</span>';
 				}
 			}
 	    }
@@ -445,26 +455,18 @@
 
 			$data = array();
 			$data['page_title'] = 'Item Sourcing Detail History';
-			$data['Header'] = ItemHeaderSourcing::
-				  leftjoin('request_type', 'item_sourcing_header.purpose', '=', 'request_type.id')
-				->leftjoin('condition_type', 'item_sourcing_header.conditions', '=', 'condition_type.id')
-				->leftjoin('cms_users as employees', 'item_sourcing_header.employee_name', '=', 'employees.id')
+			$data['Header'] = ItemHeaderSourcing::leftjoin('cms_users as employees', 'item_sourcing_header.employee_name', '=', 'employees.id')
 				->leftjoin('companies', 'item_sourcing_header.company_name', '=', 'companies.id')
 				->leftjoin('departments', 'item_sourcing_header.department', '=', 'departments.id')
 				->leftjoin('locations', 'employees.location_id', '=', 'locations.id')
 				->leftjoin('cms_users as requested', 'item_sourcing_header.created_by','=', 'requested.id')
 				->leftjoin('cms_users as approved', 'item_sourcing_header.approved_by','=', 'approved.id')
-				->leftjoin('cms_users as recommended', 'item_sourcing_header.recommended_by','=', 'recommended.id')
-				->leftjoin('cms_users as processed', 'item_sourcing_header.purchased2_by','=', 'processed.id')
-				->leftjoin('cms_users as picked', 'item_sourcing_header.picked_by','=', 'picked.id')
-				->leftjoin('cms_users as received', 'item_sourcing_header.received_by','=', 'received.id')
+				->leftjoin('cms_users as processed', 'item_sourcing_header.processed_by','=', 'processed.id')
 				->leftjoin('cms_users as closed', 'item_sourcing_header.closed_by','=', 'closed.id')
 				->select(
 						'item_sourcing_header.*',
 						'item_sourcing_header.id as requestid',
 						'item_sourcing_header.created_at as created',
-						'request_type.*',
-						'condition_type.*',
 						'requested.name as requestedby',
 						'employees.bill_to as employee_name',
 						'item_sourcing_header.employee_name as header_emp_name',
@@ -472,22 +474,43 @@
 						'departments.department_name as department',
 						'item_sourcing_header.store_branch as store_branch',
 						'approved.name as approvedby',
-						'recommended.name as recommendedby',
-						'picked.name as pickedby',
-						'received.name as receivedby',
 						'processed.name as processedby',
 						'closed.name as closedby',
 						'item_sourcing_header.created_at as created_at'
 						)
 				->where('item_sourcing_header.id', $id)->first();
 		
-			$data['Body'] = ItemBodySourcing::
-				select(
-				  'item_sourcing_body.*'
+			$data['Body'] = ItemBodySourcing::leftjoin('new_category', 'item_sourcing_body.category_id', '=', 'new_category.id')
+			    ->leftjoin('new_sub_category', 'item_sourcing_body.sub_category_id', '=', 'new_sub_category.id')
+				->leftjoin('new_class', 'item_sourcing_body.class_id', '=', 'new_class.id')
+				->leftjoin('new_sub_class', 'item_sourcing_body.sub_class_id', '=', 'new_sub_class.id')
+				->select(
+				  'item_sourcing_body.*',
+				  'new_category.*',
+				  'new_sub_category.*',
+				  'new_class.*',
+				  'new_sub_class.*',
 				)
 				->where('item_sourcing_body.header_request_id', $id)
 				->get();
-	
+			$data['comments'] = ItemSourcingComments::
+				leftjoin('cms_users', 'item_sourcing_comments.user_id', '=', 'cms_users.id')
+				->select(
+					'item_sourcing_comments.*',
+					'cms_users.name'
+				  )
+				  ->where('item_sourcing_comments.item_header_id', $id)
+				  ->get();
+			$data['item_options'] = ItemSourcingOptions::
+				  leftjoin('item_sourcing_option_file', 'item_sourcing_options.id', '=', 'item_sourcing_option_file.opt_body_id')
+				  ->select(
+					  'item_sourcing_options.*',
+					  'item_sourcing_option_file.file_name',
+					  'item_sourcing_option_file.id as file_id',
+					)
+					->where('item_sourcing_options.header_id', $id)
+					->get();
+		    $data['versions'] = DB::table('item_sourcing_edit_versions')->where('header_id', $id)->latest('created_at')->first();
 			return $this->view("item-sourcing.item-sourcing-detail-history", $data);
 		}
 

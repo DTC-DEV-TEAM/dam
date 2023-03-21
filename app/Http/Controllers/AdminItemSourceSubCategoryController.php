@@ -4,70 +4,56 @@
 	use Request;
 	use DB;
 	use CRUDBooster;
-	use App\Users;
-	use App\StatusMatrix;
-	use App\Models\ItemHeaderSourcing;
-	use App\Models\ItemBodySourcing;
-	use App\Models\ItemSourcingComments;
-	use App\Mail\Email;
-	use Mail;
 
-	class AdminItemSourcingForApprovalController extends \crocodicstudio\crudbooster\controllers\CBController {
-		private $forApproval;
-		private $forQuotation;
-		private $closed;
-	
-		
-		public function __construct() {
-			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
-			$this->forApproval      =  1;        
-			$this->forQuotation     =  37;  
-			$this->closed           =  13;   
-		}
+	class AdminItemSourceSubCategoryController extends \crocodicstudio\crudbooster\controllers\CBController {
+
 	    public function cbInit() {
 
 			# START CONFIGURATION DO NOT REMOVE THIS LINE
-			$this->title_field = "employee_name";
+			$this->title_field = "id";
 			$this->limit = "20";
 			$this->orderby = "id,desc";
 			$this->global_privilege = false;
 			$this->button_table_action = true;
-			$this->button_bulk_action = false;
+			$this->button_bulk_action = true;
 			$this->button_action_style = "button_icon";
-			$this->button_add = false;
+			$this->button_add = true;
 			$this->button_edit = true;
 			$this->button_delete = false;
-			$this->button_detail = false;
+			$this->button_detail = true;
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
 			$this->button_export = false;
-			$this->table = "item_sourcing_header";
+			$this->table = "new_sub_category";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Status","name"=>"status_id","join"=>"statuses,status_description"];
-			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
-			$this->col[] = ["label"=>"Request Type","name"=>"request_type_id","join"=>"requests,request_name"];
-			$this->col[] = ["label"=>"Company Name","name"=>"company_name"];
-			$this->col[] = ["label"=>"Employee Name","name"=>"employee_name","join"=>"cms_users,bill_to"];
-			$this->col[] = ["label"=>"Department","name"=>"department","join"=>"departments,department_name"];
-			$this->col[] = ["label"=>"Requested By","name"=>"created_by","join"=>"cms_users,name"];
-			$this->col[] = ["label"=>"Requested Date","name"=>"created_at"];
-			//$this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
-			//$this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
-
-			$this->col[] = ["label"=>"Approved By","name"=>"approved_by","join"=>"cms_users,name"];
-			$this->col[] = ["label"=>"Approved Date","name"=>"approved_at"];
-			$this->col[] = ["label"=>"Rejected Date","name"=>"rejected_at"];
-			# END COLUMNS DO NOT REMOVE THIS LINE
+			$this->col[] = ["label"=>"Sub Category Description","name"=>"sub_category_description"];
+			$this->col[] = ["label"=>"Status","name"=>"sub_status"];
+			$this->col[] = ["label"=>"Created By","name"=>"created_by", "join" => "cms_users,name"];
+			$this->col[] = ["label"=>"Updated By","name"=>"updated_by", "join" => "cms_users,name"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-
+			$this->form[] = ['label'=>'Category','name'=>'category_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'new_category,category_description','width'=>'col-sm-5'];
+			$this->form[] = ['label'=>'Sub Category Description','name'=>'sub_category_description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
+			if(CRUDBooster::getCurrentMethod() == 'getEdit' || CRUDBooster::getCurrentMethod() == 'postEditSave' || CRUDBooster::getCurrentMethod() == 'getDetail') {
+				$this->form[] = ['label'=>'Status','name'=>'sub_status','type'=>'select','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE'];
+			}
 			# END FORM DO NOT REMOVE THIS LINE
+
+			# OLD START FORM
+			//$this->form = [];
+			//$this->form[] = ["label"=>"Category Id","name"=>"category_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"category,id"];
+			//$this->form[] = ["label"=>"Sub Category Description","name"=>"sub_category_description","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Sub Status","name"=>"sub_status","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Updated By","name"=>"updated_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			# OLD END FORM
+
 			/* 
 	        | ---------------------------------------------------------------------- 
 	        | Sub Module
@@ -225,7 +211,7 @@
 	        |
 	        */
 	        $this->load_css = array();
-	        $this->load_css[] = asset("css/chatbox.css");
+	        
 	        
 	    }
 
@@ -252,24 +238,7 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-	        if(CRUDBooster::isSuperadmin()){
-				$pending  = 1;
-				$query->orderBy('item_sourcing_header.status_id', 'DESC')->where('item_sourcing_header.status_id', $pending)->orderBy('item_sourcing_header.id', 'DESC');
-			
-			}else{
-				$pending  = 1;
-				$approvalMatrix = Users::where('cms_users.approver_id', CRUDBooster::myId())->get();
-				$approval_array = array();
-				foreach($approvalMatrix as $matrix){
-				    array_push($approval_array, $matrix->id);
-				}
-				$approval_string = implode(",",$approval_array);
-				$userslist = array_map('intval',explode(",",$approval_string));
-				$query->whereIn('item_sourcing_header.created_by', $userslist)
-				->where('item_sourcing_header.status_id', $pending) 
-				->orderBy('item_sourcing_header.id', 'DESC');
-
-			}
+	        //Your code here
 	            
 	    }
 
@@ -280,13 +249,7 @@
 	    |
 	    */    
 	    public function hook_row_index($column_index,&$column_value) {	        
-	    	$forApproval        = DB::table('statuses')->where('id', $this->forApproval)->value('status_description');        
-	
-			if($column_index == 1){
-				if($column_value == $forApproval){
-					$column_value = '<span class="label label-warning">'.$forApproval.'</span>';
-				}
-			}
+	    	//Your code here
 	    }
 
 	    /*
@@ -297,7 +260,7 @@
 	    |
 	    */
 	    public function hook_before_add(&$postdata) {        
-	        //Your code here
+			$postdata['created_by']=CRUDBooster::myId();
 
 	    }
 
@@ -322,26 +285,7 @@
 	    | 
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
-	        $fields = Request::all();
-
-			$dataLines = array();
-			$approval_action 		= $fields['approval_action'];
-			$approver_comments 		= $fields['additional_notess'];
-
-			$arf_header = ItemHeaderSourcing::where(['id' => $id])->first();
-			$arf_body = ItemBodySourcing::where(['header_request_id' => $id])->get();
-
-			if($approval_action  == 1){
-				$postdata['status_id']		    = 37;
-				$postdata['approved_by'] 		= CRUDBooster::myId();
-				$postdata['approved_at'] 		= date('Y-m-d H:i:s');
-					
-			}else{
-				$postdata['status_id'] 			= 5;
-				$postdata['approved_by'] 		= CRUDBooster::myId();
-				$postdata['rejected_at'] 		= date('Y-m-d H:i:s');
-
-			}
+			$postdata['updated_by']=CRUDBooster::myId();
 
 	    }
 
@@ -381,22 +325,9 @@
 
 	    }
 
-		public function getEdit($id){
-			$this->cbLoader();
-            if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
-                CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
-            }
 
-			$data = array();
-			$data['page_title'] = 'Item Sourcing Detail';
 
-			$data['Header']     = ItemHeaderSourcing::header($id);
-			$data['Body']       = ItemBodySourcing::body($id);
-			$data['comments']   = ItemSourcingComments::comments($id);
-			$data['versions']     = DB::table('item_sourcing_edit_versions')->where('header_id', $id)->latest('created_at')->first();
-	
-			return $this->view("item-sourcing.item-sourcing-for-approval", $data);
-		}
+	    //By the way, you can still create your own method in here... :) 
 
 
 	}

@@ -5,31 +5,38 @@
 	use DB;
 	use CRUDBooster;
 	use App\StatusMatrix;
+	use App\Users;
 	use App\Models\ItemHeaderSourcing;
 	use App\Models\ItemBodySourcing;
+	use App\Models\ItemSourcingComments;
+	use App\Models\ItemSourcingOptions;
+	use App\Models\ItemSourcingEditVersions;
 	use App\HeaderRequest;
 	use App\BodyRequest;
+	use App\Mail\Email;
+	use Mail;
 
 	class AdminItemSourcingHeaderController extends \crocodicstudio\crudbooster\controllers\CBController {
 		private $forApproval;
-		private $forQuotation;
-		private $closed;
-		private $rejected;
-		private $processing;
-		private $forItReco;
-		private $forTagging;
 		private $cancelled;
+		private $closed;
+		private $forDiscussion;
+		private $forSourcing;
+		private $forStreamlining;
+		private $forItemCreation;
+		private $forArfCreation;
 
 		public function __construct() {
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
-			$this->forApproval      =  1;        
-			$this->forQuotation     =  37;  
-			$this->closed           =  13;   
-			$this->rejected         =  5;
-			$this->processing       =  11;   
-			$this->forItReco        =  4;        
-			$this->forTagging       =  7;
+			$this->forApproval      =  1;    
 			$this->cancelled        =  8;
+			$this->closed           =  13;      
+			$this->forDiscussion    =  37;  
+			$this->forSourcing      =  38;
+			$this->forStreamlining  =  39;   
+			$this->forItemCreation  =  40;        
+			$this->forArfCreation   =  41;
+		
 		}
 	    public function cbInit() {
 
@@ -143,7 +150,14 @@
 	        */
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
-				$this->index_button[] = ["label"=>"Request Item Sourcing","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-item-sourcing'),"color"=>"success"];
+				$this->index_button[] = ["label"=>"IT Assets","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-item-sourcing-it'),"color"=>"success"];
+				$this->index_button[] = ["label"=>"Fixed Assets","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-item-sourcing-fa'),"color"=>"success"];
+				$this->index_button[] = ["label"=>"Marketing","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-item-sourcing-mkt'),"color"=>"success"];
+				$this->index_button[] = ["label"=>"Supplies","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-item-sourcing-supplies'),"color"=>"success"];
+				$this->index_button[] = ["label"=>"Services","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-item-sourcing-services'),"color"=>"success"];
+				$this->index_button[] = ["label"=>"Subscription","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-item-sourcing-subscription'),"color"=>"success"];
+
+			
 			}
 
 
@@ -178,16 +192,59 @@
 	        |
 	        */
 	        $this->script_js = "
-			
-			    $('.fa.fa-times').click(function(){
-				var strconfirm = confirm('Are you sure you want to cancel this request?');
-				if (strconfirm == true) {
-					return true;
-				}else{
-					return false;
-					window.stop();
-				}
+				$(document).ready(function() {
+					$('#supplies').prop('title', 'Bag');
+					$('#fixed-assets').prop('title', 'Cellphone');
+					$('#it-assets').prop('title', 'Laptop');
+					$('#marketing').prop('title', 'Card');
 
+					$('#it-assets').attr(
+							{
+								\"data-toggle\":\"tooltip\", 
+								\"data-placement\":\"bottom\", 
+							},
+				        );
+					$('#fixed-assets').attr(
+							{
+								\"data-toggle\":\"tooltip\", 
+								\"data-placement\":\"bottom\", 
+							},
+				        );
+					$('#marketing').attr(
+							{
+								\"data-toggle\":\"tooltip\", 
+								\"data-placement\":\"bottom\", 
+							},
+				        );
+					$('#supplies').attr(
+							{
+								\"data-toggle\":\"tooltip\", 
+								\"data-placement\":\"bottom\", 
+							},
+				        );
+				    $('.btn-detail').attr(
+							{
+								\"data-toggle\":\"tooltip\", 
+								\"data-placement\":\"bottom\", 
+							},
+				        );
+					$('a[title=\"Cancel Request\"]').attr(
+							{
+								\"data-toggle\":\"tooltip\", 
+								\"data-placement\":\"bottom\", 
+							},
+				        );
+				
+					$('.fa.fa-times').click(function(){
+					var strconfirm = confirm('Are you sure you want to cancel this request?');
+					if (strconfirm == true) {
+						return true;
+					}else{
+						return false;
+						window.stop();
+					}
+
+		    	});	
 			});";
 
 
@@ -225,6 +282,7 @@
 	        */
 	        $this->load_js = array();
 			$this->load_js[] = asset("datetimepicker/bootstrap-datetimepicker.min.js");
+			$this->load_js[] = asset("js/item_source/chat.js");
 	        
 	        
 	        /*
@@ -249,6 +307,7 @@
 	        */
 	        $this->load_css = array();
 	        $this->load_css[] = asset("datetimepicker/bootstrap-datetimepicker.min.css");
+			$this->load_css[] = asset("css/chatbox.css");
 	        
 	    }
 
@@ -317,26 +376,33 @@
 	    |
 	    */    
 	    public function hook_row_index($column_index,&$column_value) {	        
-			$forApproval        = DB::table('statuses')->where('id', $this->forApproval)->value('status_description');        
-			$forQuotation       = DB::table('statuses')->where('id', $this->forQuotation)->value('status_description');  
-			$closed             = DB::table('statuses')->where('id', $this->closed)->value('status_description');
-			$rejected           = DB::table('statuses')->where('id', $this->rejected)->value('status_description');  
-			$processing         = DB::table('statuses')->where('id', $this->processing)->value('status_description');
-			$cancelled          = DB::table('statuses')->where('id', $this->cancelled)->value('status_description');  
+			$forApproval        = DB::table('statuses')->where('id', $this->forApproval)->value('status_description');     
+			$cancelled          = DB::table('statuses')->where('id', $this->cancelled)->value('status_description');   
+			$closed             = DB::table('statuses')->where('id', $this->closed)->value('status_description');  
+			$forDiscussion      = DB::table('statuses')->where('id', $this->forDiscussion)->value('status_description');  
+			$forSourcing        = DB::table('statuses')->where('id', $this->forSourcing)->value('status_description');  
+			$forStreamlining    = DB::table('statuses')->where('id', $this->forStreamlining)->value('status_description');
+			$forItemCreation    = DB::table('statuses')->where('id', $this->forItemCreation)->value('status_description');
+			$forArfCreation     = DB::table('statuses')->where('id', $this->forArfCreation)->value('status_description');
+		
 			
 			if($column_index == 1){
 				if($column_value == $forApproval){
 					$column_value = '<span class="label label-warning">'.$forApproval.'</span>';
-				}else if($column_value == $forQuotation){
-					$column_value = '<span class="label label-info">'.$forQuotation.'</span>';
+				}else if($column_value == $forDiscussion){
+					$column_value = '<span class="label label-info">'.$forDiscussion.'</span>';
 				}else if($column_value == $closed){
 					$column_value = '<span class="label label-success">'.$closed.'</span>';
-				}else if($column_value == $rejected){
-					$column_value = '<span class="label label-danger">'.$rejected.'</span>';
-				}else if($column_value == $processing){
-					$column_value = '<span class="label label-info">'.$processing.'</span>';
 				}else if($column_value == $cancelled){
 					$column_value = '<span class="label label-danger">'.$cancelled.'</span>';
+				}else if($column_value == $forStreamlining){
+					$column_value = '<span class="label label-info">'.$forStreamlining.'</span>';
+				}else if($column_value == $forSourcing){
+					$column_value = '<span class="label label-info">'.$forSourcing.'</span>';
+				}else if($column_value == $forItemCreation){
+					$column_value = '<span class="label label-info">'.$forItemCreation.'</span>';
+				}else if($column_value == $forArfCreation){
+					$column_value = '<span class="label label-info">'.$forArfCreation.'</span>';
 				}
 			}
 	    }
@@ -352,7 +418,7 @@
 	        $fields = Request::all();
 
 			$dataLines = array();
-			$supplies_cost 		     = $fields['supplies_cost'];
+
 			$employee_name 		     = $fields['employee_name'];
 			$company_name 		     = $fields['company_name'];
 			$position 			     = $fields['position'];
@@ -360,16 +426,14 @@
 			$department 		     = $fields['department'];
 			$store_branch 		     = $fields['store_branch'];
 			$store_branch_id         = $fields['store_branch_id'];
-			$purpose 			     = $fields['purpose'];
-			$condition 			     = $fields['condition'];
+	
 			$quantity_total 	     = $fields['quantity_total'];
 			$cost_total 		     = $fields['cost_total'];
 			$total 				     = $fields['total'];
 			$request_type_id 	     = $fields['request_type_id'];
 			$requestor_comments      = $fields['requestor_comments'];
 			$suggested_supplier      = $fields['suggested_supplier'];
-			$application 		     = $fields['application'];
-			$application_others      = $fields['application_others'];
+
 			$count_header            = DB::table('item_sourcing_header')->count();
 			$header_ref              = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);			
 			$reference_number	     = "NIS-".$header_ref;
@@ -397,24 +461,14 @@
 				$postdata['store_branch'] 			= NULL;
 			}
 			
-			$postdata['purpose'] 					= $purpose;
-			$postdata['conditions'] 				= $condition;
 			$postdata['quantity_total'] 			= $quantity_total;
 			$postdata['cost_total'] 				= $cost_total;
 			$postdata['total'] 						= $total;
-			$postdata['requestor_comments'] 		= $requestor_comments;
-			$postdata['suggested_supplier'] 		= $suggested_supplier;
 			$postdata['created_by'] 				= CRUDBooster::myId();
 			$postdata['created_at'] 				= date('Y-m-d H:i:s');
 			$postdata['request_type_id']		 	= $request_type_id;
-			$postdata['privilege_id']		 		= CRUDBooster::myPrivilegeId();
 
-			if(!empty($application)){
-				$postdata['application'] 				= implode(", ",$application);
-
-				$postdata['application_others'] 		= $application_others;
-			}
-
+			
 	    }
 
 	    /* 
@@ -427,90 +481,62 @@
 	    public function hook_after_add($id) {        
 	        $fields = Request::all();
 			$dataLines = array();
-			$arf_header = DB::table('item_sourcing_header')->where(['created_by' => CRUDBooster::myId()])->orderBy('id','desc')->first();
-	
-			$supplies_cost 		= $fields['supplies_cost'];
+			$nis_header = DB::table('item_sourcing_header')->where(['created_by' => CRUDBooster::myId()])->orderBy('id','desc')->first();
+
 			$item_description 	= $fields['item_description'];
 			$category_id 		= $fields['category_id'];
 			$sub_category_id 	= $fields['sub_category_id'];
-			$app_id_others 		= $fields['app_id_others'];
+			$class_id 			= $fields['class_id'];
+			$sub_class_id 	    = $fields['sub_class_id'];
+			$brand 			    = $fields['brand'];
+			$model 		     	= $fields['model'];
+			$size 			    = $fields['size'];
+			$actual_color       = $fields['actual_color'];
 			$quantity 			= $fields['quantity'];
-			$image 				= $fields['image'];
-			$request_type_id 	= $fields['request_type_id'];
 			$budget 	        = $fields['budget'];
-			
-			$app_count = 2;
-
-         
-			for($x=0; $x < count((array)$item_description); $x++) {
-				$apps_array = array();
-				$app_no = 'app_id'.$app_count;
-				$app_id 			= $fields[$app_no];
-				for($xxx=0; $xxx < count((array)$app_id); $xxx++) {
-					array_push($apps_array,$app_id[$xxx]); 
-				}
+			$requestor_comments      = $fields['requestor_comments'];
+		 
 	
-				$app_count++;
+			ItemBodySourcing::Create([
+				'header_request_id' => $nis_header->id,
+				'item_description' 	=> $item_description,
+				'category_id' 		=> $category_id,
+				'sub_category_id' 	=> $sub_category_id,
+				'class_id' 	        => $class_id,
+				'sub_class_id' 	    => $sub_class_id,
+				'sub_category_id' 	=> $sub_category_id,
+				'brand' 	        => $brand,
+				'model' 	        => $model,
+				'size' 	            => $size,
+				'actual_color' 	    => $actual_color,
+				'quantity' 			=> $quantity,
+				'budget' 		    => $budget,
+				'created_at' 		=> date('Y-m-d H:i:s'),
+			]
+	
+			);
 
-				if(in_array(CRUDBooster::myPrivilegeId(), [4,11,12,14,15])){ 
-					if($category_id[$x] == "IT ASSETS"){
-						ItemHeaderSourcing::where('id', $arf_header->id)->update([
-							'to_reco'=> 1
-						]);
-						
-					}
-					
-				}
-
-				$dataLines[$x]['header_request_id'] = $arf_header->id;
-				$dataLines[$x]['digits_code'] 	    = $digits_code[$x];
-				$dataLines[$x]['item_description'] 	= $item_description[$x];
-				$dataLines[$x]['category_id'] 		= $category_id[$x];
-				$dataLines[$x]['sub_category_id'] 	= $sub_category_id[$x];
-				$dataLines[$x]['app_id'] 			= implode(", ",$apps_array);
-				$dataLines[$x]['app_id_others'] 	= $app_id_others[$x];
-				$dataLines[$x]['quantity'] 			= $quantity[$x];
-				$dataLines[$x]['unit_cost'] 		= $supplies_cost[$x];
-				$dataLines[$x]['budget'] 		    = $budget[$x];
-
-				if($request_type_id == 5){
-					$dataLines[$x]['to_reco'] = 0;
-					
-				}else{
-
-					if (str_contains($sub_category_id[$x], 'LAPTOP') || str_contains($sub_category_id[$x], 'DESKTOP')) {
-						$dataLines[$x]['to_reco'] = 1;
-					}else{
-						$dataLines[$x]['to_reco'] = 0;
-					}
-
-				}
-
-				if($category_id[$x] == "IT ASSETS"){
-					$dataLines[$x]['request_type_id'] = 1;
-					
-				}else if($category_id[$x] == "FIXED ASSETS"){
-					$dataLines[$x]['request_type_id'] = 5;
-				}else if($category_id[$x] == "SUPPLIES"){
-					$dataLines[$x]['request_type_id'] = 7;
-				}else{
-					$dataLines[$x]['request_type_id'] = 6;
-				}
-
-				$dataLines[$x]['created_at'] 		= date('Y-m-d H:i:s');
-				unset($apps_array);
+			if($requestor_comments){
+				ItemSourcingComments::Create(
+				    [
+					'item_header_id' => $nis_header->id,
+					'user_id'        => CRUDBooster::myId(),
+					'comments'       => $requestor_comments,
+					'created_at' 	 => date('Y-m-d H:i:s'),
+				    ]
+				);   
 			}
 
 			DB::beginTransaction();
 	
-			try {
-				ItemBodySourcing::insert($dataLines);
-				DB::commit();
-				//CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_pullout_data_success",['mps_reference'=>$pullout_header->reference]), 'success');
-			} catch (\Exception $e) {
-				DB::rollback();
-				CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_database_error",['database_error'=>$e]), 'danger');
-			}
+			// try {
+				
+			// 	DB::commit();
+			// 	//CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_pullout_data_success",['mps_reference'=>$pullout_header->reference]), 'success');
+			// } catch (\Exception $e) {
+			// 	DB::rollback();
+			// 	CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_database_error",['database_error'=>$e]), 'danger');
+			// }
 			
 			CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_add_success",['reference_number'=>$arf_header->reference_number]), 'success');
 
@@ -565,29 +591,23 @@
 	        //Your code here
 
 	    }
-        
-		public function getAddItemSourcing() {
 
+		//IT
+		public function getAddItemSourcingIt() {
 			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
 				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
 			}
-
 			$this->cbLoader();
-			$data['page_title'] = 'Create Item Sourcing Request';
+			$data['page_title'] = 'Create IT Item Sourcing';
 			$data['conditions'] = DB::table('condition_type')->where('status', 'ACTIVE')->get();
 			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
 			$data['stores'] = DB::table('stores')->where('status', 'ACTIVE')->get();
 			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
 			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-			$data['employeeinfos'] = DB::table('cms_users')
-										 ->leftjoin('positions', 'cms_users.position_id', '=', 'positions.id')
-										 ->leftjoin('departments', 'cms_users.department_id', '=', 'departments.id')
-										 ->select( 'cms_users.*', 'positions.position_description as position_description', 'departments.department_name as department_name')
-										 ->where('cms_users.id', $data['user']->id)->first();
-										 $data['categories'] = DB::table('category')->where('category_status', 'ACTIVE')->whereIn('id', [5,1,2,4])->orderby('category_description', 'asc')->get();
-			$data['sub_categories'] = DB::table('class')->where('class_status', 'ACTIVE')->where('category_id', 5)->orderby('class_description', 'asc')->get();
-			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();
-			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
+
+			$data['employeeinfos'] = Users::user($data['user']->id);
+
+			$data['categories'] = DB::table('new_category')->where('id',1)->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
 			$data['budget_range'] = DB::table('sub_masterfile_budget_range')->where('status', 'ACTIVE')->get();
 			$privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
 			$privileges_array = array();
@@ -599,12 +619,123 @@
 
 			if(in_array(CRUDBooster::myPrivilegeId(), $privilegeslist)){ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
-				return $this->view("item-sourcing.add-item-sourcing", $data);
+				return $this->view("item-sourcing.add-item-sourcing-it", $data);
 
 			}else{ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
 				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
-				return $this->view("item-sourcing.add-store-item-sourcing", $data);
+				return $this->view("item-sourcing.add-store-item-sourcing-it", $data);
+			}
+				
+		}
+
+		//IT
+		public function getAddItemSourcingFa() {
+			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
+				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
+			}
+			$this->cbLoader();
+			$data['page_title'] = 'Create Fixed Assets Item Sourcing';
+			$data['conditions'] = DB::table('condition_type')->where('status', 'ACTIVE')->get();
+			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
+			$data['stores'] = DB::table('stores')->where('status', 'ACTIVE')->get();
+			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
+			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
+
+			$data['employeeinfos'] = Users::user($data['user']->id);
+
+			$data['categories'] = DB::table('new_category')->where('id',3)->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
+			$data['budget_range'] = DB::table('sub_masterfile_budget_range')->where('status', 'ACTIVE')->get();
+			$privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
+			$privileges_array = array();
+			foreach($privilegesMatrix as $matrix){
+				array_push($privileges_array, $matrix->id);
+			}
+			$privileges_string = implode(",",$privileges_array);
+			$privilegeslist = array_map('intval',explode(",",$privileges_string));
+
+			if(in_array(CRUDBooster::myPrivilegeId(), $privilegeslist)){ 
+				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
+				return $this->view("item-sourcing.add-item-sourcing-fa", $data);
+
+			}else{ 
+				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
+				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
+				return $this->view("item-sourcing.add-store-item-sourcing-fa", $data);
+			}
+				
+		}
+
+		//Marketing
+		public function getAddItemSourcingMkt() {
+			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
+				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
+			}
+			$this->cbLoader();
+			$data['page_title'] = 'Create Marketing Item Sourcing';
+			$data['conditions'] = DB::table('condition_type')->where('status', 'ACTIVE')->get();
+			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
+			$data['stores'] = DB::table('stores')->where('status', 'ACTIVE')->get();
+			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
+			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
+
+			$data['employeeinfos'] = Users::user($data['user']->id);
+
+			$data['categories'] = DB::table('new_category')->where('id',3)->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
+			$data['budget_range'] = DB::table('sub_masterfile_budget_range')->where('status', 'ACTIVE')->get();
+			$privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
+			$privileges_array = array();
+			foreach($privilegesMatrix as $matrix){
+				array_push($privileges_array, $matrix->id);
+			}
+			$privileges_string = implode(",",$privileges_array);
+			$privilegeslist = array_map('intval',explode(",",$privileges_string));
+
+			if(in_array(CRUDBooster::myPrivilegeId(), $privilegeslist)){ 
+				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
+				return $this->view("item-sourcing.add-item-sourcing-mkt", $data);
+
+			}else{ 
+				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
+				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
+				return $this->view("item-sourcing.add-store-item-sourcing-mkt", $data);
+			}
+				
+		}
+        
+		//Supplies
+		public function getAddItemSourcingSupplies() {
+			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
+				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
+			}
+			$this->cbLoader();
+			$data['page_title'] = 'Create Supplies Item Sourcing';
+			$data['conditions'] = DB::table('condition_type')->where('status', 'ACTIVE')->get();
+			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
+			$data['stores'] = DB::table('stores')->where('status', 'ACTIVE')->get();
+			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
+			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
+
+			$data['employeeinfos'] = Users::user($data['user']->id);
+
+			$data['categories'] = DB::table('new_category')->whereIn('id',[2,4])->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
+			$data['budget_range'] = DB::table('sub_masterfile_budget_range')->where('status', 'ACTIVE')->get();
+			$privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
+			$privileges_array = array();
+			foreach($privilegesMatrix as $matrix){
+				array_push($privileges_array, $matrix->id);
+			}
+			$privileges_string = implode(",",$privileges_array);
+			$privilegeslist = array_map('intval',explode(",",$privileges_string));
+
+			if(in_array(CRUDBooster::myPrivilegeId(), $privilegeslist)){ 
+				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
+				return $this->view("item-sourcing.add-item-sourcing-supplies", $data);
+
+			}else{ 
+				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
+				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
+				return $this->view("item-sourcing.add-store-item-sourcing-supplies", $data);
 			}
 				
 		}
@@ -616,284 +747,35 @@
             }
 
 			$data = array();
-			$data['page_title'] = 'Item Sourcing Detail';
-			$data['Header'] = ItemHeaderSourcing::
-				  leftjoin('request_type', 'item_sourcing_header.purpose', '=', 'request_type.id')
-				->leftjoin('condition_type', 'item_sourcing_header.conditions', '=', 'condition_type.id')
-				->leftjoin('cms_users as employees', 'item_sourcing_header.employee_name', '=', 'employees.id')
-				->leftjoin('companies', 'item_sourcing_header.company_name', '=', 'companies.id')
-				->leftjoin('departments', 'item_sourcing_header.department', '=', 'departments.id')
-				->leftjoin('locations', 'employees.location_id', '=', 'locations.id')
-				->leftjoin('cms_users as requested', 'item_sourcing_header.created_by','=', 'requested.id')
-				->leftjoin('cms_users as approved', 'item_sourcing_header.approved_by','=', 'approved.id')
-				->leftjoin('cms_users as recommended', 'item_sourcing_header.recommended_by','=', 'recommended.id')
-				->leftjoin('cms_users as processed', 'item_sourcing_header.purchased2_by','=', 'processed.id')
-				->leftjoin('cms_users as picked', 'item_sourcing_header.picked_by','=', 'picked.id')
-				->leftjoin('cms_users as received', 'item_sourcing_header.received_by','=', 'received.id')
-				->leftjoin('cms_users as closed', 'item_sourcing_header.closed_by','=', 'closed.id')
-				->select(
-						'item_sourcing_header.*',
-						'item_sourcing_header.id as requestid',
-						'item_sourcing_header.created_at as created',
-						'request_type.*',
-						'condition_type.*',
-						'requested.name as requestedby',
-						'employees.bill_to as employee_name',
-						'item_sourcing_header.employee_name as header_emp_name',
-						'item_sourcing_header.created_by as header_created_by',
-						'departments.department_name as department',
-						'item_sourcing_header.store_branch as store_branch',
-						'approved.name as approvedby',
-						'recommended.name as recommendedby',
-						'picked.name as pickedby',
-						'received.name as receivedby',
-						'processed.name as processedby',
-						'closed.name as closedby',
-						'item_sourcing_header.created_at as created_at'
-						)
-				->where('item_sourcing_header.id', $id)->first();
-		
-			$data['Body'] = ItemBodySourcing::
-				select(
-				  'item_sourcing_body.*'
-				)
-				->where('item_sourcing_body.header_request_id', $id)
-				->get();
-		  
+			$data['page_title']   = 'Item Sourcing Detail';
+
+			$data['Header']       = ItemHeaderSourcing::header($id);
+			$data['Body']         = ItemBodySourcing::body($id);
+			$data['comments']     = ItemSourcingComments::comments($id);
+		    $data['item_options'] = ItemSourcingOptions::options($id);
+			$data['versions']     = DB::table('item_sourcing_edit_versions')->where('header_id', $id)->latest('created_at')->first();
+			$data['allOptions']   = DB::table('item_sourcing_options')->where('item_sourcing_options.header_id', $id)->count();
+
 			return $this->view("item-sourcing.item-sourcing-detail", $data);
 		}
 
-		public function createArf(Request $request){
-			$fields = Request::all();
-			
-		    $headerId        = $fields['header_id'];
-			$bodyIds         = $fields['body_ids'];
-			$request_type_id = array_unique($fields['request_type_id']);
-			$ids = implode(',',$bodyIds);
-			$bodyIdLists = array_map('intval',explode(",",$ids));
-			$item_sourcing_header = ItemHeaderSourcing::where(['id' => $headerId])->first();
-			$item_sourcing_body = ItemBodySourcing::whereIn('id',$bodyIdLists)->get();
-
-			$latestRequest = DB::table('header_request')->select('id')->orderBy('id','DESC')->first();
-			$latestRequestId = $latestRequest->id != NULL ? $latestRequest->id : 0;
-			
-			//add in arf heaader request table
-			$count_header       = DB::table('header_request')->count();
 		
-			$arfHeaderSave = [];
-			$arfHeaderContainer = [];
-			foreach($request_type_id as $arfHeadKey => $arfHeadVal){
-				if($arfHeadVal == 1){
-					$arfHeaderContainer['status_id']              = $this->forItReco;
-					$arfHeaderContainer['application'] 			  = $item_sourcing_header->application;
-					$arfHeaderContainer['application_others'] 	  = $item_sourcing_header->application_others;
-					$arfHeaderContainer['to_reco']                = 1;
-				}else{
-					$arfHeaderContainer['status_id']              = $this->forTagging;
-					$arfHeaderContainer['application'] 			  = NULL;
-					$arfHeaderContainer['application_others'] 	  = NULL;  
-					$arfHeaderContainer['to_reco']                = 0;
-				}
-				$arfHeaderContainer['reference_number']		      = "ARF-".str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);
-				$count_header ++;
-				$arfHeaderContainer['employee_name' ]		      = $item_sourcing_header->employee_name;
-				$arfHeaderContainer['company_name'] 			  = $item_sourcing_header->company_name;
-				$arfHeaderContainer['position'] 				  = $item_sourcing_header->position;
-				$arfHeaderContainer['department' ]				  = $item_sourcing_header->department;
-				$arfHeaderContainer['store_branch']		          = $item_sourcing_header->store_branch;
-				$arfHeaderContainer['purpose'] 				      = 2;
-				$arfHeaderContainer['conditions'] 				  = $item_sourcing_header->conditions;
-				$arfHeaderContainer['quantity_total'] 			  = $item_sourcing_header->quantity_total;
-				$arfHeaderContainer['cost_total'] 				  = $item_sourcing_header->cost_total;
-				$arfHeaderContainer['total'] 					  = $item_sourcing_header->total;
-				$arfHeaderContainer['requestor_comments'] 		  = $item_sourcing_header->requestor_comments;
-				$arfHeaderContainer['created_by'] 				  = CRUDBooster::myId();
-				$arfHeaderContainer['created_at'] 				  = date('Y-m-d H:i:s');
-				$arfHeaderContainer['approved_by'] 		          = $item_sourcing_header->approver_by;
-				$arfHeaderContainer['approved_at'] 		          = date('Y-m-d H:i:s');
-				$arfHeaderContainer['request_type_id']		 	  = $arfHeadVal;
-				$arfHeaderContainer['privilege_id']		 	      = NULL;
-				$arfHeaderContainer['if_from_item_source' ]		  = $item_sourcing_header->reference_number;
-			
-				$arfHeaderSave[] = $arfHeaderContainer;
-			}
-			HeaderRequest::insert($arfHeaderSave);
-			$itId = DB::table('header_request')->select('*')->where('id','>', $latestRequestId)->where('request_type_id',1)->first();
-			$faId = DB::table('header_request')->select('*')->where('id','>', $latestRequestId)->where('request_type_id',5)->first();
-			$SuppliesId = DB::table('header_request')->select('*')->where('id','>', $latestRequestId)->where('request_type_id',7)->first();
-			$MarketingId = DB::table('header_request')->select('*')->where('id','>', $latestRequestId)->where('request_type_id',6)->first();
-	
-			$resultArrforIT = [];
-			foreach($item_sourcing_body as $item){
-				if($item['request_type_id'] == 1){
-					for($i = 0; $i < $item['request_type_id']; $i++){
-						$t = $item;
-						$t['header_request_id'] = $itId->id;
-						$resultArrforIT[] = $t;
-					}
-				}
-			}
+		public function RemoveItemSource(Request $request){
+			$data   = Request::all();	
+			$opt_id = $data['opt_id'];
 
-			$resultArrforFA = [];
-			foreach($item_sourcing_body as $itemFa){
-				if($itemFa['request_type_id'] == 5){
-					for($x = 0; $x < $itemFa['request_type_id']; $x++){
-						$fa = $itemFa;
-						$fa['header_request_id'] = $faId->id;
-						$resultArrforFA[] = $fa;
-					}
-				}
-			}
-
-			$resultArrforSu = [];	
-			foreach($item_sourcing_body as $itemSu){
-				if($itemSu['request_type_id'] == 7){
-					for($s = 0; $s < $itemSu['request_type_id']; $s++){
-						$su = $itemSu;
-						$su['header_request_id'] = $SuppliesId->id;
-						$resultArrforSu[] = $su;
-					}
-				}
-			}
-
-			$resultArrforMarketing = [];	
-			foreach($item_sourcing_body as $itemMkt){
-				if($itemMkt['request_type_id'] == 6){
-					for($m = 0; $m < $itemMkt['request_type_id']; $m++){
-						$mkt = $itemMkt;
-						$mkt['header_request_id'] = $MarketingId->id;
-						$resultArrforMarketing[] = $mkt;
-					}
-				}
-			}
-
-
-			//save items in Body Request
-			$insertData = [];
-			$insertContainer = [];
-			foreach($item_sourcing_body as $key => $val){
-				$insertContainer['header_request_id']   = $val['header_request_id'];
-				$insertContainer['digits_code'] 	    = $val['digits_code'];
-				$insertContainer['item_description'] 	= $val['reco_item_description'];
-				$insertContainer['category_id'] 		= $val['category_id'];
-				$insertContainer['sub_category_id'] 	= $val['sub_category_id'];
-				$insertContainer['app_id'] 			    = NULL;
-				$insertContainer['app_id_others'] 	    = NULL;
-				$insertContainer['quantity'] 			= $val['quantity'];
-				$insertContainer['unit_cost'] 		    = NULL;
-				if($request_type_id == 5){
-					$insertContainer['to_reco'] = 0;
-				}else{
-					if (str_contains($val['sub_category_id'], 'LAPTOP') || str_contains($val['sub_category_id'], 'DESKTOP')) {
-						$insertContainer['to_reco'] = 1;
-					}else{
-						$insertContainer['to_reco'] = 0;
-					}
-				}
-				$insertContainer['created_at'] 		= date('Y-m-d H:i:s');
-				$insertData[] = $insertContainer;
-			}
-
-			//make array base on general quantity
-			$itAssets = [];
-			foreach($insertData as $itItem){
-				if($itItem['category_id'] == "IT ASSETS"){
-					for($i = 0; $i < $itItem['quantity']; $i++){
-						// make sure the quantity is now 1 and not the original > 1 value
-						$it = $itItem;
-						$it['quantity'] = 1;
-						$itAssets[] = $it;
-					}
-				}
-			}
-			$faAssets = [];
-			foreach($insertData as $faItem){
-				if($faItem['category_id'] == "FIXED ASSETS"){
-					for($j = 0; $j < $faItem['quantity']; $j++){
-						// make sure the quantity is now 1 and not the original > 1 value
-						$fa = $faItem;
-						$fa['quantity'] = 1;
-						$faAssets[] = $fa;
-					}
-				}
-			}
-
-			$suppAssets = [];
-			foreach($insertData as $suppItem){
-				if($suppItem['category_id'] == "SUPPLIES"){
-					// make sure the quantity is now 1 and not the original > 1 value
-					$sp = $suppItem;
-					$sp['quantity'] = $suppItem['quantity'];
-					$suppAssets[] = $sp;
-					
-				}
-			}
-
-			$mktAssets = [];
-			foreach($insertData as $mktItem){
-				if($mktItem['category_id'] == "MARKETING"){
-					// make sure the quantity is now 1 and not the original > 1 value
-					$mkt = $mktItem;
-					$mkt['quantity'] = $mktItem['quantity'];
-					$mktAssets[] = $mkt;
-					
-				}
-			}
-			$insertData = array_merge($itAssets, $faAssets,$suppAssets, $mktAssets);
-            
-			//update flag in item sourcing body
-			for ($i = 0; $i < count($bodyIds); $i++) {
-				ItemBodySourcing::where(['id' => $bodyIds[$i]])
-				   ->update([
-					       'if_arf_created'   => 1, 
-				           ]);
-			}
-
-			BodyRequest::insert($insertData);
-
-			$message = ['status'=>'success', 'message' => 'Created Successfully!'];
-			echo json_encode($message);
-			
-		}
-
-		public function RemoveItemSource(Request $request)
-		{
-	       
-			$data = 				Request::all();	
-			$headerID = 			$data['headerID'];
-			$bodyID = 				$data['bodyID'];
-			$quantity_total = 		$data['quantity_total']; 
-       
-			ItemHeaderSourcing::where('id', $headerID)
-			->update([
-				'quantity_total'=> 		$quantity_total
-			]);	
-
-
-			ItemBodySourcing::where('id', $bodyID)
+			ItemSourcingOptions::where('id', $opt_id)
 			->update([
 				'deleted_at'=> 		date('Y-m-d H:i:s'),
 				'deleted_by'=> 		CRUDBooster::myId()
 			]);	
 
-			$bodyCount = DB::table('item_sourcing_body')->where('header_request_id',$headerID)->whereNull('item_sourcing_body.deleted_at')->count();
-
-			if($bodyCount == 0){
-			ItemHeaderSourcing::where('id', $headerID)
-				->update([
-					'status_id'=> 8,
-					'cancelled_by'=> CRUDBooster::myId(),
-					'cancelled_at'=> date('Y-m-d H:i:s')
-				]);	
-			
-			}
 			$message = ['status'=>'success', 'message' => 'Cancelled Successfully!'];
 			echo json_encode($message);
 			
 		}
 
 		public function getRequestCancelNis($id) {
-
 			ItemHeaderSourcing::where('id',$id)
 			->update([
 					'status_id'=> 8,
@@ -909,6 +791,169 @@
 			CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Request has been cancelled successfully!"), 'success');
 		}
 
-	}
 
+		public function SubCategories(Request $request){
+			$data = Request::all();	
+			$id = $data['id'];
+			$categories = DB::table('new_category')->where('category_description', $id)->first();
+
+			$subcategories = DB::table('new_sub_category')
+							->select('new_sub_category.*')
+							->where('category_id', $id)
+							->where('sub_status', "ACTIVE")
+							->orderby('sub_category_description', 'ASC')->get();
+	
+			return($subcategories);
+		}
+
+		public function Class(Request $request){
+			$data = Request::all();	
+			$id = $data['id'];
+			$sub_categories = DB::table('new_sub_category')->where('sub_category_description', $id)->first();
+
+			$subcategories = DB::table('new_class')
+							->select('new_class.*')
+							->where('sub_category_id', $id)
+							->where('class_status', "ACTIVE")
+							->orderby('class_description', 'ASC')->get();
+	
+			return($subcategories);
+		}
+
+		public function SubClass(Request $request){
+			$data = Request::all();	
+			$id = $data['id'];
+			$class = DB::table('new_class')->where('class_description', $id)->first();
+
+			$subcategories = DB::table('new_sub_class')
+							->select('new_sub_class.*')
+							->where('class_id', $id)
+							->where('sub_class_status', "ACTIVE")
+							->orderby('sub_class_description', 'ASC')->get();
+	
+			return($subcategories);
+		}
+
+		public function saveMessage(Request $request){
+            $fields   = Request::all();
+			$id       = $fields['header_id'];
+			$comments = $fields['message'];
+
+			$comment = new ItemSourcingComments();
+			
+			$comment->item_header_id = $id;
+			$comment->user_id = CRUDBooster::myId();
+			$comment->comments = $comments;
+			$comment->created_at = date('Y-m-d H:i:s');
+			$comment->save();
+
+			$item_sourcing_header = ItemHeaderSourcing::where(['id' => $id])->first();
+
+			// $config['content'] = "Item Source Messages (".$item_sourcing_header->reference_number.")";
+			// $config['to'] = $link = CRUDBooster::adminPath('item-sourcing-header/detail/'.$id.'');
+			// $config['id_cms_users'] = [$item_sourcing_header->created_by, $item_sourcing_header->processed_by, $item_sourcing_header->approved_by]; //The Id of the user that is going to receive notification. This could be an array of id users [1,2,3,4,5]
+			// CRUDBooster::sendNotification($config);
+
+			$data = array();
+			$data['status'] = 'error';
+			$data['message'] = $comment;
+			$data['comment_by'] = CRUDBooster::myName();
+			if(!empty($comment)){
+				$data['status'] = 'success';
+			}
+			return json_encode($data);
+		}
+
+		public function editItemSource(Request $request){
+			$fields           = Request::all();
+			$id               = $fields['id'];
+			$item_description = $fields['item_description'];
+			$brand            = $fields['brand'];
+			$model            = $fields['model'];
+			$size             = $fields['size'];
+			$actual_color     = $fields['actual_color'];
+			$quantity         = $fields['quantity'];
+			$header_id        = $fields['headerID'];
+ 
+			$item_source_body = ItemBodySourcing::where(['id' => $id])->first();
+			//dd($item_source_body, $id);
+			$countHeader = DB::table('item_sourcing_edit_versions')->where('item_sourcing_edit_versions.header_id', $id)->count();
+			$finalCountHead = ($countHeader + 2);
+
+			ItemSourcingEditVersions::Create(
+				[
+				'header_id'           => $header_id,
+				'body_id'             => $id,
+				'old_description'     => $item_source_body->item_description,
+				'new_description'     => $item_description,
+				'old_brand_value'     => $item_source_body->brand,
+				'new_brand_value'     => $brand,
+				'old_model_value'     => $item_source_body->model,
+				'new_model_value'     => $model,
+				'old_size_value'      => $item_source_body->size,
+				'new_size_value'      => $size,
+				'old_ac_value'        => $item_source_body->actual_color,
+				'new_ac_value'        => $actual_color,
+				'old_qty_value'       => $item_source_body->quantity,
+				'new_qty_value'       => $quantity,
+				'version'             => "Version"."-". $finalCountHead,
+				'updated_by'          => CRUDBooster::myId(),
+				'created_at' 	      => date('Y-m-d H:i:s'),
+				]
+			);  
+
+     
+			ItemBodySourcing::where(['id' => $id])
+				->update([
+						'item_description'           => $item_description, 
+						'brand'                      => $brand,
+						'model'                      => $model,
+						'size'                       => $size,
+						'actual_color'               => $actual_color,
+						'quantity'                   => $quantity,
+						'updated_by'                 => CRUDBooster::myId(),
+						]);
+		    $item_source_header = ItemHeaderSourcing::where(['id' => $header_id])->first();
+			$employee_name = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
+			$approver_name = DB::table('cms_users')->where('id', $employee_name->approver_id)->first();
+			$department_name = DB::table('departments')->where('id', $employee_name->department_id)->first();
+			$fhil = "fhilipacosta@digits.ph";
+
+			$infos['assign_to'] = $employee_name->bill_to;
+			$infos['reference_number'] = $item_source_header->reference_number;
+			$infos['item_description'] = $item_description;
+			$infos['brand'] = $brand;
+			$infos['model'] = $model;
+			$infos['size'] = $size;
+			$infos['actual_color'] = $actual_color;
+			$infos['quantity'] = $quantity;
+		
+			if($item_source_header->status_id != 1){
+				Mail::to($employee_name->email)
+				//->cc([$fhil])
+				->send(new Email($infos));
+			}
+			
+			$message = ['status'=>'success', 'message' => 'Update Successfully!'];
+			echo json_encode($message);
+		}
+
+		public function getVersions(Request $request){
+			$data = Request::all();	
+		
+			$id = $data['header_id'];
+
+			$versions = DB::table('item_sourcing_edit_versions')
+			                ->leftjoin('cms_users', 'item_sourcing_edit_versions.updated_by','=', 'cms_users.id')
+							->select('item_sourcing_edit_versions.*',
+							          'cms_users.*'
+							          )
+							->where('header_id', $id)
+							->orderBy('version','desc')
+							->get();
+			return($versions);
+		}
+
+
+	}
 ?>
