@@ -573,8 +573,12 @@
 			return datatables($data['finalData'])
 			->addIndexColumn()
 			->addColumn('action', function($row){
-
-				$actionBtn = '<a class="btn btn-primary btn-xs" href="'.CRUDBooster::adminpath("request_history/detail/".$row["id"]).'"><i class="fa fa-eye"></i></a>';
+                if($row['transaction_type'] === "RETURN" || $row['transaction_type'] === "TRANSFER"){
+					$actionBtn = '<a class="btn btn-primary btn-xs" href="'.CRUDBooster::adminpath("return_transfer_assets_header/detail/".$row["id"]).'"><i class="fa fa-eye"></i></a>';
+				}else{
+					$actionBtn = '<a class="btn btn-primary btn-xs" href="'.CRUDBooster::adminpath("request_history/detail/".$row["id"]).'"><i class="fa fa-eye"></i></a>';
+				}
+				
 				return $actionBtn;
 			})
 			->editColumn('requested_date', function ($row) {
