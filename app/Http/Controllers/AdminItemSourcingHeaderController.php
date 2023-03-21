@@ -197,6 +197,43 @@
 					$('#fixed-assets').prop('title', 'Cellphone');
 					$('#it-assets').prop('title', 'Laptop');
 					$('#marketing').prop('title', 'Card');
+
+					$('#it-assets').attr(
+							{
+								\"data-toggle\":\"tooltip\", 
+								\"data-placement\":\"bottom\", 
+							},
+				        );
+					$('#fixed-assets').attr(
+							{
+								\"data-toggle\":\"tooltip\", 
+								\"data-placement\":\"bottom\", 
+							},
+				        );
+					$('#marketing').attr(
+							{
+								\"data-toggle\":\"tooltip\", 
+								\"data-placement\":\"bottom\", 
+							},
+				        );
+					$('#supplies').attr(
+							{
+								\"data-toggle\":\"tooltip\", 
+								\"data-placement\":\"bottom\", 
+							},
+				        );
+				    $('.btn-detail').attr(
+							{
+								\"data-toggle\":\"tooltip\", 
+								\"data-placement\":\"bottom\", 
+							},
+				        );
+					$('a[title=\"Cancel Request\"]').attr(
+							{
+								\"data-toggle\":\"tooltip\", 
+								\"data-placement\":\"bottom\", 
+							},
+				        );
 				
 					$('.fa.fa-times').click(function(){
 					var strconfirm = confirm('Are you sure you want to cancel this request?');

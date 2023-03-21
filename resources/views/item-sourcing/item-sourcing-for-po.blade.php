@@ -33,6 +33,7 @@
                 border:none;
                 background-color: #fff;
             }
+          
             .iconPlus{
                 background-color: #3c8dbc: 
             }
@@ -85,7 +86,7 @@
             /* Extra styling */
             td { width: 100px; }
             th { text-align: left; }
-           
+
         </style>
     @endpush
 @section('content')
@@ -336,7 +337,7 @@
                         <tfoot>
                             <tr id="tr-tableOption1" class="bottom">
                                 <td style="text-align:left" colspan="5">
-                                    <button id="add-Row" name="add-Row"><div class="iconPlus" id="bigplus"></div></button>
+                                    <button class="red-tooltip" data-toggle="tooltip" data-placement="right" id="add-Row" name="add-Row" title="Add Row"><div class="iconPlus" id="bigplus"></div></button>
                                     <div id="display_error" style="text-align:left"></div>
                                 </td>
                             </tr>
