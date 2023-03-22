@@ -829,92 +829,133 @@
     $('#btnUpdate').click(function(event) {
         event.preventDefault(); // cancel default behavior
         var rowCount = $('#item-sourcing-options tr').length-1;
-        if(rowCount == 1) {
-        swal({
-            type: 'error',
-            title: 'Please add an item!',
-            icon: 'error',
-            confirmButtonColor: "#367fa9",
-        }); 
-        event.preventDefault(); // cancel default behavior
-        return false;
-        }else{
-            var opt = $("input[name^='option']").length;
-            var opt_value = $("input[name^='option']");
-            for(i=0;i<opt;i++){
-                if(opt_value.eq(i).val() == 0 || opt_value.eq(i).val() == null){
-                    swal({  
-                            type: 'error',
-                            title: 'Option Fields cannot be empty!(put N/A if not available)',
-                            icon: 'error',
-                            confirmButtonColor: "#367fa9",
-                        });
-                        event.preventDefault();
-                        return false;
-                } 
+        // if(rowCount == 1) {
+        //     swal({
+        //         type: 'error',
+        //         title: 'Please add an item!',
+        //         icon: 'error',
+        //         confirmButtonColor: "#367fa9",
+        //     }); 
+        //     event.preventDefault(); // cancel default behavior
+        //     return false;
+        // }else{
+        //     var opt = $("input[name^='option']").length;
+        //     var opt_value = $("input[name^='option']");
+        //     for(i=0;i<opt;i++){
+        //         if(opt_value.eq(i).val() == 0 || opt_value.eq(i).val() == null){
+        //             swal({  
+        //                     type: 'error',
+        //                     title: 'Option Fields cannot be empty!(put N/A if not available)',
+        //                     icon: 'error',
+        //                     confirmButtonColor: "#367fa9",
+        //                 });
+        //                 event.preventDefault();
+        //                 return false;
+        //         } 
         
-            } 
-            var vendor = $("input[name^='vendor_name']").length;
-            var vendor_value = $("input[name^='vendor_name']");
-            for(i=0;i<vendor;i++){
-                if(vendor_value.eq(i).val() == 0 || vendor_value.eq(i).val() == null){
-                    swal({  
-                            type: 'error',
-                            title: 'Vendor Name Fields cannot be empty!(put N/A if not available)',
-                            icon: 'error',
-                            confirmButtonColor: "#367fa9",
-                        });
-                        event.preventDefault();
-                        return false;
-                } 
+        //     } 
+        //     var vendor = $("input[name^='vendor_name']").length;
+        //     var vendor_value = $("input[name^='vendor_name']");
+        //     for(i=0;i<vendor;i++){
+        //         if(vendor_value.eq(i).val() == 0 || vendor_value.eq(i).val() == null){
+        //             swal({  
+        //                     type: 'error',
+        //                     title: 'Vendor Name Fields cannot be empty!(put N/A if not available)',
+        //                     icon: 'error',
+        //                     confirmButtonColor: "#367fa9",
+        //                 });
+        //                 event.preventDefault();
+        //                 return false;
+        //         } 
         
-            } 
-            var price = $("input[name^='price']").length;
-            var price_value = $("input[name^='price']");
-            for(i=0;i<price;i++){
-                if(price_value.eq(i).val() == 0 || price_value.eq(i).val() == null){
-                    swal({  
-                            type: 'error',
-                            title: 'Price Fields cannot be empty!(put N/A if not available)',
-                            icon: 'error',
-                            confirmButtonColor: "#367fa9",
-                        });
-                        event.preventDefault();
-                        return false;
-                } 
+        //     } 
+        //     var price = $("input[name^='price']").length;
+        //     var price_value = $("input[name^='price']");
+        //     for(i=0;i<price;i++){
+        //         if(price_value.eq(i).val() == 0 || price_value.eq(i).val() == null){
+        //             swal({  
+        //                     type: 'error',
+        //                     title: 'Price Fields cannot be empty!(put N/A if not available)',
+        //                     icon: 'error',
+        //                     confirmButtonColor: "#367fa9",
+        //                 });
+        //                 event.preventDefault();
+        //                 return false;
+        //         } 
         
-            } 
-            var optionFile = $("input[name^='optionFile']").length;
-            var optionFile_value = $("input[name^='optionFile']");
-            for(i=0;i<optionFile;i++){
-                if(optionFile_value.eq(i).val() == 0 || optionFile_value.eq(i).val() == null){
-                    swal({  
-                            type: 'error',
-                            title: 'File Fields cannot be empty!',
-                            icon: 'error',
-                            confirmButtonColor: "#367fa9",
-                        });
-                        event.preventDefault();
-                        return false;
-                } 
+        //     } 
+        //     var optionFile = $("input[name^='optionFile']").length;
+        //     var optionFile_value = $("input[name^='optionFile']");
+        //     for(i=0;i<optionFile;i++){
+        //         if(optionFile_value.eq(i).val() == 0 || optionFile_value.eq(i).val() == null){
+        //             swal({  
+        //                     type: 'error',
+        //                     title: 'File Fields cannot be empty!',
+        //                     icon: 'error',
+        //                     confirmButtonColor: "#367fa9",
+        //                 });
+        //                 event.preventDefault();
+        //                 return false;
+        //         } 
         
-            } 
-          
-            swal({
-                title: "Are you sure?",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#41B314",
-                cancelButtonColor: "#F9354C",
-                confirmButtonText: "Yes, update it!",
-                width: 450,
-                height: 200
-                }, function () {
-                    $(this).attr('disabled','disabled');
-                    $('#button_action').val('1');
-                    $("#myform").submit();                   
+        //     } 
+         //Option File validation
+            // var optionFile = $("input[name^='optionFile']").length;
+            // var optionFile_value = $("input[name^='optionFile']");
+    
+            // for (var i = 0; i < $("#si_dr").get(0).files.length; ++i) {
+            //     var file1 = optionFile_value.get(i).files[i].name;
+            //     console.log(file1);
+            //     if(file1){                        
+            //         var file_size= optionFile_value.get(i).files[i].size;
+            //             var ext = file1.split('.').pop().toLowerCase();                            
+            //             if($.inArray(ext,['xlsx','pdf'])===-1){
+            //                 swal({
+            //                     type: 'error',
+            //                     title: 'Invalid File!',
+            //                     icon: 'error',
+            //                     customClass: 'swal-wide'
+            //                 });
+            //                 event.preventDefault();
+            //                 return false;
+            //             }                                          
+            //     }
+            //  }
+
+             $(".optionFile").each(function(index, field){
+                var file = field.files[0];
+                var filename = field.files[0].name;
+                var ext = filename.split('.').pop().toLowerCase();  
+                console.log(ext);
+                if($.inArray(ext,['xlsx','pdf'])===-1){
+                    swal({
+                        type: 'error',
+                        title: 'Invalid File! please refer to the ff(.xlsx,.pdf)',
+                        icon: 'error',
+                        confirmButtonColor: "#367fa9",
+                    });
+                    event.preventDefault();
+                    return false;
+                }else{
+                    swal({
+                        title: "Are you sure?",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#41B314",
+                        cancelButtonColor: "#F9354C",
+                        confirmButtonText: "Yes, update it!",
+                        width: 450,
+                        height: 200
+                        }, function () {
+                            $(this).attr('disabled','disabled');
+                            $('#button_action').val('1');
+                            $("#myform").submit();                   
+                    });
+                }      
             });
-        }
+          
+           
+        //}
     });
 
     //Closed Request

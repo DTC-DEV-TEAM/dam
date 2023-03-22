@@ -283,7 +283,7 @@
 	        $this->load_js = array();
 			$this->load_js[] = asset("datetimepicker/bootstrap-datetimepicker.min.js");
 			$this->load_js[] = asset("js/item_source/chat.js");
-	        
+			$this->load_js[] = asset("js/spinner.js");
 	        
 	        /*
 	        | ---------------------------------------------------------------------- 
@@ -308,6 +308,7 @@
 	        $this->load_css = array();
 	        $this->load_css[] = asset("datetimepicker/bootstrap-datetimepicker.min.css");
 			$this->load_css[] = asset("css/chatbox.css");
+			$this->load_css[] = asset("css/spinner.css");
 	        
 	    }
 

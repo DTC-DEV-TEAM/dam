@@ -415,17 +415,23 @@
 					}
 				}
 		    }else{
-				ItemHeaderSourcing::where('id',$header_id)
-					->update([
-						'status_id'		 => $status,
-						'po_number'      => $po_no,
-						'closed_by'      => CRUDBooster::myId(),
-						'closed_at'      => date('Y-m-d H:i:s'),
-					]);	
-					CRUDBooster::redirect(CRUDBooster::mainpath(), trans('Successfully Added!'), 'success');
+				$countHeader = DB::table('item_sourcing_options')->where('item_sourcing_options.header_id', $id)->count();
+				if($countHeader === 0){
+                    return  CRUDBooster::redirect(CRUDBooster::mainpath('edit/'.$header_id), trans('Please add an Options before close transaction!'), 'danger');
+				}else{
+					ItemHeaderSourcing::where('id',$header_id)
+						->update([
+							'status_id'		 => $status,
+							'po_number'      => $po_no,
+							'closed_by'      => CRUDBooster::myId(),
+							'closed_at'      => date('Y-m-d H:i:s'),
+						]);	
+						return CRUDBooster::redirect(CRUDBooster::mainpath(), trans('Transaction Closed!'), 'success');
+				}
+				
 			}
 
-			CRUDBooster::redirect(CRUDBooster::mainpath('edit/'.$header_id), trans('Successfully Added!'), 'success');
+			return CRUDBooster::redirect(CRUDBooster::mainpath('edit/'.$header_id), trans('Successfully Added!'), 'success');
 		    
 
 	    }
