@@ -118,28 +118,27 @@
                 <label class="control-label col-md-2">Date Needed:</label>
                    <div class="col-md-4">
                         <p>{{$Header->date_needed}}</p>
-                </div>
-
-                @if($Header->store_branch != null || $Header->store_branch != "")                
-                    <label class="control-label col-md-2">{{ trans('message.form-label.store_branch') }}:</label>
-                    <div class="col-md-4">
-                            <p>{{$Header->store_branch}}</p>
-                    </div>
-                @endif
-            </div>
-
-            <div class="row">
-                @if($versions->version != null)
+                   </div>
+                   @if($versions->version != null)
                     <label class="control-label col-md-2">Version:</label>
                     <div class="col-md-4">
                             <a type="button" value="{{$Header->requestid}}" id="getVersions" data-toggle="modal" data-target="#versionModal"><strong>{{$versions->version}}</strong></a>
                     </div>
                 @endif
+            </div>
+
+            <div class="row">
                 @if($Header->po_number != null)
                 <label class="control-label col-md-2">{{ trans('message.form-label.po_number') }}:</label>
                     <div class="col-md-4">
                         <p >{{$Header->po_number}}</p>
                 </div>
+                @endif
+                @if($Header->store_branch != null || $Header->store_branch != "")                
+                    <label class="control-label col-md-2">{{ trans('message.form-label.store_branch') }}:</label>
+                    <div class="col-md-4">
+                            <p>{{$Header->store_name}}</p>
+                    </div>
                 @endif
             </div>
 

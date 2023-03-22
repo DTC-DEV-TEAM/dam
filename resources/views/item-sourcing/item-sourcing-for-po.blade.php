@@ -189,11 +189,10 @@
                 <div class="col-md-4">
                         <p>{{$Header->date_needed}}</p>
                 </div>
-
-                @if($Header->store_branch != null || $Header->store_branch != "")                        
-                    <label class="control-label col-md-2">{{ trans('message.form-label.store_branch') }}:</label>
+                @if($versions->version != null)
+                    <label class="control-label col-md-2">Version:</label>
                     <div class="col-md-4">
-                            <p>{{$Header->store_branch}}</p>
+                            <a type="button" value="{{$Header->requestid}}" id="getVersions" data-toggle="modal" data-target="#versionModal"><strong>{{$versions->version}}</strong></a>
                     </div>
                 @endif
             </div>
@@ -210,11 +209,10 @@
                         @endforeach
                     </select>
                 </div> 
-              
-                @if($versions->version != null)
-                    <label class="control-label col-md-2">Version:</label>
+                @if($Header->store_branch != null || $Header->store_branch != "")                        
+                    <label class="control-label col-md-2">{{ trans('message.form-label.store_branch') }}:</label>
                     <div class="col-md-4">
-                            <a type="button" value="{{$Header->requestid}}" id="getVersions" data-toggle="modal" data-target="#versionModal"><strong>{{$versions->version}}</strong></a>
+                            <p>{{$Header->store_name}}</p>
                     </div>
                 @endif
             </div>
