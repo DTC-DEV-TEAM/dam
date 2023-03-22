@@ -217,7 +217,6 @@
                 @endif
             </div>
          
-
             <div class="row">
                 @if($Header->po_number != null)
                     <label class="control-label col-md-2">{{ trans('message.form-label.po_number') }}:</label>
@@ -227,7 +226,6 @@
                 @endif
             </div>
          
-
             <hr/>                
             <div class="row">
                 <div class="col-md-12">

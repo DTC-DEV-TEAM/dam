@@ -100,6 +100,7 @@
 
 
 @push('bottom')
+ 
     <script type="text/javascript">
         $(function(){
             $('body').addClass("sidebar-collapse");

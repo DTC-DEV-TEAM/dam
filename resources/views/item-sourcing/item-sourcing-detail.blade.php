@@ -255,7 +255,7 @@
             </div>
 
             <div class="row">
-                <div class="col-md-8 col-md-offset-2">
+                <div class="col-md-10 col-md-offset-1">
                     <table class="table" id="item-sourcing-options">
                         <tbody id="bodyTable">
                             <tr>
@@ -598,7 +598,7 @@
     //remove items in options
     $(document).ready(function() {
             $(document).on('click', '.removeRow', function() {
-              
+                $(".checkbox3").prop('checked', false);
                 event.preventDefault();
                 var id_data = $(this).val();    
    
