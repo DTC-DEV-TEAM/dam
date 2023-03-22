@@ -625,7 +625,7 @@
 			}else{ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
 				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
-				return $this->view("item-sourcing.add-store-item-sourcing-it", $data);
+				return $this->view("item-sourcing.add-item-sourcing-it-store", $data);
 			}
 				
 		}
@@ -662,7 +662,7 @@
 			}else{ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
 				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
-				return $this->view("item-sourcing.add-store-item-sourcing-fa", $data);
+				return $this->view("item-sourcing.add-item-sourcing-fa-store", $data);
 			}
 				
 		}
@@ -699,7 +699,7 @@
 			}else{ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
 				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
-				return $this->view("item-sourcing.add-store-item-sourcing-mkt", $data);
+				return $this->view("item-sourcing.add-item-sourcing-mkt-store", $data);
 			}
 				
 		}
@@ -736,7 +736,7 @@
 			}else{ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
 				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
-				return $this->view("item-sourcing.add-store-item-sourcing-supplies", $data);
+				return $this->view("item-sourcing.add-item-sourcing-supplies-store", $data);
 			}
 				
 		}

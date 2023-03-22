@@ -1,6 +1,7 @@
 @extends('crudbooster::admin_template')
     @push('head')
         <style type="text/css">   
+          
             #other-detail th, td {
                 border: 1px solid rgba(000, 0, 0, .5);
                 padding: 8px;
@@ -57,21 +58,34 @@
                 height: 40px;
                 border-radius: 50%;
                 /* border: 1px solid rgb(194, 193, 193); */
-                font-size: 30px;
+                font-size: 35px;
                 color: white;
                 background-color: #3c8dbc;
        
             }
+            #bigplus{
+                transition: transform 0.5s ease 0s;
+            }
             #bigplus:before {
                 content: '\FF0B';
                 background-color: #3c8dbc: 
-                font-size: 30px;
+                font-size: 50px;
             }
             #bigplus:hover{
-                cursor: default;
-                transform: rotate(180deg);
-                transition: all 0.3s ease-in-out 0s;
+                /* cursor: default;
+                transform: rotate(180deg); */
+                -webkit-animation: infinite-spinning 1s ease-out 0s infinite normal;
+                 animation: infinite-spinning 1s ease-out 0s infinite normal;
                
+            }
+
+            @keyframes infinite-spinning {
+                from {
+                    transform: rotate(0deg);
+                }
+                to {
+                    transform: rotate(360deg);
+                }
             }
 
             table { border-collapse: collapse; empty-cells: show; }
@@ -175,9 +189,19 @@
                 <div class="col-md-4">
                         <p>{{$Header->date_needed}}</p>
                 </div>
+
+                @if($Header->store_branch != null || $Header->store_branch != "")                        
+                    <label class="control-label col-md-2">{{ trans('message.form-label.store_branch') }}:</label>
+                    <div class="col-md-4">
+                            <p>{{$Header->store_branch}}</p>
+                    </div>
+                @endif
+            </div>
+           
+            <div class="row">  
                 <label class="control-label col-md-2">Status:</label>
                 <div class="col-md-4">
-                    <select required selected data-placeholder="-- Please Select ERF --" id="status" name="status" class="form-select erf" style="width:100%;">
+                    <select required selected data-placeholder="-- Please Select ERF --" id="status" name="status" class="form-select" style="width:50%;">
                         @foreach($statuses as $res)
                         <option value="{{ $res->id }}"
                             {{ isset($Header->status_id) && $Header->status_id == $res->id ? 'selected' : '' }}>
@@ -185,25 +209,18 @@
                         </option>>
                         @endforeach
                     </select>
-                </div>
-            </div>
-           
-            @if($Header->store_branch != null || $Header->store_branch != "")
-                <div class="row">                           
-                    <label class="control-label col-md-2">{{ trans('message.form-label.store_branch') }}:</label>
-                    <div class="col-md-4">
-                            <p>{{$Header->store_branch}}</p>
-                    </div>
-                </div>
-            @endif
-
-            <div class="row">
+                </div> 
+              
                 @if($versions->version != null)
                     <label class="control-label col-md-2">Version:</label>
                     <div class="col-md-4">
                             <a type="button" value="{{$Header->requestid}}" id="getVersions" data-toggle="modal" data-target="#versionModal"><strong>{{$versions->version}}</strong></a>
                     </div>
                 @endif
+            </div>
+         
+
+            <div class="row">
                 @if($Header->po_number != null)
                     <label class="control-label col-md-2">{{ trans('message.form-label.po_number') }}:</label>
                         <div class="col-md-4">

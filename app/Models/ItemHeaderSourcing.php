@@ -61,7 +61,7 @@ class ItemHeaderSourcing extends Model
                 'item_sourcing_header.employee_name as header_emp_name',
                 'item_sourcing_header.created_by as header_created_by',
                 'departments.department_name as department',
-                'item_sourcing_header.store_branch as store_branch',
+                'locations.store_name as store_branch',
                 'approved.name as approvedby',
                 'processed.name as processedby',
                 'closed.name as closedby',
