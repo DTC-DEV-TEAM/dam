@@ -21,6 +21,16 @@
             input.finput:read-only {
                 background-color: #fff;
             }
+            .suggested{
+                border:none;
+                height: 10px;
+                font-weight: bold;
+            }
+            input.suggested:read-only {
+                background-color: #fff;
+            }
+
+
             .green-color {
                 color:green;
                 margin-top:12px;
@@ -108,6 +118,7 @@
 
         <input type="hidden" value="{{$countOptions}}" name="countRow" id="countRow">
         <input type="hidden" value="{{$allOptions}}" name="allcountOption" id="allcountOption">
+        <input type="hidden" value="{{$Header->reference_number}}" name="ref_no" id="ref_no">
         
 
         <input type="hidden" value="" name="bodyID" id="bodyID">
@@ -190,7 +201,13 @@
                 @if($versions->version != null)
                     <label class="control-label col-md-2">Version:</label>
                     <div class="col-md-4">
-                            <a type="button" value="{{$Header->requestid}}" id="getVersions"><strong>{{$versions->version}}</strong></a>
+                            <a type="button" value="{{$Header->requestid}}" id="getVersions" data-toggle="modal" data-target="#versionModal"><strong>{{$versions->version}}</strong></a>
+                    </div>
+                @endif
+                @if($Header->po_number != null)
+                    <label class="control-label col-md-2">{{ trans('message.form-label.po_number') }}:</label>
+                        <div class="col-md-4">
+                            <p >{{$Header->po_number}}</p>
                     </div>
                 @endif
             </div>
@@ -292,7 +309,7 @@
                                 @foreach($item_options as $res)
                                 <?php   $tableRow1++; ?>
                                     @if($res->deleted_at != null || $res->deleted_at != "")
-                                      <tr class="strikeout" style="background-color: #dd4b39; color:#fff">                                    
+                                      <tr style="background-color: #dd4b39; color:#fff">                                    
                                         <td style="text-align:center" height="10">
                                             {{$res->options}}                               
                                         </td>
@@ -305,10 +322,28 @@
                                         <td style="text-align:center" height="10">
                                             {{$res->file_name}}                               
                                         </td>
-                                        
-                                            <td  style="text-align:center; color:#fff"><i class="fa fa-times-circle"></i></td>                               
-                                        
-                                    </tr>
+                                        <td colspan="2" style="text-align:center; color:#fff">
+                                            <i data-toggle="tooltip" data-placement="right" title="Cancelled" class="fa fa-times-circle"></i>
+                                        </td>                               
+                                      </tr>
+                                    @elseif($res->selected_at != null || $res->selected_at != "")
+                                      <tr style="background-color: #d4edda; color:#155724">                                    
+                                        <td style="text-align:center" height="10">
+                                            {{$res->options}}                               
+                                        </td>
+                                        <td style="text-align:center" height="10">
+                                            {{$res->vendor_name}}                               
+                                        </td>
+                                        <td style="text-align:center" height="10">
+                                            {{number_format($res->price, 2, '.', ',')}}                               
+                                        </td>
+                                        <td style="text-align:center" height="10">
+                                            {{$res->file_name}}                              
+                                        </td>
+                                        <td colspan="2"  style="text-align:center; color:white">
+                                            <i data-toggle="tooltip" data-placement="right" title="Selected" class="fa fa-check-circle text-success"></i>
+                                        </td>                               
+                                      </tr>
                                    @else
                                     <tr id="tr-tableOption">                                    
                                         <td style="text-align:center" height="10">
@@ -611,12 +646,11 @@
             }
          
         });
-        $('#versionModal').modal('show'); 
        
     });
 
     $('#versionModal').on('hidden.bs.modal', function () {
-      location.reload();
+        $("#modal-version tbody").html("");
     });
 
     //Add Row
@@ -706,7 +740,7 @@
         
         var rowCountOption = $('#item-sourcing-options tr').length - 2;
         var finalOptCount = ((rowCountOption + 1));
-    
+        var ref_no = $('#ref_no').val();
         if(count_fail == 0){
             if(rowCount > 3){
               $('#add-Row').prop("disabled", true);
@@ -731,10 +765,11 @@
 
                     '<td>' +
                     '<input class="form-control finput optionFile" type="file" placeholder="File..." name="optionFile[]" id="optionFile' + tableRow + '" data-id="' + tableRow  + '" style="width:100%">' + 
+                    '<input type="text"  class="form-control suggested text-center"  value="'+ref_no+'-OPTION '+ finalOptCount +'" readonly>' +
                     '</td>' +
 
                     '<td>' +
-                        '<button id="deleteRow" name="removeRow" data-id="' + tableRow + '" class="btn btn-danger removeRow"><i class="glyphicon glyphicon-trash"></i></button>' +
+                        '<button id="deleteRow" name="removeRow" data-id="' + tableRow + '" class="btn btn-danger btn-sm removeRow"><i class="glyphicon glyphicon-trash"></i></button>' +
                     '</td>' +
 
                 '</tr>';
@@ -794,92 +829,133 @@
     $('#btnUpdate').click(function(event) {
         event.preventDefault(); // cancel default behavior
         var rowCount = $('#item-sourcing-options tr').length-1;
-        if(rowCount == 1) {
-        swal({
-            type: 'error',
-            title: 'Please add an item!',
-            icon: 'error',
-            confirmButtonColor: "#367fa9",
-        }); 
-        event.preventDefault(); // cancel default behavior
-        return false;
-        }else{
-            var opt = $("input[name^='option']").length;
-            var opt_value = $("input[name^='option']");
-            for(i=0;i<opt;i++){
-                if(opt_value.eq(i).val() == 0 || opt_value.eq(i).val() == null){
-                    swal({  
-                            type: 'error',
-                            title: 'Option Fields cannot be empty!(put N/A if not available)',
-                            icon: 'error',
-                            confirmButtonColor: "#367fa9",
-                        });
-                        event.preventDefault();
-                        return false;
-                } 
+        // if(rowCount == 1) {
+        //     swal({
+        //         type: 'error',
+        //         title: 'Please add an item!',
+        //         icon: 'error',
+        //         confirmButtonColor: "#367fa9",
+        //     }); 
+        //     event.preventDefault(); // cancel default behavior
+        //     return false;
+        // }else{
+        //     var opt = $("input[name^='option']").length;
+        //     var opt_value = $("input[name^='option']");
+        //     for(i=0;i<opt;i++){
+        //         if(opt_value.eq(i).val() == 0 || opt_value.eq(i).val() == null){
+        //             swal({  
+        //                     type: 'error',
+        //                     title: 'Option Fields cannot be empty!(put N/A if not available)',
+        //                     icon: 'error',
+        //                     confirmButtonColor: "#367fa9",
+        //                 });
+        //                 event.preventDefault();
+        //                 return false;
+        //         } 
         
-            } 
-            var vendor = $("input[name^='vendor_name']").length;
-            var vendor_value = $("input[name^='vendor_name']");
-            for(i=0;i<vendor;i++){
-                if(vendor_value.eq(i).val() == 0 || vendor_value.eq(i).val() == null){
-                    swal({  
-                            type: 'error',
-                            title: 'Vendor Name Fields cannot be empty!(put N/A if not available)',
-                            icon: 'error',
-                            confirmButtonColor: "#367fa9",
-                        });
-                        event.preventDefault();
-                        return false;
-                } 
+        //     } 
+        //     var vendor = $("input[name^='vendor_name']").length;
+        //     var vendor_value = $("input[name^='vendor_name']");
+        //     for(i=0;i<vendor;i++){
+        //         if(vendor_value.eq(i).val() == 0 || vendor_value.eq(i).val() == null){
+        //             swal({  
+        //                     type: 'error',
+        //                     title: 'Vendor Name Fields cannot be empty!(put N/A if not available)',
+        //                     icon: 'error',
+        //                     confirmButtonColor: "#367fa9",
+        //                 });
+        //                 event.preventDefault();
+        //                 return false;
+        //         } 
         
-            } 
-            var price = $("input[name^='price']").length;
-            var price_value = $("input[name^='price']");
-            for(i=0;i<price;i++){
-                if(price_value.eq(i).val() == 0 || price_value.eq(i).val() == null){
-                    swal({  
-                            type: 'error',
-                            title: 'Price Fields cannot be empty!(put N/A if not available)',
-                            icon: 'error',
-                            confirmButtonColor: "#367fa9",
-                        });
-                        event.preventDefault();
-                        return false;
-                } 
+        //     } 
+        //     var price = $("input[name^='price']").length;
+        //     var price_value = $("input[name^='price']");
+        //     for(i=0;i<price;i++){
+        //         if(price_value.eq(i).val() == 0 || price_value.eq(i).val() == null){
+        //             swal({  
+        //                     type: 'error',
+        //                     title: 'Price Fields cannot be empty!(put N/A if not available)',
+        //                     icon: 'error',
+        //                     confirmButtonColor: "#367fa9",
+        //                 });
+        //                 event.preventDefault();
+        //                 return false;
+        //         } 
         
-            } 
-            var optionFile = $("input[name^='optionFile']").length;
-            var optionFile_value = $("input[name^='optionFile']");
-            for(i=0;i<optionFile;i++){
-                if(optionFile_value.eq(i).val() == 0 || optionFile_value.eq(i).val() == null){
-                    swal({  
-                            type: 'error',
-                            title: 'File Fields cannot be empty!',
-                            icon: 'error',
-                            confirmButtonColor: "#367fa9",
-                        });
-                        event.preventDefault();
-                        return false;
-                } 
+        //     } 
+        //     var optionFile = $("input[name^='optionFile']").length;
+        //     var optionFile_value = $("input[name^='optionFile']");
+        //     for(i=0;i<optionFile;i++){
+        //         if(optionFile_value.eq(i).val() == 0 || optionFile_value.eq(i).val() == null){
+        //             swal({  
+        //                     type: 'error',
+        //                     title: 'File Fields cannot be empty!',
+        //                     icon: 'error',
+        //                     confirmButtonColor: "#367fa9",
+        //                 });
+        //                 event.preventDefault();
+        //                 return false;
+        //         } 
         
-            } 
-          
-            swal({
-                title: "Are you sure?",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#41B314",
-                cancelButtonColor: "#F9354C",
-                confirmButtonText: "Yes, update it!",
-                width: 450,
-                height: 200
-                }, function () {
-                    $(this).attr('disabled','disabled');
-                    $('#button_action').val('1');
-                    $("#myform").submit();                   
+        //     } 
+         //Option File validation
+            // var optionFile = $("input[name^='optionFile']").length;
+            // var optionFile_value = $("input[name^='optionFile']");
+    
+            // for (var i = 0; i < $("#si_dr").get(0).files.length; ++i) {
+            //     var file1 = optionFile_value.get(i).files[i].name;
+            //     console.log(file1);
+            //     if(file1){                        
+            //         var file_size= optionFile_value.get(i).files[i].size;
+            //             var ext = file1.split('.').pop().toLowerCase();                            
+            //             if($.inArray(ext,['xlsx','pdf'])===-1){
+            //                 swal({
+            //                     type: 'error',
+            //                     title: 'Invalid File!',
+            //                     icon: 'error',
+            //                     customClass: 'swal-wide'
+            //                 });
+            //                 event.preventDefault();
+            //                 return false;
+            //             }                                          
+            //     }
+            //  }
+
+             $(".optionFile").each(function(index, field){
+                var file = field.files[0];
+                var filename = field.files[0].name;
+                var ext = filename.split('.').pop().toLowerCase();  
+                console.log(ext);
+                if($.inArray(ext,['xlsx','pdf'])===-1){
+                    swal({
+                        type: 'error',
+                        title: 'Invalid File! please refer to the ff(.xlsx,.pdf)',
+                        icon: 'error',
+                        confirmButtonColor: "#367fa9",
+                    });
+                    event.preventDefault();
+                    return false;
+                }else{
+                    swal({
+                        title: "Are you sure?",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#41B314",
+                        cancelButtonColor: "#F9354C",
+                        confirmButtonText: "Yes, update it!",
+                        width: 450,
+                        height: 200
+                        }, function () {
+                            $(this).attr('disabled','disabled');
+                            $('#button_action').val('1');
+                            $("#myform").submit();                   
+                    });
+                }      
             });
-        }
+          
+           
+        //}
     });
 
     //Closed Request

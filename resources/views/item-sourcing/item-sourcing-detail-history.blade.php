@@ -121,7 +121,7 @@
                 @if($versions->version != null)
                 <label class="control-label col-md-2">Version:</label>
                 <div class="col-md-4">
-                        <a type="button" value="{{$Header->requestid}}" id="getVersions"><strong>{{$versions->version}}</strong></a>
+                        <a type="button" value="{{$Header->requestid}}" id="getVersions" data-toggle="modal" data-target="#versionModal"><strong>{{$versions->version}}</strong></a>
                 </div>
             @endif
             </div>
@@ -133,6 +133,15 @@
                             <p>{{$Header->store_branch}}</p>
                     </div>
                 </div>
+            @endif
+
+            @if($Header->po_number != null)
+            <div class="row">
+                <label class="control-label col-md-2">{{ trans('message.form-label.po_number') }}:</label>
+                    <div class="col-md-4">
+                        <p >{{$Header->po_number}}</p>
+                </div>
+            </div>
             @endif
 
             <hr/>                
@@ -225,7 +234,7 @@
                             <th class="text-center">Vendor Name</th>
                             <th class="text-center">Price</th> 
                             <th class="text-center">Quotation</th> 
-                            <th width="5%" class="text-center"><i class="fa fa-trash"></i></th>
+                            <th width="5%" class="text-center"><i class="fa fa-times-circle"></i></th>
                         </tr>  
                       
                                                     
@@ -233,7 +242,7 @@
                                 @foreach($item_options as $res)
                                 <?php   $tableRow1++; ?>
                                     @if($res->deleted_at != null || $res->deleted_at != "")
-                                      <tr class="strikeout" style="background-color: #dd4b39; color:#fff">                                    
+                                      <tr style="background-color: #dd4b39; color:#fff">                                    
                                         <td style="text-align:center" height="10">
                                             {{$res->options}}                               
                                         </td>
@@ -245,12 +254,33 @@
                                         </td>
                                         <td style="text-align:center" height="10">
                                             {{$res->file_name}}                              
-                                        </td>
-                                        
-                                            <td  style="text-align:center; color:white"><i class="fa fa-times-circle"></i></td>                               
+                                        </td>                                       
+                                        <td colspan="2" style="text-align:center; color:white">
+                                            <i data-toggle="tooltip" data-placement="right" title="Cancelled" class="fa fa-times-circle"></i>
+                                        </td>                               
                                         
                                     </tr>
+                                    @elseif($res->selected_at != null || $res->selected_at != "")
+                                      <tr style="background-color: #d4edda; color:#155724">                                    
+                                        <td style="text-align:center" height="10">
+                                            {{$res->options}}                               
+                                        </td>
+                                        <td style="text-align:center" height="10">
+                                            {{$res->vendor_name}}                               
+                                        </td>
+                                        <td style="text-align:center" height="10">
+                                            {{number_format($res->price, 2, '.', ',')}}                               
+                                        </td>
+                                        <td style="text-align:center" height="10">
+                                            {{$res->file_name}}                              
+                                        </td>
+                                        <td colspan="2"  style="text-align:center;">
+                                            <i data-toggle="tooltip" data-placement="right" title="Selected" class="fa fa-check-circle text-success"></i>
+                                        </td>                               
+                                      </tr>
+                            
                                    @else
+                                   
                                     <tr id="tr-tableOption">                                    
                                         <td style="text-align:center" height="10">
                                             <input type="hidden"  class="form-control"  name="opt_id" id="opt_id"  required  value="{{$res->optId}}" readonly>  
@@ -415,12 +445,12 @@
             }
          
         });
-        $('#versionModal').modal('show'); 
+   
        
     });
 
     $('#versionModal').on('hidden.bs.modal', function () {
-      location.reload();
+        $("#modal-version tbody").html("");
     });
 
    

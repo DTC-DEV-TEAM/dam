@@ -87,7 +87,7 @@
                 @if($versions->version != null)
                     <label class="control-label col-md-2">Version:</label>
                     <div class="col-md-4">
-                            <a type="button" value="{{$Header->requestid}}" id="getVersions"><strong>{{$versions->version}}</strong></a>
+                            <a type="button" value="{{$Header->requestid}}" id="getVersions" data-toggle="modal" data-target="#versionModal"><strong>{{$versions->version}}</strong></a>
                     </div>
                 @endif
             </div>
@@ -99,6 +99,15 @@
                             <p>{{$Header->store_branch}}</p>
                     </div>
                 </div>
+            @endif
+
+            @if($Header->po_number != null)
+            <div class="row">
+                <label class="control-label col-md-2">{{ trans('message.form-label.po_number') }}:</label>
+                    <div class="col-md-4">
+                        <p >{{$Header->po_number}}</p>
+                </div>
+            </div>
             @endif
 
             <hr/>                
@@ -372,11 +381,10 @@
             }
          
         });
-        $('#versionModal').modal('show'); 
        
     });
     $('#versionModal').on('hidden.bs.modal', function () {
-      location.reload();
+        $("#modal-version tbody").html("");
     });
 
     

@@ -283,7 +283,7 @@
 	        $this->load_js = array();
 			$this->load_js[] = asset("datetimepicker/bootstrap-datetimepicker.min.js");
 			$this->load_js[] = asset("js/item_source/chat.js");
-	        
+			$this->load_js[] = asset("js/spinner.js");
 	        
 	        /*
 	        | ---------------------------------------------------------------------- 
@@ -308,6 +308,7 @@
 	        $this->load_css = array();
 	        $this->load_css[] = asset("datetimepicker/bootstrap-datetimepicker.min.css");
 			$this->load_css[] = asset("css/chatbox.css");
+			$this->load_css[] = asset("css/spinner.css");
 	        
 	    }
 
@@ -759,7 +760,7 @@
 			return $this->view("item-sourcing.item-sourcing-detail", $data);
 		}
 
-		
+		//Remove row in option
 		public function RemoveItemSource(Request $request){
 			$data   = Request::all();	
 			$opt_id = $data['opt_id'];
@@ -771,6 +772,22 @@
 			]);	
 
 			$message = ['status'=>'success', 'message' => 'Cancelled Successfully!'];
+			echo json_encode($message);
+			
+		}
+
+		//Select row in option
+		public function SelectedOption(Request $request){
+			$data   = Request::all();	
+			$opt_id = $data['opt_id'];
+
+			ItemSourcingOptions::where('id', $opt_id)
+			->update([
+				'selected_at'=> 	date('Y-m-d H:i:s'),
+				'selected_by'=> 	CRUDBooster::myId()
+			]);	
+
+			$message = ['status'=>'success', 'message' => 'Selected Successfully!'];
 			echo json_encode($message);
 			
 		}

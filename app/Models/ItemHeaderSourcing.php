@@ -27,8 +27,8 @@ class ItemHeaderSourcing extends Model
        'approved_by',
        'approved_at',
        'request_type_id',
-       'privilege_id',
-       'application',
+       'processed_by',
+       'processed_at',
        'application_others',
        'to_reco',
        'if_from_erf'
@@ -51,6 +51,7 @@ class ItemHeaderSourcing extends Model
         ->leftjoin('cms_users as approved', 'item_sourcing_header.approved_by','=', 'approved.id')
         ->leftjoin('cms_users as processed', 'item_sourcing_header.processed_by','=', 'processed.id')
         ->leftjoin('cms_users as closed', 'item_sourcing_header.closed_by','=', 'closed.id')
+        ->leftjoin('statuses', 'item_sourcing_header.status_id', '=', 'statuses.id')
         ->select(
                 'item_sourcing_header.*',
                 'item_sourcing_header.id as requestid',
@@ -64,7 +65,8 @@ class ItemHeaderSourcing extends Model
                 'approved.name as approvedby',
                 'processed.name as processedby',
                 'closed.name as closedby',
-                'item_sourcing_header.created_at as created_at'
+                'item_sourcing_header.created_at as created_at',
+                'statuses.status_description as status_description'
                 )
         ->where('item_sourcing_header.id', $id)->first();
 

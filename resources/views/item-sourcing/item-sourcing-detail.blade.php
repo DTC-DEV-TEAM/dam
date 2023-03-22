@@ -50,7 +50,14 @@
             /* Extra styling */
             td { width: 100px; }
             th { text-align: left; }
-            
+
+            /* .btn-circle.btn-sm {
+                width: 30px;
+                height: 30px;
+                padding: 6px 0px;
+                border-radius: 15px;
+                text-align: center;
+            } */
      
         </style>
     @endpush
@@ -72,7 +79,9 @@
         <input type="hidden" value="{{$Header->requestid}}" name="headerID" id="headerID">
 
         <div class='panel-body'>
-
+            <section id="loading">
+                <div id="loading-content"></div>
+            </section>
             <div class="row">                           
                 <label class="control-label col-md-2">{{ trans('message.form-label.reference_number') }}:</label>
                 <div class="col-md-4">
@@ -124,7 +133,7 @@
                 @if($versions->version != null)
                     <label class="control-label col-md-2">Version:</label>
                     <div class="col-md-4">
-                            <a type="button" value="{{$Header->requestid}}" id="getVersions"><strong>{{$versions->version}}</strong></a>
+                            <a type="button" value="{{$Header->requestid}}" id="getVersions" data-toggle="modal" data-target="#versionModal"><strong>{{$versions->version}}</strong></a>
                     </div>
                 @endif
             </div>
@@ -136,6 +145,15 @@
                             <p>{{$Header->store_branch}}</p>
                     </div>
                 </div>
+            @endif
+
+            @if($Header->po_number != null)
+            <div class="row">
+                <label class="control-label col-md-2">{{ trans('message.form-label.po_number') }}:</label>
+                    <div class="col-md-4">
+                        <p >{{$Header->po_number}}</p>
+                </div>
+            </div>
             @endif
 
             <hr/>                
@@ -242,60 +260,91 @@
                 <div class="col-md-8 col-md-offset-2">
                     <table class="table" id="item-sourcing-options">
                         <tbody id="bodyTable">
-                        <tr>
-                            <th class="text-center">Option</th> 
-                            <th class="text-center">Vendor Name</th>
-                            <th class="text-center">Price</th> 
-                            <th class="text-center">Quotation</th> 
-                            <th width="5%" class="text-center"><i class="fa fa-trash"></i></th>
-                        </tr>  
-                      
-                                                    
+                            <tr>
+                                <th class="text-center">Option</th> 
+                                <th class="text-center">Vendor Name</th>
+                                <th class="text-center">Price</th> 
+                                <th class="text-center">Quotation</th> 
+                                <th width="5%" class="text-center"><i class="fa fa-check-circle"></i></th>
+                                <th width="5%" class="text-center"><i class="fa fa-times-circle"></i></th>
+                            </tr>  
+              
+                           @if($item_options->isNotEmpty())                                              
                                 <?php   $tableRow = 1; ?>
                                 @foreach($item_options as $res)
-                                <?php   $tableRow1++; ?>
-                                    @if($res->deleted_at != null || $res->deleted_at != "")
-                                    <input type="hidden"  class="form-control"  name="opt_id" id="opt_id"  required  value="{{$res->optId}}" readonly>  
-                                      <tr class="strikeout" style="background-color: #dd4b39; color:#fff">                                    
-                                        <td style="text-align:center" height="10">
-                                            {{$res->options}}                               
-                                        </td>
-                                        <td style="text-align:center" height="10">
-                                            {{$res->vendor_name}}                               
-                                        </td>
-                                        <td style="text-align:center" height="10">
-                                             {{number_format($res->price, 2, '.', ',')}}                               
-                                        </td>
-                                        <td style="text-align:center" height="10">
-                                            {{$res->file_name}}                              
-                                        </td>
+                                    <?php   $tableRow1++; ?>
+                                        @if($res->deleted_at != null || $res->deleted_at != "")
+                                        <input type="hidden"  class="form-control"  name="opt_id" id="opt_id"  required  value="{{$res->optId}}" readonly>  
+                                        <tr style="background-color: #dd4b39; color:#fff">                                    
+                                            <td style="text-align:center" height="10">
+                                                {{$res->options}}                               
+                                            </td>
+                                            <td style="text-align:center" height="10">
+                                                {{$res->vendor_name}}                               
+                                            </td>
+                                            <td style="text-align:center" height="10">
+                                                {{number_format($res->price, 2, '.', ',')}}                               
+                                            </td>
+                                            <td style="text-align:center" height="10">
+                                                {{$res->file_name}}                              
+                                            </td>
+                                            <td colspan="2" style="text-align:center; color:white">
+                                                <i data-toggle="tooltip" data-placement="right" title="Cancelled" class="fa fa-times-circle"></i>
+                                            </td>                               
+                                        </tr>
+                                    @elseif($res->selected_at != null || $res->selected_at != "")
+                                        <tr style="background-color: #d4edda; color:#155724">                                    
+                                            <td style="text-align:center" height="10">
+                                                {{$res->options}}                               
+                                            </td>
+                                            <td style="text-align:center" height="10">
+                                                {{$res->vendor_name}}                               
+                                            </td>
+                                            <td style="text-align:center" height="10">
+                                                {{number_format($res->price, 2, '.', ',')}}                               
+                                            </td>
+                                            <td style="text-align:center" height="10">
+                                                {{$res->file_name}}                              
+                                            </td>
+                                            <td colspan="2"  style="text-align:center;">
+                                                <i data-toggle="tooltip" data-placement="right" title="Selected" class="fa fa-check-circle text-success"></i>
+                                            </td>                               
+                                        </tr>
+                                    @else
+                                        <tr id="tr-tableOption">                                    
+                                            <td style="text-align:center" height="10">
+                                                <input type="hidden"  class="form-control"  name="opt_id" id="opt_id"  required  value="{{$res->optId}}" readonly>  
+                                                {{$res->options}}                               
+                                            </td>
+                                            <td style="text-align:center" height="10">
+                                                {{$res->vendor_name}}                               
+                                            </td>
+                                            <td style="text-align:center" height="10">
+                                                {{number_format($res->price, 2, '.', ',')}}                               
+                                            </td>
+                                            <td style="text-align:center" height="10">
+                                                <a  href='{{CRUDBooster::adminpath("item_sourcing_for_quotation/download/".$res->file_id)."?return_url=".urlencode(Request::fullUrl())}}' class="form-control alink">{{$res->file_name}}   <i style="color:#007bff" class="fa fa-download"></i></a>                             
+                                            </td>
+                                            <td>
+                                                @if($Header->closed_at === null || $Header->closed_at === "")
+                                                <div class="round">
+                                                    <input data-toggle="tooltip" data-placement="bottom" title="Check" type="checkbox" id="checkbox3" class="checkbox3" name="selectRow" value="{{$res->optId}}" />
+                                                    <label for="checkbox3"></label>
+                                                </div>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($Header->closed_at === null || $Header->closed_at === "")
+                                                <button type="button" data-toggle="tooltip" data-placement="right" title="Cancel" id="deleteRow" name="removeRow" data-id="' + tableRow + '" class="btn btn-danger btn-circle btn-sm removeRow" value="{{$res->optId}}"><i class="glyphicon glyphicon-remove-sign"></i></button>
+                                                @endif
+                                            </td>
                                         
-                                            <td  style="text-align:center; color:white"><i class="fa fa-times-circle"></i></td>                               
-                                        
-                                    </tr>
-                                   @else
-                                    <tr id="tr-tableOption">                                    
-                                        <td style="text-align:center" height="10">
-                                            <input type="hidden"  class="form-control"  name="opt_id" id="opt_id"  required  value="{{$res->optId}}" readonly>  
-                                            {{$res->options}}                               
-                                        </td>
-                                        <td style="text-align:center" height="10">
-                                            {{$res->vendor_name}}                               
-                                        </td>
-                                        <td style="text-align:center" height="10">
-                                             {{number_format($res->price, 2, '.', ',')}}                               
-                                        </td>
-                                        <td style="text-align:center" height="10">
-                                            <a  href='{{CRUDBooster::adminpath("item_sourcing_for_quotation/download/".$res->file_id)."?return_url=".urlencode(Request::fullUrl())}}' class="form-control alink">{{$res->file_name}}   <i style="color:#007bff" class="fa fa-download"></i></a>                             
-                                        </td>
-                                        <td>
-                                            @if($Header->closed_at === null || $Header->closed_at === "")
-                                            <button id="deleteRow" name="removeRow" data-id="' + tableRow + '" class="btn btn-danger removeRow" value="{{$res->optId}}"><i class="glyphicon glyphicon-trash"></i></button>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                   @endif
-                                @endforeach                              
+                                        </tr>
+                                    @endif
+                                @endforeach        
+                            @else
+                                 <tr><td colspan="6">No Available data</td></tr>
+                            @endif                      
                          
                         
                         </tbody>
@@ -315,7 +364,7 @@
         <div class='panel-footer'>
             <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.back') }}</a>
             @if($Header->closed_at === "" || $Header->closed_at === null &&  $Header->cancelled_at === null || $Header->cancelled_at === "")
-             <button class="btn btn-primary pull-right" type="button" id="btnSubmit"><i class="fa fa-plus-circle" ></i> Edit</button>
+             <button class="btn btn-primary pull-right" type="button" id="btnSubmit"><i class="fa fa-refresh" ></i> Update</button>
             @endif
         </div>
     </form>
@@ -462,11 +511,12 @@
             }
          
         });
-        $('#versionModal').modal('show'); 
+        // $('#versionModal').modal('show'); 
        
     });
     $('#versionModal').on('hidden.bs.modal', function () {
-      location.reload();
+    //   location.reload();
+       $("#modal-version tbody").html("");
     });
 
     $("#message").keypress(function(event) {
@@ -505,7 +555,7 @@
     });
 
    
-    //submit request
+    //update request
     $('#btnSubmit').click(function() {
         swal({
             title: "Are you sure?",
@@ -513,7 +563,7 @@
             showCancelButton: true,
             confirmButtonColor: "#41B314",
             cancelButtonColor: "#F9354C",
-            confirmButtonText: "Yes, send it!",
+            confirmButtonText: "Yes, update it!",
             width: 450,
             height: 200
             }, function () {
@@ -538,7 +588,8 @@
                             });
                         }
                     }
-                });                                                
+                });     
+                showLoading();                                              
         });
         
 
@@ -564,7 +615,7 @@
                     type: "warning",
                     text: "You won't be able to revert this!",
                     showCancelButton: true,
-                    confirmButtonColor: "#41B314",
+                    confirmButtonColor: "#dd4b39",
                     cancelButtonColor: "#F9354C",
                     confirmButtonText: "Yes, cancel it!"
                     }, function () {
@@ -599,6 +650,61 @@
             });
     });
 
+    //only one checked allowed
+     //checkbox validations
+     $("input[name^='selectRow']").on('click', function() {
+        var $box = $(this);
+        if ($box.is(':checked')) {
+            var group = "input:checkbox[name='" + $box.attr("name") + "']";
+            $(group).prop("checked", false);
+            $box.prop('checked', true);
+        } else {
+            $box.prop('checked', false);
+        }
+    });
+
+    //Select option
+    $(".checkbox3").change(function() {
+        var ischecked= $(this).is(':checked');
+        var data_id = $(this).val();
+        if(ischecked == true){
+            swal({
+                title: "Are you sure?",
+                type: "warning",
+                text: "You won't be able to revert this!",
+                showCancelButton: true,
+                confirmButtonColor: "#41B314",
+                cancelButtonColor: "#F9354C",
+                confirmButtonText: "Yes, select it!"
+            }, function () {
+            $.ajax
+                ({ 
+                    url:  '{{ url('admin/item-sourcing-header/SelectedOption') }}',
+                    type: "GET",
+                    data: { opt_id: data_id},
+                    dataType: 'json',
+                    success: function(data){    
+                        if (data.status == "success") {
+                            swal({
+                                type: data.status,
+                                title: data.message,
+                            });
+                            setTimeout(function(){
+                                location.reload();
+                            }, 1000); 
+                            } else if (data.status == "error") {
+                            swal({
+                                type: data.status,
+                                title: data.message,
+                            });
+                        }
+                    }
+                });                            
+            });
+        }
+
+    });
+
     function calculateTotalQuantity(...body_qty) {
         var totalQuantity = 0;  
         $('.quantity_item').each(function() {
@@ -612,6 +718,7 @@
     num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     return num_parts.join(".");
     }
+
     
 </script>
 @endpush

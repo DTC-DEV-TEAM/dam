@@ -15,7 +15,7 @@
             <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
             <h4 class="modal-title text-center" id="event-title">Edit Logs</h4>
         </div>
-        <div class="modal-body">
+        <div class="modal-body modalBody">
             <div class="row" style="padding:30px; padding-top:0;">             
                 <table class="table" id="modal-version" style="overflow-x: scroll;">
                     <tbody id="appendVersions">

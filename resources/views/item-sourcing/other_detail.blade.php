@@ -21,28 +21,16 @@
                     <td class="col-md-4">{{$Header->approver_comments}}</td>
                 </tr>
             @endif
-            @if($Header->po_number != null)
+           
             <tr>
-                <th class="control-label col-md-2">{{ trans('message.form-label.po_number') }}:</th>
-                <td class="col-md-4">{{$Header->po_number}}</td>     
+                <th class="control-label col-md-2">Status:</th>
+                <td class="col-md-4">{{$Header->status_description}}</td>
             </tr>
-            @endif
-            @if($Header->po_date != null)
-            <tr>
-                <th class="control-label col-md-2">{{ trans('message.form-label.po_date') }}:</th>
-                <td class="col-md-4">{{$Header->po_date}}</td>
-            </tr>
-            @endif
-            @if($Header->quote_date != null)
-            <tr>
-                <th class="control-label col-md-2">{{ trans('message.form-label.quote_date') }}:</th>
-                <td class="col-md-4">{{$Header->quote_date}}</td>
-            </tr>
-            @endif
+         
             @if( $Header->processedby != null )
                 <tr>
                     <th class="control-label col-md-2">{{ trans('message.form-label.processed_by') }}:</th>
-                    <td class="col-md-4">{{$Header->processedby}} / {{$Header->purchased2_at}}</td>
+                    <td class="col-md-4">{{$Header->processedby}} / {{$Header->processed_at}}</td>
                 </tr>
             @endif
             @if( $Header->closedby != null )
