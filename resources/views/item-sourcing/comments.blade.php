@@ -24,6 +24,6 @@
             </div>                
     </div>
     <div class="send">
-        <textarea class="form-control" placeholder="Message ..." name="message" id="message" style="width:100%"></textarea> <button type="button" class="btn btn-primary btnChat" id="btnChat"><i class="fa fa-send icon-send"></i></button> 
+        <textarea oninput="validate(this)" class="form-control" placeholder="Message ..." name="message" id="message" style="width:100%"></textarea> <button type="button" class="btn btn-primary btnChat" id="btnChat"><i class="fa fa-send icon-send"></i></button> 
     </div> 
 </div>

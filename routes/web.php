@@ -196,6 +196,10 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/item-sourcing-header/save-message','AdminItemSourcingHeaderController@saveMessage')->name('save-message');
     Route::post(config('crudbooster.ADMIN_PATH').'/item-sourcing-header/edit-item-source','AdminItemSourcingHeaderController@editItemSource')->name('edit-item-source');
     Route::get(config('crudbooster.ADMIN_PATH').'/item-sourcing-header/get-versions','AdminItemSourcingHeaderController@getVersions')->name('get-versions');
+    //view and edit
+    Route::get('admin/item-sourcing-header/getDetail/{id}','AdminItemSourcingHeaderController@getDetail')->name('getDetail');
+    Route::get('admin/item-sourcing-header/getDetailReject/{id}','AdminItemSourcingHeaderController@getDetailReject')->name('getDetailReject');
+    
     //reports
     //Route::get('/admin/reports/getIndex','AdminReportsController@getIndex')->name('get-report');
     //Route::get('/admin/get-reports/getIndex', [AdminReportsv2Controller::class, 'getIndex'])->name('get-report');

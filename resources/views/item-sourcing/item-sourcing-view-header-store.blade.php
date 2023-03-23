@@ -43,7 +43,7 @@
     <div class="col-md-6">
         <div class="form-group col-md-7">
             <label class="control-label"><span style="color:red">*</span> Date Needed</label>
-            <input class="form-control finput date" type="text" placeholder="Select Needed Date" name="date_needed" id="date_needed">
+            <input class="form-control finput date" autocomplete="off" type="text" placeholder="Select Needed Date" name="date_needed" id="date_needed">
         </div>
     </div> 
    

@@ -108,6 +108,12 @@
         function preventBack() {
             window.history.forward();
         }
+
+        function validate(input){
+        if(/^\s/.test(input.value))
+            input.value = '';
+        }
+        
          window.onunload = function() {
             null;
         };

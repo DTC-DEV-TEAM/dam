@@ -217,7 +217,6 @@
                 @endif
             </div>
          
-
             <div class="row">
                 @if($Header->po_number != null)
                     <label class="control-label col-md-2">{{ trans('message.form-label.po_number') }}:</label>
@@ -227,7 +226,6 @@
                 @endif
             </div>
          
-
             <hr/>                
             <div class="row">
                 <div class="col-md-12">
@@ -415,7 +413,7 @@
                     <div class="modal-body">
                        <div class='row'>
                          <div class='col-md-12'>
-                          <input type"text" class="form-control" name="po_no"  id="po_no" placeholder="Please input PO">
+                          <input oninput="validate(this)" type"text" class="form-control" name="po_no"  id="po_no" placeholder="Please input PO">
                          </div>
                          <br>	
                        </div>
@@ -462,6 +460,12 @@
     function preventBack() {
         window.history.forward();
     }
+
+    function validate(input){
+     if(/^\s/.test(input.value))
+        input.value = '';
+    }
+
     window.onunload = function() {
         null;
     };
@@ -499,12 +503,6 @@
         
     });
 
-    $("#message").keypress(function(event) {
-        if (event.which == '13') {
-            $('#btnChat').click();
-        }
-    });
-
     //Chat
     $('#btnChat').click(function() {
         event.preventDefault();
@@ -537,7 +535,7 @@
                                             '<p style="text-align:right; font-size:12px; font-style: italic; padding-right:5px;"> '+ new Date(data.message.created_at) +'</p></span>');
                         $('#message').val('');
                     }
-                    var interval = setInterval(function() {
+                    var interval = setTimeout(function() {
                      $('.chat').scrollTop($('.chat')[0].scrollHeight);
                     },200);
                 }
@@ -780,7 +778,7 @@
 
                     '<td>' +
                     '<input class="form-control finput optionFile" type="file" placeholder="File..." name="optionFile[]" id="optionFile' + tableRow + '" data-id="' + tableRow  + '" style="width:100%">' + 
-                    '<input type="text"  class="form-control suggested text-center"  value="'+ref_no+'-OPTION '+ finalOptCount +'" readonly>' +
+                    '<input type="text"  class="form-control suggested text-center" id="fileName"  value="'+ref_no+'-OPTION '+ finalOptCount +'" readonly>' +
                     '</td>' +
 
                     '<td>' +
@@ -844,6 +842,7 @@
     $('#btnUpdate').click(function(event) {
         event.preventDefault(); // cancel default behavior
         var rowCount = $('#item-sourcing-options tr').length-1;
+        var checkFileName = $('#fileName').val();
         // if(rowCount == 1) {
         //     swal({
         //         type: 'error',
@@ -864,7 +863,7 @@
                     if(vendor_value.eq(i).val() == 0 || vendor_value.eq(i).val() == null){
                         swal({  
                                 type: 'error',
-                                title: 'Vendor Name Fields cannot be empty!(put N/A if not available)',
+                                title: 'Vendor Name Fields cannot be empty!',
                                 icon: 'error',
                                 confirmButtonColor: "#367fa9",
                             });
@@ -879,7 +878,7 @@
                     if(price_value.eq(i).val() == 0 || price_value.eq(i).val() == null){
                         swal({  
                                 type: 'error',
-                                title: 'Price Fields cannot be empty!(put N/A if not available)',
+                                title: 'Price Fields cannot be empty!',
                                 icon: 'error',
                                 confirmButtonColor: "#367fa9",
                             });
@@ -900,58 +899,44 @@
                             });
                             event.preventDefault();
                             return false;
-                    } 
+                    }else if($.inArray(optionFile_value.get(i).files[i].name.split('.').pop().toLowerCase(),['xlsx','pdf','docs'])===-1){
+                        swal({  
+                                type: 'error',
+                                title: 'Invalid File! please refer to the ff(.xlsx,.pdf)',
+                                icon: 'error',
+                                confirmButtonColor: "#367fa9",
+                            });
+                            event.preventDefault();
+                            return false;
+                    }else if(optionFile_value.get(i).files[i].name.split('.').shift() !== checkFileName){
+                        swal({  
+                                type: 'error',
+                                title: 'File Name Invalid! (please copy recommended filename in system)',
+                                icon: 'error',
+                                confirmButtonColor: "#367fa9",
+                            });
+                            event.preventDefault();
+                            return false;
+                    }
             
                 } 
-
-                $(".optionFile").each(function(index, field){
-                    var file = field.files[0];
-                    var filename = field.files[0].name;
-                    var ext = filename.split('.').pop().toLowerCase();  
-    
-                    if($.inArray(ext,['xlsx','pdf'])===-1){
-                        swal({
-                            type: 'error',
-                            title: 'Invalid File! please refer to the ff(.xlsx,.pdf)',
-                            icon: 'error',
-                            confirmButtonColor: "#367fa9",
-                        });
-                        // event.preventDefault();
-                        // return false;
-                    }else{
-                        swal({
-                            title: "Are you sure?",
-                            type: "warning",
-                            showCancelButton: true,
-                            confirmButtonColor: "#41B314",
-                            cancelButtonColor: "#F9354C",
-                            confirmButtonText: "Yes, update it!",
-                            width: 450,
-                            height: 200
-                            }, function () {
-                                $(this).attr('disabled','disabled');
-                                $('#button_action').val('1');
-                                $("#myform").submit();                   
-                        });
-                    }
-                                 
-                });
-            }else{
-                swal({
-                    title: "Are you sure?",
-                    type: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#41B314",
-                    cancelButtonColor: "#F9354C",
-                    confirmButtonText: "Yes, update it!",
-                    width: 450,
-                    height: 200
-                    }, function () {
-                        $(this).attr('disabled','disabled');
-                        $('#button_action').val('1');
-                        $("#myform").submit();                   
-                });
             }
+
+            swal({
+                title: "Are you sure?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#41B314",
+                cancelButtonColor: "#F9354C",
+                confirmButtonText: "Yes, update it!",
+                width: 450,
+                height: 200
+                }, function () {
+                    $(this).attr('disabled','disabled');
+                    $('#button_action').val('1');
+                    $("#myform").submit();                   
+            });
+            
           
            
         //}

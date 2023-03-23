@@ -107,6 +107,12 @@
         function preventBack() {
             window.history.forward();
         }
+
+        function validate(input){
+        if(/^\s/.test(input.value))
+            input.value = '';
+        }
+        
          window.onunload = function() {
             null;
         };
@@ -122,7 +128,7 @@
             format: "YYYY-MM-DD",
             dayViewHeaderFormat: "MMMM YYYY",
         });
-
+        $(".date").val('');
         $('#category_id').select2({});
         $('#sub_category_id').select2({});
         $('#class').select2({});
