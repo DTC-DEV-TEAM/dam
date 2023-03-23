@@ -54,19 +54,19 @@
                                             </td> 
 
                                             <td >
-                                                <input type="text" placeholder="Item Description..." onkeyup="this.value = this.value.toUpperCase();" class="form-control finput itemDesc" id="itemDesc"  name="item_description"  required maxlength="100">
+                                                <input type="text" placeholder="Item Description..." onkeyup="this.value = this.value.toUpperCase();" oninput="validate(this)" class="form-control finput itemDesc" id="itemDesc"  name="item_description"  required maxlength="100">
                                             </td> 
                                             <td >
-                                                <input type="text" placeholder="Brand..." onkeyup="this.value = this.value.toUpperCase();" class="form-control finput brand" id="brand"  name="brand"  required maxlength="100">
+                                                <input type="text" placeholder="Brand..." onkeyup="this.value = this.value.toUpperCase();" oninput="validate(this)" class="form-control finput brand" id="brand"  name="brand"  required maxlength="100">
                                             </td> 
                                             <td >
-                                                <input type="text" placeholder="Model..." onkeyup="this.value = this.value.toUpperCase();" class="form-control finput model" id="model"  name="model"  required maxlength="100">
+                                                <input type="text" placeholder="Model..." onkeyup="this.value = this.value.toUpperCase();" oninput="validate(this)" class="form-control finput model" id="model"  name="model"  required maxlength="100">
                                             </td> 
                                             <td >
-                                                <input type="text" placeholder="Size..." onkeyup="this.value = this.value.toUpperCase();" class="form-control finput size" id="size"  name="size"  required maxlength="100">
+                                                <input type="text" placeholder="Size..." onkeyup="this.value = this.value.toUpperCase();" oninput="validate(this)" class="form-control finput size" id="size"  name="size"  required maxlength="100">
                                             </td> 
                                             <td >
-                                                <input type="text" placeholder="Actual Color..." onkeyup="this.value = this.value.toUpperCase();" class="form-control finput actual_color" id="actual_color"  name="actual_color"  required maxlength="100">
+                                                <input type="text" placeholder="Actual Color..." onkeyup="this.value = this.value.toUpperCase();" oninput="validate(this)" class="form-control finput actual_color" id="actual_color"  name="actual_color"  required maxlength="100">
                                             </td> 
                                             <td> 
 
@@ -79,7 +79,7 @@
                                             </td> 
 
                                             <td> 
-                                            <input class="form-control text-center quantity_item" type="text" required name="quantity" id="quantity"  value="1" min="0" max="9999999999" step="any" onkeypress="return event.charCode <= 57"> 
+                                            <input class="form-control text-center quantity_item" type="text" oninput="validate(this)" required name="quantity" id="quantity"  value="1" min="0" max="9999999999" step="any" onkeypress="return event.charCode <= 57"> 
                                             </td> 
                                                             
                                         </tr>
@@ -98,7 +98,7 @@
         <div class="col-md-12">
             <div class="form-group">
                 <label>Comments</label>
-                <textarea placeholder="Comments ..." rows="3" class="form-control finput" name="requestor_comments"></textarea>
+                <textarea placeholder="Comments ..." oninput="validate(this)" rows="3" class="form-control finput" name="requestor_comments"></textarea>
             </div>
         </div>
 </div>

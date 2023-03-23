@@ -25,6 +25,7 @@
 		private $forStreamlining;
 		private $forItemCreation;
 		private $forArfCreation;
+		private $rejected;
 
 		public function __construct() {
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
@@ -36,6 +37,7 @@
 			$this->forStreamlining  =  39;   
 			$this->forItemCreation  =  40;        
 			$this->forArfCreation   =  41;
+			$this->rejected         =  5;
 		
 		}
 	    public function cbInit() {
@@ -51,7 +53,7 @@
 			$this->button_add = false;
 			$this->button_edit = false;
 			$this->button_delete = false;
-			$this->button_detail = true;
+			$this->button_detail = false;
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
@@ -75,6 +77,7 @@
 			$this->col[] = ["label"=>"Approved By","name"=>"approved_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Approved Date","name"=>"approved_at"];
 			$this->col[] = ["label"=>"Rejected Date","name"=>"rejected_at"];
+		
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
@@ -109,8 +112,10 @@
 	        */
 	        $this->addaction = array();
 			if(CRUDBooster::isUpdate()) {
+				$rejected  = 		DB::table('statuses')->where('id', 5)->value('id');
 				$this->addaction[] = ['title'=>'Cancel Request','url'=>CRUDBooster::mainpath('getRequestCancelNis/[id]'),'icon'=>'fa fa-times', "showIf"=>"[status_id] == $this->forApproval"];
-				//$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('detail-sourcing'),'icon'=>'fa fa-eye'];
+				$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailReject/[id]'),'icon'=>'fa fa-eye', "showIf"=>"[status_id] == $rejected"];
+				$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetail/[id]'),'icon'=>'fa fa-eye', "showIf"=>"[status_id] != $this->rejected"];
 
 			}
 
@@ -385,7 +390,7 @@
 			$forStreamlining    = DB::table('statuses')->where('id', $this->forStreamlining)->value('status_description');
 			$forItemCreation    = DB::table('statuses')->where('id', $this->forItemCreation)->value('status_description');
 			$forArfCreation     = DB::table('statuses')->where('id', $this->forArfCreation)->value('status_description');
-		
+			$rejected           = DB::table('statuses')->where('id', $this->rejected)->value('status_description');	
 			
 			if($column_index == 1){
 				if($column_value == $forApproval){
@@ -396,6 +401,8 @@
 					$column_value = '<span class="label label-success">'.$closed.'</span>';
 				}else if($column_value == $cancelled){
 					$column_value = '<span class="label label-danger">'.$cancelled.'</span>';
+				}else if($column_value == $rejected){
+					$column_value = '<span class="label label-danger">'.$rejected.'</span>';
 				}else if($column_value == $forStreamlining){
 					$column_value = '<span class="label label-info">'.$forStreamlining.'</span>';
 				}else if($column_value == $forSourcing){
@@ -756,8 +763,26 @@
 		    $data['item_options'] = ItemSourcingOptions::options($id);
 			$data['versions']     = DB::table('item_sourcing_edit_versions')->where('header_id', $id)->latest('created_at')->first();
 			$data['allOptions']   = DB::table('item_sourcing_options')->where('item_sourcing_options.header_id', $id)->count();
-
+     
 			return $this->view("item-sourcing.item-sourcing-detail", $data);
+		}
+		public function getDetailReject($id){
+			$this->cbLoader();
+            if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
+                CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+            }
+
+			$data = array();
+			$data['page_title']   = 'Item Sourcing Detail';
+
+			$data['Header']       = ItemHeaderSourcing::header($id);
+			$data['Body']         = ItemBodySourcing::body($id);
+			$data['comments']     = ItemSourcingComments::comments($id);
+		    $data['item_options'] = ItemSourcingOptions::options($id);
+			$data['versions']     = DB::table('item_sourcing_edit_versions')->where('header_id', $id)->latest('created_at')->first();
+			$data['allOptions']   = DB::table('item_sourcing_options')->where('item_sourcing_options.header_id', $id)->count();
+     
+			return $this->view("item-sourcing.item-sourcing-detail-reject", $data);
 		}
 
 		//Remove row in option
@@ -779,12 +804,18 @@
 		//Select row in option
 		public function SelectedOption(Request $request){
 			$data   = Request::all();	
-			$opt_id = $data['opt_id'];
+			$header_id = $data['header_id'];
+			$opt_id    = $data['opt_id'];
 
 			ItemSourcingOptions::where('id', $opt_id)
 			->update([
 				'selected_at'=> 	date('Y-m-d H:i:s'),
 				'selected_by'=> 	CRUDBooster::myId()
+			]);	
+
+			ItemHeaderSourcing::where('id', $header_id)
+			->update([
+				'if_selected'=> 	1
 			]);	
 
 			$message = ['status'=>'success', 'message' => 'Selected Successfully!'];

@@ -226,9 +226,16 @@
     $(function(){
             $('body').addClass("sidebar-collapse");
         });
+
     function preventBack() {
         window.history.forward();
     }
+
+    function validate(input){
+     if(/^\s/.test(input.value))
+        input.value = '';
+    }
+
     window.onunload = function() {
         null;
     };
@@ -268,7 +275,7 @@
                                             '<p style="text-align:right; font-size:12px; font-style: italic; padding-right:5px;"> '+ new Date(data.message.created_at) +'</p></span>');
                         $('#message').val('');
                     }
-                    var interval = setInterval(function() {
+                    var interval = setTimeout(function() {
                         $('.chat').scrollTop($('.chat')[0].scrollHeight);
                     },200);
                 }

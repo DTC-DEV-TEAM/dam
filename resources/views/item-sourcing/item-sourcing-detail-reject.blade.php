@@ -1,6 +1,5 @@
 @extends('crudbooster::admin_template')
     @push('head')
-    <link rel="stylesheet" type="text/css" href="https://flatlogic.github.io/awesome-bootstrap-checkbox/demo/build.css" />
         <style type="text/css">   
            #other-detail th, td {
             border: 1px solid rgba(000, 0, 0, .5);
@@ -72,7 +71,6 @@
     <div class='panel-heading'>
         History Detail View
     </div>
-    <form method='post' id="myform" name="myform">
         
         <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
         <input type="hidden" value="0" name="action" id="action">
@@ -153,7 +151,7 @@
                     </div>
                 @endif
             </div>
-         
+        
 
             <hr/>                
             <div class="row">
@@ -196,46 +194,26 @@
                                                             </td>
                                                             <td style="text-align:center" height="10">
                                                                 {{$rowresult->sub_class_description}}                               
+                                                            </td>                                                        
+                                                            <td style="text-align:center" height="10">
+                                                                {{$rowresult->item_description}}                               
                                                             </td>
-                                                            @if($Header->closed_at === "" || $Header->closed_at === null &&  $Header->cancelled_at === null || $Header->cancelled_at === "")                                    
-                                                                <td style="text-align:center" height="10">                                                             
-                                                                    <input type="text"  class="form-control finput"  name="item_description" id="item_description" value="{{$rowresult->item_description}}" data-id="{{$tableRow1}}"  required>  
-                                                                </td>
-                                                                <td style="text-align:center" height="10">                                                             
-                                                                    <input type="text"  class="form-control finput"  name="brand" id="brand" value="{{$rowresult->brand}}" data-id="{{$tableRow1}}"  required>  
-                                                                </td>
-                                                                <td style="text-align:center" height="10">                                                             
-                                                                    <input type="text"  class="form-control finput"  name="model" id="model" value="{{$rowresult->model}}" data-id="{{$tableRow1}}"  required>  
-                                                                </td>
-                                                                <td style="text-align:center" height="10">                                                             
-                                                                    <input type="text"  class="form-control finput"  name="size" id="size" value="{{$rowresult->size}}" data-id="{{$tableRow1}}"  required>  
-                                                                </td>
-                                                                <td style="text-align:center" height="10">                                                             
-                                                                    <input type="text"  class="form-control finput"  name="actual_color" id="actual_color" value="{{$rowresult->actual_color}}" data-id="{{$tableRow1}}"  required>  
-                                                                </td>
-                                                                <td style="text-align:center" height="10" class="qty">
-                                                                    <input type="text"  class="form-control finput"  name="quantity" id="quantity" value="{{$rowresult->quantity}}" data-id="{{$tableRow1}}"  required>  
-                                                                </td>                   
-                                                            @else
-                                                                <td style="text-align:center" height="10">
-                                                                    {{$rowresult->item_description}}                               
-                                                                </td>
-                                                                <td style="text-align:center" height="10">
-                                                                    {{$rowresult->brand}}                               
-                                                                </td>
-                                                                <td style="text-align:center" height="10">
-                                                                    {{$rowresult->model}}                               
-                                                                </td>
-                                                                <td style="text-align:center" height="10">
-                                                                    {{$rowresult->size}}                               
-                                                                </td>
-                                                                <td style="text-align:center" height="10">
-                                                                    {{$rowresult->actual_color}}                               
-                                                                </td>
-                                                                <td style="text-align:center" height="10">
-                                                                    {{$rowresult->quantity}}                               
-                                                                </td>
-                                                            @endif  
+                                                            <td style="text-align:center" height="10">
+                                                                {{$rowresult->brand}}                               
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                {{$rowresult->model}}                               
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                {{$rowresult->size}}                               
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                {{$rowresult->actual_color}}                               
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                {{$rowresult->quantity}}                               
+                                                            </td>
+                                    
                                                             <td style="text-align:center" height="10" class="cost">
                                                                     {{$rowresult->budget}}
                                                             </td>                                                                                                           
@@ -309,27 +287,6 @@
                                                 <i data-toggle="tooltip" data-placement="right" title="Selected" class="fa fa-check-circle text-success"></i>
                                             </td>                               
                                         </tr>
-                                    @elseif($Header->if_selected != null)
-                                        <tr>                                    
-                                            <td style="text-align:center" height="10">
-                                                {{$res->options}}                               
-                                            </td>
-                                            <td style="text-align:center" height="10">
-                                                {{$res->vendor_name}}                               
-                                            </td>
-                                            <td style="text-align:center" height="10">
-                                                {{number_format($res->price, 2, '.', ',')}}                               
-                                            </td>
-                                            <td style="text-align:center" height="10">
-                                                {{$res->file_name}}                              
-                                            </td>
-                                            <td colspan="2"  style="text-align:center;">
-                                               
-                                            </td>     
-                                            {{-- <td>
-                                                <a class="word" href="//docs.google.com/gview?url={{asset('vendor/crudbooster/item_source/'.$res->file_name)}}&embedded=true">Open a Word document in Fancybox</a>
-                                            </td>                                                                                       --}}
-                                        </tr>
                                     @else
                                         <tr id="tr-tableOption">                                    
                                             <td style="text-align:center" height="10">
@@ -347,22 +304,18 @@
                                             </td>
                                             <td>
                                                 @if($Header->closed_at === null || $Header->closed_at === "")
-                                                <div class="checkbox checkbox-success checkbox-circle" data-toggle="tooltip" data-placement="bottom" title="Selected">
-                                                    <input  type="checkbox" id="chkSuccess" class="checkbox3" name="selectRow" value="{{$res->optId}}" />
-                                                    <label for="chkSuccess"></label>
+                                                <div class="round">
+                                                    <input data-toggle="tooltip" data-placement="bottom" title="Check" type="checkbox" id="checkbox3" class="checkbox3" name="selectRow" value="{{$res->optId}}" />
+                                                    <label for="checkbox3"></label>
                                                 </div>
                                                 @endif
                                             </td>
                                             <td>
                                                 @if($Header->closed_at === null || $Header->closed_at === "")
-                                                {{-- <button type="button" data-toggle="tooltip" data-placement="right" title="Cancel" id="deleteRow" name="removeRow" data-id="' + tableRow + '" class="btn btn-danger btn-circle btn-sm removeRow" value="{{$res->optId}}"><i class="glyphicon glyphicon-remove-sign"></i></button> --}}
-                                                <div class="checkbox checkbox-danger checkbox-circle" data-toggle="tooltip" data-placement="bottom" title="Cancel">
-                                                    <input type="checkbox" id="chkDanger deleteRow" class="removeRow" name="removeRow" value="{{$res->optId}}" />
-                                                    <label for="chkDanger"></label>
-                                                </div>
+                                                <button type="button" data-toggle="tooltip" data-placement="right" title="Cancel" id="deleteRow" name="removeRow" data-id="' + tableRow + '" class="btn btn-danger btn-circle btn-sm removeRow" value="{{$res->optId}}"><i class="glyphicon glyphicon-remove-sign"></i></button>
                                                 @endif
                                             </td>
-                                         
+                                        
                                         </tr>
                                     @endif
                                 @endforeach        
@@ -387,11 +340,7 @@
 
         <div class='panel-footer'>
             <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.back') }}</a>
-            @if($Header->closed_at === "" || $Header->closed_at === null &&  $Header->cancelled_at === null || $Header->cancelled_at === "")
-             <button class="btn btn-primary pull-right" type="button" id="btnSubmit"><i class="fa fa-refresh" ></i> Update</button>
-            @endif
         </div>
-    </form>
 </div>
             {{-- Modal Edi Version --}}
 @include('item-sourcing.modal-edit-version')
@@ -424,15 +373,7 @@
      if(/^\s/.test(input.value))
         input.value = '';
     }
-
-    $(document).ready(function() {
-        $(".word").fancybox({
-            'width': 600, // or whatever
-            'height': 320,
-            'type': 'iframe'
-        });
-    });
-
+    
     window.onunload = function() {
         null;
     };
@@ -641,20 +582,17 @@
     tableRow ++;
     //remove items in options
     $(document).ready(function() {
-            // $(document).on('click', '.removeRow', function() {
-        $(".removeRow").change(function() {
-            var ischecked= $(this).is(':checked');
-            $(".checkbox3").prop('checked', false);
-            event.preventDefault();
-            var id_data = $(this).val();    
-
-            if ($('#asset-items1 tbody tr').length != 1) { //check if not the first row then delete the other rows
-        
-            // item_id = $("#ids"+id_data).val();
-            // $("#bodyID").val(item_id);
-            var data = $('#myform').serialize();
-            var data_id = id_data;
-            if(ischecked == true){
+            $(document).on('click', '.removeRow', function() {
+                $(".checkbox3").prop('checked', false);
+                event.preventDefault();
+                var id_data = $(this).val();    
+   
+                if ($('#asset-items1 tbody tr').length != 1) { //check if not the first row then delete the other rows
+            
+                // item_id = $("#ids"+id_data).val();
+                // $("#bodyID").val(item_id);
+                var data = $('#myform').serialize();
+                var data_id = id_data;
                 swal({
                     title: "Are you sure?",
                     type: "warning",
@@ -662,11 +600,10 @@
                     showCancelButton: true,
                     confirmButtonColor: "#dd4b39",
                     cancelButtonColor: "#F9354C",
-                    confirmButtonText: "Yes, cancel it!",
-                    closeOnCancel: true
-                    }, function (inputValue) {
-                    if(inputValue===true){
-                        $.ajax({ 
+                    confirmButtonText: "Yes, cancel it!"
+                    }, function () {
+                    $.ajax
+                        ({ 
                             url:  '{{ url('admin/item-sourcing-header/RemoveItemSource') }}',
                             type: "GET",
                             data: { opt_id: data_id},
@@ -687,18 +624,13 @@
                                     });
                                 }
                             }
-                        });   
-                   }else{
-                        uncheckSelectedRemoveRow();
-                    }                         
-                });
-            }
-             
-            }
-        });
-        function uncheckSelectedRemoveRow(){
-            $(".removeRow").prop('checked', false);
-        }
+                        });                            
+                    });
+                    $("#deleteRow"+id_data).attr('disabled', true);
+                    tableRow--;
+                    return false;   
+               }
+            });
     });
 
     //only one checked allowed
@@ -713,23 +645,10 @@
             $box.prop('checked', false);
         }
     });
-    //checkbox validations
-    $("input[name^='removeRow']").on('click', function() {
-        var $box = $(this);
-        if ($box.is(':checked')) {
-            var group = "input:checkbox[name='" + $box.attr("name") + "']";
-            $(group).prop("checked", false);
-            $box.prop('checked', true);
-        } else {
-            $box.prop('checked', false);
-        }
-    });
 
     //Select option
     $(".checkbox3").change(function() {
-        $(".removeRow").prop('checked', false);
         var ischecked= $(this).is(':checked');
-        var header_id = $('#headerID').val();
         var data_id = $(this).val();
         if(ischecked == true){
             swal({
@@ -739,47 +658,35 @@
                 showCancelButton: true,
                 confirmButtonColor: "#41B314",
                 cancelButtonColor: "#F9354C",
-                confirmButtonText: "Yes, select it!",
-                closeOnCancel: true
-            }, function (inputValue) {
-                if(inputValue===true){
-                    $.ajax({ 
-                        url:  '{{ url('admin/item-sourcing-header/SelectedOption') }}',
-                        type: "GET",
-                        data: { 
-                            opt_id: data_id,
-                            header_id:header_id
-                        },
-                        dataType: 'json',
-                        success: function(data){    
-                            if (data.status == "success") {
-                                swal({
-                                    type: data.status,
-                                    title: data.message,
-                                });
-                                setTimeout(function(){
-                                    location.reload();
-                                }, 1000); 
-                                } else if (data.status == "error") {
-                                swal({
-                                    type: data.status,
-                                    title: data.message,
-                                });
-                            }
+                confirmButtonText: "Yes, select it!"
+            }, function () {
+            $.ajax
+                ({ 
+                    url:  '{{ url('admin/item-sourcing-header/SelectedOption') }}',
+                    type: "GET",
+                    data: { opt_id: data_id},
+                    dataType: 'json',
+                    success: function(data){    
+                        if (data.status == "success") {
+                            swal({
+                                type: data.status,
+                                title: data.message,
+                            });
+                            setTimeout(function(){
+                                location.reload();
+                            }, 1000); 
+                            } else if (data.status == "error") {
+                            swal({
+                                type: data.status,
+                                title: data.message,
+                            });
                         }
-                    }); 
-                }else{
-                    uncheckSelected();
-                }
-                                           
+                    }
+                });                            
             });
         }
 
     });
-
-    function uncheckSelected(){
-        $(".checkbox3").prop('checked', false);
-    }
 
     function calculateTotalQuantity(...body_qty) {
         var totalQuantity = 0;  

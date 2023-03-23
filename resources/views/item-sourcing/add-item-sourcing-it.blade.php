@@ -77,7 +77,7 @@
         IT Item Source Form
     </div>
 
-    <form action="{{ CRUDBooster::mainpath('add-save') }}" method="POST" id="AssetRequest" enctype="multipart/form-data">
+    <form novalidate action="{{ CRUDBooster::mainpath('add-save') }}" method="POST" id="AssetRequest" enctype="multipart/form-data">
         <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
         <input type="hidden" value="1" name="request_type_id" id="request_type_id">
 
@@ -111,6 +111,11 @@
          window.onunload = function() {
             null;
         };
+
+        function validate(input){
+        if(/^\s/.test(input.value))
+            input.value = '';
+        }
         setTimeout("preventBack()", 0);
         
         var tableRow = 1;

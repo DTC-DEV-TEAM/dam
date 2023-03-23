@@ -33,8 +33,8 @@
 <div class="row">
     <div class="col-md-3">
         <div class="form-group">
-            <label class="control-label"><span style="color:red">*</span> Date Needed</label>
-            <input class="form-control finput date" type="text" placeholder="Select Needed Date" name="date_needed" id="date_needed">
+            <label class="control-label require"><span style="color:red">*</span> Date Needed</label>
+            <input class="form-control finput date" autocomplete="off" type="text" placeholder="Select Needed Date" name="date_needed" id="date_needed">
         </div>
     </div> 
 </div>
