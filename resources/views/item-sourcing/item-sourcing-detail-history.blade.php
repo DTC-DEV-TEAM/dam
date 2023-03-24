@@ -47,7 +47,10 @@
             /* Extra styling */
             td { width: 100px; }
             th { text-align: left; }
-            
+            .selected {
+                border:none;
+                background-color:#d4edda
+            }
         </style>
     @endpush
 @section('content')
@@ -269,8 +272,8 @@
                                         <td style="text-align:center" height="10">
                                             {{number_format($res->price, 2, '.', ',')}}                               
                                         </td>
-                                        <td style="text-align:center" height="10">
-                                            {{$res->file_name}}                              
+                                        <td style="text-align:center;" height="10">
+                                            <a  href='{{CRUDBooster::adminpath("item_sourcing_for_quotation/download/".$res->file_id)."?return_url=".urlencode(Request::fullUrl())}}' class="form-control selected">{{$res->file_name}}   <i style="color:#007bff" class="fa fa-download"></i></a>                             
                                         </td>
                                         <td colspan="2"  style="text-align:center;">
                                             <i data-toggle="tooltip" data-placement="right" title="Selected" class="fa fa-check-circle text-success"></i>
@@ -485,7 +488,7 @@
                                             '<p style="text-align:right; font-size:12px; font-style: italic; padding-right:5px;"> '+ new Date(data.message.created_at) +'</p></span>');
                         $('#message').val('');
                     }
-                    var interval = setInterval(function() {
+                    var interval = setTimeout(function() {
                         $('.chat').scrollTop($('.chat')[0].scrollHeight);
                     },200);
                 }
