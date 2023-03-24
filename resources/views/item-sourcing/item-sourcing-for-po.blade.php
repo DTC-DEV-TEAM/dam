@@ -110,7 +110,10 @@
             /* Extra styling */
             td { width: 100px; }
             th { text-align: left; }
-
+            .selected {
+                border:none;
+                background-color:#d4edda
+            }
         </style>
     @endpush
 @section('content')
@@ -350,8 +353,8 @@
                                         <td style="text-align:center" height="10">
                                             {{number_format($res->price, 2, '.', ',')}}                               
                                         </td>
-                                        <td style="text-align:center" height="10">
-                                            {{$res->file_name}}                              
+                                        <td style="text-align:center;" height="10">
+                                            <a  href='{{CRUDBooster::adminpath("item_sourcing_for_quotation/download/".$res->file_id)."?return_url=".urlencode(Request::fullUrl())}}' class="form-control selected">{{$res->file_name}}   <i style="color:#007bff" class="fa fa-download"></i></a>                             
                                         </td>
                                         <td colspan="2"  style="text-align:center; color:white">
                                             <i data-toggle="tooltip" data-placement="right" title="Selected" class="fa fa-check-circle text-success"></i>
@@ -778,7 +781,7 @@
 
                     '<td>' +
                     '<input class="form-control finput optionFile" type="file" placeholder="File..." name="optionFile[]" id="optionFile' + tableRow + '" data-id="' + tableRow  + '" style="width:100%">' + 
-                    '<input type="text"  class="form-control suggested text-center" id="fileName"  value="'+ref_no+'-OPTION '+ finalOptCount +'" readonly>' +
+                    '<input type="text" name="fileName[]" class="form-control suggested text-center" id="fileName' + tableRow +' "  value="'+ref_no+'-OPTION '+ finalOptCount +'" readonly>' +
                     '</td>' +
 
                     '<td>' +
@@ -842,7 +845,7 @@
     $('#btnUpdate').click(function(event) {
         event.preventDefault(); // cancel default behavior
         var rowCount = $('#item-sourcing-options tr').length-1;
-        var checkFileName = $('#fileName').val();
+        tableRow++;
         // if(rowCount == 1) {
         //     swal({
         //         type: 'error',
@@ -889,7 +892,12 @@
                 } 
                 var optionFile = $("input[name^='optionFile']").length;
                 var optionFile_value = $("input[name^='optionFile']");
-                for(i=0;i<optionFile;i++){
+                var checkFileName = $("input[name^='fileName']");
+                for(i = 0; i < optionFile; i++){
+                  
+                    var ext = optionFile_value.eq(i).val().replace(/C:\\fakepath\\/i, '');
+                    var name = optionFile_value.eq(i).val().replace(/C:\\fakepath\\/i, '');
+                    console.log(name, checkFileName);
                     if(optionFile_value.eq(i).val() == 0 || optionFile_value.eq(i).val() == null){
                         swal({  
                                 type: 'error',
@@ -899,7 +907,8 @@
                             });
                             event.preventDefault();
                             return false;
-                    }else if($.inArray(optionFile_value.get(i).files[i].name.split('.').pop().toLowerCase(),['xlsx','pdf','docs'])===-1){
+                    }
+                    else if($.inArray(ext.split('.').pop(),['xlsx','pdf','docs'])===-1){
                         swal({  
                                 type: 'error',
                                 title: 'Invalid File! please refer to the ff(.xlsx,.pdf)',
@@ -908,7 +917,8 @@
                             });
                             event.preventDefault();
                             return false;
-                    }else if(optionFile_value.get(i).files[i].name.split('.').shift() !== checkFileName){
+                    }
+                    else if(name.split('.').shift() !== checkFileName.eq(i).val()){
                         swal({  
                                 type: 'error',
                                 title: 'File Name Invalid! (please copy recommended filename in system)',
@@ -920,6 +930,7 @@
                     }
             
                 } 
+            
             }
 
             swal({
