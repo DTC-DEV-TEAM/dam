@@ -99,6 +99,12 @@
                 <tbody>
                 
                 </tbody>
+                <tfoot>
+                    <th><strong>Total:</strong></th>
+                    <?php for($x=1;$x<=4;$x++): ?>
+                        <th></th>
+                    <?php endfor;?>
+                </tfoot>
             </table>
         </div>                 
         </div>
@@ -178,6 +184,7 @@
         });
        var table;
        $(document).ready(function() {
+        let targetColumns = [4]
            table = $("#table_dashboard").DataTable({
                 ordering:false,
                 language: {
@@ -243,11 +250,33 @@
                                 }
                     
                     },
+                    // targets : targetColumns,
+                    // render(v){
+                    //     return (+v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})
+                    // }
         
-                }]
+                }],
+                    
+                // footerCallback : function ( row, data, start, end, display ) {
+                //     var api = this.api();
+                //     api.columns(targetColumns, {
+                //         page: 'current'
+                //     }).every(function() {
+                //         var sum = this.data().reduce(function(a, b) {
+                //             var x = parseFloat(a) || 0;
+                //             var y = parseFloat(b) || 0;
+                //             return x + y;
+                //         }, 0);
+                //         $(this.footer()).html(sum.toLocaleString(undefined,{
+                //             minimumFractionDigits: 2,
+                //             maximumFractionDigits: 2
+                //         }));
+                //     });
+                // }
      
                 
             });
+          
             // $("#btn-export").on("click", function () {
             //     table.button(".buttons-excel").trigger();
             // });

@@ -4,48 +4,20 @@
 	use Request;
 	use DB;
 	use CRUDBooster;
-	use App\Users;
-	use App\StatusMatrix;
-	use App\Models\ItemHeaderSourcing;
-	use App\Models\ItemBodySourcing;
-	use App\Models\ItemSourcingComments;
-	use App\Models\ItemSourcingOptions;
 
-	class AdminItemSourcingApprovalHistoryController extends \crocodicstudio\crudbooster\controllers\CBController {
-		private $forApproval;
-		private $cancelled;
-		private $closed;
-		private $forDiscussion;
-		private $forSourcing;
-		private $forStreamlining;
-		private $forItemCreation;
-		private $forArfCreation;
-		private $rejected;
+	class AdminSubMasterfileAssetsSpecsController extends \crocodicstudio\crudbooster\controllers\CBController {
 
-		public function __construct() {
-			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
-			$this->forApproval      =  1;    
-			$this->cancelled        =  8;
-			$this->closed           =  13;      
-			$this->forDiscussion    =  37;  
-			$this->forSourcing      =  38;
-			$this->forStreamlining  =  39;   
-			$this->forItemCreation  =  40;        
-			$this->forArfCreation   =  41;
-			$this->rejected         =  5;
-		
-		}
 	    public function cbInit() {
 
 			# START CONFIGURATION DO NOT REMOVE THIS LINE
-			$this->title_field = "employee_name";
+			$this->title_field = "id";
 			$this->limit = "20";
 			$this->orderby = "id,desc";
 			$this->global_privilege = false;
 			$this->button_table_action = true;
-			$this->button_bulk_action = false;
+			$this->button_bulk_action = true;
 			$this->button_action_style = "button_icon";
-			$this->button_add = false;
+			$this->button_add = true;
 			$this->button_edit = true;
 			$this->button_delete = false;
 			$this->button_detail = true;
@@ -53,29 +25,35 @@
 			$this->button_filter = true;
 			$this->button_import = false;
 			$this->button_export = false;
-			$this->table = "item_sourcing_header";
+			$this->table = "sub_masterfile_assets_specs";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Status","name"=>"status_id","join"=>"statuses,status_description"];
-			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
-			$this->col[] = ["label"=>"Request Type","name"=>"request_type_id","join"=>"requests,request_name"];
-			$this->col[] = ["label"=>"Company Name","name"=>"company_name"];
-			$this->col[] = ["label"=>"Employee Name","name"=>"employee_name","join"=>"cms_users,bill_to"];
-			$this->col[] = ["label"=>"Department","name"=>"department","join"=>"departments,department_name"];
-			$this->col[] = ["label"=>"Requested By","name"=>"created_by","join"=>"cms_users,name"];
-			$this->col[] = ["label"=>"Requested Date","name"=>"created_at"];
-			//$this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
-			//$this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
-
-			$this->col[] = ["label"=>"Approved By","name"=>"approved_by","join"=>"cms_users,name"];
-			$this->col[] = ["label"=>"Approved Date","name"=>"approved_at"];
-			$this->col[] = ["label"=>"Rejected Date","name"=>"rejected_at"];
+			$this->col[] = ["label"=>"Description","name"=>"description"];
+			$this->col[] = ["label"=>"Status","name"=>"status"];
+			$this->col[] = ["label"=>"Created By","name"=>"created_by", "join" => "cms_users,name"];
+			$this->col[] = ["label"=>"Created At","name"=>"created_at"];
+			$this->col[] = ["label"=>"Updated By","name"=>"updated_by", "join" => "cms_users,name"];
+			$this->col[] = ["label"=>"Updated At","name"=>"updated_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
+			$this->form[] = ['label'=>'Description','name'=>'description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
+			if(CRUDBooster::getCurrentMethod() == 'getEdit' || CRUDBooster::getCurrentMethod() == 'postEditSave' || CRUDBooster::getCurrentMethod() == 'getDetail') {
+				$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE'];
+			}
+			# END FORM DO NOT REMOVE THIS LINE
+
+			# OLD START FORM
+			//$this->form = [];
+			//$this->form[] = ["label"=>"Description","name"=>"description","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Status","name"=>"status","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Updated By","name"=>"updated_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			# OLD END FORM
+
 			/* 
 	        | ---------------------------------------------------------------------- 
 	        | Sub Module
@@ -233,7 +211,7 @@
 	        |
 	        */
 	        $this->load_css = array();
-			$this->load_css[] = asset("css/chatbox.css");
+	        
 	        
 	    }
 
@@ -260,15 +238,7 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-			if(CRUDBooster::isSuperadmin()){
-				$query->whereNull('item_sourcing_header.deleted_at')->orderBy('item_sourcing_header.status_id', 'DESC')->orderBy('item_sourcing_header.id', 'DESC');
-			}
-			else if(CRUDBooster::myPrivilegeId() == 6){
-				$query->whereIn('item_sourcing_header.status_id', [$this->forDiscussion, $this->forSourcing,$this->forStreamlining,$this->forItemCreation,$this->forArfCreation, $this->closed, $this->cancelled])->whereNull('item_sourcing_header.deleted_at')->orderBy('item_sourcing_header.id', 'asc'); 
-			}
-			else{
-				$query->whereNotNull('item_sourcing_header.approved_by')->where('item_sourcing_header.approved_by', CRUDBooster::myId())->whereNull('item_sourcing_header.deleted_at')->orderBy('item_sourcing_header.id', 'DESC');
-			}
+	        //Your code here
 	            
 	    }
 
@@ -279,37 +249,7 @@
 	    |
 	    */    
 	    public function hook_row_index($column_index,&$column_value) {	        
-	    	$forApproval        = DB::table('statuses')->where('id', $this->forApproval)->value('status_description');     
-			$cancelled          = DB::table('statuses')->where('id', $this->cancelled)->value('status_description');   
-			$closed             = DB::table('statuses')->where('id', $this->closed)->value('status_description');  
-			$forDiscussion      = DB::table('statuses')->where('id', $this->forDiscussion)->value('status_description');  
-			$forSourcing        = DB::table('statuses')->where('id', $this->forSourcing)->value('status_description');  
-			$forStreamlining    = DB::table('statuses')->where('id', $this->forStreamlining)->value('status_description');
-			$forItemCreation    = DB::table('statuses')->where('id', $this->forItemCreation)->value('status_description');
-			$forArfCreation     = DB::table('statuses')->where('id', $this->forArfCreation)->value('status_description');
-			$rejected           = DB::table('statuses')->where('id', $this->rejected)->value('status_description');	
-			
-			if($column_index == 1){
-				if($column_value == $forApproval){
-					$column_value = '<span class="label label-warning">'.$forApproval.'</span>';
-				}else if($column_value == $forDiscussion){
-					$column_value = '<span class="label label-info">'.$forDiscussion.'</span>';
-				}else if($column_value == $closed){
-					$column_value = '<span class="label label-success">'.$closed.'</span>';
-				}else if($column_value == $cancelled){
-					$column_value = '<span class="label label-danger">'.$cancelled.'</span>';
-				}else if($column_value == $rejected){
-					$column_value = '<span class="label label-danger">'.$rejected.'</span>';
-				}else if($column_value == $forStreamlining){
-					$column_value = '<span class="label label-info">'.$forStreamlining.'</span>';
-				}else if($column_value == $forSourcing){
-					$column_value = '<span class="label label-info">'.$forSourcing.'</span>';
-				}else if($column_value == $forItemCreation){
-					$column_value = '<span class="label label-info">'.$forItemCreation.'</span>';
-				}else if($column_value == $forArfCreation){
-					$column_value = '<span class="label label-info">'.$forArfCreation.'</span>';
-				}
-			}
+	    	//Your code here
 	    }
 
 	    /*
@@ -320,7 +260,7 @@
 	    |
 	    */
 	    public function hook_before_add(&$postdata) {        
-	        //Your code here
+			$postdata['created_by']=CRUDBooster::myId();
 
 	    }
 
@@ -345,7 +285,7 @@
 	    | 
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
-	        //Your code here
+			$postdata['updated_by']=CRUDBooster::myId();
 
 	    }
 
@@ -385,21 +325,9 @@
 
 	    }
 
-		public function getDetail($id){
-			$this->cbLoader();
-            if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
-                CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
-            }
 
-			$data = array();
-			$data['page_title'] = 'Item Sourcing Detail History';
-			$data['Header']       = ItemHeaderSourcing::header($id);
-			$data['Body']         = ItemBodySourcing::body($id);
-			$data['comments']     = ItemSourcingComments::comments($id);
-		    $data['item_options'] = ItemSourcingOptions::options($id);
-		    $data['versions'] = DB::table('item_sourcing_edit_versions')->where('header_id', $id)->latest('created_at')->first();
-			return $this->view("item-sourcing.item-sourcing-detail-history", $data);
-		}
+
+	    //By the way, you can still create your own method in here... :) 
 
 
 	}

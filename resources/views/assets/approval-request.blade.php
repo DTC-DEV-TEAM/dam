@@ -1,4 +1,17 @@
 @extends('crudbooster::admin_template')
+    @push('head')
+        <style type="text/css">   
+            #approval-table th, td, tr {
+                border: 1px solid rgba(000, 0, 0, .5);
+                padding: 8px;
+                border-radius: 5px 0 0 5px;
+            }
+            .finput {
+                border:none;
+                border-bottom: 1px solid rgba(18, 17, 17, 0.5);
+            }
+        </style>
+    @endpush
 @section('content')
 
 @if(g('return_url'))
@@ -85,48 +98,60 @@
                 <h3 class="box-title"><b>{{ trans('message.form-label.asset_items') }}</b></h3>
             </div>
 
-            <table  class='table table-striped table-bordered'>
+            <table id="approval-table">
                 <thead>
                     <tr>
                         <th width="10%" class="text-center">{{ trans('message.table.digits_code') }}</th>
-                        <th width="30%" class="text-center">{{ trans('message.table.item_description') }}</th>
-                        <th width="25%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
-                        <th width="20%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
-                        <th width="7%" class="text-center">{{ trans('message.table.quantity_text') }}</th> 
-                    <!-- <th width="13%" class="text-center">{{ trans('message.table.image') }}</th> -->
+                        <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
+                        <th width="10%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
+                        <th width="10%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
+                        <th width="5%" class="text-center">{{ trans('message.table.quantity_text') }}</th> 
+                        @if(in_array($Header->request_type_id, [6,7]))       
+                            <th width="5%" class="text-center">For Replenish Qty</th> 
+                            <th width="5%" class="text-center">For Re Order Qty</th> 
+                            <th width="5%" class="text-center">Serve Qty</th> 
+                            <th width="5%" class="text-center">UnServe Qty</th> 
+                            <th width="7%" class="text-center">Item Cost</th> 
+                            <th width="7%" class="text-center">Total Cost</th>                                                                                                                                            
+                            <th width="10%" class="text-center">MO/SO</th>                                                  
+                        @endif 
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($Body as $rowresult)
                         <tr>
-                            <td style="text-align:center" height="10">{{$rowresult->digits_code}}</td>
-                            <td style="text-align:center" height="10">{{$rowresult->item_description}}</td>
-                            <td style="text-align:center" height="10">{{$rowresult->category_id}}</td>
-                            <td style="text-align:center" height="10">
+                            <td style="text-align:center">{{$rowresult->digits_code}}</td>
+                            <td style="text-align:center">{{$rowresult->item_description}}</td>
+                            <td style="text-align:center">{{$rowresult->category_id}}</td>
+                            <td style="text-align:center">{{$rowresult->sub_category_id}}</td>
+                            <td style="text-align:center">{{$rowresult->quantity}}</td>
 
-                                {{$rowresult->sub_category_id}}
-
-                            </td>
-
-                            <td style="text-align:center" height="10">{{$rowresult->quantity}}</td>
-
-                        
+                            @if(in_array($Header->request_type_id, [6,7]))
+                                <td style="text-align:center">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
+                                <td style="text-align:center">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                           
+                                <td style="text-align:center">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>
+                                <td style="text-align:center">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td>
+                                <td style="text-align:center">{{$rowresult->unit_cost}}</td>
+                                <td style="text-align:center" class="cost">{{$rowresult->unit_cost * $rowresult->serve_qty}}</td>
+                                <td style="text-align:center">{{$rowresult->mo_so_num}}</td>   
+                                
+                            @endif
                         </tr>
                     @endforeach
 
                     <tr>
-                        <td colspan="3" style="text-align:right">
+                        <td colspan="4" style="text-align:right">
                             <label>{{ trans('message.table.total_quantity') }}:</label>
                         </td>
 
                         <td style="text-align:center">
                             <label>{{$Header->quantity_total}}</label>
                         </td>
-
                     </tr>
                 </tbody>
                 
             </table> 
+            <br><hr>
 
             @if($Header->application != null || $Header->application != "")
                 <div class="row">                           
@@ -147,7 +172,7 @@
 
             @if($Header->requestor_comments != null || $Header->requestor_comments != "")
                 <div class="row">                           
-                    <label class="control-label col-md-2">{{ trans('message.table.note') }}:</label>
+                    <label class="control-label col-md-2">Requestor Comment:</label>
                     <div class="col-md-10">
                             <p>{{$Header->requestor_comments}}</p>
                     </div>
@@ -161,12 +186,10 @@
                 <div class="col-md-12">
                     <div class="form-group">
                         <label>{{ trans('message.table.comments') }}:</label>
-                        <textarea placeholder="{{ trans('message.table.comments') }} ..." rows="3" class="form-control" name="approver_comments">{{$Header->approver_comments}}</textarea>
+                        <textarea placeholder="{{ trans('message.table.comments') }} ..." rows="3" class="form-control finput" name="approver_comments">{{$Header->approver_comments}}</textarea>
                     </div>
                 </div>
             </div>
-
-            
 
         </div>
 
@@ -177,17 +200,15 @@
             <button class="btn btn-danger pull-right" type="button" id="btnReject" style="margin-left: 5px;"><i class="fa fa-thumbs-down" ></i> Reject</button>
             <button class="btn btn-success pull-right" type="button" id="btnApprove"><i class="fa fa-thumbs-up" ></i> Approve</button>
         </div>
-
     </form>
-
-
-
 </div>
 
 @endsection
 @push('bottom')
 <script type="text/javascript">
-
+    $(function(){
+        $('body').addClass("sidebar-collapse");
+    });
     function preventBack() {
         window.history.forward();
     }
@@ -197,15 +218,6 @@
     setTimeout("preventBack()", 0);
 
     $('#btnApprove').click(function(event) {
-        // var strconfirm = confirm("Are you sure you want to approve this request?");
-        // if (strconfirm == true) {
-        //     $(this).attr('disabled','disabled');
-        //     $('#approval_action').val('1');
-        //     $('#myform').submit(); 
-        // }else{
-        //     return false;
-        //     window.stop();
-        // }
         event.preventDefault();
         swal({
             title: "Are you sure?",
@@ -224,15 +236,6 @@
     });
 
     $('#btnReject').click(function(event) {
-        // var strconfirm = confirm("Are you sure you want to reject this request?");
-        // if (strconfirm == true) {
-        //     $(this).attr('disabled','disabled');
-        //     $('#approval_action').val('0');
-        //     $('#myform').submit(); 
-        // }else{
-        //     return false;
-        //     window.stop();
-        // }
         event.preventDefault();
         swal({
             title: "Are you sure?",
