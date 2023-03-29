@@ -405,7 +405,7 @@
 			$MOList = array_map('intval',explode(",",$list_string));
 				
 
-			$query->whereIn('mo_body_request.id', $MOList);
+			$query->whereIn('mo_body_request.id', $MOList)->where('mo_body_request.created_by',CRUDBooster::myId());
 
 			//dd($list_string);
 	            
@@ -1063,12 +1063,22 @@
 			// 									   ->orwhere('to_mo', 1)
 			// 									   ->get();
 			//Option 2
-			$data['AssetRequest'] = HeaderRequest::whereNotNull('purchased2_by')->where('mo_plug', 0)
-			                                       ->whereNotIn('request_type_id' , [6,7])
-												   ->where('status_id','!=',13)
-												   ->whereNotNull('created_by')
-												   ->orwhere('to_mo', 1)
-												   ->get();
+			if(in_array(CRUDBooster::myPrivilegeId(),[5,17])){
+				$data['AssetRequest'] = HeaderRequest::whereNotNull('purchased2_by')->where('mo_plug', 0)
+				->where('request_type_id' , 1)
+				->where('status_id','!=',13)
+				->whereNotNull('created_by')
+				->orwhere('to_mo', 1)
+				->get();
+			}else{
+				$data['AssetRequest'] = HeaderRequest::whereNotNull('purchased2_by')->where('mo_plug', 0)
+				->where('request_type_id' , 5)
+				->where('status_id','!=',13)
+				->whereNotNull('created_by')
+				->orwhere('to_mo', 1)
+				->get();
+			}
+			
 
 			$data['Header'] = HeaderRequest::
 				  leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
@@ -1321,6 +1331,7 @@
 						'condition_type.*',
 						'requested.name as requestedby',
 						'employees.bill_to as employee_name',
+						'header_request.employee_name as header_emp_name',
 						'employees.company_name_id as company_name',
 						'departments.department_name as department',
 						//'positions.position_description as position',
@@ -1331,7 +1342,21 @@
 						'header_request.created_at as created_at'
 						)
 				->where('header_request.id', $HeaderID->header_request_id)->first();
+			$data['Body'] = BodyRequest::
+				select(
+				  'body_request.*'
+				)
+				->where('body_request.header_request_id', $id)
+				->get();
 
+			$data['Body1'] = BodyRequest::
+				select(
+				  'body_request.*'
+				)
+				->where('body_request.header_request_id', $id)
+				->wherenotnull('body_request.digits_code')
+				->orderby('body_request.id', 'desc')
+				->get();
 
 			$data['MoveOrder'] = MoveOrder::
 				select(
@@ -1343,6 +1368,14 @@
 				->leftjoin('statuses', 'mo_body_request.status_id', '=', 'statuses.id')
 				->orderby('mo_body_request.id', 'desc')
 				->get();	
+			$data['BodyReco'] = DB::table('recommendation_request')
+				->select(
+				  'recommendation_request.*'
+				)
+				->where('recommendation_request.header_request_id', $id)
+				->get();				
+
+			$data['recommendations'] = DB::table('recommendations')->where('status', 'ACTIVE')->get();
 			return $this->view("assets.mo-new-detail", $data);
 
 		}
@@ -1573,9 +1606,11 @@
 							<input type="hidden"  class="form-control"  name="item_description[]" id="item_description'.$tableRow.'"  required  value="'.$rowresult->item_description.'">
 							<input type="hidden"  class="form-control"  name="remove_btn[]" id="remove_btn'.$tableRow.'"  required  value="'.$tableRow.'">
 							<input type="hidden"  class="form-control"  name="remove_btn[]" id="category"  required  value="'.$data['Header']->request_type_id.'">
-							<button type="button"  data-id="'.$tableRow.'"  class="btn btn-info btnsearch" id="searchrow'.$tableRow.'" name="searchrow" disabled><i class="glyphicon glyphicon-search"></i></button>
+							<button type="button"  data-id="'.$tableRow.'"  class="btn btn-primary btnsearch" id="searchrow'.$tableRow.'" name="searchrow" disabled data-toggle="tooltip" data-placement="bottom" title="Search Item"><i class="glyphicon glyphicon-search"></i></button>
 						</td>
-
+						<td style="text-align:center" height="10">
+							'.$rowresult->digits_code.'
+						</td>
 						<td style="text-align:center" height="10">
 							'.$rowresult->item_description.'
 						</td>
@@ -1621,42 +1656,41 @@
 						<h3 class="box-title"><b>Recommendation</b></h3>
 					</div>
 					<div class="box-body no-padding">
-						<div class="table-responsive">
-							<div class="pic-container">
-								<div class="pic-row">
-									<table class="table table-bordered" id="asset-items1">
-										<tbody id="bodyTable">
-											<tr class="tbl_header_color dynamicRows">
-												<th width="5%" class="text-center">Action</th>
-												<th width="20%" class="text-center">Item Description</th>
-												<th width="9%" class="text-center">Category</th>                                                         
-												<th width="15%" class="text-center">Sub Category</th> 
-												<th width="5%" class="text-center">Qty</th>';
+						<div class="pic-container">
+							<div class="pic-row">
+								<table id="asset-items1">
+									<tbody id="bodyTable">
+										<tr class="tbl_header_color dynamicRows">
+											<th width="5%" class="text-center">Action</th>
+											<th width="7%" class="text-center">Digits Code</th>
+											<th width="20%" class="text-center">Item Description</th>
+											<th width="9%" class="text-center">Category</th>                                                         
+											<th width="9%" class="text-center">Sub Category</th> 
+											<th width="5%" class="text-center">Qty</th>';
 
 
-												if($data['Header']->recommendedby != null || $data['Header']->recommendedby != ""){ 
-													$data['ARFBodyTable'] .= '
-														<th width="13%" class="text-center">Laptop Type</th> 
-														<th width="14%" class="text-center">Digits Code Reco</th> 
-														<th width="24%" class="text-center">Item Description Reco</th>
-													';
-												}
-												
-
-			$data['ARFBodyTable'] .= '	
-											<tr id="tr-table">	
-												<tr>
-													'.$data['ARFBody'].'
-												</tr>
-											</tr>
-
-											</tr>
-										</tbody>
-										<tfoot>
+											if($data['Header']->recommendedby != null || $data['Header']->recommendedby != ""){ 
+												$data['ARFBodyTable'] .= '
+													<th width="7%" class="text-center">Laptop Type</th> 
+													<th width="10%" class="text-center">Digits Code Reco</th> 
+													<th width="20%" class="text-center">Item Description Reco</th>
+												';
+											}
 											
-										</tfoot>
-									</table>
-								</div>
+
+		$data['ARFBodyTable'] .= '	
+										<tr id="tr-table">	
+											<tr>
+												'.$data['ARFBody'].'
+											</tr>
+										</tr>
+
+										</tr>
+									</tbody>
+									<tfoot>
+										
+									</tfoot>
+								</table>
 							</div>
 						</div>
 					</div>	
@@ -1748,7 +1782,7 @@
 						'employees.bill_to as employee_name',
 						'employees.company_name_id as company_name',
 						'departments.department_name as department',
-						'locations.store_name as store_branch',
+						'locations.store_name as store_name',
 						'approved.name as approvedby',
 						'recommended.name as recommendedby',
 						'processed.name as processedby',

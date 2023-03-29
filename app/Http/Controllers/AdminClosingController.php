@@ -680,7 +680,7 @@
 				->get();
 
 			$data['HeaderID'] = MoveOrder::where('id', $id)->first();
-
+			
 			return $this->view("assets.closing-request", $data);
 		}
 

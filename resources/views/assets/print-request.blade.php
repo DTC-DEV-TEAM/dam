@@ -57,7 +57,7 @@
                         <tr>
                             @if($Header->store_branch != null || $Header->store_branch != "")
                                 <td width="20%"><label><strong>Store/Branch:<strong></label></td>
-                                <td width="40%"><p>{{$Header->store_branch}}</p></td>
+                                <td width="40%"><p>{{$Header->store_name}}</p></td>
                             @endif
                             <td width="20%"><label><strong>Date:<strong></label></td>
                             <td><p>{{ date('Y-m-d') }}</p></td>
@@ -127,7 +127,7 @@
                                     </tbody>
 
                                     <tr>
-                                        <td colspan="4" style="text-align:right">
+                                        <td colspan="5" style="text-align:right">
                                             <label>Total:</label>
                                         </td>
 

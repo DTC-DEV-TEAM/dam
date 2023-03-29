@@ -15,6 +15,7 @@
 	use Maatwebsite\Excel\HeadingRowImport;
 	use App\Imports\ItemMasterImport;
 	//use App\Imports\InventoryUpload;
+	use App\Exports\ExportItemMaster;
 
 	class AdminAssetsController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -45,7 +46,7 @@
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
-			$this->button_export = true;
+			$this->button_export = false;
 			$this->table = "assets";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
@@ -208,6 +209,7 @@
 						"label"=>"Upload Item Master",
 						"icon"=>"fa fa-upload",
 						"url"=>CRUDBooster::mainpath('item-master-upload')];
+					$this->index_button[] = ["label"=>"Export","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('export'),"color"=>"primary"];
 				}
 				// $this->index_button[] = ["label"=>"Sync Data","icon"=>"fa fa-refresh","color"=>"primary"];
 			}
@@ -855,6 +857,10 @@
 				}
             }
             \Log::info('Item Create: executed! items');
+		}
+
+		public function getExport(){
+			return Excel::download(new ExportItemMaster, 'ItemMaster.xlsx');
 		}
 
 

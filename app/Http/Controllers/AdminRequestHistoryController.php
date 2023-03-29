@@ -337,20 +337,11 @@
 				->orderBy('header_request.id', 'ASC');
 
 			}else if(CRUDBooster::myPrivilegeId() == 5 || CRUDBooster::myPrivilegeId() == 17){ 
-
-				//$approved =  		DB::table('statuses')->where('id', 4)->value('id');
-				$user_data         = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-				//$query->whereIn('header_request.department', explode(",",$user_data->department_id))
-				$query->
-				//whereIn('header_request.company_name', explode(",",$user_data->company_name_id))
-				where('header_request.recommended_by', '!=', null)
+				$user_data = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
+				$query->where('header_request.recommended_by', '!=', null)
 				->where('header_request.to_reco', 1)
 				->whereNull('header_request.deleted_at')
 				->orderBy('header_request.id', 'ASC');
-
-			}else if(CRUDBooster::myPrivilegeId() == 6){ 
-
-				$query->whereNotNull('header_request.purchased2_by')->whereNull('header_request.deleted_at')->orderBy('header_request.status_id', 'asc')->orderBy('header_request.id', 'DESC');
 
 			}else if(CRUDBooster::myPrivilegeId() == 7){ 
 
@@ -358,7 +349,11 @@
 
 			}else if(CRUDBooster::myPrivilegeId() == 9){ 
 
-				$query->whereNotNull('header_request.purchased2_by')->where('header_request.picked_by', CRUDBooster::myId())->whereNull('header_request.deleted_at')->orderBy('header_request.status_id', 'asc')->orderBy('header_request.id', 'DESC');
+				$query->whereNotNull('header_request.purchased2_by')->where('header_request.purchased2_by', CRUDBooster::myId())->orWhere('header_request.picked_by', CRUDBooster::myId())->whereNull('header_request.deleted_at')->orderBy('header_request.status_id', 'asc')->orderBy('header_request.id', 'DESC');
+
+			}else if(CRUDBooster::myPrivilegeId() == 19){ 
+
+				$query->whereNotNull('header_request.purchased2_by')->where('header_request.purchased2_by', CRUDBooster::myId())->orWhere('header_request.picked_by', CRUDBooster::myId())->whereNull('header_request.deleted_at')->orderBy('header_request.status_id', 'asc')->orderBy('header_request.id', 'DESC');
 
 			}
 	            
@@ -541,7 +536,7 @@
 						'employees.bill_to as employee_name',
 						'employees.company_name_id as company_name',
 						'departments.department_name as department',
-						'locations.store_name as store_branch',
+						'locations.store_name as store_name',
 						'approved.name as approvedby',
 						'recommended.name as recommendedby',
 						'picked.name as pickedby',
