@@ -10,6 +10,10 @@
                 border: 1px solid rgba(000, 0, 0, .5);
                 padding: 8px;
             }
+            #asset-items th, td, tr {
+                border: 1px solid rgba(000, 0, 0, .5);
+                padding: 8px;
+            }
             table { border-collapse: collapse; empty-cells: show; }
 
             td { position: relative; }
@@ -165,32 +169,18 @@
             <hr/>
 
             <div class="row">                           
-
-
                 <label class="control-label col-md-2">{{ trans('message.form-label.approved_by') }}:</label>
                 <div class="col-md-4">
-                        <p>{{$Header->approvedby}}</p>
+                        <p>{{$Header->approvedby}} / <strong>{{$Header->approved_at}}</strong></p>
                 </div>
-
-                <label class="control-label col-md-2">{{ trans('message.form-label.approved_at') }}:</label>
-                <div class="col-md-4">
-                        <p>{{$Header->approved_at}}</p>
-                </div>
-
-            </div>
-            @endif
-
-
-            @if($Header->approver_comments != null || $Header->approver_comments != "")
-                <div class="row">                           
+                @if($Header->approver_comments != null || $Header->approver_comments != "")          
                     <label class="control-label col-md-2">{{ trans('message.table.approver_comments') }}:</label>
-                    <div class="col-md-10">
+                    <div class="col-md-4">
                             <p>{{$Header->approver_comments}}</p>
                     </div>
-
-            
-                </div>
-            @endif 
+                @endif 
+            </div>
+            @endif   
 
 
             <hr/>                
@@ -212,10 +202,10 @@
                                             <th width="5%" class="text-center">{{ trans('message.table.quantity_text') }}</th> 
                                             
                                             @if(in_array($Header->request_type_id, [6,7]))       
-                                                <th width="5%" class="text-center">For Replenish Qty</th> 
-                                                <th width="5%" class="text-center">For Re Order Qty</th> 
+                                                {{-- <th width="5%" class="text-center">For Replenish Qty</th> 
+                                                <th width="5%" class="text-center">For Re Order Qty</th>  --}}
                                                 <th width="5%" class="text-center">Serve Qty</th> 
-                                                <th width="5%" class="text-center">UnServe Qty</th> 
+                                                {{-- <th width="5%" class="text-center">UnServe Qty</th>  --}}
                                                 <th width="7%" class="text-center">Item Cost</th> 
                                                 <th width="7%" class="text-center">Total Cost</th>                                                                                                                                            
                                                 <th width="10%" class="text-center">MO/SO</th>                                                  
@@ -260,10 +250,10 @@
                                                                     <input type='hidden' name="quantity_body" id="quantity{{$tableRow}}" readonly value="{{$rowresult->quantity}}">
                                                                 </td>
                                                                 @if(in_array($Header->request_type_id, [6,7]))
-                                                                    <td style="text-align:center">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
-                                                                    <td style="text-align:center">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                           
+                                                                    {{-- <td style="text-align:center">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
+                                                                    <td style="text-align:center">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                            --}}
                                                                     <td style="text-align:center">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>
-                                                                    <td style="text-align:center">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td>
+                                                                    {{-- <td style="text-align:center">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td> --}}
                                                                     <td style="text-align:center" height="10">{{$rowresult->unit_cost}}</td>
                                                                     <td style="text-align:center" height="10" class="cost">{{$rowresult->unit_cost * $rowresult->serve_qty}}</td>
                                                                     <td style="text-align:center" height="10">{{$rowresult->mo_so_num}}</td>   
@@ -310,10 +300,10 @@
                                                                     <input type='hidden' name="quantity_body" id="quantity{{$tableRow}}" readonly value="{{$rowresult->quantity}}">
                                                                 </td>
                                                                 @if(in_array($Header->request_type_id, [6,7]))
-                                                                    <td style="text-align:center">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
-                                                                    <td style="text-align:center">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                           
+                                                                    {{-- <td style="text-align:center">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
+                                                                    <td style="text-align:center">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                            --}}
                                                                     <td style="text-align:center">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>
-                                                                    <td style="text-align:center">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td>
+                                                                    {{-- <td style="text-align:center">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td> --}}
                                                                     <td style="text-align:center" height="10">{{$rowresult->unit_cost}}</td>
                                                                     <td style="text-align:center" height="10" class="cost">{{$rowresult->unit_cost * $rowresult->serve_qty}}</td>
                                                                     <td style="text-align:center" height="10">{{$rowresult->mo_so_num}}</td>   
@@ -360,123 +350,106 @@
             </div>
 
             @if($Header->recommendedby != null || $Header->recommendedby != "")
-
-            <hr/>
-
-            <div class="row">                           
-
+                <hr/>
+                <div class="row">                           
                     <label class="control-label col-md-2">{{ trans('message.form-label.recommended_by') }}:</label>
                     <div class="col-md-4">
-                            <p>{{$Header->recommendedby}}</p>
+                            <p>{{$Header->recommendedby}} / <strong>{{$Header->recommended_at}}</strong> </p>
                     </div>
-
-                    <label class="control-label col-md-2">{{ trans('message.form-label.recommended_at') }}:</label>
-                    <div class="col-md-4">
-                            <p>{{$Header->recommended_at}}</p>
-                    </div>
-
-                </div>
-
-            @endif 
-
-
-            @if($Header->it_comments != null || $Header->it_comments != "")
-
-                <div class="row">                           
-                    <label class="control-label col-md-2">{{ trans('message.table.it_comments') }}:</label>
-                    <div class="col-md-10">
-                            <p>{{$Header->it_comments}}</p>
-                    </div>
-
-            
+                    @if($Header->it_comments != null || $Header->it_comments != "")                        
+                        <label class="control-label col-md-2">{{ trans('message.table.it_comments') }}:</label>
+                        <div class="col-md-4">
+                                <p>{{$Header->it_comments}}</p>
+                        </div>
+                    @endif 
                 </div>
             @endif 
+           
 
             @if( $MoveOrder->count() != 0 )
-                <hr />
+            <hr>
                 <div class="row">
                     <div class="col-md-12">
                         <div class="box-header text-center">
-                            <h3 class="box-title"><b>{{ trans('message.form-label.asset_items') }}</b></h3>
+                            <h3 class="box-title"><b>Item Mo Details</b></h3>
                         </div>
                         <div class="box-body no-padding">
-                            <div class="table-responsive">
-                                <div class="pic-container">
-                                    <div class="pic-row">
-                                        <table class="table table-bordered" id="asset-items">
-                                            <tbody>
-                                                <tr class="tbl_header_color dynamicRows">
-                                                    <th width="10%" class="text-center">{{ trans('message.table.mo_reference_number') }}</th>
-                                                    <th width="13%" class="text-center">{{ trans('message.table.status_id') }}</th>
-                                                    <th width="10%" class="text-center">{{ trans('message.table.digits_code') }}</th>
-                                                    <th width="10%" class="text-center">{{ trans('message.table.asset_tag') }}</th>
-                                                    <th width="26%" class="text-center">{{ trans('message.table.item_description') }}</th>
-                                                    <th width="13%" class="text-center">{{ trans('message.table.serial_no') }}</th>
-                                                    <th width="4%" class="text-center">{{ trans('message.table.item_quantity') }}</th>
-                                                    <th width="8%" class="text-center">{{ trans('message.table.item_cost') }}</th>
-                                                    <th width="16%" class="text-center">{{ trans('message.table.item_total_cost') }}</th>         
-                                                </tr>
-                                                <?php   $tableRow1 = 0; ?>
-                                                @if( !empty($MoveOrder) )
-                                                    @foreach($MoveOrder as $rowresult)
-                                                        <?php   $tableRow1++; ?>
-                                                        <tr>
-                                                            <td style="text-align:center" height="10">
+                            <div class="pic-container">
+                                <div class="pic-row">
+                                    <table id="asset-items">
+                                        <tbody>
+                                            <tr class="tbl_header_color dynamicRows">
+                                                <th width="10%" class="text-center">{{ trans('message.table.mo_reference_number') }}</th>
+                                                <th width="13%" class="text-center">{{ trans('message.table.status_id') }}</th>
+                                                <th width="10%" class="text-center">{{ trans('message.table.digits_code') }}</th>
+                                                <th width="10%" class="text-center">{{ trans('message.table.asset_tag') }}</th>
+                                                <th width="26%" class="text-center">{{ trans('message.table.item_description') }}</th>
+                                                <th width="13%" class="text-center">{{ trans('message.table.serial_no') }}</th>
+                                                <th width="4%" class="text-center">{{ trans('message.table.item_quantity') }}</th>
+                                                <th width="8%" class="text-center">{{ trans('message.table.item_cost') }}</th>
+                                                <th width="16%" class="text-center">{{ trans('message.table.item_total_cost') }}</th>         
+                                            </tr>
+                                            <?php   $tableRow1 = 0; ?>
+                                            @if( !empty($MoveOrder) )
+                                                @foreach($MoveOrder as $rowresult)
+                                                    <?php   $tableRow1++; ?>
+                                                    <tr>
+                                                        <td style="text-align:center" height="10">
 
-                                                                            <input type="hidden" value="{{$rowresult->id}}" name="item_id[]">
+                                                                        <input type="hidden" value="{{$rowresult->id}}" name="item_id[]">
 
-                                                                            {{$rowresult->mo_reference_number}}
-                                                                            
-                                                            </td>
-                                                            <td style="text-align:center" height="10">
-
-                                                                            <label style="color: #3c8dbc;">
-                                                                                {{$rowresult->status_description}}
-                                                                            </label>
+                                                                        {{$rowresult->mo_reference_number}}
                                                                         
+                                                        </td>
+                                                        <td style="text-align:center" height="10">
 
-                                                            </td>
-                                                            <td style="text-align:center" height="10">
-                                                                            {{$rowresult->digits_code}}
-                                                            </td>
-                                                            <td style="text-align:center" height="10">
-                                                                            {{$rowresult->asset_code}}
-                                                            </td>
-                                                            <td style="text-align:center" height="10">
-                                                                            {{$rowresult->item_description}}
-                                                            </td>
-                                                            <td style="text-align:center" height="10">
-                                                                            {{$rowresult->serial_no}}
-                                                            </td>
-                                                            <td style="text-align:center" height="10">
-                                                                            {{$rowresult->quantity}}
-                                                            </td>
-                                                            <td style="text-align:center" height="10">
-                                                                            {{$rowresult->unit_cost}}
-                                                            </td>
-                                                            <td style="text-align:center" height="10">
-                                                                            {{$rowresult->total_unit_cost}}
-                                                            </td>
-                                                        </tr>
-                                                    @endforeach
-                                                @endif       
-                                                <tr class="tableInfo">
-                                                    <td colspan="6" align="right"><strong>{{ trans('message.table.total') }}</strong></td>
-                                                    <td align="center">
-                                                        <label>{{$Header->quantity_total}}</label>
-                                                    </td>
-                                                    <td colspan="1"></td>
-                                                </tr>
-        
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div> 
-                            </div>
+                                                                        <label style="color: #3c8dbc;">
+                                                                            {{$rowresult->status_description}}
+                                                                        </label>
+                                                                    
+
+                                                        </td>
+                                                        <td style="text-align:center" height="10">
+                                                                        {{$rowresult->digits_code}}
+                                                        </td>
+                                                        <td style="text-align:center" height="10">
+                                                                        {{$rowresult->asset_code}}
+                                                        </td>
+                                                        <td style="text-align:center" height="10">
+                                                                        {{$rowresult->item_description}}
+                                                        </td>
+                                                        <td style="text-align:center" height="10">
+                                                                        {{$rowresult->serial_no}}
+                                                        </td>
+                                                        <td style="text-align:center" height="10">
+                                                                        {{$rowresult->quantity}}
+                                                        </td>
+                                                        <td style="text-align:center" height="10">
+                                                                        {{$rowresult->unit_cost}}
+                                                        </td>
+                                                        <td style="text-align:center" height="10">
+                                                                        {{$rowresult->total_unit_cost}}
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            @endif       
+                                            <tr class="tableInfo">
+                                                <td colspan="6" align="right"><strong>{{ trans('message.table.total') }}</strong></td>
+                                                <td align="center">
+                                                    <label>{{$Header->quantity_total}}</label>
+                                                </td>
+                                                <td colspan="1"></td>
+                                            </tr>
+    
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>         
                         </div>
                     </div>
                 </div> 
             @endif
+            <hr>
             <br>
             @if( $Header->processedby != null )
                 <div class="row">

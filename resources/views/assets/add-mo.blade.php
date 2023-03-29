@@ -48,6 +48,21 @@
                 text-decoration: none;
                 cursor: pointer;
             }
+            #asset-items1 th, td, tr {
+                border: 1px solid rgba(000, 0, 0, .5);
+                padding: 8px;
+            }
+            #asset-items th, td, tr {
+                border: 1px solid rgba(000, 0, 0, .5);
+                padding: 8px;
+            }
+            .finput {
+                border:none;
+                border-bottom: 1px solid rgba(18, 17, 17, 0.5);
+            }
+            input.finput:read-only {
+                background-color: #fff;
+            }
 
         </style>
     @endpush
@@ -88,7 +103,7 @@
                                 <li>No Item Found...</li>
                             </ul>
                         </div>
-                        <button type="button"  class="btn btn-info pull-right btnsearch" id="searchclose" >Close</button>
+                        <button type="button"  class="btn btn-primary pull-right btnsearch" id="searchclose" >Close</button>
                     </div>
                 </div> 
               
@@ -97,7 +112,7 @@
         <!-- Modal -->
 
         <!-- Modal 2-->
-        <div id="myModal2" class="modal" style="padding: auto">
+        {{-- <div id="myModal2" class="modal" style="padding: auto">
             <!-- Modal content -->
             <div class="modal-content">
                 <div class='callout callout-info'>
@@ -116,12 +131,12 @@
                                 <li>Loading...</li>
                             </ul>
                         </div>
-                        <button type="button"  class="btn btn-info pull-right btnsearch" id="searchclose2" >Close</button>
+                        <button type="button"  class="btn btn-primary pull-right btnsearch" id="searchclose2" >Close</button>
                     </div>
                 </div> 
             
             </div>               
-        </div>
+        </div> --}}
         <!-- Modal -->
 
         <div class='panel-body'>
@@ -162,40 +177,38 @@
                         <h3 class="box-title"><b>{{ trans('message.form-label.asset_items') }}</b></h3>
                     </div>
                     <div class="box-body no-padding">
-                        <div class="table-responsive">
-                            <div class="pic-container">
-                                <div class="pic-row">
-                                    <table class="table table-bordered" id="asset-items">
-                                        <tbody>
-                                            <tr class="tbl_header_color dynamicRows">
-                                                <th width="13%" class="text-center">{{ trans('message.table.digits_code') }}</th>
-                                                <th width="13%" class="text-center">{{ trans('message.table.asset_tag') }}</th>
-                                                <th width="26%" class="text-center">{{ trans('message.table.item_description') }}</th>
-                                                <th width="18%" class="text-center">{{ trans('message.table.serial_no') }}</th>
-                                                <th width="7%" class="text-center">{{ trans('message.table.item_quantity') }}</th>
-                                                <th width="10%" class="text-center">{{ trans('message.table.item_cost') }}</th>
-                                                <th width="10%" class="text-center">{{ trans('message.table.item_total_cost') }}</th>
-                                                <th width="5%" class="text-center">{{ trans('message.table.action') }}</th>
-                                            </tr>
+                        <div class="pic-container">
+                            <div class="pic-row">
+                                <table  id="asset-items">
+                                    <tbody>
+                                        <tr class="tbl_header_color dynamicRows">
+                                            <th width="13%" class="text-center">{{ trans('message.table.digits_code') }}</th>
+                                            <th width="13%" class="text-center">{{ trans('message.table.asset_tag') }}</th>
+                                            <th width="26%" class="text-center">{{ trans('message.table.item_description') }}</th>
+                                            <th width="18%" class="text-center">{{ trans('message.table.serial_no') }}</th>
+                                            <th width="7%" class="text-center">{{ trans('message.table.item_quantity') }}</th>
+                                            <th width="10%" class="text-center">{{ trans('message.table.item_cost') }}</th>
+                                            <th width="10%" class="text-center">{{ trans('message.table.item_total_cost') }}</th>
+                                            <th width="5%" class="text-center">{{ trans('message.table.action') }}</th>
+                                        </tr>
 
-                                            <tr class="tableInfo">
+                                        <tr class="tableInfo">
 
-                                                <td colspan="6">
-                                                   <!-- <input type="button" id="add-Row" name="add-Row" class="btn btn-info add" value='Add Freebies' /> -->
+                                            <td colspan="6">
+                                                <!-- <input type="button" id="add-Row" name="add-Row" class="btn btn-info add" value='Add Freebies' /> -->
+                                            </td>
+                                            <td align="left" colspan="1">
+                                                <input type='hidden' name="quantity_total" class="form-control text-center" id="quantity_total" readonly>
+                                                <input type='hidden' name="cost_total" class="form-control text-center" id="cost_total" readonly>
+                                                <input type='number' name="total" class="form-control text-center finput" id="total" readonly value="{{$Header->total}}">
                                                 </td>
-                                                <td align="left" colspan="1">
-                                                    <input type='hidden' name="quantity_total" class="form-control text-center" id="quantity_total" readonly>
-                                                    <input type='hidden' name="cost_total" class="form-control text-center" id="cost_total" readonly>
-                                                    <input type='number' name="total" class="form-control text-center" id="total" readonly value="{{$Header->total}}">
-                                                 </td>
-                                                <td colspan="1"></td>
-                                            </tr>              
-                                        </tbody>
+                                            <td colspan="1"></td>
+                                        </tr>              
+                                    </tbody>
 
-                                    </table>
-                                </div>
+                                </table>
                             </div>
-                        </div>   
+                        </div>                 
                     </div>
                 </div>
             </div>
@@ -220,7 +233,9 @@
 @endsection
 @push('bottom')
 <script type="text/javascript">
-
+    $(function(){
+        $('body').addClass("sidebar-collapse");
+    });
     $("#Tag").hide();
 
     var stack = [];
@@ -559,19 +574,19 @@
                                         
                                             var new_row = '<tr class="nr" id="rowid' + e.id + '">' +
                                                     
-                                                    '<td><input class="form-control text-center" type="text" name="add_digits_code[]" readonly value="' + e.digits_code + '"></td>' +
-                                                    '<td><input class="form-control text-center" type="text" name="add_asset_code[]" readonly value="' + e.asset_code + '"></td>' +
-                                                    '<td><input class="form-control" type="text" name="add_item_description[]" readonly value="' + e.value + '"></td>' +
-                                                    '<td><input class="form-control" type="text" name="add_serial_no[]" readonly value="' + serials + '"></td>' +
+                                                    '<td><input class="form-control finput text-center" type="text" name="add_digits_code[]" readonly value="' + e.digits_code + '"></td>' +
+                                                    '<td><input class="form-control finput text-center" type="text" name="add_asset_code[]" readonly value="' + e.asset_code + '"></td>' +
+                                                    '<td><input class="form-control finput" type="text" name="add_item_description[]" readonly value="' + e.value + '"></td>' +
+                                                    '<td><input class="form-control finput text-center" type="text" name="add_serial_no[]" readonly value="' + serials + '"></td>' +
                                                     
 
-                                                    '<td><input class="form-control text-center quantity_item" type="number" name="add_quantity[]" id="quantity' + e.id  + '" data-id="' + e.id  + '"  value="1" min="0" max="9999999999" step="any" onKeyPress="if(this.value.length==10) return false;" oninput="validity.valid||(value=0);" readonly="readonly"></td>' +
+                                                    '<td><input class="form-control text-center finput quantity_item" type="number" name="add_quantity[]" id="quantity' + e.id  + '" data-id="' + e.id  + '"  value="1" min="0" max="9999999999" step="any" onKeyPress="if(this.value.length==10) return false;" oninput="validity.valid||(value=0);" readonly="readonly"></td>' +
                                 
-                                                    '<td><input class="form-control text-center cost_item" type="number" name="add_unit_cost[]" id="unit_cost' + e.id  + '"   data-id="' + e.id  + '"  value="' + e.item_cost + '" min="0" max="9999999999" step="any" onKeyPress="if(this.value.length==10) return false;" oninput="validity.valid||(value=0);"></td>' +
+                                                    '<td><input class="form-control finput text-center cost_item" type="number" name="add_unit_cost[]" id="unit_cost' + e.id  + '"   data-id="' + e.id  + '"  value="' + e.item_cost + '" min="0" max="9999999999" step="any" onKeyPress="if(this.value.length==10) return false;" oninput="validity.valid||(value=0);"></td>' +
                                                     
-                                                    '<td><input class="form-control text-center total_cost_item" type="number" name="add_total_unit_cost[]"  id="total_unit_cost' + e.id  + '"   value="' + e.item_cost + '" readonly="readonly" step="0.01" required maxlength="100"></td>' +
+                                                    '<td><input class="form-control finput text-center total_cost_item" type="number" name="add_total_unit_cost[]"  id="total_unit_cost' + e.id  + '"   value="' + e.item_cost + '" readonly="readonly" step="0.01" required maxlength="100"></td>' +
 
-                                                    '<td class="text-center"><button id="' +e.id + '" data-id="' + e.id  + '" onclick="reply_click1(this.id)" class="btn btn-xs btn-danger delete_item" style="width:60px;height:30px;font-size: 11px;text-align: center;">REMOVE</button></td>' +
+                                                    '<td class="text-center"><button id="' +e.id + '" data-id="' + e.id  + '" onclick="reply_click1(this.id)" class="btn btn-sm btn-danger delete_item" data-toggle="tooltip" data-placement="bottom" title="Remove"><i class="fa fa-trash"></i> </button></td>' +
                                                     
                                                     '<input type="hidden" name="body_request_id[]" readonly value="' + add_id + '">' +
 

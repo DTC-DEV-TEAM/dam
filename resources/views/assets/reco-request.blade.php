@@ -1,4 +1,24 @@
 @extends('crudbooster::admin_template')
+    @push('head')
+        <style type="text/css">   
+            #footer th, td {
+                border: 1px solid rgba(000, 0, 0, .5);
+                padding: 8px;
+                border-radius: 5px 0 0 5px;
+            }
+            #asset-items th, td, tr {
+                border: 1px solid rgba(000, 0, 0, .5);
+                padding: 8px;
+            }
+            .finput {
+                border:none;
+                border-bottom: 1px solid rgba(18, 17, 17, 0.5);
+            }
+            input.finput:read-only {
+                background-color: #fff;
+            }
+        </style>
+    @endpush
 @section('content')
 
 @if(g('return_url'))
@@ -129,183 +149,146 @@
             <hr/>
 
             <div class="row">                           
-
-
                 <label class="control-label col-md-2">{{ trans('message.form-label.approved_by') }}:</label>
                 <div class="col-md-4">
-                        <p>{{$Header->approvedby}}</p>
+                        <p>{{$Header->approvedby}} / <strong>{{$Header->approved_at}}</strong></p>
                 </div>
-
-                <label class="control-label col-md-2">{{ trans('message.form-label.approved_at') }}:</label>
-                <div class="col-md-4">
-                        <p>{{$Header->approved_at}}</p>
-                </div>
-
-            </div>
-            @endif
-
-
-            @if($Header->approver_comments != null || $Header->approver_comments != "")
-                <div class="row">                           
+                @if($Header->approver_comments != null || $Header->approver_comments != "")          
                     <label class="control-label col-md-2">{{ trans('message.table.approver_comments') }}:</label>
-                    <div class="col-md-10">
+                    <div class="col-md-4">
                             <p>{{$Header->approver_comments}}</p>
                     </div>
+                @endif 
+            </div>
+            @endif  
 
-            
-                </div>
-            @endif 
-
-
-            <hr/>                
-            
-
+            <hr/>                      
 
             <div class="row">
                 <div class="col-md-12">
                     <div class="box-header text-center">
                         <h3 class="box-title"><b>{{ trans('message.form-label.asset_reco') }}</b></h3>
                     </div>
-                                <div class="box-body no-padding">
-                                    <div class="table-responsive">
-                                    
+                    <div class="box-body no-padding">
+                        <div class="pic-container">
+                            <div class="pic-row">
+                                <table id="asset-items">
+                                    <tbody id="bodyTable">
+                                        <tr class="tbl_header_color dynamicRows">
+                                            <th width="10%" class="text-center">{{ trans('message.table.digits_code') }}</th>
+                                            <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
+                                            <th width="9%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
+                                            <th width="15%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
+                                            <th width="5%" class="text-center">{{ trans('message.table.quantity_text') }}</th> 
+                                            <th width="13%" class="text-center">{{ trans('message.table.recommendation_text') }}</th> 
+                                            <th width="14%" class="text-center">{{ trans('message.table.reco_digits_code_text') }}</th> 
+                                            <th width="24%" class="text-center">{{ trans('message.table.reco_item_description_text') }}</th> 
+                                        </tr>
+                                                       
+                                        <tr id="tr-table">
+                                                    <?php   $tableRow = 1; ?>
+                                            <tr>
 
-                                            <div class="pic-container">
-                                                <div class="pic-row">
-                                                    <table class="table table-bordered" id="asset-items">
-                                                        <tbody id="bodyTable">
-                                                            <tr class="tbl_header_color dynamicRows">
-                                                                <th width="10%" class="text-center">{{ trans('message.table.digits_code') }}</th>
-                                                                <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
-                                                                <th width="9%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
-                                                                <th width="15%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
-                                                                <th width="5%" class="text-center">{{ trans('message.table.quantity_text') }}</th> 
-                                                                <th width="13%" class="text-center">{{ trans('message.table.recommendation_text') }}</th> 
-                                                                <th width="14%" class="text-center">{{ trans('message.table.reco_digits_code_text') }}</th> 
-                                                                <th width="24%" class="text-center">{{ trans('message.table.reco_item_description_text') }}</th> 
-                                                            <!-- <th width="8%" class="text-center">{{ trans('message.table.image') }}</th> 
-                                                                <th width="5%" class="text-center">{{ trans('message.table.action') }}</th> -->
-                                                            </tr>
-                                                            
-                                                            <!--tr class="tableInfo">
-                                                                <td colspan="6" align="right"><strong>{{ trans('message.table.total') }}</strong></td>
-                                                                <td align="left" colspan="1">
+                                                @foreach($Body as $rowresult)
 
+                                                    <?php   $tableRow++; ?>
 
-                                                                    <input type='hidden' name="quantity_total" class="form-control text-center" id="quantity_total" readonly>
+                                                    <tr>
+                                                        <td style="text-align:center" height="10">                                                                                                                       
+                                                                {{$rowresult->digits_code}}
+                                                        </td>
+                                                        <td style="text-align:center" height="10">                                                                                
+                                                                <input type="hidden"  class="form-control"  name="item_id[]" id="item_id{{$tableRow}}"  required  value="{{$rowresult->id}}">
+                                                                {{$rowresult->item_description}}
+                                                        </td>
+                                                        <td style="text-align:center" height="10">
+                                                                {{$rowresult->category_id}}
+                                                        </td>
+                                                        <td style="text-align:center" height="10">
+                                                                
+                                                                {{$rowresult->sub_category_id}}
 
-                                                                    <input type='hidden' name="cost_total" class="form-control text-center" id="cost_total" readonly>
-
-                                                                    <input type='number' name="total" class="form-control text-center" id="total" readonly>
-                                                                </td>
-                                                                <td colspan="1"></td>
-                                                            </tr> -->
-
-                                                            <tr id="tr-table">
-                                                                        <?php   $tableRow = 1; ?>
-                                                                <tr>
-
-                                                                    @foreach($Body as $rowresult)
-
-                                                                        <?php   $tableRow++; ?>
-
-                                                                        <tr>
-                                                                            <td style="text-align:center" height="10">                                                                                                                       
-                                                                                    {{$rowresult->digits_code}}
-                                                                            </td>
-                                                                            <td style="text-align:center" height="10">                                                                                
-                                                                                    <input type="hidden"  class="form-control"  name="item_id[]" id="item_id{{$tableRow}}"  required  value="{{$rowresult->id}}">
-                                                                                    {{$rowresult->item_description}}
-                                                                            </td>
-                                                                            <td style="text-align:center" height="10">
-                                                                                    {{$rowresult->category_id}}
-                                                                            </td>
-                                                                            <td style="text-align:center" height="10">
-                                                                                    
-                                                                                    {{$rowresult->sub_category_id}}
-
-                                                                                    <!--{{$rowresult->app_id}}
-                                                    
-                                                                                    @if($rowresult->app_id_others != null || $rowresult->app_id_others != "" )
-                                                                                        <br>
-                                                                                        {{$rowresult->app_id_others}}
-                                                                                    @endif -->
-                                                                            
-                                                                            </td>
-                                                                            <td style="text-align:center" height="10">
-                                                                                    {{$rowresult->quantity}}
-                                                                            </td>
-                                                                            
-                                                                            <td>
-                                                                                @if($rowresult->to_reco == 1)
-                                                                                    <select class="js-example-basic-single recodropdown" style="width: 100%; height: 35px;"  name="recommendation[]" id="recommendation" data-id="{{$tableRow}}" required>
-                                                                                        <option value="">-- Select Recommendation --</option>
-                                            
-                                                                                        @foreach($recommendations as $datas)    
-                                                                                            <option  value="{{$datas->user_type}}">{{$datas->user_type}}</option>
-                                                                                        @endforeach
-                                            
-                                                                                    </select>
-                                                                                @else
-                                                                                <input type="text" class="form-control" data-id="{{$tableRow}}" id="recommendation{{$tableRow}}" value="NOT APPLICABLE"  name="recommendation[]"  readonly>
-                                                                                    <!-- <select class="js-example-basic-single Notrecodropdown" style="width: 100%; height: 35px;"  name="recommendation[]" id="recommendation" data-id="{{$tableRow}}" disabled>
-                                                                                        <option value="">-- Select Recommendation --</option>
-                                            
-                                                                                        @foreach($recommendations as $datas)    
-                                                                                            <option  value="0">{{$datas->user_type}}</option>
-                                                                                        @endforeach
-                                            
-                                                                                    </select> -->
-                                                                                @endif
-
-      
-                                                                               
-                                                                            <td>
-                                                                                    <div class="form-group">
-                                                                                        <input class="form-control auto" type="text" style="width: 100%;" placeholder="Search Item" id="search{{$tableRow}}" data-id="{{$tableRow}}"  name="reco_digits_code[]">
-                                                                                        <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" data-id="{{$tableRow}}" id="ui-id-2{{$tableRow}}" style="display: none; top: 60px; left: 15px; width: 100%;">
-                                                                                            <li>Loading...</li>
-                                                                                        </ul>
-                                                                                    </div>
-                                                                            </td>
-
-                                                                            <td>
-                                                                                <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control itemDesc" data-id="{{$tableRow}}" id="item_description{{$tableRow}}"  name="reco_item_description[]"   maxlength="100" readonly>
-                                                                            </td>
-
-                                                                        </tr>
-
-                                                                    @endforeach
-                                                
-                                                                </tr>
-                                                            </tr>
+                                                                <!--{{$rowresult->app_id}}
+                                
+                                                                @if($rowresult->app_id_others != null || $rowresult->app_id_others != "" )
+                                                                    <br>
+                                                                    {{$rowresult->app_id_others}}
+                                                                @endif -->
                                                         
-                                                        </tbody>
+                                                        </td>
+                                                        <td style="text-align:center" height="10">
+                                                                {{$rowresult->quantity}}
+                                                        </td>
+                                                        
+                                                        <td>
+                                                            @if($rowresult->to_reco == 1)
+                                                                <select class="js-example-basic-single recodropdown" style="width: 100%; height: 35px;"  name="recommendation[]" id="recommendation" data-id="{{$tableRow}}" required>
+                                                                    <option value="">-- Select Recommendation --</option>
+                        
+                                                                    @foreach($recommendations as $datas)    
+                                                                        <option  value="{{$datas->user_type}}">{{$datas->user_type}}</option>
+                                                                    @endforeach
+                        
+                                                                </select>
+                                                            @else
+                                                            <input type="text" class="form-control finput" data-id="{{$tableRow}}" id="recommendation{{$tableRow}}" value="NOT APPLICABLE"  name="recommendation[]"  readonly>
+                                                                <!-- <select class="js-example-basic-single Notrecodropdown" style="width: 100%; height: 35px;"  name="recommendation[]" id="recommendation" data-id="{{$tableRow}}" disabled>
+                                                                    <option value="">-- Select Recommendation --</option>
+                        
+                                                                    @foreach($recommendations as $datas)    
+                                                                        <option  value="0">{{$datas->user_type}}</option>
+                                                                    @endforeach
+                        
+                                                                </select> -->
+                                                            @endif
 
-                                                        <tfoot>
 
-                                                            <tr id="tr-table1" class="bottom">
-                
-                                                                <td colspan="4">
-                                                                    <!-- <input type="button" id="add-Row" name="add-Row" class="btn btn-info add" value='Add Item' /> -->
-                                                                </td> 
-                                                                <td align="center" colspan="1">
-                                                                    
-                                                                    <label>{{$Header->quantity_total}}</label>
+                                                            
+                                                        <td>
+                                                                <div class="form-group">
+                                                                    <input class="form-control finput auto" type="text" style="width: 100%; margin-top:15px" placeholder="Search Item" id="search{{$tableRow}}" data-id="{{$tableRow}}"  name="reco_digits_code[]">
+                                                                    <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" data-id="{{$tableRow}}" id="ui-id-2{{$tableRow}}" style="display: none; top: 60px; left: 15px; width: 100%;">
+                                                                        <li>Loading...</li>
+                                                                    </ul>
+                                                                </div>
+                                                        </td>
 
-                                                                </td>
-                                                            </tr>
-                                                        </tfoot>
+                                                        <td>
+                                                            <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control finput itemDesc" data-id="{{$tableRow}}" id="item_description{{$tableRow}}"  name="reco_item_description[]"   maxlength="100" readonly>
+                                                        </td>
 
-                                                    </table>
-                                                </div>
-                                            </div>
-                                       
-                                    </div>
-                                    <br>
-                                </div>
+                                                    </tr>
+
+                                                @endforeach
+                            
+                                            </tr>
+                                        </tr>
+                                    
+                                    </tbody>
+
+                                    <tfoot>
+
+                                        <tr id="tr-table1" class="bottom">
+
+                                            <td colspan="4">
+                                                <!-- <input type="button" id="add-Row" name="add-Row" class="btn btn-info add" value='Add Item' /> -->
+                                            </td> 
+                                            <td align="center" colspan="1">
+                                                
+                                                <label>{{$Header->quantity_total}}</label>
+
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-          
+            </div>
+            <br>
+              
                 @if($Header->application != null || $Header->application != "")
                
                         <div class="form-group">                          
@@ -329,30 +312,11 @@
                     <hr/>
                     <div class="form-group">
                         <label>{{ trans('message.table.note') }}</label>
-                        <textarea placeholder="{{ trans('message.table.comments') }} ..." rows="3" class="form-control" name="it_comments" id="it_comments"></textarea>
+                        <textarea placeholder="{{ trans('message.table.comments') }} ..." rows="3" class="form-control finput" name="it_comments" id="it_comments"></textarea>
                     </div>
                 </div>
          
             </div>
-         
-
- 
-
-            <!--
-
-            <hr/>
-            <div class="row">  
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <label>{{ trans('message.table.comments') }}:</label>
-                        <textarea placeholder="{{ trans('message.table.comments') }} ..." rows="3" class="form-control" name="approver_comments">{{$Header->approver_comments}}</textarea>
-                    </div>
-                </div>
-            </div> -->
-
-
-
-            
 
         </div>
 
@@ -372,7 +336,9 @@
 @endsection
 @push('bottom')
 <script type="text/javascript">
-
+    $(function(){
+        $('body').addClass("sidebar-collapse");
+    });
     function preventBack() {
         window.history.forward();
     }

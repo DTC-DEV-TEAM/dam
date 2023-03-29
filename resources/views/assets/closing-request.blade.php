@@ -6,6 +6,16 @@
             padding: 8px;
             border-radius: 5px 0 0 5px;
             }
+            #asset-items1, td, tr {
+                border: 1px solid rgba(000, 0, 0, .5);
+                padding: 8px;
+                border-radius: 5px 0 0 5px;
+            }
+            #asset-items, td, tr {
+                border: 1px solid rgba(000, 0, 0, .5);
+                padding: 8px;
+                border-radius: 5px 0 0 5px;
+            }
         </style>
     @endpush
 @section('content')
@@ -124,32 +134,18 @@
             <hr/>
 
             <div class="row">                           
-
-
                 <label class="control-label col-md-2">{{ trans('message.form-label.approved_by') }}:</label>
                 <div class="col-md-4">
-                        <p>{{$Header->approvedby}}</p>
+                        <p>{{$Header->approvedby}} / <strong>{{$Header->approved_at}}</strong></p>
                 </div>
-
-                <label class="control-label col-md-2">{{ trans('message.form-label.approved_at') }}:</label>
-                <div class="col-md-4">
-                        <p>{{$Header->approved_at}}</p>
-                </div>
-
-            </div>
-            @endif
-
-
-            @if($Header->approver_comments != null || $Header->approver_comments != "")
-                <div class="row">                           
+                @if($Header->approver_comments != null || $Header->approver_comments != "")          
                     <label class="control-label col-md-2">{{ trans('message.table.approver_comments') }}:</label>
-                    <div class="col-md-10">
+                    <div class="col-md-4">
                             <p>{{$Header->approver_comments}}</p>
                     </div>
-
-            
-                </div>
-            @endif 
+                @endif 
+            </div>
+            @endif   
 
 
             <hr/>                
@@ -158,157 +154,99 @@
                     <div class="box-header text-center">
                         <h3 class="box-title"><b>Item Request</b></h3>
                     </div>
-                                <div class="box-body no-padding">
-                                    <div class="table-responsive">
-                                            <div class="pic-container">
-                                                <div class="pic-row">
-                                                    <table class="table table-bordered" id="asset-items1">
-                                                        <tbody id="bodyTable">
-                                                            <tr class="tbl_header_color dynamicRows">
-                                                                <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
-                                                                <th width="9%" class="text-center">{{ trans('message.table.category_id_text') }}</th>   
-                                                                <th width="15%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                       
-                                                                <!-- <th width="15%" class="text-center">{{ trans('message.table.application_id_text') }}</th> -->
-                                                                <th width="5%" class="text-center">{{ trans('message.table.quantity_text') }}</th> 
+                    <div class="box-body no-padding">
+                        <div class="pic-container">
+                            <div class="pic-row">
+                                <table id="asset-items1">
+                                    <tbody id="bodyTable">
+                                        <tr class="tbl_header_color dynamicRows">
+                                            <th width="10%" class="text-center">{{ trans('message.table.digits_code') }}</th>
+                                            <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
+                                            <th width="9%" class="text-center">{{ trans('message.table.category_id_text') }}</th>   
+                                            <th width="15%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                       
+                                            <!-- <th width="15%" class="text-center">{{ trans('message.table.application_id_text') }}</th> -->
+                                            <th width="5%" class="text-center">{{ trans('message.table.quantity_text') }}</th> 
 
-                                                                @if($Header->recommendedby != null || $Header->recommendedby != "")
-                                                                    <th width="13%" class="text-center">{{ trans('message.table.recommendation_text') }}</th> 
-                                                                    <th width="14%" class="text-center">{{ trans('message.table.reco_digits_code_text') }}</th> 
-                                                                    <th width="24%" class="text-center">{{ trans('message.table.reco_item_description_text') }}</th>
-                                                                @endif 
-                                                            <!-- <th width="8%" class="text-center">{{ trans('message.table.image') }}</th> 
-                                                                <th width="5%" class="text-center">{{ trans('message.table.action') }}</th> -->
-                                                            </tr>
+                                            @if($Header->recommendedby != null || $Header->recommendedby != "")
+                                                <th width="13%" class="text-center">{{ trans('message.table.recommendation_text') }}</th> 
+                                                <th width="14%" class="text-center">{{ trans('message.table.reco_digits_code_text') }}</th> 
+                                                <th width="24%" class="text-center">{{ trans('message.table.reco_item_description_text') }}</th>
+                                            @endif 
+                                        </tr>
+                                        
+            
+                                        <tr id="tr-table">
+                                                    <?php   $tableRow = 1; ?>
+                                            <tr>
+                                                @foreach($Body as $rowresult)
+                                                    <?php   $tableRow++; ?>                                           
+                                                        <tr>
+                                                            <td style="text-align:center" height="10">
+                                                                {{$rowresult->digits_code}}
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    {{$rowresult->item_description}}
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    {{$rowresult->category_id}}
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                {{$rowresult->sub_category_id}}
+                                                            </td>
+                                                            <td style="text-align:center" height="10">
+                                                                    {{$rowresult->quantity}}
+                                                            </td>
+                                                            @if($Header->recommendedby != null || $Header->recommendedby != "")
                                                             
-                                                            <!--tr class="tableInfo">
-                                                                <td colspan="6" align="right"><strong>{{ trans('message.table.total') }}</strong></td>
-                                                                <td align="left" colspan="1">
+                                                                <td style="text-align:center" height="10">
+                                                                    {{$rowresult->recommendation}}
 
-
-                                                                    <input type='hidden' name="quantity_total" class="form-control text-center" id="quantity_total" readonly>
-
-                                                                    <input type='hidden' name="cost_total" class="form-control text-center" id="cost_total" readonly>
-
-                                                                    <input type='number' name="total" class="form-control text-center" id="total" readonly>
+                                                                    @if($BodyReco != null || $BodyReco != "")
+                                                                        @foreach($BodyReco as $rowresult1)
+            
+                                                                            @if($rowresult1->body_request_id ==  $rowresult->id)
+                                                                                {{$rowresult1->recommendation}} <br/>
+                                                                            @endif
+            
+                                                                        @endforeach
+                                                                    @endif
+                                                                
                                                                 </td>
-                                                                <td colspan="1"></td>
-                                                            </tr> -->
+                                                                
+                                                                <td style="text-align:center" height="10">
+                                                                    {{$rowresult->reco_digits_code}}
+                                                                </td>
 
-                                                            <tr id="tr-table">
-                                                                        <?php   $tableRow = 1; ?>
-                                                                <tr>
+                                                                <td style="text-align:center" height="10">
+                                                                    {{$rowresult->reco_item_description}}
+                                                                </td>
 
-                                                                    @foreach($Body as $rowresult)
-
-                                                                        <?php   $tableRow++; ?>
-
-                                                                        @if( $rowresult->digits_code == null || $rowresult->digits_code == "" )
-                                                                            <tr>
-                                                                                <td style="text-align:center" height="10">
-                                                                                    
-                                                                                    <!-- <input type="hidden"  class="form-control"  name="item_id[]" id="item_id{{$tableRow}}"  required  value="{{$rowresult->id}}"> -->
-                                                                                    
-                                                                                        {{$rowresult->item_description}}
-                                                                                </td>
-
-                                                                                <td style="text-align:center" height="10">
-                                                                                        {{$rowresult->category_id}}
-                                                                                </td>
-
-                                                                                <td style="text-align:center" height="10">
-                                                                                    {{$rowresult->sub_category_id}}
-                                                                                </td>
-                                                                                <!--
-                                                                                <td style="text-align:center" height="10">
-                                                                                        {{$rowresult->app_id}}
-                                                        
-                                                                                        @if($rowresult->app_id_others != null || $rowresult->app_id_others != "" )
-                                                                                            <br>
-                                                                                            {{$rowresult->app_id_others}}
-                                                                                        @endif
-                                                                                
-                                                                                </td>
-                                                                                -->
-                                                                                <td style="text-align:center" height="10">
-                                                                                        {{$rowresult->quantity}}
-                                                                                </td>
-
-                                                                                @if($Header->recommendedby != null || $Header->recommendedby != "")
-                                                                                
-                                                                                    <td style="text-align:center" height="10">
-                                                                                        {{$rowresult->recommendation}}
-
-                                                                                        @if($BodyReco != null || $BodyReco != "")
-                                                                                            @foreach($BodyReco as $rowresult1)
-                                
-                                                                                                @if($rowresult1->body_request_id ==  $rowresult->id)
-                                                                                                    {{$rowresult1->recommendation}} <br/>
-                                                                                                @endif
-                                
-                                                                                            @endforeach
-                                                                                        @endif
-                                                                                    
-                                                                                    </td>
-                                                                                    
-                                                                                    <td style="text-align:center" height="10">
-                                                                                        {{$rowresult->reco_digits_code}}
-                                                                                    </td>
-
-                                                                                    <td style="text-align:center" height="10">
-                                                                                        {{$rowresult->reco_item_description}}
-                                                                                    </td>
-
-                                                                                @endif
-                                                                            </tr>
-                                                                        @endif
-
-                                                                    @endforeach
-                                                
-                                                                </tr>
-                                                            </tr>
-                                                        
-                                                        </tbody>
-
-
-                                                    </table>
-                                                </div>
-                                            </div>
-                                    </div>
-                                    <br>
-                                </div>
+                                                            @endif
+                                                        </tr>                                               
+                                                @endforeach                           
+                                            </tr>
+                                        </tr>                                   
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             @if($Header->recommendedby != null || $Header->recommendedby != "")
-
-            <hr/>
-
-            <div class="row">                           
-
+                <hr/>
+                <div class="row">                           
                     <label class="control-label col-md-2">{{ trans('message.form-label.recommended_by') }}:</label>
                     <div class="col-md-4">
-                            <p>{{$Header->recommendedby}}</p>
+                            <p>{{$Header->recommendedby}} / <strong>{{$Header->recommended_at}}</strong> </p>
                     </div>
-
-                    <label class="control-label col-md-2">{{ trans('message.form-label.recommended_at') }}:</label>
-                    <div class="col-md-4">
-                            <p>{{$Header->recommended_at}}</p>
-                    </div>
-
-                </div>
-
-            @endif 
-
-
-            @if($Header->it_comments != null || $Header->it_comments != "")
-
-                <div class="row">                           
-                    <label class="control-label col-md-2">{{ trans('message.table.it_comments') }}:</label>
-                    <div class="col-md-10">
-                            <p>{{$Header->it_comments}}</p>
-                    </div>
-
-            
+                    @if($Header->it_comments != null || $Header->it_comments != "")                        
+                        <label class="control-label col-md-2">{{ trans('message.table.it_comments') }}:</label>
+                        <div class="col-md-4">
+                                <p>{{$Header->it_comments}}</p>
+                        </div>
+                    @endif 
                 </div>
             @endif 
 
@@ -318,13 +256,13 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="box-header text-center">
-                        <h3 class="box-title"><b>{{ trans('message.form-label.asset_items') }}</b></h3>
+                        <h3 class="box-title"><b>Item MO Details</b></h3>
                     </div>
                                 <div class="box-body no-padding">
                                     <div class="table-responsive">
                                         <div class="pic-container">
                                             <div class="pic-row">
-                                                <table class="table table-bordered" id="asset-items">
+                                                <table id="asset-items">
                                                     <tbody>
                                                         <tr class="tbl_header_color dynamicRows">
                                                             <th width="10%" class="text-center">{{ trans('message.table.mo_reference_number') }}</th>
@@ -410,7 +348,6 @@
                                                             <td align="center" colspan="1">
                                                                 <label>{{$Header->total}}</label>
                                                             </td>
-                                                            <td colspan="1"></td>
                                                         </tr>
                                                     
                                                     </tbody>

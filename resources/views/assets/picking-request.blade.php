@@ -18,6 +18,10 @@
                 margin-bottom:0;
             }
             .select2-container--default .select2-selection--multiple .select2-selection__choice{color:black;}
+            #asset-items th, td, tr {
+                border: 1px solid rgba(000, 0, 0, .5);
+                padding: 8px;
+            }
         </style>
     @endpush
 @section('content')
@@ -132,7 +136,7 @@
                                     <div class="table-responsive">
                                             <div class="pic-container">
                                                 <div class="pic-row">
-                                                    <table class="table table-bordered" id="asset-items">
+                                                    <table id="asset-items">
                                                         <tbody id="bodyTable">
                                                             <tr class="tbl_header_color dynamicRows">
                                                                 <!-- <th width="13%" class="text-center">{{ trans('message.table.action') }}</th>  -->
