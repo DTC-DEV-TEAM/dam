@@ -145,9 +145,9 @@
 					$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getRequestPurchasing/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[purchased2_by] == null"];
 					$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailPurchasing/[id]'),'icon'=>'fa fa-eye'];
 					//option 2
-					$this->addaction[] = ['title'=>'Add MO/SO','url'=>CRUDBooster::adminpath('[id]'),'icon'=>'fa fa-plus-circle', "showIf"=>"[status_id] == $for_closing && [mo_so_num] == null"];
+					$this->addaction[] = ['title'=>'Add MO/SO','url'=>CRUDBooster::adminpath('[id]'),'icon'=>'fa fa-plus-circle', "showIf"=>"[status_id] === $for_closing && [mo_so_num] === null"];
 					//option 3
-					$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::mainpath('getRequestPurchasingForMoSo/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[status_id] == $for_closing && [mo_so_num] != null"];
+					$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::mainpath('getRequestPurchasingForMoSo/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[status_id] == $for_closing && [mo_so_num] !== null"];
 				}
 				
 				//$this->addaction[] = ['title'=>'Print','url'=>CRUDBooster::mainpath('getRequestPrintPickList/[id]'),'icon'=>'fa fa-print', "showIf"=>"[purchased2_by] != null && [status_id] == $processing"];

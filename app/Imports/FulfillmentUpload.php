@@ -28,7 +28,6 @@ class FulfillmentUpload implements ToCollection, WithHeadingRow
             BodyRequest::where(['header_request_id'=>$header->id,'digits_code'=>$row['digits_code']])
             ->update(
                         [
-                        //'mo_so_num'    => DB::raw('CONCAT_WS(COALESCE(mo_so_num), ",'. $row['mo_so_num'] .'")'),
                         'mo_so_num'    => DB::raw('CONCAT_WS(",",mo_so_num, "'. $row['mo_so_num'].'")'),
                         'serve_qty'    => DB::raw("IF(serve_qty IS NULL, '".$row['fulfill_qty']."', serve_qty + '".$row['fulfill_qty']."')"), 
                         'unserved_qty' => DB::raw("unserved_qty - '".$row['fulfill_qty']."'")                
