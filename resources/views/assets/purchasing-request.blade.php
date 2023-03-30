@@ -79,7 +79,6 @@
         <div class='panel-body'>
 
             <div class="row">
-
                 <div class="col-md-4">
                     <div class="form-group">
                         <label class="control-label require">{{ trans('message.form-label.po_number') }}</label>
@@ -91,18 +90,14 @@
 
                 <div class="col-md-4">
                     <div class="form-group">
-
-                   
-
                         <label class="control-label require">{{ trans('message.form-label.po_date') }}</label>
                         <div class="input-group date">
                             <div class="input-group-addon"><i class="fa fa-calendar"></i></div>
                             <!-- <input type='input' name='po_date' id="po_date" value="{{$Header->po_date}}"  onkeydown="return false"   autocomplete="off"  class='form-control' placeholder="yyyy-mm-dd" />    -->
-                            <input type="text" class="form-control date" name="po_date" id="po_date" value="{{$Header->po_date}}" >
+                            <input autocomplete="off" type="text" class="form-control date" name="po_date" id="po_date" value="{{$Header->po_date}}" >
                         </div>
                         <p style="font: italic bold 12px/30px arial, arial;">Type N/A if not applicable</p> 
                     </div>
-
                 </div>
 
                 <div class="col-md-4">
@@ -110,15 +105,11 @@
                         <label class="control-label require">{{ trans('message.form-label.quote_date') }}</label>
                         <div class="input-group date">
                             <div class="input-group-addon"><i class="fa fa-calendar"></i></div>
-                            
                             <!-- <input type='input' name='quote_date' id="quote_date" value="{{$Header->quote_date}}" onkeydown="return false"   autocomplete="off"  class='form-control' placeholder="yyyy-mm-dd" /> --> 
-                            
-                            <input type="text" class="form-control date" name="quote_date" id="quote_date" value="{{$Header->quote_date}}" >
-
+                            <input autocomplete="off" type="text" class="form-control date" name="quote_date" id="quote_date" value="{{$Header->quote_date}}" >
                           </div>
                           <p style="font: italic bold 12px/30px arial, arial;">Type N/A if not applicable</p> 
                     </div>
-
                 </div>
 
             </div>
@@ -130,13 +121,10 @@
                 <div class="col-md-4">
                         <p>{{$Header->reference_number}}</p>
                 </div>
-
                 <label class="control-label col-md-2">{{ trans('message.form-label.created_at') }}:</label>
                 <div class="col-md-4">
                         <p>{{$Header->created}}</p>
                 </div>
-
-
             </div>
 
 
@@ -157,8 +145,6 @@
             </div>
 
             <div class="row">                           
-
-
                 <label class="control-label col-md-2">{{ trans('message.form-label.department') }}:</label>
                 <div class="col-md-4">
                         <p>{{$Header->department}}</p>
@@ -168,7 +154,6 @@
                 <div class="col-md-4">
                         <p>{{$Header->position}}</p>
                 </div>
-
             </div>
 
             @if($Header->store_branch != null || $Header->store_branch != "")
@@ -205,8 +190,6 @@
                 <div class="col-md-4">
                         <p>{{$Header->request_description}}</p>
                 </div>
-
-        
             </div>
 
 
@@ -217,8 +200,6 @@
                     <div class="col-md-10">
                             <p>{{$Header->requestor_comments}}</p>
                     </div>
-
-            
                 </div>
             @endif  
 
@@ -262,8 +243,7 @@
                     <div class="box-header text-center">
                         <h3 class="box-title"><b>{{ trans('message.form-label.asset_reco') }}</b></h3>
                     </div>
-                    <div class="box-body no-padding">
-                                                    
+                    <div class="box-body no-padding">                            
                         <div class="pic-container">
                             <div class="pic-row">
                                 <table id="asset-items1">
@@ -328,7 +308,7 @@
                             
                                                                     </select>
                                                                 @else
-                                                                <input type="text" class="form-control" data-id="{{$tableRow}}" id="recommendation{{$tableRow}}" value="{{$rowresult->recommendation}}"  name="recommendation[]"  readonly>
+                                                                <input type="text" style="text-align:center" class="form-control finput" data-id="{{$tableRow}}" id="recommendation{{$tableRow}}" value="{{$rowresult->recommendation}}"  name="recommendation[]"  readonly>
                                                                     <!-- <select class="js-example-basic-single recodropdown" style="width: 100%; height: 35px;"  name="recommendation[]" id="recommendation" data-id="{{$tableRow}}" disabled>
                                                                         <option value="">-- Select Recommendation --</option>
                             
@@ -376,8 +356,7 @@
 
                                 </td>
                             </div>
-                        </div>
-                        
+                        </div>                        
                     </div>
                 </div>
             </div>
@@ -474,9 +453,6 @@
     });
     
     $(document).ready(function() {
-
-
-
         $(".add-row-button").click(function() {
 
             var buttonNo = $(this).attr("data-id");
@@ -517,16 +493,10 @@
 
         //deleteRow
         $(document).on('click', '.removeRow', function() {
-
-            var buttonNo = $(this).attr("data-id");
-            
-            
+            var buttonNo = $(this).attr("data-id");  
             $('#div'+buttonNo).remove();
-
             $('#divreco'+buttonNo).remove();
-
             return false;
-            
         });
 
 
@@ -535,15 +505,10 @@
         var searchcount = <?php echo json_encode($tableRow); ?>;
 
         let countrow = 1;
-
             $(function(){
-
                 for (let i = 0; i < searchcount; i++) {
                     countrow++;
-                    
                     //$('#search'+countrow).attr('disabled', true);
-
-
                     $("#search"+countrow).autocomplete({
 
                         source: function (request, response) {
@@ -624,11 +589,8 @@
     });
 
     $(".search").click(function(event) {
-       
        var searchID = $(this).attr("data-id");
-       
        //alert($("#item_description"+searchID).val());
-
        $("#item_search").text($("#item_description"+searchID).val());
 
    });
@@ -637,37 +599,27 @@
 
         var id = $(this).attr("data-id");
         var rate = parseInt($(this).val());
-
         var qty = parseFloat($("#unit_cost" + id).val());
-
         var price = calculatePrice(qty, rate); // this is for total Value in row
-
         if(price == 0){
             price = rate * 1;
         }
-
         $("#total_unit_cost" + id).val(price.toFixed(2));
-
         $("#total").val(calculateTotalValue2());
         $("#quantity_total").val(calculateTotalQuantity());
 
     });
 
     $(document).on('keyup', '.cost_item', function(ev) {
-
         var id = $(this).attr("data-id");
         var rate = parseFloat($(this).val());
-        
         var qty = parseInt($("#quantity" + id).val());
-
         var price = calculatePrice(qty, rate); // this is for total Value in row
-
         if(price == 0){
             price = rate * 1;
         }
 
         $("#total_unit_cost" + id).val(price.toFixed(2));
-
         $("#total").val(calculateTotalValue2());
         $("#quantity_total").val(calculateTotalQuantity());
 
@@ -773,10 +725,7 @@
     });
 
     $("#btnUpdate").click(function(event) {
-
-
             $("#action").val("0");
-
     });
 
     $(document).on('click', '.delete_item', function() {
@@ -812,17 +761,16 @@
     }
     }
     if($('#request_type_id').val() == 6 || $('#request_type_id').val() == 7){
-        document.getElementById("asset-items1").innerHTML +=
+        $(document).getElementById("asset-items1").innerHTML +=
         "<tr><td colspan='4' style='text-align:right'><strong>TOTAL</strong></td><td style='text-align:center'><strong>" +
         sumcost +
         "</strong></td></tr>";
     }else{
-        document.getElementById("asset-items1").innerHTML +=
+        $(document).getElementById("asset-items1").innerHTML +=
         "<tr><td colspan='4' style='text-align:right'><strong>TOTAL</strong></td><td style='text-align:center'><strong>" +
         sumcost +
         "</strong></td></tr>";
     }
-   
 
 </script>
 @endpush

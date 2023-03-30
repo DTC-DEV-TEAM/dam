@@ -143,7 +143,7 @@
 
             <div class="row">
 
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label class="require control-label">*{{ trans('message.form-label.header_request_id') }}:</label>
                         <select class="js-example-basic-single" data-placeholder="** Please a Asset Request"  style="width: 100%;" name="header_request_id" id="header_request_id">
