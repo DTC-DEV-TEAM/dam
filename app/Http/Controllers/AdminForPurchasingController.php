@@ -9,10 +9,12 @@
 	use App\ApprovalMatrix;
 	use App\StatusMatrix;
 	use App\MoveOrder;
+	use App\Imports\FulfillmentUpload;
 	//use Illuminate\Http\Request;
 	//use Illuminate\Support\Facades\Input;
 	use Illuminate\Support\Facades\Log;
 	use Illuminate\Support\Facades\Redirect;
+	
 
 	class AdminForPurchasingController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -139,13 +141,6 @@
 
 				if(CRUDBooster::myPrivilegeId() == 14){
 					$this->addaction[] = ['title'=>'View','url'=>CRUDBooster::mainpath('getRequestPurchasingManagerView/[id]'),'icon'=>'fa fa-eye'];
-				}if(CRUDBooster::myPrivilegeId() == 18){
-					$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailPurchasing/[id]'),'icon'=>'fa fa-eye'];
-					//option 2
-					$this->addaction[] = ['title'=>'Add MO/SO','url'=>CRUDBooster::adminpath('[id]'),'icon'=>'fa fa-plus-circle', "showIf"=>"[status_id] == $for_closing && [mo_so_num] == null"];
-					//option 3
-					$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::mainpath('getRequestPurchasingForMoSo/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[status_id] == $for_closing && [mo_so_num] != null"];
-				
 				}else{
 					$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getRequestPurchasing/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[purchased2_by] == null"];
 					$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailPurchasing/[id]'),'icon'=>'fa fa-eye'];
@@ -199,8 +194,9 @@
 	        | 
 	        */
 	        $this->index_button = array();
-
-
+			if(CRUDBooster::getCurrentMethod() == 'getIndex') {
+			   $this->index_button[] = ["label"=>"Upload Fulfillment","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('fulfillment-upload')];
+			}
 
 	        /* 
 	        | ---------------------------------------------------------------------- 
@@ -402,7 +398,7 @@
 	        |
 	        */
 	        $this->load_css = array();
-	        
+	        $this->load_css[] = asset("css/font-family.css");
 	        
 	    }
 
@@ -1596,6 +1592,12 @@
 			$message = ['status'=>'success', 'message'=>'Successfully Saved!','redirect_url'=>CRUDBooster::mainpath('request-purchasing-for-mo-so/'.$id)];
 			echo json_encode($message);
 			//CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Request has been closed successfully!"), 'info');
+		}
+
+		//upload fulfillment
+		public function UploadFulfillment() {
+			$data['page_title']= 'Fulfillment Upload';
+			return view('import.fulfillment-upload', $data)->render();
 		}
 
 	}

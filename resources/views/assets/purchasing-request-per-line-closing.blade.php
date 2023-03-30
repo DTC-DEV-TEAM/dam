@@ -27,9 +27,12 @@
         border: 1px solid rgba(000, 0, 0, .5);
         padding: 8px;
     }
-    .finput {
+    /* .finput {
         border:none;
         border-bottom: 1px solid rgba(18, 17, 17, 0.5);
+    } */
+    input.finput:read-only {
+        background-color: #fff;
     }
  
    </style>
@@ -97,7 +100,7 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <label class="control-label require">{{ trans('message.form-label.po_number') }}</label>
-                        <input type="text" class="form-control"  id="po_number" name="po_number"   value="{{$Header->po_number}}" readonly>      
+                        <input type="text" class="form-control finput"  id="po_number" name="po_number"   value="{{$Header->po_number}}" readonly>      
          
                         <p style="font: italic bold 12px/30px arial, arial;">Type N/A if not applicable</p>                         
                     </div>
@@ -112,7 +115,7 @@
                         <div class="input-group date">
                             <div class="input-group-addon"><i class="fa fa-calendar"></i></div>
                             <!-- <input type='input' name='po_date' id="po_date" value="{{$Header->po_date}}"  onkeydown="return false"   autocomplete="off"  class='form-control' placeholder="yyyy-mm-dd" />    -->
-                            <input type="text" class="form-control date" name="po_date" id="po_date" value="{{$Header->po_date}}" readonly>
+                            <input type="text" class="form-control finput date" name="po_date" id="po_date" value="{{$Header->po_date}}" readonly>
                         </div>
                         <p style="font: italic bold 12px/30px arial, arial;">Type N/A if not applicable</p> 
                     </div>
@@ -127,7 +130,7 @@
                             
                             <!-- <input type='input' name='quote_date' id="quote_date" value="{{$Header->quote_date}}" onkeydown="return false"   autocomplete="off"  class='form-control' placeholder="yyyy-mm-dd" /> --> 
                             
-                            <input type="text" class="form-control date" name="quote_date" id="quote_date" value="{{$Header->quote_date}}" readonly>
+                            <input type="text" class="form-control finput date" name="quote_date" id="quote_date" value="{{$Header->quote_date}}" readonly>
 
                           </div>
                           <p style="font: italic bold 12px/30px arial, arial;">Type N/A if not applicable</p> 
@@ -265,7 +268,7 @@
                                         <tr class="tbl_header_color dynamicRows">
 
                                             <!--<th width="5%" class="text-center">{{ trans('message.table.action') }}</th>-->
-
+                                            <th width="15%" class="text-center">Digits Code</th>
                                             <th width="15%" class="text-center">{{ trans('message.table.item_description') }}</th>
                                             <th width="9%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
                                             <th width="10%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
@@ -291,11 +294,10 @@
                                                     <?php   $tableRow++; ?>
 
                                                     <tr>
-
+                                                        <td style="text-align:center" height="10">                                    
+                                                             {{$rowresult->digits_code}} 
+                                                        </td>
                                                         <td style="text-align:center" height="10">
-                                                            
-                                                                <!-- <input type="hidden"  class="form-control"  name="item_id[]" id="item_id{{$tableRow}}"  required  value="{{$rowresult->id}}"> -->
-                                                            
                                                                 <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}">
                                                                 <input type="text"  class="form-control mo_so_num" value="{{$rowresult->item_description}}" readonly>
                                                                 <!-- {{$rowresult->item_description}} -->
@@ -385,7 +387,7 @@
 
                                     <tfoot>
                                     <tr>
-                                        <td colspan='4' style='text-align:right'>
+                                        <td colspan='5' style='text-align:right'>
                                         <strong>TOTAL</strong>
                                         </td>
                                         <td style='text-align:center'>

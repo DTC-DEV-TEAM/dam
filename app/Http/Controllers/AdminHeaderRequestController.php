@@ -313,7 +313,7 @@
 	        |
 	        */
 	        $this->load_css = array();
-	        
+			$this->load_css[] = asset("css/font-family.css");
 	        
 	    }
 
@@ -628,6 +628,7 @@
 				$dataLines[$x]['app_id'] 			= implode(", ",$apps_array);
 				$dataLines[$x]['app_id_others'] 	= $app_id_others[$x];
 				$dataLines[$x]['quantity'] 			= $quantity[$x];
+				$dataLines[$x]['unserved_qty']      = $quantity[$x];
 				$dataLines[$x]['unit_cost'] 		= $supplies_cost[$x];
 
 				if($request_type_id == 5){
