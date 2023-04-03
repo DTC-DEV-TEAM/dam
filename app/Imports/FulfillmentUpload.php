@@ -30,7 +30,8 @@ class FulfillmentUpload implements ToCollection, WithHeadingRow
                         [
                         'mo_so_num'    => DB::raw('CONCAT_WS(",",mo_so_num, "'. $row['mo_so_num'].'")'),
                         'serve_qty'    => DB::raw("IF(serve_qty IS NULL, '".$row['fulfill_qty']."', serve_qty + '".$row['fulfill_qty']."')"), 
-                        'unserved_qty' => DB::raw("unserved_qty - '".$row['fulfill_qty']."'")                
+                        'unserved_qty' => DB::raw("unserved_qty - '".$row['fulfill_qty']."'"),    
+                        'reorder_qty'  => DB::raw("reorder_qty - '".$row['fulfill_qty']."'")            
                         ]
                     );
         }
