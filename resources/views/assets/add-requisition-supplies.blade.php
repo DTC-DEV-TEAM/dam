@@ -323,7 +323,7 @@
                         '</td>' +
 
                         '<td>'+
-                            '<select selected data-placeholder="- Select Sub Category -" class="form-control sub_category_id" name="sub_category_id[]" data-id="' + tableRow + '" id="sub_category_id' + tableRow + '" required style="width:100%">' +
+                            '<select selected data-placeholder="Select Sub Category" class="form-control sub_category_id" name="sub_category_id[]" data-id="' + tableRow + '" id="sub_category_id' + tableRow + '" required style="width:100%">' +
                             '  <option value=""></option>' +
                             '        @foreach($sub_categories as $data)'+
                             '        <option value="{{$data->class_description}}">{{$data->class_description}}</option>'+

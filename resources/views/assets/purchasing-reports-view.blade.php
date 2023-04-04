@@ -52,6 +52,9 @@
                         <th width="auto">Requested Date</th>
                         <th width="auto">Approved By</th>
                         <th width="auto">Approved Date</th>
+                        <th width="auto">Recommended By</th>
+                        <th width="auto">Recommended At</th>
+                        <th width="auto">IT Comments</th>
                         <th width="auto">Transacted By</th>
                         <th width="auto">Transacted Date</th>
                
@@ -92,6 +95,9 @@
                     <td>{{$val['requested_date']}}</td> 
                     <td>{{$val['approved_by']}}</td> 
                     <td>{{$val['approved_at']}}</td> 
+                    <td>{{$val['recommended_by']}}</td>  
+                    <td>{{$val['recommended_at']}}</td>  
+                    <td>{{$val['it_comments']}}</td>  
                     <td>{{$val['transacted_by']}}</td>  
                     <td>{{$val['transacted_date']}}</td>  
                     </tr>

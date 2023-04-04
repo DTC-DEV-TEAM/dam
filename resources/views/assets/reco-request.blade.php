@@ -178,10 +178,10 @@
                                             <th width="10%" class="text-center">{{ trans('message.table.digits_code') }}</th>
                                             <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
                                             <th width="9%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
-                                            <th width="15%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
+                                            <th width="14%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
                                             <th width="5%" class="text-center">{{ trans('message.table.quantity_text') }}</th> 
-                                            <th width="13%" class="text-center">{{ trans('message.table.recommendation_text') }}</th> 
-                                            <th width="14%" class="text-center">{{ trans('message.table.reco_digits_code_text') }}</th> 
+                                            <th width="12%" class="text-center">{{ trans('message.table.recommendation_text') }}</th> 
+                                            <th width="10%" class="text-center">{{ trans('message.table.reco_digits_code_text') }}</th> 
                                             <th width="24%" class="text-center">{{ trans('message.table.reco_item_description_text') }}</th> 
                                         </tr>
                                                        
@@ -194,17 +194,17 @@
                                                     <?php   $tableRow++; ?>
 
                                                     <tr>
-                                                        <td style="text-align:center" height="10">                                                                                                                       
+                                                        <td style="text-align:center">                                                                                                                       
                                                                 {{$rowresult->digits_code}}
                                                         </td>
-                                                        <td style="text-align:center" height="10">                                                                                
+                                                        <td style="text-align:center">                                                                                
                                                                 <input type="hidden"  class="form-control"  name="item_id[]" id="item_id{{$tableRow}}"  required  value="{{$rowresult->id}}">
                                                                 {{$rowresult->item_description}}
                                                         </td>
-                                                        <td style="text-align:center" height="10">
+                                                        <td style="text-align:center">
                                                                 {{$rowresult->category_id}}
                                                         </td>
-                                                        <td style="text-align:center" height="10">
+                                                        <td style="text-align:center">
                                                                 
                                                                 {{$rowresult->sub_category_id}}
 
@@ -216,7 +216,7 @@
                                                                 @endif -->
                                                         
                                                         </td>
-                                                        <td style="text-align:center" height="10">
+                                                        <td style="text-align:center">
                                                                 {{$rowresult->quantity}}
                                                         </td>
                                                         

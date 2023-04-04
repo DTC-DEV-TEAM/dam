@@ -207,6 +207,10 @@ Route::group(['middleware' => ['web']], function() {
     //location api
     Route::post(config('crudbooster.ADMIN_PATH').'/get-location-data','AdminLocationsController@getLocationDataApi')->name('get-location-data');
     Route::post(config('crudbooster.ADMIN_PATH').'/get-location-updated-data','AdminLocationsController@getLocationUpdatedDataApi')->name('get-location-updated-data');
+
+    //Supplies upload quantity fulfillment
+    Route::get('/admin/for_purchasing/fulfillment-upload','AdminForPurchasingController@UploadFulfillment');
+    Route::post('/admin/admin_import/upload-fulfillment','AdminImportController@fulfillmentUpload')->name('upload-fulfillment');
     Route::get('/admin/clear-view', function() {
         Artisan::call('view:clear');
         return "View cache is cleared!";

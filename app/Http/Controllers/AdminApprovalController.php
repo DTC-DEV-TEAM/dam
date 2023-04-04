@@ -253,7 +253,7 @@
 	        |
 	        */
 	        $this->load_css = array();
-	        
+			$this->load_css[] = asset("css/font-family.css");
 	        
 	    }
 
@@ -433,7 +433,8 @@
 				// 			->update([
 				// 				'replenish_qty'   =>  $fBodyVal['quantity'],
 				// 				'reorder_qty'     =>  NULL,
-				// 				'serve_qty'       =>  $fBodyVal['quantity']
+				// 				'serve_qty'       =>  $fBodyVal['quantity'],
+				// 				'unserved_qty'    =>  0,
 				// 			]);	
 				// 			DB::table('assets_supplies_inventory')
 				// 			->where('digits_code', $fBodyVal['digits_code'])

@@ -91,6 +91,9 @@
                         <th width="auto">MO Item Description</th>
                         <th width="auto">MO QTY/Serve QTY</th>
                         <th width="auto">Requested Date</th>
+                        <th width="auto">Recommended By</th>
+                        <th width="auto">Recommended At</th>
+                        <th width="auto">IT Comments</th>
                         <th width="auto">Transacted By</th>
                         <th width="auto">Transacted Date</th>
                
@@ -233,6 +236,10 @@
                                 _: 'display',
                             }
                         }, 
+                       
+                        {data: 'recommended_by'},  
+                        {data: 'recommended_at'},  
+                        {data: 'it_comments'},  
                         {data: 'transacted_by'},  
                         {data: 'transacted_date'},  
                 ],

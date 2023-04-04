@@ -9,10 +9,12 @@
 	use App\ApprovalMatrix;
 	use App\StatusMatrix;
 	use App\MoveOrder;
+	use App\Imports\FulfillmentUpload;
 	//use Illuminate\Http\Request;
 	//use Illuminate\Support\Facades\Input;
 	use Illuminate\Support\Facades\Log;
 	use Illuminate\Support\Facades\Redirect;
+	
 
 	class AdminForPurchasingController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -139,13 +141,12 @@
 
 				if(CRUDBooster::myPrivilegeId() == 14){
 					$this->addaction[] = ['title'=>'View','url'=>CRUDBooster::mainpath('getRequestPurchasingManagerView/[id]'),'icon'=>'fa fa-eye'];
-				}if(CRUDBooster::myPrivilegeId() == 18){
+				}else if(CRUDBooster::myPrivilegeId() == 19){
 					$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailPurchasing/[id]'),'icon'=>'fa fa-eye'];
 					//option 2
 					$this->addaction[] = ['title'=>'Add MO/SO','url'=>CRUDBooster::adminpath('[id]'),'icon'=>'fa fa-plus-circle', "showIf"=>"[status_id] == $for_closing && [mo_so_num] == null"];
 					//option 3
 					$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::mainpath('getRequestPurchasingForMoSo/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[status_id] == $for_closing && [mo_so_num] != null"];
-				
 				}else{
 					$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getRequestPurchasing/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[purchased2_by] == null"];
 					$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailPurchasing/[id]'),'icon'=>'fa fa-eye'];
@@ -199,8 +200,9 @@
 	        | 
 	        */
 	        $this->index_button = array();
-
-
+			if(CRUDBooster::getCurrentMethod() == 'getIndex') {
+			   $this->index_button[] = ["label"=>"Upload Fulfillment","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('fulfillment-upload')];
+			}
 
 	        /* 
 	        | ---------------------------------------------------------------------- 
@@ -402,7 +404,7 @@
 	        |
 	        */
 	        $this->load_css = array();
-	        
+	        $this->load_css[] = asset("css/font-family.css");
 	        
 	    }
 
@@ -473,7 +475,31 @@
 
 				$query->orderBy('header_request.status_id', 'asc')->orderBy('header_request.id', 'desc');
 
-			}else if(in_array(CRUDBooster::myPrivilegeId(),[5,17])){ 
+			}
+			// else if(in_array(CRUDBooster::myPrivilegeId(),[5,17])){ 
+			// 	$query->where(function($sub_query){
+
+			// 		$approved =  		DB::table('statuses')->where('id', 7)->value('id');
+
+			// 		$it_reco  = 		DB::table('statuses')->where('id', 4)->value('id');
+
+			// 		$processing = 		DB::table('statuses')->where('id', 11)->value('id');
+
+			// 		$picked =  			DB::table('statuses')->where('id', 15)->value('id');
+
+			// 		$sub_query->where('header_request.request_type_id', 1)->where('header_request.to_reco', 0)->where('header_request.status_id', $approved)->whereNull('header_request.deleted_at')->whereNull('mo_by'); 
+			// 		$sub_query->orwhere('header_request.to_reco', 1)->where('header_request.request_type_id', 1)->where('header_request.status_id', $approved)->whereNull('header_request.deleted_at')->whereNull('mo_by');
+			// 		$sub_query->orwhere('header_request.status_id', $processing)->where('header_request.request_type_id', 1)->whereNull('header_request.deleted_at')->whereNull('mo_by');
+			// 		$sub_query->orwhereNotNull('header_request.purchased2_by')->where('header_request.request_type_id', 1)->where('header_request.closing_plug', 0)->whereNull('mo_by');
+
+			// 		//$sub_query->orwhere('header_request.status_id', $picked)->whereNull('header_request.deleted_at');
+			// 	});
+
+			// 	$query->orderBy('header_request.status_id', 'asc')->orderBy('header_request.id', 'desc');
+
+			// }
+			else{
+
 				$query->where(function($sub_query){
 
 					$approved =  		DB::table('statuses')->where('id', 7)->value('id');
@@ -484,32 +510,10 @@
 
 					$picked =  			DB::table('statuses')->where('id', 15)->value('id');
 
-					$sub_query->where('header_request.request_type_id', 1)->where('header_request.to_reco', 0)->where('header_request.status_id', $approved)->whereNull('header_request.deleted_at')->whereNull('mo_by'); 
-					$sub_query->orwhere('header_request.to_reco', 1)->where('header_request.request_type_id', 1)->where('header_request.status_id', $approved)->whereNull('header_request.deleted_at')->whereNull('mo_by');
-					$sub_query->orwhere('header_request.status_id', $processing)->where('header_request.request_type_id', 1)->whereNull('header_request.deleted_at')->whereNull('mo_by');
-					$sub_query->orwhereNotNull('header_request.purchased2_by')->where('header_request.request_type_id', 1)->where('header_request.closing_plug', 0)->whereNull('mo_by');
-
-					//$sub_query->orwhere('header_request.status_id', $picked)->whereNull('header_request.deleted_at');
-				});
-
-				$query->orderBy('header_request.status_id', 'asc')->orderBy('header_request.id', 'desc');
-
-			}else{
-
-				$query->where(function($sub_query){
-
-					$approved =  		DB::table('statuses')->where('id', 7)->value('id');
-
-					$it_reco  = 		DB::table('statuses')->where('id', 4)->value('id');
-
-					$processing = 		DB::table('statuses')->where('id', 11)->value('id');
-
-					$picked =  			DB::table('statuses')->where('id', 15)->value('id');
-
-					$sub_query->whereIn('header_request.request_type_id', [5,6])->where('header_request.to_reco', 0)->where('header_request.status_id', $approved)->whereNull('header_request.deleted_at')->whereNull('mo_by'); 
-					$sub_query->where('header_request.status_id', $approved)->whereIn('header_request.request_type_id', [5,6])->whereNull('header_request.deleted_at')->whereNull('mo_by');
-					$sub_query->orwhere('header_request.status_id', $processing)->whereIn('header_request.request_type_id', [5,6])->whereNull('header_request.deleted_at')->whereNull('mo_by');
-					$sub_query->orwhereNotNull('header_request.purchased2_by')->whereIn('header_request.request_type_id', [5,6])->where('header_request.closing_plug', 0)->whereNull('mo_by');
+					$sub_query->where('header_request.to_reco', 0)->where('header_request.status_id', $approved)->whereNull('header_request.deleted_at')->whereNull('mo_by'); 
+					$sub_query->orwhere('header_request.to_reco', 1)->where('header_request.status_id', $approved)->whereNull('header_request.deleted_at')->whereNull('mo_by');
+					$sub_query->orwhere('header_request.status_id', $processing)->whereNull('header_request.deleted_at')->whereNull('mo_by');
+					$sub_query->orwhereNotNull('header_request.purchased2_by')->where('header_request.closing_plug', 0)->whereNull('mo_by');
 
 					//$sub_query->orwhere('header_request.status_id', $picked)->whereNull('header_request.deleted_at');
 				});
@@ -1596,6 +1600,12 @@
 			$message = ['status'=>'success', 'message'=>'Successfully Saved!','redirect_url'=>CRUDBooster::mainpath('request-purchasing-for-mo-so/'.$id)];
 			echo json_encode($message);
 			//CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Request has been closed successfully!"), 'info');
+		}
+
+		//upload fulfillment
+		public function UploadFulfillment() {
+			$data['page_title']= 'Fulfillment Upload';
+			return view('import.fulfillment-upload', $data)->render();
 		}
 
 	}
