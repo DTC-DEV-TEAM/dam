@@ -273,13 +273,15 @@
                                             <th width="9%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
                                             <th width="10%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
                                             <th width="5%" class="text-center">{{ trans('message.table.quantity_text') }}</th> 
-                                            <th width="5%" class="text-center">For Replenish Qty</th> 
+                                           
+                                            {{-- <th width="5%" class="text-center">For Replenish Qty</th> 
                                             <th width="5%" class="text-center">For Re Order Qty</th> 
-                                            <th width="5%" class="text-center">Serve Qty</th> 
-                                            <th width="5%" class="text-center">UnServe Qty</th> 
+                                            <th width="5%" class="text-center">UnServe Qty</th>  --}}
+
                                             <th width="7%" class="text-center">Item Cost</th> 
                                             <th width="7%" class="text-center">Total Cost</th>                                                                                                                                            
                                             <th width="10%" class="text-center">MO/SO</th>    
+                                            <th width="5%" class="text-center">Serve Qty</th> 
                                             @if($Header->recommendedby != null || $Header->recommendedby != "")
                                                 <th width="13%" class="text-center">{{ trans('message.table.recommendation_text') }}</th> 
                                                 <th width="14%" class="text-center">{{ trans('message.table.reco_digits_code_text_mo') }}</th> 
@@ -321,23 +323,23 @@
                                                             <input type="text"  class="form-control mo_so_num" name="quantity{{$tableRow}}" value="{{$rowresult->quantity}}" id="quantity{{$tableRow}}" readonly>
                                                                     <!-- {{$rowresult->quantity}} -->
                                                         </td>
-                                                        <td style="text-align:center">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
-                                                        <td style="text-align:center">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                           
-                                                        <td style="text-align:center" height="10">
-                                                            <input type="text" style="text-align:center" class="form-control finput reserve_qty"  name="reserve_qty[]" id="reserve_qty{{$tableRow}}" value="{{$rowresult->quantity}}" data-id="{{$tableRow}}">
-                                                            <div id="display_error{{$tableRow}}" style="text-align:left"></div>
-                                                        </td>
-                                                        <td style="text-align:center">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td>
+
+                                                        {{-- <td style="text-align:center">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
+                                                        <td style="text-align:center">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                              
+                                                        <td style="text-align:center">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td> --}}
+
                                                         <td style="text-align:center" height="10">{{$rowresult->unit_cost}}</td>
                                                         <td style="text-align:center" height="10" class="cost">{{$rowresult->unit_cost * $rowresult->serve_qty}}</td>
+                                                      
                                                         <td style="text-align:center" height="10">
                                                             <input type="text"  class="form-control mo_so_num"  name="mo_so_num[]" id="mo_so_num{{$tableRow}}" value="{{$rowresult->mo_so_num}}" readonly>
                                                             <input type="hidden"  class="form-control"  name="default_val[]" id="default_val{{$tableRow}}" value="{{$rowresult->mo_so_num}}" readonly>
                                                         </td>
-                                                                               
-                                                        
-                                                        
-
+                                                        <td style="text-align:center" height="10">
+                                                            <input type="text" style="text-align:center" class="form-control finput reserve_qty"  name="reserve_qty[]" id="reserve_qty{{$tableRow}}" value="{{$rowresult->quantity}}" data-id="{{$tableRow}}">
+                                                            <div id="display_error{{$tableRow}}" style="text-align:left"></div>
+                                                        </td>                       
+                                                                                                                
                                                         @if($Header->recommendedby != null || $Header->recommendedby != "")
                                                         
                                                             <td>

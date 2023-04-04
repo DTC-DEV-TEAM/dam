@@ -141,13 +141,19 @@
 
 				if(CRUDBooster::myPrivilegeId() == 14){
 					$this->addaction[] = ['title'=>'View','url'=>CRUDBooster::mainpath('getRequestPurchasingManagerView/[id]'),'icon'=>'fa fa-eye'];
+				}else if(CRUDBooster::myPrivilegeId() == 19){
+					$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailPurchasing/[id]'),'icon'=>'fa fa-eye'];
+					//option 2
+					$this->addaction[] = ['title'=>'Add MO/SO','url'=>CRUDBooster::adminpath('[id]'),'icon'=>'fa fa-plus-circle', "showIf"=>"[status_id] == $for_closing && [mo_so_num] == null"];
+					//option 3
+					$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::mainpath('getRequestPurchasingForMoSo/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[status_id] == $for_closing && [mo_so_num] != null"];
 				}else{
 					$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getRequestPurchasing/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[purchased2_by] == null"];
 					$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailPurchasing/[id]'),'icon'=>'fa fa-eye'];
 					//option 2
-					$this->addaction[] = ['title'=>'Add MO/SO','url'=>CRUDBooster::adminpath('[id]'),'icon'=>'fa fa-plus-circle', "showIf"=>"[status_id] === $for_closing && [mo_so_num] === null"];
+					$this->addaction[] = ['title'=>'Add MO/SO','url'=>CRUDBooster::adminpath('[id]'),'icon'=>'fa fa-plus-circle', "showIf"=>"[status_id] == $for_closing && [mo_so_num] == null"];
 					//option 3
-					$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::mainpath('getRequestPurchasingForMoSo/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[status_id] == $for_closing && [mo_so_num] !== null"];
+					$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::mainpath('getRequestPurchasingForMoSo/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[status_id] == $for_closing && [mo_so_num] != null"];
 				}
 				
 				//$this->addaction[] = ['title'=>'Print','url'=>CRUDBooster::mainpath('getRequestPrintPickList/[id]'),'icon'=>'fa fa-print', "showIf"=>"[purchased2_by] != null && [status_id] == $processing"];
@@ -469,7 +475,31 @@
 
 				$query->orderBy('header_request.status_id', 'asc')->orderBy('header_request.id', 'desc');
 
-			}else if(in_array(CRUDBooster::myPrivilegeId(),[5,17])){ 
+			}
+			// else if(in_array(CRUDBooster::myPrivilegeId(),[5,17])){ 
+			// 	$query->where(function($sub_query){
+
+			// 		$approved =  		DB::table('statuses')->where('id', 7)->value('id');
+
+			// 		$it_reco  = 		DB::table('statuses')->where('id', 4)->value('id');
+
+			// 		$processing = 		DB::table('statuses')->where('id', 11)->value('id');
+
+			// 		$picked =  			DB::table('statuses')->where('id', 15)->value('id');
+
+			// 		$sub_query->where('header_request.request_type_id', 1)->where('header_request.to_reco', 0)->where('header_request.status_id', $approved)->whereNull('header_request.deleted_at')->whereNull('mo_by'); 
+			// 		$sub_query->orwhere('header_request.to_reco', 1)->where('header_request.request_type_id', 1)->where('header_request.status_id', $approved)->whereNull('header_request.deleted_at')->whereNull('mo_by');
+			// 		$sub_query->orwhere('header_request.status_id', $processing)->where('header_request.request_type_id', 1)->whereNull('header_request.deleted_at')->whereNull('mo_by');
+			// 		$sub_query->orwhereNotNull('header_request.purchased2_by')->where('header_request.request_type_id', 1)->where('header_request.closing_plug', 0)->whereNull('mo_by');
+
+			// 		//$sub_query->orwhere('header_request.status_id', $picked)->whereNull('header_request.deleted_at');
+			// 	});
+
+			// 	$query->orderBy('header_request.status_id', 'asc')->orderBy('header_request.id', 'desc');
+
+			// }
+			else{
+
 				$query->where(function($sub_query){
 
 					$approved =  		DB::table('statuses')->where('id', 7)->value('id');
@@ -480,32 +510,10 @@
 
 					$picked =  			DB::table('statuses')->where('id', 15)->value('id');
 
-					$sub_query->where('header_request.request_type_id', 1)->where('header_request.to_reco', 0)->where('header_request.status_id', $approved)->whereNull('header_request.deleted_at')->whereNull('mo_by'); 
-					$sub_query->orwhere('header_request.to_reco', 1)->where('header_request.request_type_id', 1)->where('header_request.status_id', $approved)->whereNull('header_request.deleted_at')->whereNull('mo_by');
-					$sub_query->orwhere('header_request.status_id', $processing)->where('header_request.request_type_id', 1)->whereNull('header_request.deleted_at')->whereNull('mo_by');
-					$sub_query->orwhereNotNull('header_request.purchased2_by')->where('header_request.request_type_id', 1)->where('header_request.closing_plug', 0)->whereNull('mo_by');
-
-					//$sub_query->orwhere('header_request.status_id', $picked)->whereNull('header_request.deleted_at');
-				});
-
-				$query->orderBy('header_request.status_id', 'asc')->orderBy('header_request.id', 'desc');
-
-			}else{
-
-				$query->where(function($sub_query){
-
-					$approved =  		DB::table('statuses')->where('id', 7)->value('id');
-
-					$it_reco  = 		DB::table('statuses')->where('id', 4)->value('id');
-
-					$processing = 		DB::table('statuses')->where('id', 11)->value('id');
-
-					$picked =  			DB::table('statuses')->where('id', 15)->value('id');
-
-					$sub_query->whereIn('header_request.request_type_id', [5,6])->where('header_request.to_reco', 0)->where('header_request.status_id', $approved)->whereNull('header_request.deleted_at')->whereNull('mo_by'); 
-					$sub_query->where('header_request.status_id', $approved)->whereIn('header_request.request_type_id', [5,6])->whereNull('header_request.deleted_at')->whereNull('mo_by');
-					$sub_query->orwhere('header_request.status_id', $processing)->whereIn('header_request.request_type_id', [5,6])->whereNull('header_request.deleted_at')->whereNull('mo_by');
-					$sub_query->orwhereNotNull('header_request.purchased2_by')->whereIn('header_request.request_type_id', [5,6])->where('header_request.closing_plug', 0)->whereNull('mo_by');
+					$sub_query->where('header_request.to_reco', 0)->where('header_request.status_id', $approved)->whereNull('header_request.deleted_at')->whereNull('mo_by'); 
+					$sub_query->orwhere('header_request.to_reco', 1)->where('header_request.status_id', $approved)->whereNull('header_request.deleted_at')->whereNull('mo_by');
+					$sub_query->orwhere('header_request.status_id', $processing)->whereNull('header_request.deleted_at')->whereNull('mo_by');
+					$sub_query->orwhereNotNull('header_request.purchased2_by')->where('header_request.closing_plug', 0)->whereNull('mo_by');
 
 					//$sub_query->orwhere('header_request.status_id', $picked)->whereNull('header_request.deleted_at');
 				});

@@ -233,9 +233,9 @@
 @endsection
 @push('bottom')
 <script type="text/javascript">
-    $(function(){
-        $('body').addClass("sidebar-collapse");
-    });
+    // $(function(){
+    //     $('body').addClass("sidebar-collapse");
+    // });
     $("#Tag").hide();
 
     var stack = [];

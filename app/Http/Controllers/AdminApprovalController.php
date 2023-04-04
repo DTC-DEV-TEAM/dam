@@ -9,7 +9,7 @@
 	use App\ApprovalMatrix;
 	use App\StatusMatrix;
 	use App\Users;
-	use App\Models\AssetsSuppliesInventory;
+	//use App\Models\AssetsSuppliesInventory;
 	//use Illuminate\Http\Request;
 	//use Illuminate\Support\Facades\Input;
 	use Illuminate\Support\Facades\Log;
@@ -407,57 +407,57 @@
 					}
 
 				}
-				if(in_array($arf_header->request_type_id, [7])){
-					//Get the inventory value per digits code
-					$arraySearch = DB::table('assets_supplies_inventory')->select('*')->get()->toArray();
+				// if(in_array($arf_header->request_type_id, [7])){
+				// 	//Get the inventory value per digits code
+				// 	$arraySearch = DB::table('assets_supplies_inventory')->select('*')->get()->toArray();
 				
-					$finalBodyValue = [];
-					foreach($arf_body as $bodyfKey => $bodyVal){
-						$i = array_search($bodyVal['digits_code'], array_column($arraySearch,'digits_code'));
-						if($i !== false){
-							$bodyVal['inv_value'] = $arraySearch[$i];
-							$finalBodyValue[] = $bodyVal;
-						}else{
-							$bodyVal['inv_value'] = "";
-							$finalBodyValue[] = $bodyVal;
-						}
-					}
+				// 	$finalBodyValue = [];
+				// 	foreach($arf_body as $bodyfKey => $bodyVal){
+				// 		$i = array_search($bodyVal['digits_code'], array_column($arraySearch,'digits_code'));
+				// 		if($i !== false){
+				// 			$bodyVal['inv_value'] = $arraySearch[$i];
+				// 			$finalBodyValue[] = $bodyVal;
+				// 		}else{
+				// 			$bodyVal['inv_value'] = "";
+				// 			$finalBodyValue[] = $bodyVal;
+				// 		}
+				// 	}
 
-					//Set data in each qty
-					$containerData = [];
-					$finalContData = [];
-					foreach($finalBodyValue as $fBodyKey => $fBodyVal){
-                        if($fBodyVal['inv_value']->quantity > $fBodyVal['quantity']){
-							//less quantity in inventory
-							BodyRequest::where('id', $fBodyVal['id'])
-							->update([
-								'replenish_qty'   =>  $fBodyVal['quantity'],
-								'reorder_qty'     =>  NULL,
-								'serve_qty'       =>  $fBodyVal['quantity'],
-								'unserved_qty'    =>  0,
-							]);	
-							DB::table('assets_supplies_inventory')
-							->where('digits_code', $fBodyVal['digits_code'])
-							->decrement('quantity', $fBodyVal['quantity']);
-						}else{
-							$reorder = $fBodyVal['quantity'] - $fBodyVal['inv_value']->quantity;
-							$containerData['serve_qty']     = $fBodyVal['inv_value']->quantity;  
-							$containerData['unserve_qty']   = $containerData['reorder_qty'];
-							BodyRequest::where('id', $fBodyVal['id'])
-							->update([
-								'replenish_qty'   =>  $fBodyVal['inv_value']->quantity,
-								'reorder_qty'     =>  $reorder,
-								'serve_qty'       =>  $fBodyVal['inv_value']->quantity,
-								'unserved_qty'    =>  $reorder
-							]);	
-							AssetsSuppliesInventory::where('digits_code', $fBodyVal['digits_code'])
-							->update([
-								'quantity'   =>  0,
-							]);	
-					    }
-						$finalContData[] = $containerData;
-					}
-			    }
+				// 	//Set data in each qty
+				// 	$containerData = [];
+				// 	$finalContData = [];
+				// 	foreach($finalBodyValue as $fBodyKey => $fBodyVal){
+                //         if($fBodyVal['inv_value']->quantity > $fBodyVal['quantity']){
+				// 			//less quantity in inventory
+				// 			BodyRequest::where('id', $fBodyVal['id'])
+				// 			->update([
+				// 				'replenish_qty'   =>  $fBodyVal['quantity'],
+				// 				'reorder_qty'     =>  NULL,
+				// 				'serve_qty'       =>  $fBodyVal['quantity'],
+				// 				'unserved_qty'    =>  0,
+				// 			]);	
+				// 			DB::table('assets_supplies_inventory')
+				// 			->where('digits_code', $fBodyVal['digits_code'])
+				// 			->decrement('quantity', $fBodyVal['quantity']);
+				// 		}else{
+				// 			$reorder = $fBodyVal['quantity'] - $fBodyVal['inv_value']->quantity;
+				// 			$containerData['serve_qty']     = $fBodyVal['inv_value']->quantity;  
+				// 			$containerData['unserve_qty']   = $containerData['reorder_qty'];
+				// 			BodyRequest::where('id', $fBodyVal['id'])
+				// 			->update([
+				// 				'replenish_qty'   =>  $fBodyVal['inv_value']->quantity,
+				// 				'reorder_qty'     =>  $reorder,
+				// 				'serve_qty'       =>  $fBodyVal['inv_value']->quantity,
+				// 				'unserved_qty'    =>  $reorder
+				// 			]);	
+				// 			AssetsSuppliesInventory::where('digits_code', $fBodyVal['digits_code'])
+				// 			->update([
+				// 				'quantity'   =>  0,
+				// 			]);	
+				// 	    }
+				// 		$finalContData[] = $containerData;
+				// 	}
+			    // }
 
 			}else{
 

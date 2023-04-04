@@ -1656,6 +1656,7 @@
 						<h3 class="box-title"><b>Recommendation</b></h3>
 					</div>
 					<div class="box-body no-padding">
+					  <div class="table-responsive">
 						<div class="pic-container">
 							<div class="pic-row">
 								<table id="asset-items1">
@@ -1693,6 +1694,7 @@
 								</table>
 							</div>
 						</div>
+					   </div>
 					</div>	
 				</div>
 
