@@ -2,6 +2,7 @@
 
 namespace App\Imports;
 
+use App\HeaderRequest;
 use App\BodyRequest;
 use App\Models\CmsPrivileges;
 use Illuminate\Support\Facades\Hash;
@@ -25,6 +26,10 @@ class FulfillmentUpload implements ToCollection, WithHeadingRow
     {
         foreach ($rows->toArray() as $row){
             $header = DB::table('header_request')->where(['reference_number' => $row['arf_number']])->first();
+            HeaderRequest::where('id',$header->id)
+			->update([
+					'mo_so_num' => $row['mo_so_num'],
+			]);	
             BodyRequest::where(['header_request_id'=>$header->id,'digits_code'=>$row['digits_code']])
             ->update(
                         [
