@@ -144,16 +144,16 @@
 				}else if(CRUDBooster::myPrivilegeId() == 19){
 					$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailPurchasing/[id]'),'icon'=>'fa fa-eye'];
 					//option 2
-					$this->addaction[] = ['title'=>'Add MO/SO','url'=>CRUDBooster::adminpath('[id]'),'icon'=>'fa fa-plus-circle', "showIf"=>"[status_id] == $for_closing && [mo_so_num] == null"];
+					//$this->addaction[] = ['title'=>'Add MO/SO','url'=>CRUDBooster::adminpath('[id]'),'icon'=>'fa fa-plus-circle', "showIf"=>"[status_id] == $for_closing && [mo_so_num] == null"];
 					//option 3
-					$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::mainpath('getRequestPurchasingForMoSo/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[status_id] == $for_closing && [mo_so_num] != null"];
+					$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::mainpath('getRequestPurchasingForMoSo/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[status_id] == $for_closing"];
 				}else{
 					$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getRequestPurchasing/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[purchased2_by] == null"];
 					$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailPurchasing/[id]'),'icon'=>'fa fa-eye'];
 					//option 2
-					$this->addaction[] = ['title'=>'Add MO/SO','url'=>CRUDBooster::adminpath('[id]'),'icon'=>'fa fa-plus-circle', "showIf"=>"[status_id] == $for_closing && [mo_so_num] == null"];
+					//$this->addaction[] = ['title'=>'Add MO/SO','url'=>CRUDBooster::adminpath('[id]'),'icon'=>'fa fa-plus-circle', "showIf"=>"[status_id] == $for_closing && [mo_so_num] == null"];
 					//option 3
-					$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::mainpath('getRequestPurchasingForMoSo/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[status_id] == $for_closing && [mo_so_num] != null"];
+					$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::mainpath('getRequestPurchasingForMoSo/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[status_id] == $for_closing"];
 				}
 				
 				//$this->addaction[] = ['title'=>'Print','url'=>CRUDBooster::mainpath('getRequestPrintPickList/[id]'),'icon'=>'fa fa-print', "showIf"=>"[purchased2_by] != null && [status_id] == $processing"];
@@ -598,28 +598,36 @@
 	    |
 	    */
 	    public function hook_before_add(&$postdata) {        
-			$fields = Request::all();
-			$ids = $fields['ids'];
+			$fields    = Request::all();
+			$ids       = $fields['ids'];
 			$header_id = $fields['header_id'];
 			$mo_so_num = $fields['mo_so_num'];
 			$serve_qty = $fields['reserve_qty'];
-    
-			HeaderRequest::where('id',$header_id)
-			->update([
-				    'closing_plug'=> 1,
-					'status_id'=> 13,
-					'closed_by'=> CRUDBooster::myId(),
-					'closed_at'=> date('Y-m-d H:i:s'),
+			$action    = $fields['action'];
 
-			]);	
-			for ($i = 0; $i < count($ids); $i++) {
-				BodyRequest::where(['id' => $ids[$i]])
-					->update([
-							'mo_so_num' => $mo_so_num[$i],
-							'serve_qty' => $serve_qty[$i]
-							]);
-			}  
-            CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Request has been closed successfully!"), 'info');
+			if($action == 1){
+				HeaderRequest::where('id',$header_id)
+				->update([
+						'closing_plug'=> 1,
+						'status_id'=> 13,
+						'closed_by'=> CRUDBooster::myId(),
+						'closed_at'=> date('Y-m-d H:i:s'),
+	
+				]);	
+				 CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Request has been closed successfully!"), 'success');
+			}else{
+				for ($i = 0; $i < count($ids); $i++) {
+					BodyRequest::where(['id' => $ids[$i]])
+						->update([
+								'mo_so_num'    => $mo_so_num[$i],
+								'serve_qty'    => DB::raw("IF(serve_qty IS NULL, '".(int)$serve_qty[$i]."', serve_qty + '".(int)$serve_qty[$i]."')"), 
+								'unserved_qty' => DB::raw("unserved_qty - '".(int)$serve_qty[$i]."'"), 
+								'reorder_qty'  => DB::raw("reorder_qty - '".(int)$serve_qty[$i]."'")
+								]);
+				}  
+				 CRUDBooster::redirect(CRUDBooster::mainpath('getRequestPurchasingForMoSo/'.$header_id), trans("Request updated successfully!"), 'success');
+			}
+			
 	    }
 
 	    /* 

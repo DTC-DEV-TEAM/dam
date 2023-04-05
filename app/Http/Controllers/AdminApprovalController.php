@@ -434,7 +434,7 @@
 								'replenish_qty'   =>  $fBodyVal['quantity'],
 								'reorder_qty'     =>  NULL,
 								'serve_qty'       =>  $fBodyVal['quantity'],
-								'unserved_qty'    =>  0,
+								'unserved_qty'    =>  NULL,
 							]);	
 							DB::table('assets_supplies_inventory')
 							->where('digits_code', $fBodyVal['digits_code'])

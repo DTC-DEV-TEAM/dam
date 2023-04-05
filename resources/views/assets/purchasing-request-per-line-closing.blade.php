@@ -27,10 +27,10 @@
         border: 1px solid rgba(000, 0, 0, .5);
         padding: 8px;
     }
-    /* .finput {
+    .finput {
         border:none;
         border-bottom: 1px solid rgba(18, 17, 17, 0.5);
-    } */
+    }
     input.finput:read-only {
         background-color: #fff;
     }
@@ -258,7 +258,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="box-header text-center">
-                        <h3 class="box-title"><b>{{ trans('message.form-label.asset_reco') }}</b></h3>
+                        <h3 class="box-title"><b>Item Details</b></h3>
                     </div>
                     <div class="box-body no-padding">
                         <div class="pic-container">
@@ -268,7 +268,7 @@
                                         <tr class="tbl_header_color dynamicRows">
 
                                             <!--<th width="5%" class="text-center">{{ trans('message.table.action') }}</th>-->
-                                            <th width="15%" class="text-center">Digits Code</th>
+                                            <th width="10%" class="text-center">Digits Code</th>
                                             <th width="15%" class="text-center">{{ trans('message.table.item_description') }}</th>
                                             <th width="9%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
                                             <th width="10%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
@@ -276,12 +276,13 @@
                                            
                                             <th width="5%" class="text-center">For Replenish Qty</th> 
                                             <th width="5%" class="text-center">For Re Order Qty</th> 
+                                            <th width="5%" class="text-center">Serve Qty</th> 
                                             <th width="5%" class="text-center">UnServe Qty</th> 
 
                                             <th width="7%" class="text-center">Item Cost</th> 
                                             <th width="7%" class="text-center">Total Cost</th>                                                                                                                                            
                                             <th width="10%" class="text-center">MO/SO</th>    
-                                            <th width="5%" class="text-center">Serve Qty</th> 
+                                            <th width="5%" class="text-center">Fulfill Qty</th> 
                                             @if($Header->recommendedby != null || $Header->recommendedby != "")
                                                 <th width="13%" class="text-center">{{ trans('message.table.recommendation_text') }}</th> 
                                                 <th width="14%" class="text-center">{{ trans('message.table.reco_digits_code_text_mo') }}</th> 
@@ -325,20 +326,25 @@
                                                         </td>
 
                                                         <td style="text-align:center">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
-                                                        <td style="text-align:center">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                              
-                                                        <td style="text-align:center">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td>
+                                                        <td style="text-align:center">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>     
+                                                        <td style="text-align:center">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>                                                           
+                                                        <td style="text-align:center" height="10">
+                                                            <input type="text"  class="form-control mo_so_num" name="unserved_qty{{$tableRow}}" value="{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}" id="unserved_qty{{$tableRow}}" readonly>
+                                                        </td>
 
                                                         <td style="text-align:center" height="10">{{$rowresult->unit_cost}}</td>
                                                         <td style="text-align:center" height="10" class="cost">{{$rowresult->unit_cost * $rowresult->serve_qty}}</td>
                                                       
                                                         <td style="text-align:center" height="10">
-                                                            <input type="text"  class="form-control mo_so_num"  name="mo_so_num[]" id="mo_so_num{{$tableRow}}" value="{{$rowresult->mo_so_num}}" readonly>
+                                                            <input type="text"  class="form-control finput"  name="mo_so_num[]" id="mo_so_num{{$tableRow}}" value="{{$rowresult->mo_so_num}}">
+                                                            {{-- <input type="text"  class="form-control mo_so_num"  name="mo_so_num[]" id="mo_so_num{{$tableRow}}" value="{{$rowresult->mo_so_num}}" readonly> --}}
                                                             <input type="hidden"  class="form-control"  name="default_val[]" id="default_val{{$tableRow}}" value="{{$rowresult->mo_so_num}}" readonly>
                                                         </td>
+                                                         
                                                         <td style="text-align:center" height="10">
-                                                            <input type="text" style="text-align:center" class="form-control finput reserve_qty"  name="reserve_qty[]" id="reserve_qty{{$tableRow}}" value="{{$rowresult->serve_qty}}" data-id="{{$tableRow}}">
+                                                            <input type="text" style="text-align:center" class="form-control finput reserve_qty"  name="reserve_qty[]" id="reserve_qty{{$tableRow}}" data-id="{{$tableRow}}">
                                                             <div id="display_error{{$tableRow}}" style="text-align:left"></div>
-                                                        </td>                       
+                                                        </td>                        
                                                                                                                 
                                                         @if($Header->recommendedby != null || $Header->recommendedby != "")
                                                         
@@ -486,9 +492,9 @@
 
         <div class='panel-footer'>
             <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
-            <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> Close</button>
+            <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-times-circle" ></i> Close</button>
             <!-- <button class="btn btn-warning pull-right" type="submit" id="btnPrint" style="margin-right: 10px;"> <i class="fa fa-print" ></i> {{ trans('message.form.print') }}</button> -->
-             <!-- <button class="btn btn-warning pull-right" type="submit" id="btnUpdate" style="margin-right: 10px;"> <i class="fa fa-circle-o" ></i> {{ trans('message.form.update') }}</button>  -->
+            <button class="btn btn-warning pull-right" type="submit" id="btnUpdate" style="margin-right: 10px;"> <i class="fa fa-refresh" ></i> {{ trans('message.form.update') }}</button>
         </div>
 
     </form>
@@ -556,12 +562,29 @@
                     width: 450,
                     height: 200
                     }, function () {
+                        $("#action").val("1");
                         $("#myform").submit();                      
                 });
             }
         
         }
-
+    });
+    $("#btnUpdate").click(function(event) {
+       event.preventDefault();
+        swal({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#41B314",
+            cancelButtonColor: "#F9354C",
+            confirmButtonText: "Yes, update it!",
+            width: 450,
+            height: 200
+            }, function () {
+                $("#action").val("0");
+                $("#myform").submit();                       
+        });
     });
     var count_pick = 0;
     //reserve quantity
@@ -579,21 +602,24 @@
             var value =  this.value;
             var text = "OUT OF STOCK";
             var orig_val = $("#default_val"+$(this).attr("data-id")).val();
-            var quantity = parseFloat($("#quantity"+$(this).attr("data-id")).val());
+            //var quantity = parseFloat($("#quantity"+$(this).attr("data-id")).val());
+            var unserved_qty = parseFloat($("#unserved_qty"+$(this).attr("data-id")).val());
             var reserve_qty = parseFloat($("#reserve_qty"+$(this).attr("data-id")).val());
         
-            if(value <= 0){
-                $("#mo_so_num"+$(this).attr("data-id")).val(text);
-                //$("#mo_so_num"+countrow).val(text).trigger('change');
-            }else{
-                $("#mo_so_num"+$(this).attr("data-id")).val(orig_val);
-            }
+            // if(value <= 0){
+            //     $("#mo_so_num"+$(this).attr("data-id")).val(text);
+            //     //$("#mo_so_num"+countrow).val(text).trigger('change');
+            // }else{
+            //     $("#mo_so_num"+$(this).attr("data-id")).val(orig_val);
+            // }
 
-            if(value > quantity){
+            if(value > unserved_qty){
                 $('#btnSubmit').attr('disabled','disabled');
+                $('#btnUpdate').attr('disabled','disabled');
                 $('#display_error'+$(this).attr("data-id")).html("<span id='notif' class='label label-danger'> Serve Quantity Exceed!</span>")
             }else{
                 $('#btnSubmit').removeAttr('disabled');
+                $('#btnUpdate').removeAttr('disabled');
                 $('#display_error'+$(this).attr("data-id")).html('')
             }
 

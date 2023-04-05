@@ -24,8 +24,14 @@ class FulfillmentUpload implements ToCollection, WithHeadingRow
      */
     public function collection(Collection $rows)
     {
-        foreach ($rows->toArray() as $row){
-            $header = DB::table('header_request')->where(['reference_number' => $row['arf_number']])->first();
+        foreach ($rows->toArray() as $key => $row){
+            $header   = DB::table('header_request')->where(['reference_number' => $row['arf_number']])->first();
+            $checkQty = DB::table('body_request')->where(['header_request_id'=>$header->id,'digits_code'=>$row['digits_code']])->value('unserved_qty');
+            
+            if($row['fulfill_qty'] > $checkQty){
+                return CRUDBooster::redirect(CRUDBooster::adminpath('for_purchasing'),"Fullfill Qty Exceed! at line: ".($key+2),"danger");
+            }
+
             HeaderRequest::where('id',$header->id)
 			->update([
 					'mo_so_num' => $row['mo_so_num'],
@@ -34,9 +40,9 @@ class FulfillmentUpload implements ToCollection, WithHeadingRow
             ->update(
                         [
                         'mo_so_num'    => DB::raw('CONCAT_WS(",",mo_so_num, "'. $row['mo_so_num'].'")'),
-                        'serve_qty'    => DB::raw("IF(serve_qty IS NULL, '".$row['fulfill_qty']."', serve_qty + '".$row['fulfill_qty']."')"), 
-                        'unserved_qty' => DB::raw("unserved_qty - '".$row['fulfill_qty']."'"),    
-                        'reorder_qty'  => DB::raw("reorder_qty - '".$row['fulfill_qty']."'")            
+                        'serve_qty'    => DB::raw("IF(serve_qty IS NULL, '".(int)$row['fulfill_qty']."', serve_qty + '".(int)$row['fulfill_qty']."')"), 
+                        'unserved_qty' => DB::raw("unserved_qty - '".(int)$row['fulfill_qty']."'"),    
+                        'reorder_qty'  => DB::raw("reorder_qty - '".(int)$row['fulfill_qty']."'")            
                         ]
                     );
         }
