@@ -7,7 +7,7 @@
         <div class="box-tools"></div>
     </div>
 
-    <form method='post' id="form" enctype="multipart/form-data" action="{{ route('upload-fulfillment') }}">
+    <form method='post' id="form" enctype="multipart/form-data" action="{{ route('upload-supplies-inventory') }}">
         <input type="hidden" name="_token" value="{{ csrf_token() }}">
         <div class="box-body">
 
@@ -19,7 +19,7 @@
 
             <label class='col-sm-2 control-label'>Import Template File: </label>
             <div class='col-sm-4'>
-                <a href='{{ CRUDBooster::adminpath('admin_import') }}/download-filfill-qty-template' class="btn btn-primary" role="button">Download Template</a>
+                <a href='{{ CRUDBooster::mainpath() }}/upload-supplies-inventory-template' class="btn btn-primary" role="button">Download Template</a>
             </div>
             <br/>
             <br/>

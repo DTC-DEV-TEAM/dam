@@ -314,7 +314,7 @@
 	        |
 	        */
 	        $this->load_css = array();
-	        
+			$this->load_css[] = asset("css/font-family.css");
 	        
 	    }
 
@@ -1076,6 +1076,12 @@
 			}else if(in_array(CRUDBooster::myPrivilegeId(),[9])){
 				$data['AssetRequest'] = HeaderRequest::whereNotNull('purchased2_by')->where('mo_plug', 0)
 				->where('request_type_id' , 5)
+				->where('status_id','!=',13)
+				->whereNotNull('created_by')
+				->orwhere('to_mo', 1)
+				->get();
+			}else{
+				$data['AssetRequest'] = HeaderRequest::whereNotNull('purchased2_by')->where('mo_plug', 0)
 				->where('status_id','!=',13)
 				->whereNotNull('created_by')
 				->orwhere('to_mo', 1)

@@ -525,9 +525,16 @@
 				"last_name"          => "last_name",
 				"screen_date"        => "screen_date",
 			];
-		   
+			$arrData = [
+				"erf_number"         => "ERF-0000001",
+				"status"             => "First Interviewed",
+				"first_name"         => "John",
+				"last_name"          => "Doe",
+				"screen_date"        => "2023-01-01",
+			];
 			$spreadsheet = new Spreadsheet();
 			$spreadsheet->getActiveSheet()->fromArray(array_values($arrHeader), null, 'A1');
+			$spreadsheet->getActiveSheet()->fromArray($arrData, null, 'A2');
 			$filename = "applicant-template";
 			header('Content-Type: application/vnd.ms-excel');
 			header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"');

@@ -14,6 +14,8 @@ use App\Http\Controllers\AdminAssetsInventoryBodyController;
 */
 Route::get('/admin/reports/request-reports', 'AdminReportsController@getReports')->name('api.reports.index');
 
+//Route::get('/admin/reports/search-approved', 'AdminReportsController@searchApplicant')->name('api.reports.approved');
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
     Route::apiResources([

@@ -24,6 +24,7 @@
 		private $forStreamlining;
 		private $forItemCreation;
 		private $forArfCreation;
+		private $rejected;
 
 		public function __construct() {
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
@@ -35,7 +36,7 @@
 			$this->forStreamlining  =  39;   
 			$this->forItemCreation  =  40;        
 			$this->forArfCreation   =  41;
-		
+		    $this->rejected         =  5;
 		}
 	    public function cbInit() {
 
@@ -295,7 +296,7 @@
 			$forStreamlining    = DB::table('statuses')->where('id', $this->forStreamlining)->value('status_description');
 			$forItemCreation    = DB::table('statuses')->where('id', $this->forItemCreation)->value('status_description');
 			$forArfCreation     = DB::table('statuses')->where('id', $this->forArfCreation)->value('status_description');
-		
+			$rejected           = DB::table('statuses')->where('id', $this->rejected)->value('status_description');	
 			
 			if($column_index == 1){
 				if($column_value == $forApproval){
@@ -314,6 +315,8 @@
 					$column_value = '<span class="label label-info">'.$forItemCreation.'</span>';
 				}else if($column_value == $forArfCreation){
 					$column_value = '<span class="label label-info">'.$forArfCreation.'</span>';
+				}else if($column_value == $rejected){
+					$column_value = '<span class="label label-danger">'.$rejected.'</span>';
 				}
 			}
 	    }

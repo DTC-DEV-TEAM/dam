@@ -31,7 +31,7 @@ class FulfillmentUpload implements ToCollection, WithHeadingRow
             if($row['fulfill_qty'] > $checkQty){
                 return CRUDBooster::redirect(CRUDBooster::adminpath('for_purchasing'),"Fullfill Qty Exceed! at line: ".($key+2),"danger");
             }
-
+         
             HeaderRequest::where('id',$header->id)
 			->update([
 					'mo_so_num' => $row['mo_so_num'],

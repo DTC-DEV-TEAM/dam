@@ -1,9 +1,20 @@
 <?php namespace App\Http\Controllers;
 
 	use Session;
-	use Request;
+	//use Request;
 	use DB;
 	use CRUDBooster;
+	use Excel;
+	use Illuminate\Http\Request;
+	use Illuminate\Support\Facades\Input;
+	use Illuminate\Support\Facades\Log;
+	use Illuminate\Support\Facades\Redirect;
+	use Maatwebsite\Excel\HeadingRowImport;
+	use App\Imports\SuppliesInventoryImport;
+	use PhpOffice\PhpSpreadsheet\Spreadsheet;
+	use PhpOffice\PhpSpreadsheet\Reader\Exception;
+	use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+	use PhpOffice\PhpSpreadsheet\IOFactory;
 
 	class AdminAssetsSuppliesInventoryController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -42,19 +53,18 @@
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Digits Code','name'=>'digits_code','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Description','name'=>'description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
-			$this->form[] = ['label'=>'Quantity','name'=>'quantity','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			if(CRUDBooster::getCurrentMethod() == 'getEdit' || CRUDBooster::getCurrentMethod() == 'postEditSave' || CRUDBooster::getCurrentMethod() == 'getDetail') {
+				$this->form[] = ['label'=>'Digits Code','name'=>'digits_code','type'=>'text','validation'=>'required|integer|min:0','width'=>'col-sm-5','readonly'=>true];
+			}else{
+				$this->form[] = ['label'=>'Digits Code','name'=>'digits_code','type'=>'text','validation'=>'required|integer|min:0','width'=>'col-sm-5'];
+			}
+			
+			$this->form[] = ['label'=>'Description','name'=>'description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
+			$this->form[] = ['label'=>'Quantity','name'=>'quantity','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-5'];
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
 			//$this->form = [];
-			//$this->form[] = ["label"=>"Digits Code","name"=>"digits_code","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Description","name"=>"description","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Quantity","name"=>"quantity","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Status","name"=>"status","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Updated By","name"=>"updated_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
 			# OLD END FORM
 
 			/* 
@@ -121,7 +131,10 @@
 	        | 
 	        */
 	        $this->index_button = array();
-
+			if(CRUDBooster::getCurrentMethod() == 'getIndex') {
+				$this->index_button[] = ["label"=>"Upload Inventory","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('supplies-inventory-upload')];
+				// $this->index_button[] = ["label"=>"Consolidation","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('conso-export')];
+			 }
 
 
 	        /* 
@@ -263,7 +276,7 @@
 	    |
 	    */
 	    public function hook_before_add(&$postdata) {        
-	        //Your code here
+			$postdata['created_by']=CRUDBooster::myId();
 
 	    }
 
@@ -288,7 +301,7 @@
 	    | 
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
-	        //Your code here
+			$postdata['updated_by']=CRUDBooster::myId();
 
 	    }
 
@@ -328,9 +341,38 @@
 
 	    }
 
+		public function UploadSuppliesInventory() {
+			$data['page_title']= 'Assets Supplies Inventory Upload';
+			return view('import.asset-supplies-upload', $data)->render();
+		}
 
+		public function SuppliesInventoryUpload(Request $request) {
+			$path_excel = $request->file('import_file')->store('temp');
+			$path = storage_path('app').'/'.$path_excel;
+			Excel::import(new SuppliesInventoryImport, $path);	
+			CRUDBooster::redirect(CRUDBooster::adminpath('assets_supplies_inventory'), trans("Upload Successfully!"), 'success');
+		}
 
-	    //By the way, you can still create your own method in here... :) 
-
+		function downloadSuppliesInventoryTemplate() {
+			$arrHeader = [
+				"digits_code"        => "digits_code",
+				"item_description"   => "item_description",
+				"quantity"           => "quantity"
+			];
+			$arrData = [
+				"digits_code"        => "40000054",
+				"item_description"   => "OFC SUP PAPER CLIP ASSTD COLOR SMALL PER BOX",
+				"quantity"           => "1"
+			];
+			$spreadsheet = new Spreadsheet();
+			$spreadsheet->getActiveSheet()->fromArray(array_values($arrHeader), null, 'A1');
+			$spreadsheet->getActiveSheet()->fromArray($arrData, null, 'A2');
+			$filename = "supplies-inventory";
+			header('Content-Type: application/vnd.ms-excel');
+			header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"');
+			header('Cache-Control: max-age=0');
+			$writer = new Xlsx($spreadsheet);
+			$writer->save('php://output');
+		}
 
 	}
