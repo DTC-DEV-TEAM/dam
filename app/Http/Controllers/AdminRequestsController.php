@@ -346,9 +346,17 @@
 
 	    }
 
+		public function getDescription(Request $request){
+			$data = Request::all();	
+			$digits_code = $data['digits_code'];
 
-
-	    //By the way, you can still create your own method in here... :) 
+			$data = DB::table('assets')
+							->select('item_description')
+							->where('digits_code', $digits_code)
+							->get();
+	
+			return($data);
+		}
 
 
 	}

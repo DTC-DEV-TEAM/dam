@@ -552,7 +552,7 @@
 				  'body_request.*'
 				)
 				->where('body_request.header_request_id', $id)
-				->whereNull('deleted_at')
+				//->whereNull('deleted_at')
 				->get();
 
 			$data['Body1'] = BodyRequest::

@@ -342,8 +342,12 @@
                                                         </td>
                                                          
                                                         <td style="text-align:center" height="10">
+                                                            @if($rowresult->quantity === $rowresult->serve_qty)
+                                                            <input type="text" style="text-align:center" class="form-control finput reserve_qty"  name="reserve_qty[]" id="reserve_qty{{$tableRow}}" data-id="{{$tableRow}}" readonly>
+                                                            @else
                                                             <input type="text" style="text-align:center" class="form-control finput reserve_qty"  name="reserve_qty[]" id="reserve_qty{{$tableRow}}" data-id="{{$tableRow}}">
-                                                            <div id="display_error{{$tableRow}}" style="text-align:left"></div>
+                                                            @endif
+                                                            <div id="display_error{{$tableRow}}" style="text-align:left"></div>   
                                                         </td>                        
                                                                                                                 
                                                         @if($Header->recommendedby != null || $Header->recommendedby != "")

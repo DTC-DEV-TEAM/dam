@@ -41,10 +41,31 @@ class FulfillmentUpload implements ToCollection, WithHeadingRow
                         [
                         'mo_so_num'    => DB::raw('CONCAT_WS(",",mo_so_num, "'. $row['mo_so_num'].'")'),
                         'serve_qty'    => DB::raw("IF(serve_qty IS NULL, '".(int)$row['fulfill_qty']."', serve_qty + '".(int)$row['fulfill_qty']."')"), 
-                        'unserved_qty' => DB::raw("unserved_qty - '".(int)$row['fulfill_qty']."'"),    
-                        'reorder_qty'  => DB::raw("reorder_qty - '".(int)$row['fulfill_qty']."'")            
+                        'unserved_qty' => DB::raw("unserved_qty - '".(int)$row['fulfill_qty']."'")          
                         ]
                     );
+
+            //Close if all unserved quantity is fulfill
+            $checkBodyQty = DB::table('body_request')->where(['header_request_id'=>$header->id])->whereNull('deleted_at')->get();
+            $resData = [];
+            foreach($checkBodyQty as $item){
+                if($item->quantity != $item->serve_qty){                
+                    $t = $item;
+                    $resData[] = $t;                
+                }
+            }
+
+            if(empty($resData)){
+                HeaderRequest::where('id',$header->id)
+				->update([
+						'closing_plug'=> 1,
+						'status_id'=> 13,
+						'closed_by'=> CRUDBooster::myId(),
+						'closed_at'=> date('Y-m-d H:i:s'),
+	
+				]);	
+            }
+       
         }
     }
 }

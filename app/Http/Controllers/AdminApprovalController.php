@@ -390,7 +390,7 @@
 
 			$arf_header = HeaderRequest::where(['id' => $id])->first();
 
-			$arf_body = BodyRequest::where(['header_request_id' => $id])->get();
+			$arf_body = BodyRequest::where(['header_request_id' => $id])->whereNull('deleted_at')->get();
 
 			if($approval_action  == 1){
 				$postdata['status_id']		    = StatusMatrix::where('current_step', 2)
@@ -433,8 +433,8 @@
 							->update([
 								'replenish_qty'   =>  $fBodyVal['quantity'],
 								'reorder_qty'     =>  NULL,
-								'serve_qty'       =>  $fBodyVal['quantity'],
-								'unserved_qty'    =>  NULL,
+								'serve_qty'       =>  NULL,
+								'unserved_qty'    =>  $fBodyVal['quantity'],
 							]);	
 							DB::table('assets_supplies_inventory')
 							->where('digits_code', $fBodyVal['digits_code'])
@@ -447,8 +447,8 @@
 							->update([
 								'replenish_qty'   =>  $fBodyVal['inv_value']->quantity,
 								'reorder_qty'     =>  $reorder,
-								'serve_qty'       =>  $fBodyVal['inv_value']->quantity,
-								'unserved_qty'    =>  $reorder
+								'serve_qty'       =>  NULL,
+								'unserved_qty'    =>  $fBodyVal['quantity']
 							]);	
 							AssetsSuppliesInventory::where('digits_code', $fBodyVal['digits_code'])
 							->update([

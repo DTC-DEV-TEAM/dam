@@ -4,17 +4,15 @@
             table, th, td {
             border: 1px solid rgba(000, 0, 0, .5);
             padding: 8px;
-            border-radius: 5px 0 0 5px;
+            /* border-radius: 5px 0 0 5px; */
             }
             #asset-items1, td, tr {
                 border: 1px solid rgba(000, 0, 0, .5);
                 padding: 8px;
-                border-radius: 5px 0 0 5px;
             }
             #asset-items, td, tr {
                 border: 1px solid rgba(000, 0, 0, .5);
                 padding: 8px;
-                border-radius: 5px 0 0 5px;
             }
         </style>
     @endpush
@@ -203,100 +201,101 @@
                                                     @foreach($Body as $rowresult)
                                                         <?php   $tableRow++; ?>
                                                         
-                                                                        @if($rowresult->deleted_at != null || $rowresult->deleted_at != "")
-                                                                            <tr style="background-color: #d9534f; color: white;">
-                                                                                <td style="text-align:center" height="10">  
-                                                                                            <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}">                               
-                                                                                            {{$rowresult->digits_code}}
-                                                                                    </td>
-                                                                                <td style="text-align:center" height="10">  
-                                                                                        <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}">                               
-                                                                                        {{$rowresult->item_description}}
-                                                                                </td>
-                                                                                <td style="text-align:center" height="10">
-                                                                                        {{$rowresult->category_id}}
-                                                                                </td>
-                                                                                <td style="text-align:center" height="10">
-                                                                                        {{$rowresult->sub_category_id}}
-                                                                                </td>
-                                                                             
-                                                                                <td style="text-align:center" height="10">
-                                                                                        {{$rowresult->quantity}}
-                                                                                        <input type='hidden' name="quantity" class="form-control text-center quantity_item" id="quantity" readonly value="{{$rowresult->quantity}}">
-                                                                                </td>
-                                                                                @if(in_array($Header->request_type_id, [6,7]))
-                                                                                    <td style="text-align:center">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
-                                                                                    <td style="text-align:center">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                           
-                                                                                    <td style="text-align:center">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>
-                                                                                    <td style="text-align:center">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td>
-                                                                                    <td style="text-align:center" height="10">{{$rowresult->unit_cost}}</td>
-                                                                                    <td style="text-align:center" height="10" class="cost">{{$rowresult->unit_cost * $rowresult->serve_qty}}</td>
-                                                                                    <td style="text-align:center" height="10">{{$rowresult->mo_so_num}}</td>   
-                                                                                    
-                                                                                @endif
-                                                                                
-                                                                                @if($Header->recommendedby != null || $Header->recommendedby != "")                                                                               
-                                                                                    <td style="text-align:center" height="10">
-                                                                                        {{$rowresult->recommendation}}
-                                                                                    </td>                                                                                  
-                                                                                    <td style="text-align:center" height="10">
-                                                                                        {{$rowresult->reco_digits_code}}
-                                                                                    </td>
-                                                                                    <td style="text-align:center" height="10">
-                                                                                        {{$rowresult->reco_item_description}}
-                                                                                    </td>
-                                                                                @endif
-                                                                                    <td style="text-align:center" height="10">
-                                                                                        <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow" disabled><i class="glyphicon glyphicon-remove"></i></button>
-                                                                                    </td>                 
-                                                                            </tr>
-                                                                        @else
-                                                                            <tr>
-                                                                                <td style="text-align:center" height="10">  
-                                                                                            <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}">                               
-                                                                                            {{$rowresult->digits_code}}
-                                                                                    </td>
-                                                                                <td style="text-align:center" height="10">
-                                                                                        
-                                                                                        <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}">                               
-                                                                                        {{$rowresult->item_description}}
-                                                                                </td>
-                                                                                <td style="text-align:center" height="10">
-                                                                                        {{$rowresult->category_id}}
-                                                                                </td>
-                                                                                <td style="text-align:center" height="10">
-                                                                                        {{$rowresult->sub_category_id}}
-                                                                                </td>
-                                                                          
-                                                                                <td style="text-align:center" height="10">
-                                                                                        {{$rowresult->quantity}}
-                                                                                        <input type='hidden' name="quantity" class="form-control text-center quantity_item" id="quantity" readonly value="{{$rowresult->quantity}}">
-                                                                                </td>
+                                                        @if($rowresult->deleted_at != null || $rowresult->deleted_at != "")
+                                                            <tr style="background-color: #dd4b39; color:#fff">
+                                                                <td style="text-align:center" height="10">  
+                                                                            <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}">                               
+                                                                            {{$rowresult->digits_code}}
+                                                                    </td>
+                                                                <td style="text-align:center" height="10">  
+                                                                        <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}">                               
+                                                                        {{$rowresult->item_description}}
+                                                                </td>
+                                                                <td style="text-align:center" height="10">
+                                                                        {{$rowresult->category_id}}
+                                                                </td>
+                                                                <td style="text-align:center" height="10">
+                                                                        {{$rowresult->sub_category_id}}
+                                                                </td>
+                                                                
+                                                                <td style="text-align:center" height="10">
+                                                                        {{$rowresult->quantity}}
+                                                                        <input type='hidden' name="quantity" class="form-control text-center quantity_item" id="quantity" readonly value="{{$rowresult->quantity}}">
+                                                                </td>
+                                                                @if(in_array($Header->request_type_id, [6,7]))
+                                                                    <td style="text-align:center">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
+                                                                    <td style="text-align:center">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                           
+                                                                    <td style="text-align:center">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>
+                                                                    <td style="text-align:center">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td>
+                                                                    <td style="text-align:center" height="10">{{$rowresult->unit_cost}}</td>
+                                                                    <td style="text-align:center" height="10" class="cost">{{$rowresult->unit_cost * $rowresult->serve_qty}}</td>
+                                                                    <td style="text-align:center" height="10">{{$rowresult->mo_so_num}}</td>   
+                                                                    
+                                                                @endif
+                                                                
+                                                                @if($Header->recommendedby != null || $Header->recommendedby != "")                                                                               
+                                                                    <td style="text-align:center" height="10">
+                                                                        {{$rowresult->recommendation}}
+                                                                    </td>                                                                                  
+                                                                    <td style="text-align:center" height="10">
+                                                                        {{$rowresult->reco_digits_code}}
+                                                                    </td>
+                                                                    <td style="text-align:center" height="10">
+                                                                        {{$rowresult->reco_item_description}}
+                                                                    </td>
+                                                                @endif
+                                                                <td  style="text-align:center; color:#fff"><i class="fa fa-times-circle"></i></td>
+                                                                    {{-- <td style="text-align:center" height="10">
+                                                                        <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow" disabled><i class="glyphicon glyphicon-remove"></i></button>
+                                                                    </td>                  --}}
+                                                            </tr>
+                                                        @else
+                                                            <tr>
+                                                                <td style="text-align:center" height="10">  
+                                                                            <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}">                               
+                                                                            {{$rowresult->digits_code}}
+                                                                    </td>
+                                                                <td style="text-align:center" height="10">
+                                                                        
+                                                                        <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}">                               
+                                                                        {{$rowresult->item_description}}
+                                                                </td>
+                                                                <td style="text-align:center" height="10">
+                                                                        {{$rowresult->category_id}}
+                                                                </td>
+                                                                <td style="text-align:center" height="10">
+                                                                        {{$rowresult->sub_category_id}}
+                                                                </td>
+                                                            
+                                                                <td style="text-align:center" height="10">
+                                                                        {{$rowresult->quantity}}
+                                                                        <input type='hidden' name="quantity" class="form-control text-center quantity_item" id="quantity" readonly value="{{$rowresult->quantity}}">
+                                                                </td>
 
-                                                                                @if(in_array($Header->request_type_id, [6,7]))
-                                                                                    <td style="text-align:center">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
-                                                                                    <td style="text-align:center">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                           
-                                                                                    <td style="text-align:center">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>
-                                                                                    <td style="text-align:center">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td>
-                                                                                    <td style="text-align:center" height="10">{{$rowresult->unit_cost}}</td>
-                                                                                    <td style="text-align:center" height="10" class="cost">{{$rowresult->unit_cost * $rowresult->serve_qty}}</td>
-                                                                                    <td style="text-align:center" height="10">{{$rowresult->mo_so_num}}</td>   
-                                                                                    
-                                                                                @endif
-                                                                                @if($Header->recommendedby != null || $Header->recommendedby != "")                                                                               
-                                                                                    <td style="text-align:center" height="10">
-                                                                                        {{$rowresult->recommendation}}
-                                                                                    </td>                                                                                  
-                                                                                    <td style="text-align:center" height="10">
-                                                                                        {{$rowresult->reco_digits_code}}
-                                                                                    </td>
-                                                                                    <td style="text-align:center" height="10">
-                                                                                        {{$rowresult->reco_item_description}}
-                                                                                    </td>
-                                                                                @endif
-                                                                                
-                                                                            </tr>
-                                                                        @endif
+                                                                @if(in_array($Header->request_type_id, [6,7]))
+                                                                    <td style="text-align:center">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
+                                                                    <td style="text-align:center">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                           
+                                                                    <td style="text-align:center">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>
+                                                                    <td style="text-align:center">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td>
+                                                                    <td style="text-align:center" height="10">{{$rowresult->unit_cost}}</td>
+                                                                    <td style="text-align:center" height="10" class="cost">{{$rowresult->unit_cost * $rowresult->serve_qty}}</td>
+                                                                    <td style="text-align:center" height="10">{{$rowresult->mo_so_num}}</td>   
+                                                                    
+                                                                @endif
+                                                                @if($Header->recommendedby != null || $Header->recommendedby != "")                                                                               
+                                                                    <td style="text-align:center" height="10">
+                                                                        {{$rowresult->recommendation}}
+                                                                    </td>                                                                                  
+                                                                    <td style="text-align:center" height="10">
+                                                                        {{$rowresult->reco_digits_code}}
+                                                                    </td>
+                                                                    <td style="text-align:center" height="10">
+                                                                        {{$rowresult->reco_item_description}}
+                                                                    </td>
+                                                                @endif
+                                                                
+                                                            </tr>
+                                                        @endif
 
                                                     @endforeach     
                                                     

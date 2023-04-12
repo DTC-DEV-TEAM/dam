@@ -4,15 +4,15 @@
             #footer th, td {
                 border: 1px solid rgba(000, 0, 0, .5);
                 padding: 8px;
-                border-radius: 5px 0 0 5px;
+                /* border-radius: 5px 0 0 5px; */
             }
-            #asset-items1 th, td, tr {
+            #asset-items1 th, td {
                 border: 1px solid rgba(000, 0, 0, .5);
                 padding: 8px;
             }
-            #asset-items th, td, tr {
+            #asset-items th, td {
                 border: 1px solid rgba(000, 0, 0, .5);
-                padding: 8px;
+                //padding: 8px;
             }
             table { border-collapse: collapse; empty-cells: show; }
 
@@ -228,7 +228,7 @@
                                                     <?php   $tableRow++; ?>
                                                 
                                                         @if($rowresult->deleted_at != null || $rowresult->deleted_at != "")
-                                                            <tr class="strikeout">
+                                                            <tr style="background-color: #dd4b39; color:#fff">
                                                                 <td style="text-align:center" height="10">
                                                                         <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}">                               
                                                                         {{$rowresult->digits_code}}
@@ -271,7 +271,7 @@
                                                                         {{$rowresult->reco_item_description}}
                                                                     </td>
                                                                 @endif
-                                                                <td  style="text-align:center; color:#dd4b39"><i class="fa fa-times-circle"></i></td>
+                                                                <td  style="text-align:center; color:#fff"><i class="fa fa-times-circle"></i></td>
                                                                 <!-- @if($Header->closed_by == null)
                                                                     <td style="text-align:center">
                                                                         <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow btn-sm" disabled><i class="fa fa-trash"></i></button>

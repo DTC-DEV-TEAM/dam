@@ -217,6 +217,7 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('/admin/assets_supplies_inventory/supplies-inventory-upload','AdminAssetsSuppliesInventoryController@UploadSuppliesInventory');
     Route::post('/admin/assets_supplies_inventory/upload-supplies-inventory','AdminAssetsSuppliesInventoryController@SuppliesInventoryUpload')->name('upload-supplies-inventory');
     Route::get('/admin/assets_supplies_inventory/upload-supplies-inventory-template','AdminAssetsSuppliesInventoryController@downloadSuppliesInventoryTemplate');
+    Route::post(config('crudbooster.ADMIN_PATH').'/assets_supplies_inventory/description','AdminRequestsController@getDescription')->name('get.supplies.description');
 
     Route::get('/admin/clear-view', function() {
         Artisan::call('view:clear');

@@ -13,6 +13,12 @@
 	use App\HeaderRequest;
 	use App\BodyRequest;
 	use App\Statuses;
+	use App\Exports\ExportItemSource;
+	use Maatwebsite\Excel\Facades\Excel;
+	use PhpOffice\PhpSpreadsheet\Spreadsheet;
+	use PhpOffice\PhpSpreadsheet\Reader\Exception;
+	use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+	use PhpOffice\PhpSpreadsheet\IOFactory;
 	use Illuminate\Support\Facades\Response;
 
 	class AdminItemSourcingForQuotationController extends \crocodicstudio\crudbooster\controllers\CBController {
@@ -142,7 +148,9 @@
 	        | 
 	        */
 	        $this->index_button = array();
-
+			if(CRUDBooster::getCurrentMethod() == 'getIndex') {
+				$this->index_button[] = ["label"=>"Export Data","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('item-source-export')];
+			 }
 
 
 	        /* 
@@ -506,6 +514,11 @@
 					);
 
 			return Response::download($file, $getFile->file_name, $headers);
+		}
+
+		//Export Conso
+		public function getItemSourceExport(){
+			return Excel::download(new ExportItemSource, 'item-source-data-'.date('Y-m-d') .'.xlsx');
 		}
 
 

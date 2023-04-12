@@ -28,7 +28,7 @@
 			$this->button_table_action = true;
 			$this->button_bulk_action = false;
 			$this->button_action_style = "button_icon";
-			$this->button_add = true;
+			$this->button_add = false;
 			$this->button_edit = true;
 			$this->button_delete = false;
 			$this->button_detail = true;
@@ -56,7 +56,7 @@
 			if(CRUDBooster::getCurrentMethod() == 'getEdit' || CRUDBooster::getCurrentMethod() == 'postEditSave' || CRUDBooster::getCurrentMethod() == 'getDetail') {
 				$this->form[] = ['label'=>'Digits Code','name'=>'digits_code','type'=>'text','validation'=>'required|integer|min:0','width'=>'col-sm-5','readonly'=>true];
 			}else{
-				$this->form[] = ['label'=>'Digits Code','name'=>'digits_code','type'=>'text','validation'=>'required|integer|min:0','width'=>'col-sm-5'];
+				$this->form[] = ['label'=>'Digits Code','name'=>'digits_code','type'=>'select','datatable'=>'assets,digits_code','validation'=>'required|integer|min:0','width'=>'col-sm-5'];
 			}
 			
 			$this->form[] = ['label'=>'Description','name'=>'description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
@@ -132,6 +132,7 @@
 	        */
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex') {
+				$this->index_button[] = ["label"=>"Add Data","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-supplies-inventory'),"color"=>"success"];
 				$this->index_button[] = ["label"=>"Upload Inventory","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('supplies-inventory-upload')];
 				// $this->index_button[] = ["label"=>"Consolidation","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('conso-export')];
 			 }
@@ -275,7 +276,8 @@
 	    | @arr
 	    |
 	    */
-	    public function hook_before_add(&$postdata) {        
+	    public function hook_before_add(&$postdata) {       
+			dd($postdata); 
 			$postdata['created_by']=CRUDBooster::myId();
 
 	    }
@@ -341,6 +343,20 @@
 
 	    }
 
+		 //By the way, you can still create your own method in here... :) 
+		 public function getAddSuppliesInventory() {
+
+			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
+				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
+			}
+
+			$this->cbLoader();
+			$data['page_title'] = 'Add Supplies Inventory';
+			$data['digits_code'] = DB::table('assets')->where('category_id', 2)->get();
+			return $this->view("inventory-supplies.add-supplies-inventory", $data);
+		
+		}
+
 		public function UploadSuppliesInventory() {
 			$data['page_title']= 'Assets Supplies Inventory Upload';
 			return view('import.asset-supplies-upload', $data)->render();
@@ -373,6 +389,6 @@
 			header('Cache-Control: max-age=0');
 			$writer = new Xlsx($spreadsheet);
 			$writer->save('php://output');
-		}
+		}	
 
 	}
