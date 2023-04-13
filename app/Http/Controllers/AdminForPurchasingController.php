@@ -111,36 +111,29 @@
 	        */
 	        $this->addaction = array();
 			if(CRUDBooster::isUpdate()) {
-
-				$processing  = 		DB::table('statuses')->where('id', 11)->value('id');
-
-				$picked =  			DB::table('statuses')->where('id', 15)->value('id');
-
-				$for_closing =  			DB::table('statuses')->where('id', 19)->value('id');
+				$for_tagging    =  DB::table('statuses')->where('id', 7)->value('id');
+				$processing     =  DB::table('statuses')->where('id', 11)->value('id');
+				$for_move_order =  DB::table('statuses')->where('id', 14)->value('id');
+				$for_closing    =  DB::table('statuses')->where('id', 19)->value('id');
 
 				if(CRUDBooster::myPrivilegeId() == 14){
 					$this->addaction[] = ['title'=>'View','url'=>CRUDBooster::mainpath('getRequestPurchasingManagerView/[id]'),'icon'=>'fa fa-eye'];
 				}else if(CRUDBooster::myPrivilegeId() == 19){
-					$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailPurchasing/[id]'),'icon'=>'fa fa-eye'];
+					//$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailPurchasing/[id]'),'icon'=>'fa fa-eye'];
 					//option 2
 					//$this->addaction[] = ['title'=>'Add MO/SO','url'=>CRUDBooster::adminpath('[id]'),'icon'=>'fa fa-plus-circle', "showIf"=>"[status_id] == $for_closing && [mo_so_num] == null"];
 					//option 3
-					$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::mainpath('getRequestPurchasingForMoSo/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[status_id] == $for_closing"];
+					$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::mainpath('getRequestPurchasingForMoSo/[id]'),'icon'=>'fa fa-eye' , "showIf"=>"[status_id] == $for_move_order || [status_id] == $for_closing || [status_id] == $for_tagging"];
 				}else{			
-					$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailPurchasing/[id]'),'icon'=>'fa fa-eye'];
-					$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getRequestPurchasing/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[purchased2_by] == null"];
+					//$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailPurchasing/[id]'),'icon'=>'fa fa-eye'];
+					//$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getRequestPurchasing/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[purchased2_by] == null"];
 					//option 2
 					//$this->addaction[] = ['title'=>'Add MO/SO','url'=>CRUDBooster::adminpath('[id]'),'icon'=>'fa fa-plus-circle', "showIf"=>"[status_id] == $for_closing && [mo_so_num] == null"];
 					//option 3
-					$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::mainpath('getRequestPurchasingForMoSo/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[status_id] == $for_closing"];
+					$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::mainpath('getRequestPurchasingForMoSo/[id]'),'icon'=>'fa fa-eye' , "showIf"=>"[status_id] == $for_move_order || [status_id] == $for_closing || [status_id] == $for_tagging"];
 				}
 				
-				//$this->addaction[] = ['title'=>'Print','url'=>CRUDBooster::mainpath('getRequestPrintPickList/[id]'),'icon'=>'fa fa-print', "showIf"=>"[purchased2_by] != null && [status_id] == $processing"];
-				
-				//$this->addaction[] = ['title'=>'Print','url'=>CRUDBooster::mainpath('getRequestPrint/[id]'),'icon'=>'fa fa-print', "showIf"=>"[status_id] == $picked"];
-
-				//$this->addaction[] = ['title'=>'Print','url'=>CRUDBooster::mainpath('getRequestPrint/[id]'),'icon'=>'fa fa-print', "showIf"=>"[purchased2_by] != null"];
-				//$this->addaction[] = ['title'=>'Edit','url'=>CRUDBooster::mainpath('getRequestEdit/[id]'),'icon'=>'fa fa-pencil', "showIf"=>"[status_id] == $Rejected"]; //, "showIf"=>"[status_level1] == $inwarranty"
+			
 			}
 
 
@@ -182,6 +175,7 @@
 			if(CRUDBooster::getCurrentMethod() == 'getIndex') {
 			   $this->index_button[] = ["label"=>"Upload Fulfillment","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('fulfillment-upload')];
 			   $this->index_button[] = ["label"=>"Consolidation","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('conso-export')];
+			   $this->index_button[] = ["label"=>"Upload PO","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('po-upload')];
 			}
 
 	        /* 
@@ -437,18 +431,15 @@
 			}else if(in_array(CRUDBooster::myPrivilegeId(),[18,19])){ 
 				$query->where(function($sub_query){
 
-					$approved =  		DB::table('statuses')->where('id', 7)->value('id');
+					$for_tagging    =  DB::table('statuses')->where('id', 7)->value('id');
+					$processing     =  DB::table('statuses')->where('id', 11)->value('id');
+					$for_move_order =  DB::table('statuses')->where('id', 14)->value('id');
+					$for_closing    =  DB::table('statuses')->where('id', 19)->value('id');
 
-					$it_reco  = 		DB::table('statuses')->where('id', 4)->value('id');
-
-					$processing = 		DB::table('statuses')->where('id', 11)->value('id');
-
-					$picked =  			DB::table('statuses')->where('id', 15)->value('id');
-
-					$sub_query->where('header_request.request_type_id', 7)->where('header_request.to_reco', 0)->where('header_request.status_id', $approved)->whereNull('header_request.deleted_at')->whereNull('mo_by'); 
-					$sub_query->where('header_request.status_id', $approved)->where('header_request.request_type_id', 7)->whereNull('header_request.deleted_at')->whereNull('mo_by');
-					$sub_query->orwhere('header_request.status_id', $processing)->where('header_request.request_type_id', 7)->whereNull('header_request.deleted_at')->whereNull('mo_by');
-					$sub_query->orwhereNotNull('header_request.purchased2_by')->where('header_request.request_type_id', 7)->where('header_request.closing_plug', 0)->whereNull('mo_by');
+					//$sub_query->where('header_request.request_type_id', 7)->where('header_request.to_reco', 0)->where('header_request.status_id', $approved)->whereNull('header_request.deleted_at')->whereNull('mo_by'); 
+					$sub_query->whereIn('header_request.status_id', [$for_tagging, $for_move_order, $for_closing])->where('header_request.request_type_id', 7)->whereNull('header_request.deleted_at')->whereNull('mo_by');
+					//$sub_query->orwhere('header_request.status_id', $processing)->where('header_request.request_type_id', 7)->whereNull('header_request.deleted_at')->whereNull('mo_by');
+					//$sub_query->orwhereNotNull('header_request.purchased2_by')->where('header_request.request_type_id', 7)->where('header_request.closing_plug', 0)->whereNull('mo_by');
 
 					//$sub_query->orwhere('header_request.status_id', $picked)->whereNull('header_request.deleted_at');
 				});
@@ -1589,32 +1580,6 @@
 			//CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Request has been closed successfully!"), 'info');
 		}
 
-		function downloadFilfillQtyTemplate() {
-			$arrHeader = [
-				"erf_number"         => "erf_number",
-				"status"             => "status",
-				"first_name"         => "first_name",
-				"last_name"          => "last_name",
-				"screen_date"        => "screen_date",
-			];
-			$arrData = [
-				"erf_number"         => "ERF-0000001",
-				"status"             => "First Interviewed",
-				"first_name"         => "John",
-				"last_name"          => "Doe",
-				"screen_date"        => "2023-01-01",
-			];
-			$spreadsheet = new Spreadsheet();
-			$spreadsheet->getActiveSheet()->fromArray(array_values($arrHeader), null, 'A1');
-			$spreadsheet->getActiveSheet()->fromArray($arrData, null, 'A2');
-			$filename = "applicant-template";
-			header('Content-Type: application/vnd.ms-excel');
-			header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"');
-			header('Cache-Control: max-age=0');
-			$writer = new Xlsx($spreadsheet);
-			$writer->save('php://output');
-		}
-
 		//upload fulfillment
 		public function UploadFulfillment() {
 			$data['page_title']= 'Fulfillment Upload';
@@ -1625,5 +1590,12 @@
 		public function getConsoExport(){
 			return Excel::download(new ExportConso, 'Consolidation-'.date('Y-m-d') .'.xlsx');
 		}
+
+		//UPLOAD PO
+		public function UploadPo() {
+			$data['page_title']= 'PO Upload';
+			return view('import.po-upload', $data)->render();
+		}
+       
 
 	}

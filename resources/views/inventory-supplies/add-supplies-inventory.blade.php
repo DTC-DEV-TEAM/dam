@@ -71,7 +71,7 @@
             Applicant Form
         </div>
 
-       <form action="{{ CRUDBooster::mainpath('add-save') }}" method="POST" id="applicant" enctype="multipart/form-data">
+       <form name="suppliesInventory" id="suppliesInventory" enctype="multipart/form-data">
         <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
         <input type="hidden" value="1" name="request_type_id" id="request_type_id">
             <div class="card">
@@ -154,43 +154,7 @@
     
         event.preventDefault();
 
-            if($("#erf_number").val() === ""){
-                swal({
-                    type: 'error',
-                    title: 'Please select ERF Number!',
-                    icon: 'error',
-                    confirmButtonColor: "#367fa9",
-                }); 
-                event.preventDefault(); // cancel default behavior
-                return false;
-            }else if($("#screen_date").val() === ""){
-                swal({
-                    type: 'error',
-                    title: 'Screen Date Required!',
-                    icon: 'error',
-                    confirmButtonColor: "#367fa9",
-                }); 
-                event.preventDefault(); // cancel default behavior
-                return false;
-            }else if($("#first_name").val() === ""){
-                swal({
-                    type: 'error',
-                    title: 'First Name Required!',
-                    icon: 'error',
-                    confirmButtonColor: "#367fa9",
-                }); 
-                event.preventDefault(); // cancel default behavior
-                return false;
-            }else if($("#last_name").val() === ""){
-                swal({
-                    type: 'error',
-                    title: 'Last Name Required!',
-                    icon: 'error',
-                    confirmButtonColor: "#367fa9",
-                }); 
-                event.preventDefault(); // cancel default behavior
-                return false;
-            }else if($("#job_portal").val() === ""){
+            if($("#job_portal").val() === ""){
                 swal({
                     type: 'error',
                     title: 'Job Portal Required!',
@@ -208,7 +172,33 @@
                         cancelButtonColor: "#F9354C",
                         confirmButtonText: "Yes, send it!",
                         }, function () {
-                            $("#applicant").submit();                                                   
+                            $.ajax({
+                                data: $('#suppliesInventory').serialize(),
+                                url: "{{ route('add.supplies.inventory') }}",
+                                type: "POST",
+                                dataType: 'json',
+                                success: function (data) {
+                                    if (data.status == "success") {
+                                        swal({
+                                            type: data.status,
+                                            title: data.message,
+                                        });
+                                    
+                                        } else if (data.status == "error") {
+                                        swal({
+                                            type: data.status,
+                                            title: data.message,
+                                        });
+                                    }
+                                    $('#earnForm').trigger("reset");
+                                    $('#demoModal').modal('hide');
+                                    location.reload();
+                                
+                                },
+                                error: function (data) {
+                                    console.log('Error:', data);
+                                }
+                            });                                                 
                     });
             }
                 

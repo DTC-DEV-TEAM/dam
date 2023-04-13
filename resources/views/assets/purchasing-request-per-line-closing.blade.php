@@ -49,7 +49,7 @@
         Request Form
     </div>
 
-    <form method='post' id="myform" action='{{CRUDBooster::mainpath('add-save/'.$Header->requestid)}}'>
+    {{-- <form method='post' id="myform" action='{{CRUDBooster::mainpath('add-save/'.$Header->requestid)}}'> --}}
         <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
         <input type="hidden" value="0" name="action" id="action">
 
@@ -95,7 +95,7 @@
 
         <div class='panel-body'>
 
-            <div class="row">
+            {{-- <div class="row">
 
                 <div class="col-md-4">
                     <div class="form-group">
@@ -138,9 +138,7 @@
 
                 </div>
 
-            </div>
- 
-            <hr/>
+            </div> --}}
 
             <div class="row">                           
                 <label class="control-label col-md-2">{{ trans('message.form-label.reference_number') }}:</label>
@@ -276,18 +274,13 @@
                                            
                                             <th width="5%" class="text-center">For Replenish Qty</th> 
                                             <th width="5%" class="text-center">For Re Order Qty</th> 
-                                            <th width="5%" class="text-center">Serve Qty</th> 
-                                            <th width="5%" class="text-center">UnServe Qty</th> 
-
+                                            <th width="5%" class="text-center">Fulfilled Qty</th> 
+                                            <th width="5%" class="text-center">UnServed Qty</th> 
                                             <th width="7%" class="text-center">Item Cost</th> 
                                             <th width="7%" class="text-center">Total Cost</th>                                                                                                                                            
-                                            <th width="10%" class="text-center">MO/SO</th>    
-                                            <th width="5%" class="text-center">Fulfill Qty</th> 
-                                            @if($Header->recommendedby != null || $Header->recommendedby != "")
-                                                <th width="13%" class="text-center">{{ trans('message.table.recommendation_text') }}</th> 
-                                                <th width="14%" class="text-center">{{ trans('message.table.reco_digits_code_text_mo') }}</th> 
-                                                <th width="24%" class="text-center">{{ trans('message.table.reco_item_description_text_mo') }}</th>
-                                            @endif 
+                                            {{-- <th width="10%" class="text-center">DR#</th>     --}}
+                                            {{-- <th width="5%" class="text-center">Serve Qty</th>  --}}
+                                           
                                         </tr>
                                         
 
@@ -335,69 +328,21 @@
                                                         <td style="text-align:center" height="10">{{$rowresult->unit_cost}}</td>
                                                         <td style="text-align:center" height="10" class="cost">{{$rowresult->unit_cost * $rowresult->serve_qty}}</td>
                                                       
-                                                        <td style="text-align:center" height="10">
+                                                        {{-- <td style="text-align:center" height="10">
                                                             <input type="text"  class="form-control finput"  name="mo_so_num[]" id="mo_so_num{{$tableRow}}" value="{{$rowresult->mo_so_num}}">
-                                                            {{-- <input type="text"  class="form-control mo_so_num"  name="mo_so_num[]" id="mo_so_num{{$tableRow}}" value="{{$rowresult->mo_so_num}}" readonly> --}}
+                                                            <input type="text"  class="form-control mo_so_num"  name="mo_so_num[]" id="mo_so_num{{$tableRow}}" value="{{$rowresult->mo_so_num}}" readonly> 
                                                             <input type="hidden"  class="form-control"  name="default_val[]" id="default_val{{$tableRow}}" value="{{$rowresult->mo_so_num}}" readonly>
-                                                        </td>
+                                                        </td> --}}
                                                          
-                                                        <td style="text-align:center" height="10">
+                                                        {{-- <td style="text-align:center" height="10">
                                                             @if($rowresult->quantity === $rowresult->serve_qty)
                                                             <input type="text" style="text-align:center" class="form-control finput reserve_qty"  name="reserve_qty[]" id="reserve_qty{{$tableRow}}" data-id="{{$tableRow}}" readonly>
                                                             @else
                                                             <input type="text" style="text-align:center" class="form-control finput reserve_qty"  name="reserve_qty[]" id="reserve_qty{{$tableRow}}" data-id="{{$tableRow}}">
                                                             @endif
                                                             <div id="display_error{{$tableRow}}" style="text-align:left"></div>   
-                                                        </td>                        
-                                                                                                                
-                                                        @if($Header->recommendedby != null || $Header->recommendedby != "")
-                                                        
-                                                            <td>
-                                                                @if($rowresult->to_reco == 1)
-                                                                    <select class="js-example-basic-single recodropdown" style="width: 100%; height: 35px;" required name="recommendation[]" id="recommendation" data-id="{{$tableRow}}">
-                                                                        <option value="">-- Select Recommendation --</option>
-                            
-                                                                        @foreach($recommendations as $datas)    
-                                                                            @if($rowresult->recommendation == $datas->user_type)
-                                                                                <option  value="{{$datas->user_type}}" selected>{{$datas->user_type}}</option>
-                                                                            @else
-                                                                                <option  value="{{$datas->user_type}}">{{$datas->user_type}}</option>
-                                                                            @endif
-                                                                        @endforeach
-                            
-                                                                    </select>
-                                                                @else
-                                                                    <select class="js-example-basic-single recodropdown" style="width: 100%; height: 35px;"  name="recommendation[]" id="recommendation" data-id="{{$tableRow}}" disabled>
-                                                                        <option value="">-- Select Recommendation --</option>
-                            
-                                                                        @foreach($recommendations as $datas)    
-                                                                            @if($rowresult->recommendation == $datas->user_type)
-                                                                                <option  value="{{$datas->user_type}}" selected>{{$datas->user_type}}</option>
-                                                                            @else
-                                                                                <option  value="{{$datas->user_type}}">{{$datas->user_type}}</option>
-                                                                            @endif
-                                                                        @endforeach
-                            
-                                                                    </select>
-                                                                @endif
-
-                                                            </td>
-                                                            
-                                                            <td>
-                                                                    <div class="form-group">
-                                                                        <input class="form-control auto" type="text" style="width: 100%;" placeholder="Search Item" id="search{{$tableRow}}" data-id="{{$tableRow}}"  name="reco_digits_code[]" value="{{$rowresult->reco_digits_code}}">
-                                                                        <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" data-id="{{$tableRow}}" id="ui-id-2{{$tableRow}}" style="display: none; top: 60px; left: 15px; width: 100%;">
-                                                                            <li>Loading...</li>
-                                                                        </ul>
-                                                                    </div>
-                                                            </td>
-
-                                                            <td>
-                                                                <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control itemDesc" data-id="{{$tableRow}}" id="item_description{{$tableRow}}"  name="reco_item_description[]" maxlength="100" readonly value="{{$rowresult->reco_item_description}}">
-                                                            </td>
-
-                                                        @endif
-
+                                                        </td>                         --}}
+                                                                                                                                                                      
                                                     </tr>
 
                                                 @endforeach
@@ -496,12 +441,12 @@
 
         <div class='panel-footer'>
             <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
-            <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-times-circle" ></i> Close</button>
+            {{-- <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-times-circle" ></i> Close</button>
             <!-- <button class="btn btn-warning pull-right" type="submit" id="btnPrint" style="margin-right: 10px;"> <i class="fa fa-print" ></i> {{ trans('message.form.print') }}</button> -->
-            <button class="btn btn-warning pull-right" type="submit" id="btnUpdate" style="margin-right: 10px;"> <i class="fa fa-refresh" ></i> {{ trans('message.form.update') }}</button>
+            <button class="btn btn-warning pull-right" type="submit" id="btnUpdate" style="margin-right: 10px;"> <i class="fa fa-refresh" ></i> {{ trans('message.form.update') }}</button> --}}
         </div>
 
-    </form>
+    {{-- </form> --}}
 
 
 

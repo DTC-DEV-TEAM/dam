@@ -203,12 +203,13 @@
                                             
                                             @if(in_array($Header->request_type_id, [6,7]))       
                                                 <th width="5%" class="text-center">For Replenish Qty</th> 
-                                                <th width="5%" class="text-center">For Re Order Qty</th> 
-                                                <th width="5%" class="text-center">Serve Qty</th> 
-                                                <th width="5%" class="text-center">UnServe Qty</th> 
-                                                <th width="7%" class="text-center">Item Cost</th> 
-                                                <th width="7%" class="text-center">Total Cost</th>                                                                                                                                            
-                                                <th width="10%" class="text-center">MO/SO</th>                                                  
+                                                <th width="5%" class="text-center">For ReOrder Qty</th> 
+                                                <th width="5%" class="text-center">Fulfilled Qty</th> 
+                                                <th width="5%" class="text-center">UnServed Qty</th>                                                                                                                                                                                                          
+                                                <th width="5%" class="text-center">DR Qty</th>
+                                                <th width="5%" class="text-center">PO Qty</th>     
+                                                <th width="10%" class="text-center">DR#</th>         
+                                                <th width="10%" class="text-center">PO#</th>                                   
                                             @endif 
 
                                             @if($Header->recommendedby != null || $Header->recommendedby != "")
@@ -254,9 +255,10 @@
                                                                     <td style="text-align:center">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                           
                                                                     <td style="text-align:center">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>
                                                                     <td style="text-align:center">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td>
-                                                                    <td style="text-align:center" height="10">{{$rowresult->unit_cost}}</td>
-                                                                    <td style="text-align:center" height="10" class="cost">{{$rowresult->unit_cost * $rowresult->serve_qty}}</td>
-                                                                    <td style="text-align:center" height="10">{{$rowresult->mo_so_num}}</td>   
+                                                                    <td style="text-align:center">{{$rowresult->dr_qty}}</td> 
+                                                                    <td style="text-align:center">{{$rowresult->po_qty}}</td>   
+                                                                    <td style="text-align:center">{{$rowresult->mo_so_num}}</td>   
+                                                                    <td style="text-align:center">{{$rowresult->po_no}}</td>  
                                                                     
                                                                 @endif
 
@@ -303,10 +305,11 @@
                                                                     <td style="text-align:center">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
                                                                     <td style="text-align:center">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                           
                                                                     <td style="text-align:center">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>
-                                                                    <td style="text-align:center">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td>
-                                                                    <td style="text-align:center" height="10">{{$rowresult->unit_cost}}</td>
-                                                                    <td style="text-align:center" height="10" class="cost">{{$rowresult->unit_cost * $rowresult->serve_qty}}</td>
-                                                                    <td style="text-align:center" height="10">{{$rowresult->mo_so_num}}</td>   
+                                                                    <td style="text-align:center">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td>      
+                                                                    <td style="text-align:center">{{$rowresult->dr_qty}}</td> 
+                                                                    <td style="text-align:center">{{$rowresult->po_qty}}</td>   
+                                                                    <td style="text-align:center">{{$rowresult->mo_so_num}}</td>   
+                                                                    <td style="text-align:center">{{$rowresult->po_no}}</td>     
                                                                 
                                                                 @endif
                                                                 @if($Header->recommendedby != null || $Header->recommendedby != "")                                                                               

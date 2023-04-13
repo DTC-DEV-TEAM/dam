@@ -212,12 +212,16 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('/admin/for_purchasing/fulfillment-upload','AdminForPurchasingController@UploadFulfillment');
     Route::post('/admin/admin_import/upload-fulfillment','AdminImportController@fulfillmentUpload')->name('upload-fulfillment');
     Route::get('/admin/admin_import/download-filfill-qty-template','AdminImportController@downloadFulfillQtyTemplate');
-
+    //PO UPLOAD
+    Route::get('/admin/for_purchasing/po-upload','AdminForPurchasingController@UploadPo');
+    Route::post('/admin/admin_import/upload-po','AdminImportController@poUpload')->name('upload-po');
+    Route::get('/admin/admin_import/download-po-template','AdminImportController@downloadPOTemplate');
     //Supplies Inventory
     Route::get('/admin/assets_supplies_inventory/supplies-inventory-upload','AdminAssetsSuppliesInventoryController@UploadSuppliesInventory');
     Route::post('/admin/assets_supplies_inventory/upload-supplies-inventory','AdminAssetsSuppliesInventoryController@SuppliesInventoryUpload')->name('upload-supplies-inventory');
     Route::get('/admin/assets_supplies_inventory/upload-supplies-inventory-template','AdminAssetsSuppliesInventoryController@downloadSuppliesInventoryTemplate');
     Route::post(config('crudbooster.ADMIN_PATH').'/assets_supplies_inventory/description','AdminRequestsController@getDescription')->name('get.supplies.description');
+    Route::post(config('crudbooster.ADMIN_PATH').'/assets_supplies_inventory/add-supplies-inventory','AdminRequestsController@addSuppliesInventory')->name('add.supplies.inventory');
 
     Route::get('/admin/clear-view', function() {
         Artisan::call('view:clear');

@@ -384,19 +384,17 @@
 
 			$approver_comments 		= $fields['approver_comments'];
 
-			$approved =  		DB::table('statuses')->where('id', 4)->value('id');
-			$rejected =  		DB::table('statuses')->where('id', 5)->value('id');
-
+			$approved       =  DB::table('statuses')->where('id', 4)->value('id');
+			$rejected       =  DB::table('statuses')->where('id', 5)->value('id');
+			$for_move_order =  DB::table('statuses')->where('id', 14)->value('id');
 
 			$arf_header = HeaderRequest::where(['id' => $id])->first();
 
 			$arf_body = BodyRequest::where(['header_request_id' => $id])->whereNull('deleted_at')->get();
 
 			if($approval_action  == 1){
-				$postdata['status_id']		    = StatusMatrix::where('current_step', 2)
-												  ->where('request_type', $arf_header->request_type_id)
-												  ->value('status_id');
 
+				$postdata['status_id']          = $for_move_order;
 				$postdata['approver_comments'] 	= $approver_comments;
 				$postdata['approved_by'] 		= CRUDBooster::myId();
 				$postdata['approved_at'] 		= date('Y-m-d H:i:s');
@@ -407,6 +405,7 @@
 					}
 
 				}
+
 				if(in_array($arf_header->request_type_id, [7])){
 					//Get the inventory value per digits code
 					$arraySearch = DB::table('assets_supplies_inventory')->select('*')->get()->toArray();
@@ -431,10 +430,12 @@
 							//less quantity in inventory
 							BodyRequest::where('id', $fBodyVal['id'])
 							->update([
-								'replenish_qty'   =>  $fBodyVal['quantity'],
-								'reorder_qty'     =>  NULL,
-								'serve_qty'       =>  NULL,
-								'unserved_qty'    =>  $fBodyVal['quantity'],
+								'replenish_qty'      =>  $fBodyVal['quantity'],
+								'reorder_qty'        =>  NULL,
+								'serve_qty'          =>  NULL,
+								'unserved_qty'       =>  $fBodyVal['quantity'],
+								'unserved_rep_qty'   =>  $fBodyVal['quantity'],
+								'unserved_ro_qty'    =>  NULL
 							]);	
 							DB::table('assets_supplies_inventory')
 							->where('digits_code', $fBodyVal['digits_code'])
@@ -445,10 +446,12 @@
 							$containerData['unserve_qty']   = $containerData['reorder_qty'];
 							BodyRequest::where('id', $fBodyVal['id'])
 							->update([
-								'replenish_qty'   =>  $fBodyVal['inv_value']->quantity,
-								'reorder_qty'     =>  $reorder,
-								'serve_qty'       =>  NULL,
-								'unserved_qty'    =>  $fBodyVal['quantity']
+								'replenish_qty'      =>  $fBodyVal['inv_value']->quantity,
+								'reorder_qty'        =>  $reorder,
+								'serve_qty'          =>  NULL,
+								'unserved_qty'       =>  $fBodyVal['quantity'],
+								'unserved_rep_qty'   =>  $fBodyVal['inv_value']->quantity,
+								'unserved_ro_qty'    =>  $reorder
 							]);	
 							AssetsSuppliesInventory::where('digits_code', $fBodyVal['digits_code'])
 							->update([
@@ -485,13 +488,14 @@
 
 			$arf_header = HeaderRequest::where(['id' => $id])->first();
 
-			$approved =  		DB::table('statuses')->where('id', 4)->value('id');
-			$rejected =  		DB::table('statuses')->where('id', 5)->value('id');
-			$for_tagging =  	DB::table('statuses')->where('id', 7)->value('id');
+			$approved       =  DB::table('statuses')->where('id', 4)->value('id');
+			$rejected       =  DB::table('statuses')->where('id', 5)->value('id');
+			$for_tagging    =  DB::table('statuses')->where('id', 7)->value('id');
+			$for_move_order =  DB::table('statuses')->where('id', 14)->value('id');
 
 			if($arf_header->status_id  == $approved){
 				CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_petty_cash_approve_success",['reference_number'=>$arf_header->reference_number]), 'info');
-			}elseif($arf_header->status_id  == $for_tagging){
+			}elseif($arf_header->status_id  == $for_move_order){
 				CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_petty_cash_approve_success",['reference_number'=>$arf_header->reference_number]), 'info');
 			}else{
 				CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_petty_cash_reject_success",['reference_number'=>$arf_header->reference_number]), 'danger');
