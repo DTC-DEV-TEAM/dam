@@ -444,7 +444,7 @@
 					//$sub_query->orwhere('header_request.status_id', $picked)->whereNull('header_request.deleted_at');
 				});
 
-				$query->orderBy('header_request.status_id', 'asc')->orderBy('header_request.id', 'desc');
+				$query->orderBy('header_request.status_id', 'desc')->orderBy('header_request.id', 'asc');
 
 			}
 			// else if(in_array(CRUDBooster::myPrivilegeId(),[5,17])){ 

@@ -314,19 +314,20 @@
                                                         </td>
 
                                                         <td style="text-align:center" height="10" class="qty">
-                                                            <input type="text"  class="form-control mo_so_num" name="quantity{{$tableRow}}" value="{{$rowresult->quantity}}" id="quantity{{$tableRow}}" readonly>
-                                                                    <!-- {{$rowresult->quantity}} -->
+                                                            {{-- <input type="text"  class="form-control mo_so_num" name="quantity{{$tableRow}}" value="{{$rowresult->quantity}}" id="quantity{{$tableRow}}" readonly> --}}
+                                                                    {{$rowresult->quantity}} 
                                                         </td>
 
-                                                        <td style="text-align:center">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
-                                                        <td style="text-align:center">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>     
-                                                        <td style="text-align:center">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>                                                           
-                                                        <td style="text-align:center" height="10">
-                                                            <input type="text"  class="form-control mo_so_num" name="unserved_qty{{$tableRow}}" value="{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}" id="unserved_qty{{$tableRow}}" readonly>
+                                                        <td style="text-align:center" class="rep_qty">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
+                                                        <td style="text-align:center" class="re_qty">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>     
+                                                        <td style="text-align:center" class="served_qty">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>                                                           
+                                                        <td style="text-align:center" class="unserved_qty">
+                                                            {{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}
+                                                            {{-- <input type="text"  class="form-control mo_so_num" name="unserved_qty{{$tableRow}}" value="{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}" id="unserved_qty{{$tableRow}}" readonly> --}}
                                                         </td>
 
-                                                        <td style="text-align:center" height="10">{{$rowresult->unit_cost}}</td>
-                                                        <td style="text-align:center" height="10" class="cost">{{$rowresult->unit_cost * $rowresult->serve_qty}}</td>
+                                                        <td style="text-align:center" class="unit_cost">{{$rowresult->unit_cost}}</td>
+                                                        <td style="text-align:center" class="total_cost">{{$rowresult->unit_cost * $rowresult->serve_qty}}</td>
                                                       
                                                         {{-- <td style="text-align:center" height="10">
                                                             <input type="text"  class="form-control finput"  name="mo_so_num[]" id="mo_so_num{{$tableRow}}" value="{{$rowresult->mo_so_num}}">
@@ -353,7 +354,7 @@
                                     </tbody>
 
                                     <tfoot>
-                                    <tr>
+                                    {{-- <tr>
                                         <td colspan='4' style='text-align:right'>
                                         <strong>TOTAL</strong>
                                         </td>
@@ -364,7 +365,7 @@
                                             @endforeach
                                         </strong>
                                         </td>
-                                        </tr>
+                                        </tr> --}}
                                     </tfoot>
 
                                 </table>
@@ -576,20 +577,74 @@
         }
     });
 
-        // var tds = document
-        // .getElementById("asset-items1")
-        // .getElementsByTagName("td");
-        // var sumqty = 0;
-     
-        // for (var i = 0; i < tds.length; i++) {
-        //     console.log(tds[i].innerHTML);
-        // if (tds[i].className == "qty") {
-        //     sumqty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-        // }
-        // }
-        // document.getElementById("asset-items1").innerHTML +=
-        // "<tr><td colspan='4' style='text-align:right'><strong>TOTAL</strong></td><td style='text-align:center'><strong>" +
-        // sumqty +
-        // "</strong></td></tr>";
+    var tds = document
+        .getElementById("asset-items1")
+        .getElementsByTagName("td");
+        var sumqty       = 0;
+        var rep_qty      = 0;
+        var ro_qty       = 0;
+        var served_qty   = 0;
+        var unserved_qty = 0;
+        var unit_cost       = 0;
+        var total_cost       = 0;
+        for (var i = 0; i < tds.length; i++) {
+            if(tds[i].className == "qty") {
+                sumqty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+            }else if(tds[i].className == "rep_qty"){
+                rep_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+            }else if(tds[i].className == "ro_qty"){
+                ro_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+            }else if(tds[i].className == "served_qty"){
+                served_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+            }else if(tds[i].className == "unserved_qty"){
+                unserved_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+            }else if(tds[i].className == "unit_cost"){
+                unit_cost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+            }else if(tds[i].className == "total_cost"){
+                total_cost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+            }
+        }
+        document.getElementById("asset-items1").innerHTML +=
+        "<tr>"+
+            "<td colspan='4' style='text-align:right'>"+
+                    "<strong>TOTAL</strong>"+
+                "</td>"+
+                
+                "<td style='text-align:center'>"+
+                    "<strong>" +
+                    sumqty +
+                    "</strong>"+
+                "</td>"+
+                "<td style='text-align:center'>"+
+                    "<strong>" +
+                    rep_qty +
+                    "</strong>"+
+                "</td>"+
+                "<td style='text-align:center'>"+
+                    "<strong>" +
+                    ro_qty +
+                    "</strong>"+
+                "</td>"+
+                "<td style='text-align:center'>"+
+                    "<strong>" +
+                    served_qty +
+                    "</strong>"+
+                "</td>"+
+                "<td style='text-align:center'>"+
+                    "<strong>" +
+                    unserved_qty +
+                    "</strong>"+
+                "</td>"+
+                "<td style='text-align:center'>"+
+                    "<strong>" +
+                        unit_cost +
+                    "</strong>"+
+                "</td>"+
+                "<td style='text-align:center'>"+
+                    "<strong>" +
+                        total_cost +
+                    "</strong>"+
+                "</td>"+             
+        "</tr>";
 </script>
 @endpush

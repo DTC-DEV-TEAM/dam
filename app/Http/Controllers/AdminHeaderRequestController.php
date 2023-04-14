@@ -1648,6 +1648,7 @@
 					->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',2)->where('assets.status','!=','INACTIVE')
 					
 						->join('category', 'assets.category_id','=', 'category.id')
+						->join('class', 'assets.class_id','=', 'class.id')
 						->leftjoin('assets_supplies_inventory', 'assets.digits_code','=', 'assets_supplies_inventory.digits_code')
 	
 						->leftJoin('body_request', function($join) 
@@ -1661,7 +1662,8 @@
 									'assets_supplies_inventory.quantity as wh_qty',
 									DB::raw('SUM(body_request.unserved_qty) as unserved_qty'),
 									//'digits_imfs.digits_code as dcode',
-									'category.category_description as category_description'
+									'category.category_description as category_description',
+									'class.class_description as class_description'
 								)->take(10)->get();
 					
 					if($items){
@@ -1679,6 +1681,7 @@
 							$return_data[$i]['serial_no']            = $value->serial_no;
 							$return_data[$i]['item_description']     = $value->item_description;
 							$return_data[$i]['category_description'] = $value->category_description;
+							$return_data[$i]['class_description']    = $value->class_description;
 							$return_data[$i]['item_cost']            = $value->item_cost;
 							$return_data[$i]['item_type']            = $value->item_type;
 							$return_data[$i]['image']                = $value->image;

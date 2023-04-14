@@ -571,9 +571,10 @@
 						)
 				->where('header_request.id', $id)->first();
 
-			$data['Body'] = BodyRequest::
-				select(
-				  'body_request.*'
+			$data['Body'] = BodyRequest::leftjoin('assets_supplies_inventory', 'body_request.digits_code','=', 'assets_supplies_inventory.digits_code')
+				->select(
+				  'body_request.*',
+				  'assets_supplies_inventory.quantity as wh_qty'
 				)
 				->where('body_request.header_request_id', $id)
 				->whereNull('deleted_at')

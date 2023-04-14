@@ -53,6 +53,7 @@
         <input type="hidden" value="0" name="action" id="action">
 
         <input type="hidden" value="{{$Header->requestid}}" name="headerID" id="headerID">
+        <input type="hidden" value="{{$Header->request_type_id}}"  id="request_type_id">
 
         <input type="hidden" value="" name="bodyID" id="bodyID">
 
@@ -245,18 +246,18 @@
                                                                 <td style="text-align:center" height="10">
                                                                         {{$rowresult->sub_category_id}}
                                                                 </td>
-                                                                <td style="text-align:center" height="10">
+                                                                <td style="text-align:center" height="10" class="qty">
                                                                     {{$rowresult->quantity}}
-                                                                    <input type='hidden' name="quantity" class="form-control text-center quantity_item" id="quantity" readonly value="{{$rowresult->quantity}}">
-                                                                    <input type='hidden' name="quantity_body" id="quantity{{$tableRow}}" readonly value="{{$rowresult->quantity}}">
+                                                                    {{-- <input type='hidden' name="quantity" class="form-control text-center quantity_item" id="quantity" readonly value="{{$rowresult->quantity}}">
+                                                                    <input type='hidden' name="quantity_body" id="quantity{{$tableRow}}" readonly value="{{$rowresult->quantity}}"> --}}
                                                                 </td>
                                                                 @if(in_array($Header->request_type_id, [6,7]))
-                                                                    <td style="text-align:center">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
-                                                                    <td style="text-align:center">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                           
-                                                                    <td style="text-align:center">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>
-                                                                    <td style="text-align:center">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td>
-                                                                    <td style="text-align:center">{{$rowresult->dr_qty}}</td> 
-                                                                    <td style="text-align:center">{{$rowresult->po_qty}}</td>   
+                                                                    <td style="text-align:center" class="rep_qty">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
+                                                                    <td style="text-align:center" class="ro_qty">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                           
+                                                                    <td style="text-align:center" class="served_qty">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>
+                                                                    <td style="text-align:center" class="unserved_qty">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td>
+                                                                    <td style="text-align:center" class="dr_qty">{{$rowresult->dr_qty ? $rowresult->dr_qty : 0}}</td> 
+                                                                    <td style="text-align:center" class="po_qty">{{$rowresult->po_qty ? $rowresult->po_qty : 0}}</td>   
                                                                     <td style="text-align:center">{{$rowresult->mo_so_num}}</td>   
                                                                     <td style="text-align:center">{{$rowresult->po_no}}</td>  
                                                                     
@@ -296,18 +297,18 @@
                                                                 <td style="text-align:center" height="10">
                                                                         {{$rowresult->sub_category_id}}
                                                                 </td>
-                                                                <td style="text-align:center" height="10">
+                                                                <td style="text-align:center" height="10" class="qty">
                                                                     {{$rowresult->quantity}}
-                                                                    <input type='hidden' name="quantity" class="form-control text-center quantity_item" id="quantity" readonly value="{{$rowresult->quantity}}">
-                                                                    <input type='hidden' name="quantity_body" id="quantity{{$tableRow}}" readonly value="{{$rowresult->quantity}}">
+                                                                        {{-- <input type='hidden' name="quantity" class="form-control text-center quantity_item" id="quantity" readonly value="{{$rowresult->quantity}}">
+                                                                        <input type='hidden' name="quantity_body" id="quantity{{$tableRow}}" readonly value="{{$rowresult->quantity}}"> --}}
                                                                 </td>
                                                                 @if(in_array($Header->request_type_id, [6,7]))
-                                                                    <td style="text-align:center">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
-                                                                    <td style="text-align:center">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                           
-                                                                    <td style="text-align:center">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>
-                                                                    <td style="text-align:center">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td>      
-                                                                    <td style="text-align:center">{{$rowresult->dr_qty}}</td> 
-                                                                    <td style="text-align:center">{{$rowresult->po_qty}}</td>   
+                                                                    <td style="text-align:center" class="rep_qty">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
+                                                                    <td style="text-align:center" class="ro_qty">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                           
+                                                                    <td style="text-align:center" class="served_qty">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>
+                                                                    <td style="text-align:center" class="unserved_qty">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td>
+                                                                    <td style="text-align:center" class="dr_qty">{{$rowresult->dr_qty ? $rowresult->dr_qty : 0}}</td> 
+                                                                    <td style="text-align:center" class="po_qty">{{$rowresult->po_qty ? $rowresult->po_qty : 0}}</td>   
                                                                     <td style="text-align:center">{{$rowresult->mo_so_num}}</td>   
                                                                     <td style="text-align:center">{{$rowresult->po_no}}</td>     
                                                                 
@@ -621,19 +622,85 @@
     
         }
     
-        // var tds = document
-        // .getElementById("asset-items1")
-        // .getElementsByTagName("td");
-        // var sumqty = 0;
-        // var sumcost = 0;
-        // for (var i = 0; i < tds.length; i++) {
-        // if (tds[i].className == "cost") {
-        //     sumcost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-        // }
-        // }
-        // document.getElementById("asset-items1").innerHTML +=
-        // "<tr><td colspan='7' style='text-align:right'><strong>TOTAL</strong></td><td style='text-align:center'><strong>" +
-        // sumcost.toFixed(2) +
-        // "</strong></td></td></tr>";
+        var tds = document
+        .getElementById("asset-items1")
+        .getElementsByTagName("td");
+        var sumqty       = 0;
+        var rep_qty      = 0;
+        var ro_qty       = 0;
+        var served_qty   = 0;
+        var unserved_qty = 0;
+        var dr_qty       = 0;
+        var po_qty       = 0;
+        for (var i = 0; i < tds.length; i++) {
+            if(tds[i].className == "qty") {
+                sumqty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+            }else if(tds[i].className == "rep_qty"){
+                rep_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+            }else if(tds[i].className == "ro_qty"){
+                ro_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+            }else if(tds[i].className == "served_qty"){
+                served_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+            }else if(tds[i].className == "unserved_qty"){
+                unserved_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+            }else if(tds[i].className == "dr_qty"){
+                dr_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+            }else if(tds[i].className == "po_qty"){
+                po_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+            }
+        }
+        document.getElementById("asset-items1").innerHTML +=
+        "<tr>"+
+            "<td colspan='4' style='text-align:right'>"+
+                    "<strong>TOTAL</strong>"+
+                "</td>"+
+                
+                "<td style='text-align:center'>"+
+                    "<strong>" +
+                    sumqty +
+                    "</strong>"+
+                "</td>"+
+                "<td style='text-align:center'>"+
+                    "<strong>" +
+                    rep_qty +
+                    "</strong>"+
+                "</td>"+
+                "<td style='text-align:center'>"+
+                    "<strong>" +
+                    ro_qty +
+                    "</strong>"+
+                "</td>"+
+                "<td style='text-align:center'>"+
+                    "<strong>" +
+                    served_qty +
+                    "</strong>"+
+                "</td>"+
+                "<td style='text-align:center'>"+
+                    "<strong>" +
+                    unserved_qty +
+                    "</strong>"+
+                "</td>"+
+                "<td style='text-align:center'>"+
+                    "<strong>" +
+                        dr_qty +
+                    "</strong>"+
+                "</td>"+
+                "<td style='text-align:center'>"+
+                    "<strong>" +
+                        po_qty +
+                    "</strong>"+
+                "</td>"+
+                "<td style='text-align:center'>"+
+                
+                "</td>"+
+                "<td style='text-align:center'>"+
+                
+                "</td>"+
+                "<td style='text-align:center'>"+
+                
+                "</td>"+
+                
+        "</tr>";
+        
 </script>
 @endpush

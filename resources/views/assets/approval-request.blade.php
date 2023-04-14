@@ -105,6 +105,7 @@
                         <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
                         <th width="10%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
                         <th width="10%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
+                        <th width="5%" class="text-center">WH Qty</th> 
                         <th width="5%" class="text-center">{{ trans('message.table.quantity_text') }}</th> 
                         @if(in_array($Header->request_type_id, [6,7]))       
                             <th width="5%" class="text-center">For Replenish Qty</th> 
@@ -124,6 +125,7 @@
                             <td style="text-align:center">{{$rowresult->item_description}}</td>
                             <td style="text-align:center">{{$rowresult->category_id}}</td>
                             <td style="text-align:center">{{$rowresult->sub_category_id}}</td>
+                            <td style="text-align:center">{{$rowresult->wh_qty}}</td>
                             <td style="text-align:center">{{$rowresult->quantity}}</td>
 
                             @if(in_array($Header->request_type_id, [6,7]))
@@ -140,7 +142,7 @@
                     @endforeach
 
                     <tr>
-                        <td colspan="4" style="text-align:right">
+                        <td colspan="5" style="text-align:right">
                             <label>{{ trans('message.table.total_quantity') }}:</label>
                         </td>
 

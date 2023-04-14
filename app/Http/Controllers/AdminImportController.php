@@ -24,14 +24,37 @@ class AdminImportController extends \crocodicstudio\crudbooster\controllers\CBCo
     public function fulfillmentUpload(Request $request) {
         $path_excel = $request->file('import_file')->store('temp');
         $path = storage_path('app').'/'.$path_excel;
-       
-        if($request->upload_type == "dr_rep"){
-            Excel::import(new FulfillmentUpload, $path);
-        }else{
-            Excel::import(new FulfillmentRoUpload, $path);
-        }
-        CRUDBooster::redirect(CRUDBooster::adminpath('for_purchasing'), trans("Upload Successfully!"), 'success');
+        $headings = array_filter((new HeadingRowImport)->toArray($path)[0][0]);
+
+        if (count($headings) !== 5) {
+			CRUDBooster::redirect(CRUDBooster::adminpath('for_purchasing'), 'Template column not match, please refer to downloaded template.', 'danger');
+		} else {
+            try {
+
+                if($request->upload_type == "dr_rep"){
+                    Excel::import(new FulfillmentUpload, $path);
+                }else{
+                    Excel::import(new FulfillmentRoUpload, $path);
+                }
+                CRUDBooster::redirect(CRUDBooster::adminpath('for_purchasing'), trans("Upload Successfully!"), 'success');
+                
+            } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+                $failures = $e->failures();
+                
+                $error = [];
+                foreach ($failures as $failure) {
+                    $line = $failure->row();
+                    foreach ($failure->errors() as $err) {
+                        $error[] = $err . " on line: " . $line; 
+                    }
+                }
+                
+                $errors = collect($error)->unique()->toArray();
         
+            }
+            CRUDBooster::redirect(CRUDBooster::adminpath('for_purchasing'), $errors[0], 'danger');
+
+		}
         
     }
 

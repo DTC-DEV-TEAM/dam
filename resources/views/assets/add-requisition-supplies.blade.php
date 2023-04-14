@@ -309,29 +309,36 @@
                         '</td>' +  
 
                         '<td>' + 
-                            '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control digits_code finput" data-id="'+ tableRow +'" id="digits_code'+ tableRow +'"  name="digits_code[]"   maxlength="100" readonly>' +
+                            '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control text-center digits_code finput" data-id="'+ tableRow +'" id="digits_code'+ tableRow +'"  name="digits_code[]"   maxlength="100" readonly>' +
                         '</td>' +
                         '<td style="display:none">' + 
                             '<input type="hidden" class="form-control cost" data-id="'+ tableRow +'" id="cost'+ tableRow +'"  name="supplies_cost[]"   maxlength="100" readonly>' +
                             '<input type="hidden" onkeyup="this.value = this.value.toUpperCase();" class="form-control fixed_description finput" data-id="'+ tableRow +'" id="fixed_description'+ tableRow +'"  name="fixed_description[]"   maxlength="100" readonly>' +
                         '</td>' +
-                        '<td>'+
-                            '<select class="form-control drop'+ tableRow + '" name="category_id[]" data-id="' + tableRow + '" id="category_id' + tableRow + '" required style="width:100%">' +
-                            '  ' +
-                            '        @foreach($categories as $data)'+
-                            '        <option value="{{$data->category_description}}">{{$data->category_description}}</option>'+
-                            '         @endforeach'+
-                            '</select>'+
-                        '</td>' +
 
-                        '<td>'+
-                            '<select selected data-placeholder="Select Sub Category" class="form-control sub_category_id" name="sub_category_id[]" data-id="' + tableRow + '" id="sub_category_id' + tableRow + '" required style="width:100%">' +
-                            '  <option value=""></option>' +
-                            '        @foreach($sub_categories as $data)'+
-                            '        <option value="{{$data->class_description}}">{{$data->class_description}}</option>'+
-                            '         @endforeach'+
-                            '</select>'+
-                        '</td>' +   
+                        '<td>' + 
+                            '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control text-center category_id finput" data-id="'+ tableRow +'" id="category_id'+ tableRow +'"  name="category_id[]"   maxlength="100" readonly>' +
+                        '</td>' +
+                        '<td>' + 
+                            '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control text-center sub_category_id finput" data-id="'+ tableRow +'" id="sub_category_id'+ tableRow +'"  name="sub_category_id[]"   maxlength="100" readonly>' +
+                        '</td>' +
+                        // '<td>'+
+                        //     '<select class="form-control drop'+ tableRow + '" name="category_id[]" data-id="' + tableRow + '" id="category_id' + tableRow + '" required style="width:100%">' +
+                        //     '  ' +
+                        //     '        @foreach($categories as $data)'+
+                        //     '        <option value="{{$data->category_description}}">{{$data->category_description}}</option>'+
+                        //     '         @endforeach'+
+                        //     '</select>'+
+                        // '</td>' +
+
+                        // '<td>'+
+                        //     '<select selected data-placeholder="Select Sub Category" class="form-control sub_category_id" name="sub_category_id[]" data-id="' + tableRow + '" id="sub_category_id' + tableRow + '" required style="width:100%">' +
+                        //     '  <option value=""></option>' +
+                        //     '        @foreach($sub_categories as $data)'+
+                        //     '        <option value="{{$data->class_description}}">{{$data->class_description}}</option>'+
+                        //     '         @endforeach'+
+                        //     '</select>'+
+                        // '</td>' +   
 
                         '<td><input class="form-control text-center finput wh_quantity" type="text" required name="wh_quantity[]" id="wh_quantity' + tableRow + '" data-id="' + tableRow  + '" readonly></td>' +
                         
@@ -351,9 +358,9 @@
                     $('.js-example-basic-multiple').select2();
                     // $('#itemDesc'+tableRow).select2({
                     // placeholder_text_single : "- Select Item Description -"});
-                    $('#category_id'+tableRow).select2({minimumResultsForSearch: -1});
-                    $('#sub_category_id'+tableRow).select2({
-                    placeholder_text_single : "- Select Sub Category -"});
+                    // $('#category_id'+tableRow).select2({minimumResultsForSearch: -1});
+                    // $('#sub_category_id'+tableRow).select2({
+                    // placeholder_text_single : "- Select Sub Category -"});
                     $('#app_id'+tableRow).change(function(){
 
                             if($('#app_id'+$(this).attr("data-id")).val() != null){
@@ -427,6 +434,7 @@
                                                         serial_no:                  item.serial_no,
                                                         value:                      item.item_description,
                                                         category_description:       item.category_description,
+                                                        class_description:          item.class_description,
                                                         item_cost:                  item.item_cost,
                                                         wh_qty:                     item.wh_qty,
                                                         unserved_qty:               item.unserved_qty,
@@ -460,6 +468,8 @@
                                             $('#itemDesc'+$(this).attr("data-id")).val(e.value);
                                             $('#itemDesc'+$(this).attr("data-id")).attr('readonly','readonly');
                                             $('#fixed_description'+$(this).attr("data-id")).val(e.value);
+                                            $('#category_id'+$(this).attr("data-id")).val(e.category_description);
+                                            $('#sub_category_id'+$(this).attr("data-id")).val(e.class_description);
                                             $('#wh_quantity'+$(this).attr("data-id")).val(e.wh_qty);
                                             $('#unserved_quantity'+$(this).attr("data-id")).val(e.unserved_qty);
                                             $('#val_item').html('');
