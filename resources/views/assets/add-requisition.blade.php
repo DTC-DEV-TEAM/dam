@@ -82,7 +82,7 @@
         <input type="hidden" value="1" name="request_type_id" id="request_type_id">
 
         <div class='panel-body'>
-
+            {{-- header --}}
             <div class="row">
 
                 <div class="col-md-6">
@@ -105,13 +105,8 @@
                 </div>
 
             </div>
-
-
+            {{-- header --}}
             <div class="row">
-
-
-
-
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label require">{{ trans('message.form-label.department') }}</label>
@@ -131,7 +126,7 @@
             </div>
 
             <hr/>
-
+            {{-- purpose --}}
             <div class="row"> 
                 <label class="require control-label col-md-2">*{{ trans('message.form-label.purpose') }}</label>
                     @foreach($purposes as $data)
@@ -152,7 +147,7 @@
             </div>
 
             <hr/>
-
+            {{-- table --}}
             <div class="row">
                 <div class="col-md-12">
                     <div class="box-header text-center">
@@ -169,6 +164,8 @@
                                                             <th width="20%" class="text-center">Digits Code</th>
                                                             <th width="25%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                                                                                    
                                                             <th width="20%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
+                                                            <th width="15%" class="text-center"> Wh Quantity</th>
+                                                            <th width="15%" class="text-center"> Unserved Quantity</th> 
                                                             <th width="7%" class="text-center">*{{ trans('message.table.quantity_text') }}</th> 
                                                             <th width="5%" class="text-center">{{ trans('message.table.action') }}</th>
                                                         </tr>
@@ -185,7 +182,7 @@
 
                                                         <tr id="tr-table1" class="bottom">
             
-                                                            <td colspan="4">
+                                                            <td colspan="6">
                                                                 <input type="button" id="add-Row" name="add-Row" class="btn btn-primary add" value='Add Item' />
                                                             </td>
                                                             <td align="left" colspan="1">
@@ -412,6 +409,9 @@
                             '<br/><br/><input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control AppOthers" data-id="' + tableRow + '" id="AppOthers' + tableRow + '"  name="app_id_others[]" maxlength="100">' +
                         '</td>' +   
                         */        
+                        '<td><input class="form-control text-center finput wh_quantity" type="text" required name="wh_quantity[]" id="wh_quantity' + tableRow + '" data-id="' + tableRow  + '" readonly></td>' +
+                        
+                        '<td><input class="form-control text-center finput unserved_quantity" type="text" required name="unserved_quantity[]" id="unserved_quantity' + tableRow + '" data-id="' + tableRow  + '" readonly></td>' +
                         
                         '<td><input class="form-control text-center quantity_item" type="number" required name="quantity[]" id="quantity' + tableRow + '" data-id="' + tableRow  + '"  value="1" min="0" max="9999999999" step="any" onKeyPress="if(this.value.length==4) return false;" oninput="validity.valid;" readonly></td>' +
                         
@@ -508,7 +508,8 @@
                                             value:                      item.item_description,
                                             category_description:       item.category_description,
                                             item_cost:                  item.item_cost,
-                                        
+                                            wh_qty:                     item.wh_qty,
+                                            unserved_qty:               item.unserved_qty,
                                         }
 
                                     }));
@@ -539,6 +540,8 @@
                                 $('#itemDesc'+$(this).attr("data-id")).val(e.value);
                                 $('#itemDesc'+$(this).attr("data-id")).attr('readonly','readonly');
                                 $('#fixed_description'+$(this).attr("data-id")).val(e.value);
+                                $('#wh_quantity'+$(this).attr("data-id")).val(e.wh_qty);
+                                $('#unserved_quantity'+$(this).attr("data-id")).val(e.unserved_qty);
                                 $('#val_item').html('');
                                 return false;
 

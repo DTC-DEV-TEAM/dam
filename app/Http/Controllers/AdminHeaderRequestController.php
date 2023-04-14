@@ -1463,39 +1463,64 @@
 		
 					//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
 		
-					$items = DB::table('assets')
+					$item = DB::table('assets')
 					->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',5)->where('assets.status','!=','INACTIVE')
 					->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',5)->where('assets.status','!=','INACTIVE')
-					
-						->join('category', 'assets.category_id','=', 'category.id')
-						//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
-						->select(	'assets.*',
-									'assets.id as assetID',
-									//'digits_imfs.digits_code as dcode',
-									'category.category_description as category_description'
-								)->take(10)->get();
-					
-					if($items){
+					->join('category', 'assets.category_id','=', 'category.id')
+
+					//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
+					->select(	'assets.*',
+								'assets.id as assetID',
+								'category.category_description as category_description'
+							)->take(10)->get();
+					$arraySearch = DB::table('assets_inventory_body')->select('digits_code as digits_code',DB::raw('SUM(quantity) as wh_qty'))->where('statuses_id',6)->groupBy('digits_code')->get()->toArray();
+					$items = [];
+					foreach($item as $itemKey => $itemVal){
+						$i = array_search($itemVal->digits_code, array_column($arraySearch,'digits_code'));
+						if($i !== false){
+							$itemVal->inv_value = $arraySearch[$i];
+							$items[] = $itemVal;
+						}else{
+							$itemVal->inv_value = "";
+							$items[] = $itemVal;
+						}
+					}
+
+					$arraySearchUnservedQty = DB::table('body_request')->select('digits_code as digits_code',DB::raw('SUM(unserved_qty) as unserved_qty'))->where('body_request.created_by',CRUDBooster::myId())->groupBy('digits_code')->get()->toArray();
+					$finalItems = [];
+					foreach($items as $itemsKey => $itemsVal){
+						$i = array_search($itemsVal->digits_code, array_column($arraySearchUnservedQty,'digits_code'));
+						if($i !== false){
+							$itemsVal->unserved_qty = $arraySearchUnservedQty[$i];
+							$finalItems[] = $itemsVal;
+						}else{
+							$itemsVal->unserved_qty = "";
+							$finalItems[] = $itemsVal;
+						}
+					}
+					if($finalItems){
 						$data['status'] = 1;
 						$data['problem']  = 1;
 						$data['status_no'] = 1;
 						$data['message']   ='Item Found';
 						$i = 0;
-						foreach ($items as $key => $value) {
+						foreach ($finalItems as $key => $value) {
 		
-							$return_data[$i]['id'] = 				$value->assetID;
-							$return_data[$i]['asset_code'] = 		$value->asset_code;
-							$return_data[$i]['digits_code'] = 		$value->digits_code;
-							$return_data[$i]['asset_tag'] = 		$value->asset_tag;
-							$return_data[$i]['serial_no'] = 		$value->serial_no;
-							$return_data[$i]['item_description'] = 	$value->item_description;
-							$return_data[$i]['category_description'] = 		$value->category_description;
-							$return_data[$i]['item_cost'] = 				$value->item_cost;
-							$return_data[$i]['item_type'] = 				$value->item_type;
-							$return_data[$i]['image'] = 				$value->image;
-							$return_data[$i]['quantity'] = 				$value->quantity;
-							$return_data[$i]['total_quantity'] = 				$value->total_quantity;
-		
+							$return_data[$i]['id']                   = 	$value->assetID;
+							$return_data[$i]['asset_code']           = 	$value->asset_code;
+							$return_data[$i]['digits_code']          = 	$value->digits_code;
+							$return_data[$i]['asset_tag']            = 	$value->asset_tag;
+							$return_data[$i]['serial_no']            = 	$value->serial_no;
+							$return_data[$i]['item_description']     = 	$value->item_description;
+							$return_data[$i]['category_description'] = 	$value->category_description;
+							$return_data[$i]['item_cost']            = 	$value->item_cost;
+							$return_data[$i]['item_type']            = 	$value->item_type;
+							$return_data[$i]['image']                = 	$value->image;
+							$return_data[$i]['quantity']             = 	$value->quantity;
+							$return_data[$i]['total_quantity']       = 	$value->total_quantity;
+							$return_data[$i]['wh_qty']               =  $value->inv_value->wh_qty  ? $value->inv_value->wh_qty : 0;
+							$return_data[$i]['unserved_qty']         =  $value->unserved_qty->unserved_qty  ? $value->unserved_qty->unserved_qty : 0;
+
 							$i++;
 		
 						}
@@ -1526,14 +1551,20 @@
 					$items = DB::table('assets')
 					->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',1)->where('assets.status','!=','INACTIVE')
 					->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',1)->where('assets.status','!=','INACTIVE')
-					
-						->join('category', 'assets.category_id','=', 'category.id')
-						//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
-						->select(	'assets.*',
-									'assets.id as assetID',
-									//'digits_imfs.digits_code as dcode',
-									'category.category_description as category_description'
-								)->take(10)->get();
+					->join('category', 'assets.category_id','=', 'category.id')
+					->leftjoin('assets_supplies_inventory', 'assets.digits_code','=', 'assets_supplies_inventory.digits_code')
+
+					->leftJoin('body_request', function($join) 
+					{
+						$join->on('assets.digits_code', '=', 'body_request.digits_code')
+						->where('body_request.created_by',CRUDBooster::myId());
+					})
+					//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
+					->select(	'assets.*',
+								'assets.id as assetID',
+								//'digits_imfs.digits_code as dcode',
+								'category.category_description as category_description'
+							)->take(10)->get();
 					
 					if($items){
 						$data['status'] = 1;
@@ -1543,18 +1574,20 @@
 						$i = 0;
 						foreach ($items as $key => $value) {
 		
-							$return_data[$i]['id'] = 				$value->assetID;
-							$return_data[$i]['asset_code'] = 		$value->asset_code;
-							$return_data[$i]['digits_code'] = 		$value->digits_code;
-							$return_data[$i]['asset_tag'] = 		$value->asset_tag;
-							$return_data[$i]['serial_no'] = 		$value->serial_no;
-							$return_data[$i]['item_description'] = 	$value->item_description;
-							$return_data[$i]['category_description'] = 		$value->category_description;
-							$return_data[$i]['item_cost'] = 				$value->item_cost;
-							$return_data[$i]['item_type'] = 				$value->item_type;
-							$return_data[$i]['image'] = 				$value->image;
-							$return_data[$i]['quantity'] = 				$value->quantity;
-							$return_data[$i]['total_quantity'] = 				$value->total_quantity;
+							$return_data[$i]['id']                   = 	$value->assetID;
+							$return_data[$i]['asset_code']           = 	$value->asset_code;
+							$return_data[$i]['digits_code']          = 	$value->digits_code;
+							$return_data[$i]['asset_tag']            = 	$value->asset_tag;
+							$return_data[$i]['serial_no']            = 	$value->serial_no;
+							$return_data[$i]['item_description']     = 	$value->item_description;
+							$return_data[$i]['category_description'] = 	$value->category_description;
+							$return_data[$i]['item_cost']            = 	$value->item_cost;
+							$return_data[$i]['item_type']            = 	$value->item_type;
+							$return_data[$i]['image']                = 	$value->image;
+							$return_data[$i]['quantity']             = 	$value->quantity;
+							$return_data[$i]['total_quantity']       = 	$value->total_quantity;
+							$return_data[$i]['wh_qty']               =  $value->wh_qty  ? $value->wh_qty : 0;
+							$return_data[$i]['unserved_qty']         =  $value->unserved_qty  ? $value->unserved_qty : 0;
 		
 							$i++;
 		
@@ -1586,14 +1619,19 @@
 					$items = DB::table('assets')
 					->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',4)->where('assets.status','!=','INACTIVE')
 					->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',4)->where('assets.status','!=','INACTIVE')
-					
-						->join('category', 'assets.category_id','=', 'category.id')
-						//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
-						->select(	'assets.*',
-									'assets.id as assetID',
-									//'digits_imfs.digits_code as dcode',
-									'category.category_description as category_description'
-								)->take(10)->get();
+					->join('category', 'assets.category_id','=', 'category.id')
+					->leftjoin('assets_supplies_inventory', 'assets.digits_code','=', 'assets_supplies_inventory.digits_code')
+					->leftJoin('body_request', function($join) 
+					{
+						$join->on('assets.digits_code', '=', 'body_request.digits_code')
+						->where('body_request.created_by',CRUDBooster::myId());
+					})
+					//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
+					->select(	'assets.*',
+								'assets.id as assetID',
+								//'digits_imfs.digits_code as dcode',
+								'category.category_description as category_description'
+							)->take(10)->get();
 					
 					if($items){
 						$data['status'] = 1;
@@ -1603,18 +1641,20 @@
 						$i = 0;
 						foreach ($items as $key => $value) {
 		
-							$return_data[$i]['id'] = 				$value->assetID;
-							$return_data[$i]['asset_code'] = 		$value->asset_code;
-							$return_data[$i]['digits_code'] = 		$value->digits_code;
-							$return_data[$i]['asset_tag'] = 		$value->asset_tag;
-							$return_data[$i]['serial_no'] = 		$value->serial_no;
-							$return_data[$i]['item_description'] = 	$value->item_description;
-							$return_data[$i]['category_description'] = 		$value->category_description;
-							$return_data[$i]['item_cost'] = 				$value->item_cost;
-							$return_data[$i]['item_type'] = 				$value->item_type;
-							$return_data[$i]['image'] = 				$value->image;
-							$return_data[$i]['quantity'] = 				$value->quantity;
-							$return_data[$i]['total_quantity'] = 				$value->total_quantity;
+							$return_data[$i]['id']                   = 	$value->assetID;
+							$return_data[$i]['asset_code']           = 	$value->asset_code;
+							$return_data[$i]['digits_code']          = 	$value->digits_code;
+							$return_data[$i]['asset_tag']            = 	$value->asset_tag;
+							$return_data[$i]['serial_no']            = 	$value->serial_no;
+							$return_data[$i]['item_description']     = 	$value->item_description;
+							$return_data[$i]['category_description'] = 	$value->category_description;
+							$return_data[$i]['item_cost']            = 	$value->item_cost;
+							$return_data[$i]['item_type']            = 	$value->item_type;
+							$return_data[$i]['image']                = 	$value->image;
+							$return_data[$i]['quantity']             = 	$value->quantity;
+							$return_data[$i]['total_quantity']       = 	$value->total_quantity;
+							$return_data[$i]['wh_qty']               =  $value->wh_qty  ? $value->wh_qty : 0;
+							$return_data[$i]['unserved_qty']         =  $value->unserved_qty  ? $value->unserved_qty : 0;
 		
 							$i++;
 		
@@ -1650,29 +1690,33 @@
 						->join('category', 'assets.category_id','=', 'category.id')
 						->join('class', 'assets.class_id','=', 'class.id')
 						->leftjoin('assets_supplies_inventory', 'assets.digits_code','=', 'assets_supplies_inventory.digits_code')
-	
-						->leftJoin('body_request', function($join) 
-						{
-							$join->on('assets.digits_code', '=', 'body_request.digits_code')
-							->where('body_request.created_by',CRUDBooster::myId());
-						})
 						//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
 						->select(	'assets.*',
 									'assets.id as assetID',
 									'assets_supplies_inventory.quantity as wh_qty',
-									DB::raw('SUM(body_request.unserved_qty) as unserved_qty'),
 									//'digits_imfs.digits_code as dcode',
 									'category.category_description as category_description',
 									'class.class_description as class_description'
 								)->take(10)->get();
-					
-					if($items){
+					$arraySearchUnservedQty = DB::table('body_request')->select('digits_code as digits_code',DB::raw('SUM(unserved_qty) as unserved_qty'))->where('body_request.created_by',CRUDBooster::myId())->groupBy('digits_code')->get()->toArray();
+					$finalItems = [];
+					foreach($items as $itemsKey => $itemsVal){
+						$i = array_search($itemsVal->digits_code, array_column($arraySearchUnservedQty,'digits_code'));
+						if($i !== false){
+							$itemsVal->unserved_qty = $arraySearchUnservedQty[$i];
+							$finalItems[] = $itemsVal;
+						}else{
+							$itemsVal->unserved_qty = "";
+							$finalItems[] = $itemsVal;
+						}
+					}
+					if($finalItems){
 						$data['status'] = 1;
 						$data['problem']  = 1;
 						$data['status_no'] = 1;
 						$data['message']   ='Item Found';
 						$i = 0;
-						foreach ($items as $key => $value) {
+						foreach ($finalItems as $key => $value) {
 		
 							$return_data[$i]['id']                   = $value->assetID;
 							$return_data[$i]['asset_code']           = $value->asset_code;
@@ -1688,7 +1732,7 @@
 							$return_data[$i]['quantity']             = $value->quantity;
 							$return_data[$i]['total_quantity']       = $value->total_quantity;
 							$return_data[$i]['wh_qty']               = $value->wh_qty  ? $value->wh_qty : 0;
-							$return_data[$i]['unserved_qty']         = $value->unserved_qty  ? $value->unserved_qty : 0;
+							$return_data[$i]['unserved_qty']         = $value->unserved_qty->unserved_qty  ? $value->unserved_qty->unserved_qty : 0;
 							$i++;
 		
 						}

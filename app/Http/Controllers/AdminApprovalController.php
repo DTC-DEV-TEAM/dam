@@ -461,6 +461,13 @@
 						$finalContData[] = $containerData;
 					}
 			    }
+				// else{
+				// 	//GET ASSETS INVENTORY AVAILABLE COUNT
+				// 	$inventoryList = DB::table('assets_inventory_body')->select('digits_code as digits_code',DB::raw('SUM(quantity) as avail_qty'))->where('statuses_id',6)->groupBy('digits_code')->get();
+				// 	//GET RESERVED QTY 
+				// 	$reservedList = DB::table('assets_inventory_reserved')->select('digits_code as digits_code',DB::raw('SUM(approved_qty) as reserved_qty'))->groupBy('digits_code')->groupBy('reference_number')->get()->toArray();
+				// 	dd($inventoryList, $reservedList);
+				// }
 
 			}else{
 
