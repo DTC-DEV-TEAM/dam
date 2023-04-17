@@ -545,7 +545,7 @@
 		
 
 			$fields = Request::all();
-			
+			//dd($fields);
 			$cont = (new static)->apiContext;
 
 			$dataLines1 = array();
@@ -1067,21 +1067,21 @@
 			// 									   ->get();
 			//Option 2
 			if(in_array(CRUDBooster::myPrivilegeId(),[5,17])){
-				$data['AssetRequest'] = HeaderRequest::whereNotNull('purchased2_by')->where('mo_plug', 0)
+				$data['AssetRequest'] = HeaderRequest::where('mo_plug', 0)
 				->where('request_type_id' , 1)
 				->where('status_id','!=',13)
 				->whereNotNull('created_by')
 				->orwhere('to_mo', 1)
 				->get();
 			}else if(in_array(CRUDBooster::myPrivilegeId(),[9])){
-				$data['AssetRequest'] = HeaderRequest::whereNotNull('purchased2_by')->where('mo_plug', 0)
+				$data['AssetRequest'] = HeaderRequest::where('mo_plug', 0)
 				->where('request_type_id' , 5)
 				->where('status_id','!=',13)
 				->whereNotNull('created_by')
 				->orwhere('to_mo', 1)
 				->get();
 			}else{
-				$data['AssetRequest'] = HeaderRequest::whereNotNull('purchased2_by')->where('mo_plug', 0)
+				$data['AssetRequest'] = HeaderRequest::where('mo_plug', 0)
 				->where('status_id','!=',13)
 				->whereNotNull('created_by')
 				->orwhere('to_mo', 1)
@@ -1612,49 +1612,49 @@
 					<tr>
 						<td>
 							<input type="hidden"  class="form-control"  name="add_item_id[]" id="add_item_id'.$tableRow.'"  required  value='.$rowresult->id.'">                                                                               
-							<input type="hidden"  class="form-control"  name="item_description[]" id="item_description'.$tableRow.'"  required  value="'.$rowresult->item_description.'">
+							<input type="hidden"  class="form-control text-center finput"  name="item_description[]" id="item_description'.$tableRow.'"  required  value="'.$rowresult->item_description.'">
 							<input type="hidden"  class="form-control"  name="remove_btn[]" id="remove_btn'.$tableRow.'"  required  value="'.$tableRow.'">
 							<input type="hidden"  class="form-control"  name="remove_btn[]" id="category"  required  value="'.$data['Header']->request_type_id.'">
 							<button type="button"  data-id="'.$tableRow.'"  class="btn btn-primary btnsearch" id="searchrow'.$tableRow.'" name="searchrow" disabled data-toggle="tooltip" data-placement="bottom" title="Search Item"><i class="glyphicon glyphicon-search"></i></button>
 						</td>
 						<td style="text-align:center" height="10">
-							'.$rowresult->digits_code.'
+							<input class="form-control text-center itemDcode finput" type="text" name="add_digits_code[]" value="'.$rowresult->digits_code.'" required max="99999999" readonly>                                                                              
 						</td>
 						<td style="text-align:center" height="10">
-							'.$rowresult->item_description.'
+						    <input type="text"  class="form-control text-center finput"  name="add_item_description[]" id="add_item_description'.$tableRow.'"  required  value="'.$rowresult->item_description.'">
 						</td>
 
 						<td style="text-align:center" height="10">
-							'.$rowresult->category_id.'
+							<input type="text"  class="form-control text-center finput"  name="category_id[]" id="category_id'.$tableRow.'"  required  value="'.$rowresult->category_id.'">
                         </td>
 
 						<td style="text-align:center" height="10">
-							'.$rowresult->sub_category_id.'
+						   <input type="text"  class="form-control text-center finput"  name="sub_category_id[]" id="sub_category_id'.$tableRow.'"  required  value="'.$rowresult->sub_category_id.'">
                         </td>
 
 						<td style="text-align:center" height="10">
-							'.$rowresult->quantity.'
+						  <input type="text"  class="form-control text-center finput"  name="quantity[]" id="quantity'.$tableRow.'"  required  value="'.$rowresult->quantity.'">
                         </td>	
 				';
 
-				if($data['Header']->recommendedby != null || $data['Header']->recommendedby != ""){ 
-					$data['ARFBody'] .='
+				// if($data['Header']->recommendedby != null || $data['Header']->recommendedby != ""){ 
+				// 	$data['ARFBody'] .='
 
-							<td style="text-align:center" height="10">
-								'.$rowresult->recommendation.'
-							</td>
+				// 			<td style="text-align:center" height="10">
+				// 				'.$rowresult->recommendation.'
+				// 			</td>
 
-							<td style="text-align:center" height="10">
-								'.$rowresult->reco_digits_code.'
-                             </td>
+				// 			<td style="text-align:center" height="10">
+				// 				'.$rowresult->reco_digits_code.'
+                //              </td>
 
-                             <td style="text-align:center" height="10">
-							 	'.$rowresult->reco_item_description.'
-                             </td>
+                //              <td style="text-align:center" height="10">
+				// 			 	'.$rowresult->reco_item_description.'
+                //              </td>
 
-						</tr>
-					';
-				}
+				// 		</tr>
+				// 	';
+				// }
 
 			}
 
@@ -1679,13 +1679,13 @@
 											<th width="5%" class="text-center">Qty</th>';
 
 
-											if($data['Header']->recommendedby != null || $data['Header']->recommendedby != ""){ 
-												$data['ARFBodyTable'] .= '
-													<th width="7%" class="text-center">Laptop Type</th> 
-													<th width="10%" class="text-center">Digits Code Reco</th> 
-													<th width="20%" class="text-center">Item Description Reco</th>
-												';
-											}
+											// if($data['Header']->recommendedby != null || $data['Header']->recommendedby != ""){ 
+											// 	$data['ARFBodyTable'] .= '
+											// 		<th width="7%" class="text-center">Laptop Type</th> 
+											// 		<th width="10%" class="text-center">Digits Code Reco</th> 
+											// 		<th width="20%" class="text-center">Item Description Reco</th>
+											// 	';
+											// }
 											
 
 		$data['ARFBodyTable'] .= '	

@@ -125,9 +125,13 @@
                             <td style="text-align:center">{{$rowresult->item_description}}</td>
                             <td style="text-align:center">{{$rowresult->category_id}}</td>
                             <td style="text-align:center">{{$rowresult->sub_category_id}}</td>
+                            @if(in_array($Header->request_type_id, [6,7]))  
                             <td style="text-align:center" class="wh_qty">{{$rowresult->wh_qty ? $rowresult->wh_qty : 0}}</td>
-                            <td style="text-align:center" class="qty">{{$rowresult->quantity}}</td>
+                            @else
+                            <td style="text-align:center" class="wh_qty">{{$rowresult->available_qty ? $rowresult->available_qty : 0}}</td>
+                            @endif 
 
+                            <td style="text-align:center" class="qty">{{$rowresult->quantity}}</td>
                             {{-- @if(in_array($Header->request_type_id, [6,7])) --}}
                                 <td style="text-align:center" class="rep_qty">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
                                 <td style="text-align:center" class="ro_qty">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                           

@@ -1498,13 +1498,34 @@
 							$finalItems[] = $itemsVal;
 						}
 					}
-					if($finalItems){
+
+					//get reserved qty
+					$reservedList = DB::table('assets_inventory_reserved')->select('digits_code as digits_code',DB::raw('SUM(approved_qty) as reserved_qty'))->groupBy('digits_code')->groupBy('reference_number')->get()->toArray();
+					$resultInventory = [];
+					foreach($finalItems as $invKey => $invVal){
+						$i = array_search($invVal->digits_code, array_column($reservedList,'digits_code'));
+						if($i !== false){
+							$invVal->reserved_value = $reservedList[$i];
+							$resultInventory[] = $invVal;
+						}else{
+							$invVal->reserved_value = "";
+							$resultInventory[] = $invVal;
+						}
+					}
+					//get the final available qty
+					$finalInventory = [];
+					foreach($resultInventory as $fKey => $fVal){
+						$fVal->available_qty = max($fVal->inv_value->wh_qty - $fVal->reserved_value->reserved_qty,0);
+						$finalInventory[] = $fVal;
+					}
+
+					if($finalInventory){
 						$data['status'] = 1;
 						$data['problem']  = 1;
 						$data['status_no'] = 1;
 						$data['message']   ='Item Found';
 						$i = 0;
-						foreach ($finalItems as $key => $value) {
+						foreach ($finalInventory as $key => $value) {
 		
 							$return_data[$i]['id']                   = 	$value->assetID;
 							$return_data[$i]['asset_code']           = 	$value->asset_code;
@@ -1518,7 +1539,7 @@
 							$return_data[$i]['image']                = 	$value->image;
 							$return_data[$i]['quantity']             = 	$value->quantity;
 							$return_data[$i]['total_quantity']       = 	$value->total_quantity;
-							$return_data[$i]['wh_qty']               =  $value->inv_value->wh_qty  ? $value->inv_value->wh_qty : 0;
+							$return_data[$i]['wh_qty']               =  $value->available_qty  ? $value->available_qty : 0;
 							$return_data[$i]['unserved_qty']         =  $value->unserved_qty->unserved_qty  ? $value->unserved_qty->unserved_qty : 0;
 
 							$i++;
