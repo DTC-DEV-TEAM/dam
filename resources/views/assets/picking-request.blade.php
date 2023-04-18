@@ -129,19 +129,19 @@
                                         <tr class="tbl_header_color dynamicRows">
                                             <!-- <th width="13%" class="text-center">{{ trans('message.table.action') }}</th>  -->
                                             <th width="5%" class="text-center">Good</th> 
-                                            <th class="text-center">Defective</th>
+                                            <th width="5%" class="text-center">Defective</th>
                                             <th width="10%" class="text-center">{{ trans('message.table.mo_reference_number') }}</th>
                                             <!-- <th width="13%" class="text-center">{{ trans('message.table.status_id') }}</th> -->
-                                            <th width="10%" class="text-center">{{ trans('message.table.digits_code') }}</th>
-                                            <th width="10%" class="text-center">{{ trans('message.table.asset_tag') }}</th>
-                                            <th width="26%" class="text-center">{{ trans('message.table.item_description') }}</th>
-                                            <th width="13%" class="text-center">{{ trans('message.table.serial_no') }}</th>
+                                            <th width="8%" class="text-center">{{ trans('message.table.digits_code') }}</th>
+                                            <th width="8%" class="text-center">{{ trans('message.table.asset_tag') }}</th>
+                                            <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
+                                            <th width="8%" class="text-center">{{ trans('message.table.serial_no') }}</th>
                                             <th width="4%" class="text-center">{{ trans('message.table.item_quantity') }}</th>
                                             <!-- <th width="8%" class="text-center">{{ trans('message.table.item_cost') }}</th>
                                             <th width="16%" class="text-center">{{ trans('message.table.item_total_cost') }}</th>
                                             -->
-                                            <th>Comments</th>
-                                            
+                                            <th width="8%">Comments</th>
+                                            <th width="8%">Asset Code Tagging</th>
                                         </tr>
                                         
                                         <?php   $tableRow1 = 0; ?>
@@ -202,13 +202,22 @@
                                                     </td>
                   
                                                     <td>
-                                                    <select required selected data-placeholder="-- Select Comments --" id="comments{{$tableRow1}}" data-id="{{$tableRow1}}" name="comments[]" class="form-select select2 comments" style="width:100%;" multiple="multiple">
+                                                    <select required selected data-placeholder="Select Comments" id="comments{{$tableRow1}}" data-id="{{$tableRow1}}" name="comments[]" class="form-select select2 comments" style="width:100%;" multiple="multiple">
                                                         @foreach($good_defect_lists as $good_defect_list)
                                                             <option value=""></option>
                                                             <option value="{{ $rowresult->asset_code. '|' .$rowresult->digits_code. '|' .$good_defect_list->defect_description }}">{{ $good_defect_list->defect_description }}</option>
                                                         @endforeach
                                                     </select>
                                                     </td>
+
+                                                    <td>
+                                                        <select required selected data-placeholder="Tag Asset Code" id="asset_code_tag{{$tableRow1}}" data-id="{{$tableRow1}}" name="asset_code_tag[]" class="form-select asset_code_tag" style="width:100%;">
+                                                            @foreach($assets_code as $asset_code)
+                                                                <option value=""></option>
+                                                                <option value="{{ $asset_code->id }}">{{ $asset_code->asset_code }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                        </td>
                                                     
                                                 </tr>
 
@@ -324,6 +333,8 @@
     $('.select2').select2({
     placeholder_text_single : "-- Select --",
     multiple: true});
+
+    $('.asset_code_tag').select2({allowClear: true});
     var searchfield = $(this).find('.select2-search--inline');
     var selection = $(this).find('.select2-selection__rendered');
     $(this).find('.select2-search__field').html("");

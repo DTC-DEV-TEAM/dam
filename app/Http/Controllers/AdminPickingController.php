@@ -11,7 +11,7 @@
 	use App\CommentsGoodDefect;
 	use App\MoveOrder;
 	use App\GoodDefectLists;
-	
+	use App\AssetsInventoryBody;
 	//use Illuminate\Http\Request;
 	//use Illuminate\Support\Facades\Input;
 	use Illuminate\Support\Facades\Log;
@@ -838,6 +838,8 @@
 			//   ->where('comments_good_defect_tbl.asset_code', $asset_code['asset_code'])
 			//   ->get();
 			$data['good_defect_lists'] = GoodDefectLists::all();
+			$data['assets_code'] = AssetsInventoryBody::select('asset_code as asset_code','id as id')->where('item_category', 'IT ASSETS')->get();
+
 			return $this->view("assets.picking-request", $data);
 		}
 

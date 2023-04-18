@@ -12,6 +12,7 @@ class AssetsInventoryReserved extends Model
         'body_id', 
         'digits_code', 
         'approved_qty', 
+        'reserved', 
         'requested_by',
         'updated_by',
         'updated_at	',

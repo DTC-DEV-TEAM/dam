@@ -1500,7 +1500,7 @@
 					}
 
 					//get reserved qty
-					$reservedList = DB::table('assets_inventory_reserved')->select('digits_code as digits_code',DB::raw('SUM(approved_qty) as reserved_qty'))->groupBy('digits_code')->groupBy('reference_number')->get()->toArray();
+					$reservedList = DB::table('assets_inventory_reserved')->select('digits_code as digits_code',DB::raw('SUM(approved_qty) as reserved_qty'))->whereNotNull('reserved')->groupBy('digits_code')->groupBy('reference_number')->get()->toArray();
 					$resultInventory = [];
 					foreach($finalItems as $invKey => $invVal){
 						$i = array_search($invVal->digits_code, array_column($reservedList,'digits_code'));
