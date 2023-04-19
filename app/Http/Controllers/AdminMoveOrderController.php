@@ -1576,7 +1576,7 @@
 
 				$data['ARFBody'] .='
 
-					<tr>
+					<tr style="background-color: #d4edda; color:#155724">
 						<input type="hidden"  class="form-control text-center finput"  name="item_description[]" id="item_description'.$tableRow.'"  required  value="'.$rowresult->item_description.'">
 						<input type="hidden"  class="form-control"  name="remove_btn[]" id="remove_btn'.$tableRow.'"  required  value="'.$tableRow.'">
 						<input type="hidden"  class="form-control"  name="remove_btn[]" id="category"  required  value="'.$data['Header']->request_type_id.'">
@@ -1589,19 +1589,19 @@
 							<input class="form-control text-center itemDcode finput" type="text" name="add_digits_code[]" value="'.$rowresult->digits_code.'" required max="99999999" readonly>                                                                              
 						</td>
 						<td style="text-align:center" height="10">
-						    <input type="text"  class="form-control text-center finput"  name="add_item_description[]" id="add_item_description'.$tableRow.'"  required  value="'.$rowresult->item_description.'">
+						    <input type="text"  class="form-control text-center finput"  name="add_item_description[]" id="add_item_description'.$tableRow.'"  required  value="'.$rowresult->item_description.'" readonly>
 						</td>
 
 						<td style="text-align:center" height="10">
-							<input type="text"  class="form-control text-center finput"  name="category_id[]" id="category_id'.$tableRow.'"  required  value="'.$rowresult->category_id.'">
+							<input type="text"  class="form-control text-center finput"  name="category_id[]" id="category_id'.$tableRow.'"  required  value="'.$rowresult->category_id.'" readonly>
                         </td>
 
 						<td style="text-align:center" height="10">
-						   <input type="text"  class="form-control text-center finput"  name="sub_category_id[]" id="sub_category_id'.$tableRow.'"  required  value="'.$rowresult->sub_category_id.'">
+						   <input type="text"  class="form-control text-center finput"  name="sub_category_id[]" id="sub_category_id'.$tableRow.'"  required  value="'.$rowresult->sub_category_id.'" readonly>
                         </td>
 
 						<td style="text-align:center" height="10">
-						  <input type="text"  class="form-control text-center finput"  name="add_quantity[]" id="add_quantity'.$tableRow.'"  required  value="'.$rowresult->quantity.'">
+						  <input type="text"  class="form-control text-center finput"  name="add_quantity[]" id="add_quantity'.$tableRow.'"  required  value="'.$rowresult->quantity.'" readonly>
                         </td>	
 
 						<td style="text-align:center" class="rep_qty">
@@ -1621,9 +1621,12 @@
 						</td>
 						<td style="text-align:center" class="total_cost">
 						'. ($rowresult->unit_cost * $rowresult->serve_qty) .'
+						</td>
+						<td style="text-align:center"><i data-toggle="tooltip" data-placement="right" title="Selected" class="fa fa-check-circle text-success"></i></td>
 					';
 				}else{
 					$data['ARFBody'] .='
+					<tr >
 					   <td style="text-align:center" height="10">
 							'.$rowresult->digits_code.'                                                                            
 						</td>
@@ -1657,7 +1660,8 @@
 						<td style="text-align:center" class="total_cost">
 						'. ($rowresult->unit_cost * $rowresult->serve_qty) .'
 						</td>
-					';
+						<td style="text-align:center"><i data-toggle="tooltip" data-placement="right" title="Cancelled" class="fa fa-times-circle text-danger"></i></td>
+					</tr>';
 				}
 				// if($data['Header']->recommendedby != null || $data['Header']->recommendedby != ""){ 
 				// 	$data['ARFBody'] .='
@@ -1703,7 +1707,9 @@
                                             <th width="5%" class="text-center">Fulfilled Qty</th> 
                                             <th width="5%" class="text-center">UnServed Qty</th> 
                                             <th width="7%" class="text-center">Item Cost</th> 
-                                            <th width="7%" class="text-center">Total Cost</th>'; 
+                                            <th width="7%" class="text-center">Total Cost</th>
+											<th width="7%" class="text-center">Reserved</th>
+											'; 
 
 											// if($data['Header']->recommendedby != null || $data['Header']->recommendedby != ""){ 
 											// 	$data['ARFBodyTable'] .= '

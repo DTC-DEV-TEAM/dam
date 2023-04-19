@@ -22,6 +22,7 @@
 	use App\MoveOrder;
 	use App\HeaderRequest;
 	use App\BodyRequest;
+	use App\Models\AssetsInventoryReserved;
 	use App\WarehouseLocationModel;
 	use App\Exports\ExportHeaderInventory;
 	use Illuminate\Support\Facades\File;
@@ -414,12 +415,24 @@
 			$rr_date = $fields['rr_date'];
 			$location = $fields['location'];
 			$warranty_coverage = $fields['warranty_coverage'];
+			$arf_tag = $fields['arf_tag'];
 
+			//update reserved table
+			if($arf_tag){
+				for ($i = 0; $i < count($arf_tag); $i++) {
+					AssetsInventoryReserved::where(['id' => $arf_tag[$i]])
+					   ->update([
+							   'reserved' => 1
+							   ]);
+				}
+			}
+			
 			//MAKE ARRAY DATA
 			$allData = [];
 			$container = [];
 			foreach($digits_code as $key => $val){
 				$container['item_id'] = $item_id[$key];
+				$container['reserved_id'] = $arf_tag[$key];
 				$container['header_id'] = $header->id;
 				$container['serial_no'] = $serial_no[$key];
 				$container['statuses_id'] = 20;	
@@ -532,7 +545,8 @@
 			$data['page_title'] = 'Add Inventory';
 
 			$data['warehouse_location'] = WarehouseLocationModel::where('id','!=',4)->get();;
-
+			$data['reserved_assets'] = AssetsInventoryReserved::whereNotNull('for_po')->get();
+		
 			return $this->view("assets.add-inventory", $data);
 
 		}
@@ -570,6 +584,7 @@
 			    ->leftjoin('assets_inventory_header_for_approval', 'assets_inventory_body_for_approval.header_id', '=', 'assets_inventory_header_for_approval.id')
 			    ->leftjoin('assets', 'assets_inventory_body_for_approval.item_id', '=', 'assets.id')
 				->leftjoin('cms_users as cms_users_updated_by', 'assets_inventory_body_for_approval.updated_by', '=', 'cms_users_updated_by.id')
+				->leftjoin('assets_inventory_reserved', 'assets_inventory_body_for_approval.reserved_id', '=', 'assets_inventory_reserved.id')
 				->select(
 				  'assets_inventory_body_for_approval.*',
 				  'assets_inventory_body_for_approval.id as for_approval_body_id',
@@ -579,11 +594,15 @@
 				  'assets.item_type as itemType',
 				  'assets.image as itemImage',
 				  'assets_inventory_body_for_approval.updated_at as date_updated',
-				  'cms_users_updated_by.name as updated_by'
+				  'cms_users_updated_by.name as updated_by',
+				  'assets_inventory_reserved.reference_number as reference_number',
+				  'assets_inventory_reserved.digits_code as reserved_digits_code'
 				)
 				->where('assets_inventory_body_for_approval.header_id', $id)
 				->get();
 				$data['warehouse_location'] = WarehouseLocationModel::where('id','!=',4)->get();
+				$data['reserved_assets'] = AssetsInventoryReserved::whereNotNull('for_po')->get();
+         
 				return $this->view("assets.edit-inventory-list-for-approval", $data);
 		}
 
@@ -635,6 +654,7 @@
 				->where('assets_inventory_body_for_approval.header_id', $id)
 				->get();
 				$data['warehouse_location'] = WarehouseLocationModel::where('id','!=',4)->get();
+				
 				return $this->view("assets.inventory_list_for_approval", $data);
 		}
 
@@ -699,10 +719,11 @@
 			try {
 				$lock->block(5);
 			$fields = Request::all();
+		    
 			$files = $fields['si_dr'];
 			$id = $fields['id'];
 			$remarks = $fields['remarks'];
-	
+	     
 			$images = [];
 			if (isset($files)) {
 				$counter = 0;
@@ -728,7 +749,8 @@
 			$rr_date = $fields['rr_date'];
 			$body_id = $fields['body_id'];
 			$serial_no = $fields['serial_no'];
-		
+			$tag_id = $fields['arf_tag'];
+
 			//update header status
 			AssetsInventoryHeaderForApproval::where('id', $id)
 											->update([
@@ -774,6 +796,17 @@
 						   'quantity' => 1,
 					       'serial_no' => $serial_no[$i]
 				           ]);
+			}
+
+			//update reserved table
+			if($tag_id){
+				for ($t = 0; $t < count($tag_id); $t++) {
+					AssetsInventoryReserved::where(['id' => $tag_id[$t]])
+					   ->update([
+							   'reserved' => 1,
+							   'for_po'   => NULL
+							   ]);
+				}
 			}
 
 	        //Body details

@@ -466,7 +466,7 @@
 					//GET ASSETS INVENTORY AVAILABLE COUNT
 					$inventoryList = DB::table('assets_inventory_body')->select('digits_code as digits_code',DB::raw('SUM(quantity) as avail_qty'))->where('statuses_id',6)->groupBy('digits_code')->get();
 					//GET RESERVED QTY 
-					$reservedList = DB::table('assets_inventory_reserved')->select('digits_code as digits_code',DB::raw('SUM(approved_qty) as reserved_qty'))->whereNotNull('reserved')->groupBy('digits_code')->groupBy('reference_number')->get()->toArray();
+					$reservedList = DB::table('assets_inventory_reserved')->select('digits_code as digits_code',DB::raw('SUM(approved_qty) as reserved_qty'))->whereNotNull('reserved')->groupBy('digits_code')->get()->toArray();
 					
 					$resultInventory = [];
 					foreach($inventoryList as $invKey => $invVal){
@@ -497,27 +497,52 @@
 							$finalItFaBodyValue[] = $bodyItFaVal;
 						}
 					}
-          
+                   
 					foreach($finalItFaBodyValue as $fBodyItFaKey => $fBodyItFaVal){
-                        if($fBodyItFaVal->inv_qty->available_qty >= $fBodyItFaVal['quantity']){
-							//less quantity in inventory
-							BodyRequest::where('id', $fBodyItFaVal['id'])
+						$countAvailQty = DB::table('assets_inventory_body')->select('digits_code as digits_code',DB::raw('SUM(quantity) as avail_qty'))->where('statuses_id',6)->where('digits_code',$fBodyItFaVal->digits_code)->groupBy('digits_code')->count();
+                        $reservedListCount = DB::table('assets_inventory_reserved')->select('digits_code as digits_code',DB::raw('SUM(approved_qty) as reserved_qty'))->whereNotNull('reserved')->where('digits_code',$fBodyItFaVal->digits_code)->groupBy('digits_code')->count();
+						$available_quantity = max($countAvailQty - $reservedListCount,0);
+			
+						if($available_quantity >= $fBodyItFaVal->quantity){
+							//add to reserved taable
+							AssetsInventoryReserved::Create(
+								[
+									'reference_number'    => $arf_header->reference_number, 
+									'body_id'             => $fBodyItFaVal->id,
+									'digits_code'         => $fBodyItFaVal->digits_code, 
+									'approved_qty'        => $fBodyItFaVal->quantity,
+									'reserved'            => $fBodyItFaVal->quantity,
+									'for_po'              => NULL,
+									'created_by'          => CRUDBooster::myId(),
+									'created_at'          => date('Y-m-d H:i:s'),
+									'updated_by'          => CRUDBooster::myId(),
+									'updated_at'          => date('Y-m-d H:i:s')
+								]
+							); 
+							
+							//update details in body table
+							BodyRequest::where('id', $fBodyItFaVal->id)
 							->update([
-								'replenish_qty'      =>  $fBodyItFaVal['quantity'],
+								'replenish_qty'      =>  $fBodyItFaVal->quantity,
 								'reorder_qty'        =>  NULL,
 								'serve_qty'          =>  NULL,
-								'unserved_qty'       =>  $fBodyItFaVal['quantity'],
-								'unserved_rep_qty'   =>  $fBodyItFaVal['quantity'],
+								'unserved_qty'       =>  $fBodyItFaVal->quantity,
+								'unserved_rep_qty'   =>  $fBodyItFaVal->quantity,
 								'unserved_ro_qty'    =>  NULL
 							]);	
 
+							
+							 
+						}else{
+							$reorder = $fBodyItFaVal->quantity - $available_quantity;
 							AssetsInventoryReserved::Create(
 								[
 									'reference_number'    => $arf_header->reference_number, 
-									'body_id'             => $fBodyItFaVal['id'],
-									'digits_code'         => $fBodyItFaVal['digits_code'], 
-									'approved_qty'        => $fBodyItFaVal['quantity'],
-									'reserved'            => $fBodyItFaVal['quantity'],
+									'body_id'             => $fBodyItFaVal->id,
+									'digits_code'         => $fBodyItFaVal->digits_code, 
+									'approved_qty'        => $fBodyItFaVal->quantity,
+									'reserved'            => NULL,
+									'for_po'              => 1,
 									'created_by'          => CRUDBooster::myId(),
 									'created_at'          => date('Y-m-d H:i:s'),
 									'updated_by'          => CRUDBooster::myId(),
@@ -525,31 +550,17 @@
 								]
 							);  
 
-						}else{
-							$reorder = $fBodyItFaVal['quantity'] - $fBodyItFaVal->inv_qty->available_qty;
-							BodyRequest::where('id', $fBodyItFaVal['id'])
+							BodyRequest::where('id', $fBodyItFaVal->id)
 							->update([
-								'replenish_qty'      =>  $fBodyItFaVal->inv_qty->available_qty,
+								'replenish_qty'      =>  $available_quantity,
 								'reorder_qty'        =>  $reorder,
 								'serve_qty'          =>  NULL,
-								'unserved_qty'       =>  $fBodyItFaVal['quantity'],
-								'unserved_rep_qty'   =>  $fBodyItFaVal->inv_qty->available_qty,
+								'unserved_qty'       =>  $fBodyItFaVal->quantity,
+								'unserved_rep_qty'   =>  $available_quantity,
 								'unserved_ro_qty'    =>  $reorder
 							]);	
 
-							AssetsInventoryReserved::Create(
-								[
-									'reference_number'    => $arf_header->reference_number, 
-									'body_id'             => $fBodyItFaVal['id'],
-									'digits_code'         => $fBodyItFaVal['digits_code'], 
-									'approved_qty'        => $fBodyItFaVal['quantity'],
-									'reserved'            => NULL,
-									'created_by'          => CRUDBooster::myId(),
-									'created_at'          => date('Y-m-d H:i:s'),
-									'updated_by'          => CRUDBooster::myId(),
-									'updated_at'          => date('Y-m-d H:i:s')
-								]
-							);  
+							
 					    }
 					}
 
@@ -688,7 +699,7 @@
 				}
 			}
 			//get reserved qty
-			$reservedList = DB::table('assets_inventory_reserved')->select('digits_code as digits_code',DB::raw('SUM(approved_qty) as reserved_qty'))->whereNotNull('reserved')->groupBy('digits_code')->groupBy('reference_number')->get()->toArray();
+			$reservedList = DB::table('assets_inventory_reserved')->select('digits_code as digits_code',DB::raw('SUM(approved_qty) as reserved_qty'))->whereNotNull('reserved')->groupBy('digits_code')->get()->toArray();
 			$resultInventory = [];
 			foreach($items as $invKey => $invVal){
 				$i = array_search($invVal->digits_code, array_column($reservedList,'digits_code'));

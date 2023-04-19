@@ -13,6 +13,7 @@ class AssetsInventoryReserved extends Model
         'digits_code', 
         'approved_qty', 
         'reserved', 
+        'for_po',
         'requested_by',
         'updated_by',
         'updated_at	',

@@ -160,7 +160,7 @@
                                                     <td style="text-align:center" height="10">
 
                                                         <input type="hidden" value="{{$rowresult->id}}" name="item_id[]">
-
+                                                        <input type="hidden" value="{{$rowresult->body_request_id}}" name="body_id[]">
                                                         <input type="hidden" name="good_text[]" id="good_text{{$tableRow1}}" value="0" />
 
                                                         <input type="checkbox" name="good[]" id="good{{$tableRow1}}" class="good" required data-id="{{$tableRow1}}" value="{{$rowresult->asset_code}}"/>
@@ -214,7 +214,7 @@
                                                         <select required selected data-placeholder="Tag Asset Code" id="asset_code_tag{{$tableRow1}}" data-id="{{$tableRow1}}" name="asset_code_tag[]" class="form-select asset_code_tag" style="width:100%;">
                                                             @foreach($assets_code as $asset_code)
                                                                 <option value=""></option>
-                                                                <option value="{{ $asset_code->id }}">{{ $asset_code->asset_code }}</option>
+                                                                <option value="{{ $asset_code->id }}">{{ $asset_code->asset_code }} | {{ $asset_code->digits_code }}</option>
                                                             @endforeach
                                                         </select>
                                                         </td>
@@ -489,28 +489,45 @@
         });
     });
     $('#btnSubmit').click(function(event) {
-        // var strconfirm = confirm("Are you sure you want to pick this request?");
-        // if (strconfirm == true) {
-        //     $(this).attr('disabled','disabled');
-        //     $('#myform').submit(); 
-        // }else{
-        //     return false;
-        //     window.stop();
-        // }
+    
         event.preventDefault();
-        swal({
-            title: "Are you sure?",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#41B314",
-            cancelButtonColor: "#F9354C",
-            confirmButtonText: "Yes, pick it!",
-            width: 450,
-            height: 200
-            }, function () {
-                $(this).attr('disabled','disabled');
-                $('#myform').submit();                                                  
+        //each value validation
+        $('.asset_code_tag').each(function() {
+            asset_code = $(this).val();
+            if (asset_code == null) {
+                swal({
+                    type: 'error',
+                    title: 'Asset Code Tagging Required',
+                    icon: 'error',
+                    confirmButtonColor: "#367fa9",
+                }); 
+                event.preventDefault(); // cancel default behavior
+            } else if (asset_code == "") {
+                swal({
+                    type: 'error',
+                    title: 'Asset Code Tagging Required',
+                    icon: 'error',
+                    confirmButtonColor: "#367fa9",
+                }); 
+                event.preventDefault(); // cancel default behavior
+            }else{
+                swal({
+                    title: "Are you sure?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#41B314",
+                    cancelButtonColor: "#F9354C",
+                    confirmButtonText: "Yes, pick it!",
+                    width: 450,
+                    height: 200
+                    }, function () {
+                        $(this).attr('disabled','disabled');
+                        $('#myform').submit();                                                  
+                });
+            }
         });
+       
+        
     });
 
 </script>

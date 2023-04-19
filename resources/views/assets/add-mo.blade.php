@@ -61,7 +61,8 @@
                 /* border-bottom: 1px solid rgba(18, 17, 17, 0.5); */
             }
             input.finput:read-only {
-                background-color: #fff;
+                background-color: #d4edda; 
+                color:#155724
             }
 
         </style>

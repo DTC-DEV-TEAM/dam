@@ -530,7 +530,7 @@
 	        //Your code here
 
 			$fields = Request::all();
-
+     
 			$cont = (new static)->apiContext;
 
 			$item_id 					= $fields['item_id'];
@@ -542,12 +542,14 @@
 			$defective_text 			= $fields['defective_text'];
  
 			//good and defect value
-			$arf_number = $fields['arf_number'];
-			$digits_code = $fields['digits_code'];
-			$asset_code = $fields['asset_code'];
-			$comments = $fields['comments'];
-			$other_comment = $fields['other_comment'];
-	
+			$arf_number     = $fields['arf_number'];
+			$digits_code    = $fields['digits_code'];
+			$asset_code     = $fields['asset_code'];
+			$comments       = $fields['comments'];
+			$other_comment  = $fields['other_comment'];
+			$asset_code_tag = $fields['asset_code_tag'];
+			$body_id        = $fields['body_id'];
+
 			$HeaderID 					= MoveOrder::where('id', $id)->first();
 
 			//dd($HeaderID->header_request_id);
@@ -575,16 +577,22 @@
 				if($defective_text[$x] == 1){
 
 					$cancelled  = 		DB::table('statuses')->where('id', 8)->value('id');
-
-					$mo_info 	= 		MoveOrder::where('id',$item_id[$x])->first();
-
+					$inventoryDetails = AssetsInventoryBody::where('id',$asset_code_tag[$x])->first();
+					
 					MoveOrder::where('id',$item_id[$x])
 					->update([
-						'status_id'=> 	$cancelled,
-						'to_pick'=> 	1,
-						'good'=> 		$good_text[$x],
-						'defective'=> 	$defective_text[$x]
+						'item_id'         => $inventoryDetails->item_id,
+						'inventory_id'    => $inventoryDetails->id,
+						'asset_code'      => $inventoryDetails->asset_code,
+						'serial_no'       => $inventoryDetails->serial_no,
+						'unit_cost'       => $inventoryDetails->value,
+						'status_id'       => $cancelled,
+						'to_pick'         => 1,
+						'good'            => $good_text[$x],
+						'defective'       => $defective_text[$x]
 					]);	
+
+					$mo_info 	= 		MoveOrder::where('id',$item_id[$x])->first();
 
 					HeaderRequest::where('id', $arf_header->id)
 					->update([
@@ -605,14 +613,37 @@
 
 
 				}else{
+					$inventoryDetails = AssetsInventoryBody::where('id',$asset_code_tag[$x])->first();
 
 					MoveOrder::where('id',$item_id[$x])
 					->update([
-						'status_id'=> 	$for_receiving,
-						'to_pick'=> 	1,
-						'good'=> 		$good_text[$x],
-						'defective'=> 	$defective_text[$x]
+						'item_id'         => $inventoryDetails->item_id,
+						'inventory_id'    => $inventoryDetails->id,
+						'asset_code'      => $inventoryDetails->asset_code,
+						'serial_no'       => $inventoryDetails->serial_no,
+						'unit_cost'       => $inventoryDetails->value,
+						'status_id'       => $for_receiving,
+						'to_pick'         => 1,
+						'good'            => $good_text[$x],
+						'defective'       => $defective_text[$x]
 					]);	
+
+					BodyRequest::where('id', $body_id[$x])
+					->update(
+								[
+								'serve_qty'        => 1, 
+								'unserved_rep_qty' => DB::raw("unserved_rep_qty - 1"), 
+								'unserved_ro_qty'  => DB::raw("unserved_ro_qty - 1"), 
+								'unserved_qty'     => DB::raw("unserved_qty - 1")          
+								]
+							);
+
+					DB::table('assets_inventory_body')->where('id', $asset_code_tag[$x])
+					->update([
+						'statuses_id'=> 			2
+					]);
+
+					DB::table('assets_inventory_reserved')->where('body_id', $body_id[$x])->delete();
 
 				}
 				//}
@@ -838,7 +869,7 @@
 			//   ->where('comments_good_defect_tbl.asset_code', $asset_code['asset_code'])
 			//   ->get();
 			$data['good_defect_lists'] = GoodDefectLists::all();
-			$data['assets_code'] = AssetsInventoryBody::select('asset_code as asset_code','id as id')->where('item_category', 'IT ASSETS')->get();
+			$data['assets_code'] = AssetsInventoryBody::select('asset_code as asset_code','id as id','digits_code as digits_code')->where('statuses_id',6)->where('item_category', 'IT ASSETS')->get();
 
 			return $this->view("assets.picking-request", $data);
 		}
