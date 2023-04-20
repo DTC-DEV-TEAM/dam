@@ -530,7 +530,7 @@
 	        //Your code here
 
 			$fields = Request::all();
-     
+
 			$cont = (new static)->apiContext;
 
 			$item_id 					= $fields['item_id'];
@@ -586,6 +586,7 @@
 						'asset_code'      => $inventoryDetails->asset_code,
 						'serial_no'       => $inventoryDetails->serial_no,
 						'unit_cost'       => $inventoryDetails->value,
+						'total_unit_cost' => $inventoryDetails->value,
 						'status_id'       => $cancelled,
 						'to_pick'         => 1,
 						'good'            => $good_text[$x],
@@ -622,6 +623,7 @@
 						'asset_code'      => $inventoryDetails->asset_code,
 						'serial_no'       => $inventoryDetails->serial_no,
 						'unit_cost'       => $inventoryDetails->value,
+						'total_unit_cost' => $inventoryDetails->value,
 						'status_id'       => $for_receiving,
 						'to_pick'         => 1,
 						'good'            => $good_text[$x],
@@ -852,9 +854,11 @@
 				->leftjoin('statuses', 'mo_body_request.status_id', '=', 'statuses.id')
 				->orderby('mo_body_request.id', 'desc')
 				->get();	
+			$arrayDigitsCode = [];
             foreach($data['MoveOrder'] as $codes) {
 				$digits_code['digits_code'] = $codes['digits_code'];
 				$asset_code['asset_code'] = $codes['asset_code'];
+				array_push($arrayDigitsCode, $codes['digits_code']);
 			}
 			$data['HeaderID'] = MoveOrder::where('id', $id)->first();
 
@@ -868,9 +872,10 @@
 			//   ->where('comments_good_defect_tbl.digits_code', $digits_code['digits_code'])
 			//   ->where('comments_good_defect_tbl.asset_code', $asset_code['asset_code'])
 			//   ->get();
+			
 			$data['good_defect_lists'] = GoodDefectLists::all();
-			$data['assets_code'] = AssetsInventoryBody::select('asset_code as asset_code','id as id','digits_code as digits_code')->where('statuses_id',6)->where('item_category', 'IT ASSETS')->get();
-
+			$data['assets_code'] = AssetsInventoryBody::select('asset_code as asset_code','id as id','digits_code as digits_code')->where('statuses_id',6)->where('item_category', 'IT ASSETS')->whereIn('digits_code', $arrayDigitsCode)->get();
+		
 			return $this->view("assets.picking-request", $data);
 		}
 

@@ -745,11 +745,14 @@
 	        //parse data in form
 			parse_str($fields['form_data'], $fields);
 			$invoice_date = $fields['invoice_date'];
-			$invoice_no = $fields['invoice_no'];
-			$rr_date = $fields['rr_date'];
-			$body_id = $fields['body_id'];
-			$serial_no = $fields['serial_no'];
-			$tag_id = $fields['arf_tag'];
+			$invoice_no   = $fields['invoice_no'];
+			$rr_date      = $fields['rr_date'];
+			$body_id      = $fields['body_id'];
+			$serial_no    = $fields['serial_no'];
+			$tag_id       = $fields['arf_tag'];
+			$upc_code     = $fields['upc_code'];
+			$brand        = $fields['brand'];
+			$specs        = $fields['specs'];
 
 			//update header status
 			AssetsInventoryHeaderForApproval::where('id', $id)
@@ -793,8 +796,11 @@
 				AssetsInventoryBodyForApproval::where(['id' => $body_id[$i]])
 				   ->update([
 					       'statuses_id' => 22, 
-						   'quantity' => 1,
-					       'serial_no' => $serial_no[$i]
+						   'quantity'    => 1,
+					       'serial_no'   => $serial_no[$i],
+						   'upc_code'    => $upc_code[$i],
+						   'brand'       => $brand[$i],
+						   'specs'       => $specs[$i]
 				           ]);
 			}
 
@@ -961,24 +967,27 @@
 			$saveData = [];
 			$saveContainerData = [];
 			foreach($finalDataofSplittingArray as $frKey => $frData){		
-				$saveContainerData['header_id'] = $frData['header_id'];
-				//$saveContainerData['header_approval_id'] = $id;
-				$saveContainerData['item_id'] = $frData['item_id'];
-				$saveContainerData['statuses_id'] = 6;
-				$saveContainerData['location'] = $frData['location'];
-				$saveContainerData['digits_code'] = $frData['digits_code'];
-				$saveContainerData['item_description'] = $frData['item_description'];
-				$saveContainerData['value'] = $frData['value'];
-				$saveContainerData['quantity'] = 1;	
-				$saveContainerData['serial_no'] = $frData['serial_no'];
-				$saveContainerData['warranty_coverage'] = $frData['warranty_coverage'];
-				$saveContainerData['asset_code'] = $frData['asset_code'];
-				$saveContainerData['barcode'] = $frData['digits_code'].''.$frData['asset_code'];
-				$saveContainerData['item_condition'] = $frData['item_condition'];
-				$saveContainerData['item_category'] = $frData['item_category'];
+				$saveContainerData['header_id']             = $frData['header_id'];
+				//$saveContainerData['header_approval_id']  = $id;
+				$saveContainerData['item_id']               = $frData['item_id'];
+				$saveContainerData['statuses_id']           = 6;
+				$saveContainerData['location']              = $frData['location'];
+				$saveContainerData['digits_code']           = $frData['digits_code'];
+				$saveContainerData['item_description']      = $frData['item_description'];
+				$saveContainerData['value']                 = $frData['value'];
+				$saveContainerData['quantity']              = 1;	
+				$saveContainerData['serial_no']             = $frData['serial_no'];
+				$saveContainerData['warranty_coverage']     = $frData['warranty_coverage'];
+				$saveContainerData['asset_code']            = $frData['asset_code'];
+				$saveContainerData['barcode']               = $frData['digits_code'].''.$frData['asset_code'];
+				$saveContainerData['item_condition']        = $frData['item_condition'];
+				$saveContainerData['item_category']         = $frData['item_category'];
 				$saveContainerData['transaction_per_asset'] = $frData['transaction_per_asset'];
-				$saveContainerData['created_by'] = $frData['created_by'];
-				$saveContainerData['created_at'] = Carbon::parse($frData['created_at'])->toDateTimeString();
+				$saveContainerData['upc_code']              = $frData['upc_code'];
+				$saveContainerData['brand']                 = $frData['brand'];
+				$saveContainerData['specs']                 = $frData['specs'];
+				$saveContainerData['created_by']            = $frData['created_by'];
+				$saveContainerData['created_at']            = Carbon::parse($frData['created_at'])->toDateTimeString();
 			
 				$saveData[] = $saveContainerData;
 			}

@@ -269,7 +269,6 @@
                                                 <table class="table table-bordered" id="asset-items" style="overflow-x: auto; height:auto;">
                                                     <tbody id="bodyTable">
                                                         <tr class="tbl_header_color dynamicRows">
-                                                            <th width="10%" class="text-center">Assign ARF</th>
                                                             <th width="10%" class="text-center">{{ trans('message.table.digits_code') }}</th>
                                                             <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
                                                            
@@ -280,6 +279,7 @@
                                                             <th width="10%" class="text-center">Value</th>
                                                             <th width="5%" class="text-center"> Warranty Month Expiration</th>                                                     
                                                             <!-- <th width="10%" class="text-center">{{ trans('message.table.image') }}</th>  -->
+                                                            <th width="10%" class="text-center">Assign ARF</th>
                                                             <th width="3%" class="text-center">Action</th>
                                                         </tr>
                                                 
@@ -346,6 +346,7 @@
 @endsection
 
 @push('bottom')
+
     <script type="text/javascript">
         //preview image before save
         $(function() {
@@ -868,14 +869,7 @@
                                         // }else{
                                
                                             var new_row = '<tr class="nr" id="rowid' + e.id + '" rows>' +
-                                                '<td>'+
-                                                    '<select selected data-placeholder="Assign ARF" class="form-control arf_tag" name="arf_tag[]" data-id="' +  e.id + '" id="arf_tag' + e.id + '" required style="width:100%">' +
-                                                    '  <option value=""></option>' +
-                                                    '        @foreach($reserved_assets as $reserve)'+
-                                                    '          <option value="{{$reserve->id}}">{{$reserve->reference_number}} | <span> {{$reserve->digits_code}} </span></option>'+
-                                                    '         @endforeach'+
-                                                    '</select>'+
-                                                '</td>' +
+                                              
                                                 '<td><input class="form-control text-center finput" type="text" id="dc" name="digits_code[]" readonly value="' + e.digits_code + '"></td>' +
                                                 '<td><input class="form-control text-center finput" type="text" name="item_description[]" readonly value="' + e.value + '"></td>' +
                                                 '<td><input class="form-control text-center finput amount" placeholder="Value" type="text" readonly value="' + e.category_description + '"></td>' +
@@ -886,6 +880,14 @@
                                                 '<td><input class="form-control finput text-center" type="text" placeholder="(Month)" name="warranty_coverage[]" id="warranty_coverage" min="1" max="9999999999" step="1" onkeypress="return event.charCode <= 57" value="0"></td>' +                                                                                                                                       
                                                 //'<td class="images_flex"><input type="file" class="form-control body_image" onchange="readURL(this);" id="body_image_body' + e.id + '" name="item_photo[]" style="width:200px;" accept="image/png, image/gif, image/jpeg"><br><div class="body_gallery_image' + e.id + '"></div></td>' + 
                                                 //'<td><img width="50px"; height="50px"; src="{{URL::to('+e.image+')}}" alt="" data-action="zoom"></td>' +
+                                                '<td>'+
+                                                    '<select selected data-placeholder="Assign ARF" class="form-control arf_tag" name="arf_tag[]" data-id="' +  e.id + '" id="arf_tag' + e.id + '" required style="width:100%">' +
+                                                    '  <option value=""></option>' +
+                                                    '        @foreach($reserved_assets as $reserve)'+
+                                                    '          <option value="{{$reserve->id}}" data-code="{{$reserve->digits_code}}">{{$reserve->reference_number}} | <span> {{$reserve->digits_code}} </span></option>'+
+                                                    '         @endforeach'+
+                                                    '</select>'+
+                                                '</td>' +
                                                 '<td style="text-align:center"><a id="delete_item' +e.id + '" class="btn btn-xs btn-danger delete_item btn-lg" style="margin-top:5px;" ><i class="fa fa-trash"></i></a></td>' +
                                                 '<input type="hidden" name="item_id[]" readonly value="' +e.id + '">' +
                                                 '<input type="hidden" id="checkImage" value="' + e.image + '" readonly>' +
@@ -907,8 +909,13 @@
                                     //     );
                                     //     return $state;
                                     // };
-
-                                    $('#arf_tag'+ e.id).select2({allowClear:true});
+                                    $('#arf_tag'+ e.id).select2({
+                                        allowClear:true,
+                                        tags: true
+                                    });
+                                    
+                                    
+                                    
                                     $(document).on('click', '#delete_item' + e.id, function () {
                                         var parentTR = $(this).parents('tr');  
                                         $(parentTR).remove();
@@ -922,6 +929,7 @@
                                        
                                     });
 
+                                   
                                     $('#arf_tag'+ e.id)
                                     .parent()
                                     .siblings('.select2-search')
@@ -959,7 +967,27 @@
                                      });
                                      $("#quantity_total").val(calculateTotalQuantity());
                                     $(document).ready(function() {
-                                     
+                                        var $selects = $('select');
+                                        $selects.select2();
+                                        $('.arf_tag').change(function () {
+                                            $('option:hidden', $selects).each(function () {
+                                                var self = this,
+                                                    toShow = true;
+                                                $selects.not($(this).parent()).each(function () {
+                                                    if (self.value == this.value) toShow = false;
+                                                })
+                                                if (toShow) {
+                                                    $(this).removeAttr('disabled');
+                                                    $(this).parent().select2();
+                                                }
+                                            });
+                                            if (this.value != "") {
+                                                 //$selects.not(this).children('option[value=' + this.value + ']').attr('disabled', 'disabled');
+                                                $selects.not(this).children('option[value=' + this.value + ']').remove();
+                                                $selects.select2();
+                                            }
+                                        });
+                                      
                                         // $('#item_type' + e.id).change(function() {
                                         // var parentTR = $(this).parents('tr');   
                                         // var item_type = $('#item_type' + e.id).val().toLowerCase().replace(/\s/g, '');

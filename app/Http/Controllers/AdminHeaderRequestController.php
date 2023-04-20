@@ -761,7 +761,8 @@
 			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();
 			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
 			
-			$privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
+			//$privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
+			$privilegesMatrix = DB::table('cms_privileges')->get();
 			$privileges_array = array();
 			foreach($privilegesMatrix as $matrix){
 				array_push($privileges_array, $matrix->id);
@@ -771,13 +772,16 @@
 
 			if(in_array(CRUDBooster::myPrivilegeId(), $privilegeslist)){ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
+				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
 				return $this->view("assets.add-requisition", $data);
 
-			}else if(CRUDBooster::myPrivilegeId() == 8){ 
-				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
-				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
-				return $this->view("assets.add-store-requisition", $data);
-			}else{
+			}
+			// else if(CRUDBooster::myPrivilegeId() == 8){ 
+			// 	$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
+			// 	$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
+			// 	return $this->view("assets.add-store-requisition", $data);
+			// }
+			else{
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'HR')->get();
 				return $this->view("assets.add-hr-requisition", $data);
 
@@ -810,7 +814,8 @@
 			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();
 			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
 			
-			$privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
+			//$privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
+			$privilegesMatrix = DB::table('cms_privileges')->get();
 			$privileges_array = array();
 			foreach($privilegesMatrix as $matrix){
 				array_push($privileges_array, $matrix->id);
@@ -820,12 +825,15 @@
 
 			if(in_array(CRUDBooster::myPrivilegeId(), $privilegeslist)){ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
-				return $this->view("assets.add-requisition-fa", $data);
-			}else if(CRUDBooster::myPrivilegeId() == 8){ 
-				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
 				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
-				return $this->view("assets.add-store-requisition-fa", $data);
-			}else{
+				return $this->view("assets.add-requisition-fa", $data);
+			}
+			// else if(CRUDBooster::myPrivilegeId() == 8){ 
+			// 	$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
+			// 	$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
+			// 	return $this->view("assets.add-store-requisition-fa", $data);
+			// }
+			else{
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'HR')->get();
 				return $this->view("assets.add-hr-requisition", $data);
 			}
@@ -857,7 +865,8 @@
 			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();
 			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
 			
-			$privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
+			// $privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
+			$privilegesMatrix = DB::table('cms_privileges')->get();
 			$privileges_array = array();
 			foreach($privilegesMatrix as $matrix){
 				array_push($privileges_array, $matrix->id);
@@ -867,12 +876,15 @@
 
 			if(in_array(CRUDBooster::myPrivilegeId(),$privilegeslist)){ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
-				return $this->view("assets.add-requisition-marketing", $data);
-			}else if(CRUDBooster::myPrivilegeId() == 8){ 
-				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
 				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
-				return $this->view("assets.add-store-requisition-marketing", $data);
-			}else{
+				return $this->view("assets.add-requisition-marketing", $data);
+			}
+			// else if(CRUDBooster::myPrivilegeId() == 8){ 
+			// 	$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
+			// 	$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
+			// 	return $this->view("assets.add-store-requisition-marketing", $data);
+			// }
+			else{
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'HR')->get();
 				return $this->view("assets.add-hr-requisition", $data);
 			}
@@ -907,7 +919,8 @@
 			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();	
 			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
 
-			$privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
+			// $privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
+			$privilegesMatrix = DB::table('cms_privileges')->get();
 			$privileges_array = array();
 			foreach($privilegesMatrix as $matrix){
 				array_push($privileges_array, $matrix->id);
@@ -917,12 +930,15 @@
 
 			if(in_array(CRUDBooster::myPrivilegeId(), $privilegeslist)){ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
-				return $this->view("assets.add-requisition-supplies", $data);
-			}else if(CRUDBooster::myPrivilegeId() == 8){ 
-				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
 				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
-				return $this->view("assets.add-store-requisition-supplies", $data);
-			}else{
+				return $this->view("assets.add-requisition-supplies", $data);
+			}
+			// else if(CRUDBooster::myPrivilegeId() == 8){ 
+			// 	$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
+			// 	$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
+			// 	return $this->view("assets.add-store-requisition-supplies", $data);
+			// }
+			else{
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'HR')->get();
 				return $this->view("assets.add-hr-requisition", $data);
 
@@ -952,6 +968,7 @@
 				->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
 				->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
 				->leftjoin('cms_users as processed', 'header_request.purchased2_by','=', 'processed.id')
+				->leftjoin('cms_users as mo_by', 'header_request.mo_by','=', 'mo_by.id')
 				->leftjoin('cms_users as picked', 'header_request.picked_by','=', 'picked.id')
 				->leftjoin('cms_users as received', 'header_request.received_by','=', 'received.id')
 				->leftjoin('cms_users as closed', 'header_request.closed_by','=', 'closed.id')
@@ -970,6 +987,7 @@
 						'locations.store_name as store_branch',
 						'approved.name as approvedby',
 						'recommended.name as recommendedby',
+						'mo_by.name as mo_by',
 						'picked.name as pickedby',
 						'received.name as receivedby',
 						'processed.name as processedby',
@@ -1569,31 +1587,70 @@
 		
 					//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
 		
-					$items = DB::table('assets')
+					$item = DB::table('assets')
 					->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',1)->where('assets.status','!=','INACTIVE')
 					->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',1)->where('assets.status','!=','INACTIVE')
 					->join('category', 'assets.category_id','=', 'category.id')
-					->leftjoin('assets_supplies_inventory', 'assets.digits_code','=', 'assets_supplies_inventory.digits_code')
-
-					->leftJoin('body_request', function($join) 
-					{
-						$join->on('assets.digits_code', '=', 'body_request.digits_code')
-						->where('body_request.created_by',CRUDBooster::myId());
-					})
+					
 					//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
 					->select(	'assets.*',
 								'assets.id as assetID',
 								//'digits_imfs.digits_code as dcode',
 								'category.category_description as category_description'
 							)->take(10)->get();
-					
-					if($items){
+					$arraySearch = DB::table('assets_inventory_body')->select('digits_code as digits_code',DB::raw('SUM(quantity) as wh_qty'))->where('statuses_id',6)->groupBy('digits_code')->get()->toArray();
+					$items = [];
+					foreach($item as $itemKey => $itemVal){
+						$i = array_search($itemVal->digits_code, array_column($arraySearch,'digits_code'));
+						if($i !== false){
+							$itemVal->inv_value = $arraySearch[$i];
+							$items[] = $itemVal;
+						}else{
+							$itemVal->inv_value = "";
+							$items[] = $itemVal;
+						}
+					}
+
+					$arraySearchUnservedQty = DB::table('body_request')->select('digits_code as digits_code',DB::raw('SUM(unserved_qty) as unserved_qty'))->where('body_request.created_by',CRUDBooster::myId())->groupBy('digits_code')->get()->toArray();
+					$finalItems = [];
+					foreach($items as $itemsKey => $itemsVal){
+						$i = array_search($itemsVal->digits_code, array_column($arraySearchUnservedQty,'digits_code'));
+						if($i !== false){
+							$itemsVal->unserved_qty = $arraySearchUnservedQty[$i];
+							$finalItems[] = $itemsVal;
+						}else{
+							$itemsVal->unserved_qty = "";
+							$finalItems[] = $itemsVal;
+						}
+					}
+
+					//get reserved qty
+					$reservedList = DB::table('assets_inventory_reserved')->select('digits_code as digits_code',DB::raw('SUM(approved_qty) as reserved_qty'))->whereNotNull('reserved')->groupBy('digits_code')->get()->toArray();
+					$resultInventory = [];
+					foreach($finalItems as $invKey => $invVal){
+						$i = array_search($invVal->digits_code, array_column($reservedList,'digits_code'));
+						if($i !== false){
+							$invVal->reserved_value = $reservedList[$i];
+							$resultInventory[] = $invVal;
+						}else{
+							$invVal->reserved_value = "";
+							$resultInventory[] = $invVal;
+						}
+					}
+					//get the final available qty
+					$finalInventory = [];
+					foreach($resultInventory as $fKey => $fVal){
+						$fVal->available_qty = max($fVal->inv_value->wh_qty - $fVal->reserved_value->reserved_qty,0);
+						$finalInventory[] = $fVal;
+					}
+		
+					if($finalInventory){
 						$data['status'] = 1;
 						$data['problem']  = 1;
 						$data['status_no'] = 1;
 						$data['message']   ='Item Found';
 						$i = 0;
-						foreach ($items as $key => $value) {
+						foreach ($finalInventory as $key => $value) {
 		
 							$return_data[$i]['id']                   = 	$value->assetID;
 							$return_data[$i]['asset_code']           = 	$value->asset_code;
@@ -1609,6 +1666,8 @@
 							$return_data[$i]['total_quantity']       = 	$value->total_quantity;
 							$return_data[$i]['wh_qty']               =  $value->wh_qty  ? $value->wh_qty : 0;
 							$return_data[$i]['unserved_qty']         =  $value->unserved_qty  ? $value->unserved_qty : 0;
+							$return_data[$i]['wh_qty']               =  $value->available_qty  ? $value->available_qty : 0;
+							$return_data[$i]['unserved_qty']         =  $value->unserved_qty->unserved_qty  ? $value->unserved_qty->unserved_qty : 0;
 		
 							$i++;
 		

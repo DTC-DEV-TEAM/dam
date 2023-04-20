@@ -425,25 +425,25 @@
                                                         <td style="text-align:center" height="10">
                                                                         {{$rowresult->serial_no}}
                                                         </td>
-                                                        <td style="text-align:center" height="10">
+                                                        <td style="text-align:center" height="10" class="mo_qty">
                                                                         {{$rowresult->quantity}}
                                                         </td>
-                                                        <td style="text-align:center" height="10">
+                                                        <td style="text-align:center" height="10" class="mo_unit_cost">
                                                                         {{$rowresult->unit_cost}}
                                                         </td>
-                                                        <td style="text-align:center" height="10">
+                                                        <td style="text-align:center" height="10" class="mo_total_cost">
                                                                         {{$rowresult->total_unit_cost}}
                                                         </td>
                                                     </tr>
                                                 @endforeach
                                             @endif       
-                                            <tr class="tableInfo">
+                                            {{-- <tr class="tableInfo">
                                                 <td colspan="6" align="right"><strong>{{ trans('message.table.total') }}</strong></td>
                                                 <td align="center">
                                                     <label>{{$Header->quantity_total}}</label>
                                                 </td>
                                                 <td colspan="1"></td>
-                                            </tr>
+                                            </tr> --}}
     
                                         </tbody>
                                     </table>
@@ -455,12 +455,28 @@
             @endif
             <hr>
             <br>
-            @if( $Header->processedby != null )
+            @if( $Header->mo_by != null )
                 <div class="row">
                     <div class="col-md-6">
                         <table style="width:100%">
                             <tbody id="footer">
                                 <tr>
+                                    <th class="control-label col-md-2">{{ trans('message.form-label.mo_by') }}:</th>
+                                    <td class="col-md-4">{{$Header->mo_by}} / {{$Header->mo_at}}</td>     
+                                </tr>
+                                @if($Header->ac_comments != null)
+                                    <tr>
+                                        <th class="control-label col-md-2">{{ trans('message.table.ac_comments') }}:</th>
+                                        <td class="col-md-4">{{$Header->ac_comments}}</td>
+                                    </tr>
+                                @endif
+                                @if( $Header->pickedby != null )
+                                    <tr>
+                                        <th class="control-label col-md-2">{{ trans('message.form-label.picked_by') }}:</th>
+                                        <td class="col-md-4">{{$Header->pickedby}} / {{$Header->picked_at}}</td>
+                                    </tr>
+                                @endif
+                                {{-- <tr>
                                     <th class="control-label col-md-2">{{ trans('message.form-label.po_number') }}:</th>
                                     <td class="col-md-4">{{$Header->po_number}}</td>     
                                 </tr>
@@ -479,7 +495,7 @@
                                         <th class="control-label col-md-2">{{ trans('message.form-label.processed_by') }}:</th>
                                         <td class="col-md-4">{{$Header->processedby}} / {{$Header->purchased2_at}}</td>
                                     </tr>
-                                @endif
+                                @endif --}}
                             </tbody>
                         </table>
                     </div>
@@ -487,18 +503,6 @@
                     <div class="col-md-6">
                         <table style="width:100%">
                             <tbody id="footer">
-                                @if($Header->ac_comments != null)
-                                    <tr>
-                                        <th class="control-label col-md-2">{{ trans('message.table.ac_comments') }}:</th>
-                                        <td class="col-md-4">{{$Header->ac_comments}}</td>
-                                    </tr>
-                                @endif
-                                @if( $Header->pickedby != null )
-                                    <tr>
-                                        <th class="control-label col-md-2">{{ trans('message.form-label.picked_by') }}:</th>
-                                        <td class="col-md-4">{{$Header->pickedby}} / {{$Header->picked_at}}</td>
-                                    </tr>
-                                @endif
                                 @if( $Header->receivedby != null )
                                     <tr>
                                         <th class="control-label col-md-2">{{ trans('message.form-label.received_by') }}:</th>
@@ -697,7 +701,44 @@
                 "<td style='text-align:center'>"+
                 
                 "</td>"+
+        "</tr>";
+
+
+        var tds = document.getElementById("asset-items").getElementsByTagName("td");
+        var moQty        = 0;
+        var moUnitCost   = 0;
+        var moTotalCost  = 0;
+
+        for (var i = 0; i < tds.length; i++) {
+            if(tds[i].className == "mo_qty") {
+                moQty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+            }else if(tds[i].className == "mo_unit_cost"){
+                moUnitCost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+            }else if(tds[i].className == "mo_total_cost"){
+                moTotalCost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+            }
+        }
+        document.getElementById("asset-items").innerHTML +=
+        "<tr>"+
+            "<td colspan='6' style='text-align:right'>"+
+                    "<strong>TOTAL</strong>"+
+                "</td>"+
                 
+                "<td style='text-align:center'>"+
+                    "<strong>" +
+                        moQty +
+                    "</strong>"+
+                "</td>"+
+                "<td style='text-align:center'>"+
+                    "<strong>" +
+                        moUnitCost +
+                    "</strong>"+
+                "</td>"+
+                "<td style='text-align:center'>"+
+                    "<strong>" +
+                        moTotalCost +
+                    "</strong>"+
+                "</td>"+       
         "</tr>";
         
 </script>

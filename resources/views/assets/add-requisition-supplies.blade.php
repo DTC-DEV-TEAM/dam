@@ -113,6 +113,20 @@
 
             </div>
 
+            @if(CRUDBooster::myPrivilegeId() == 8)
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label require">{{ trans('message.form-label.store_branch') }}</label>
+                            
+                            <input type="text" class="form-control finput"  id="store_branch" name="store_branch"  required readonly value="{{$stores->store_name}}"> 
+                            <input type="hidden" class="form-control"  id="store_branch_id" name="store_branch_id"  required readonly value="{{$stores->id}}"> 
+
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <hr/>
 
             <div class="row"> 
