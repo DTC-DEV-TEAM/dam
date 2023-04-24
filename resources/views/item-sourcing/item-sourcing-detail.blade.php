@@ -268,8 +268,9 @@
                                 <th class="text-center">Vendor Name</th>
                                 <th class="text-center">Price</th> 
                                 <th class="text-center">Quotation</th> 
-                                <th width="5%" class="text-center"><i class="fa fa-check-circle"></i></th>
-                                <th width="5%" class="text-center"><i class="fa fa-times-circle"></i></th>
+                                <th width="5%" class="text-center"><i class="fa fa-check-circle text-success"></i></th>
+                                <th width="5%" class="text-center"><i class="fa fa-check-circle text-warning"></i></th>
+                                <th width="5%" class="text-center"><i class="fa fa-times-circle text-danger"></i></th>
                             </tr>  
               
                            @if($item_options->isNotEmpty())                                              
@@ -291,9 +292,10 @@
                                             <td style="text-align:center" height="10">
                                                 {{$res->file_name}}                              
                                             </td>
-                                            <td colspan="2" style="text-align:center; color:white">
+                                            <td colspan="3" style="text-align:center; color:white">
                                                 <i data-toggle="tooltip" data-placement="right" title="Cancelled" class="fa fa-times-circle"></i>
-                                            </td>                               
+                                            </td>   
+                                                                        
                                         </tr>
                                     @elseif($res->selected_at != null || $res->selected_at != "")
                                         <tr style="background-color: #d4edda; color:#155724">                                    
@@ -309,11 +311,11 @@
                                             <td style="text-align:center;" height="10">
                                                 <a  href='{{CRUDBooster::adminpath("item_sourcing_for_quotation/download/".$res->file_id)."?return_url=".urlencode(Request::fullUrl())}}' class="form-control selected">{{$res->file_name}}   <i style="color:#007bff" class="fa fa-download"></i></a>                             
                                             </td>
-                                            <td colspan="2"  style="text-align:center;">
+                                            <td colspan="3"  style="text-align:center;">
                                                 <i data-toggle="tooltip" data-placement="right" title="Selected" class="fa fa-check-circle text-success"></i>
                                             </td>                               
                                         </tr>
-                                    @elseif($Header->if_selected != null)
+                                    @elseif($Header->if_selected != null && $Header->if_selected_alternative != null)
                                         <tr>                                    
                                             <td style="text-align:center" height="10">
                                                 {{$res->options}}                               
@@ -334,6 +336,24 @@
                                                 <a class="word" href="//docs.google.com/gview?url={{asset('vendor/crudbooster/item_source/'.$res->file_name)}}&embedded=true">Open a Word document in Fancybox</a>
                                             </td>                                                                                       --}}
                                         </tr>
+                                    @elseif($Header->if_selected_alternative != null)
+                                        <tr style="background-color: #d4edda; color:#f0ad4e">                                    
+                                            <td style="text-align:center" height="10">
+                                                {{$res->options}}                               
+                                            </td>
+                                            <td style="text-align:center" height="10">
+                                                {{$res->vendor_name}}                               
+                                            </td>
+                                            <td style="text-align:center" height="10">
+                                                {{number_format($res->price, 2, '.', ',')}}                               
+                                            </td>
+                                            <td style="text-align:center;" height="10">
+                                                <a  href='{{CRUDBooster::adminpath("item_sourcing_for_quotation/download/".$res->file_id)."?return_url=".urlencode(Request::fullUrl())}}' class="form-control selected">{{$res->file_name}}   <i style="color:#007bff" class="fa fa-download"></i></a>                             
+                                            </td>
+                                            <td colspan="3"  style="text-align:center;">
+                                                <i data-toggle="tooltip" data-placement="right" title="Selected" class="fa fa-check-circle text-warning"></i>
+                                            </td>                               
+                                        </tr>
                                     @else
                                         <tr id="tr-tableOption">                                    
                                             <td style="text-align:center" height="10">
@@ -351,7 +371,7 @@
                                             </td>
                                             <td>
                                                 @if($Header->closed_at === null || $Header->closed_at === "")
-                                                <div class="checkbox checkbox-success checkbox-circle" data-toggle="tooltip" data-placement="bottom" title="Selected">
+                                                <div style="margin-left:10px" class="checkbox checkbox-success checkbox-circle" data-toggle="tooltip" data-placement="bottom" title="Selected">
                                                     <input  type="checkbox" id="chkSuccess" class="checkbox3" name="selectRow" value="{{$res->optId}}" />
                                                     <label for="chkSuccess"></label>
                                                 </div>
@@ -360,13 +380,22 @@
                                             <td>
                                                 @if($Header->closed_at === null || $Header->closed_at === "")
                                                 {{-- <button type="button" data-toggle="tooltip" data-placement="right" title="Cancel" id="deleteRow" name="removeRow" data-id="' + tableRow + '" class="btn btn-danger btn-circle btn-sm removeRow" value="{{$res->optId}}"><i class="glyphicon glyphicon-remove-sign"></i></button> --}}
-                                                <div class="checkbox checkbox-danger checkbox-circle" data-toggle="tooltip" data-placement="bottom" title="Cancel">
+                                                <div style="margin-left:10px" class="checkbox checkbox-warning checkbox-circle" data-toggle="tooltip" data-placement="bottom" title="Other Option">
+                                                    <input type="checkbox" id="chkWarning selected_alternative" class="selectAlternative" name="selectAlternative" value="{{$res->optId}}" />
+                                                    <label for="chkWarning"></label>
+                                                </div>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($Header->closed_at === null || $Header->closed_at === "")
+                                                {{-- <button type="button" data-toggle="tooltip" data-placement="right" title="Cancel" id="deleteRow" name="removeRow" data-id="' + tableRow + '" class="btn btn-danger btn-circle btn-sm removeRow" value="{{$res->optId}}"><i class="glyphicon glyphicon-remove-sign"></i></button> --}}
+                                                <div style="margin-left:10px" class="checkbox checkbox-danger checkbox-circle" data-toggle="tooltip" data-placement="bottom" title="Cancel">
                                                     <input type="checkbox" id="chkDanger deleteRow" class="removeRow" name="removeRow" value="{{$res->optId}}" />
                                                     <label for="chkDanger"></label>
                                                 </div>
                                                 @endif
                                             </td>
-                                         
+                                            
                                         </tr>
                                     @endif
                                 @endforeach        
@@ -694,6 +723,66 @@
         });
         function uncheckSelectedRemoveRow(){
             $(".removeRow").prop('checked', false);
+        }
+
+        $(".selectAlternative").change(function() {
+            var ischecked= $(this).is(':checked');
+            event.preventDefault();
+            var header_id = $('#headerID').val();
+            var id_data = $(this).val();    
+            if ($('#asset-items1 tbody tr').length != 1) { //check if not the first row then delete the other rows
+        
+            // item_id = $("#ids"+id_data).val();
+            // $("#bodyID").val(item_id);
+            var data = $('#myform').serialize();
+            var data_id = id_data;
+            if(ischecked == true){
+                swal({
+                    title: "Are you sure?",
+                    type: "warning",
+                    text: "You won't be able to revert this!",
+                    showCancelButton: true,
+                    confirmButtonColor: "#f0ad4e",
+                    cancelButtonColor: "#F9354C",
+                    confirmButtonText: "Yes, select it!",
+                    closeOnCancel: true
+                    }, function (inputValue) {
+                    if(inputValue===true){
+                        $.ajax({ 
+                            url:  '{{ url('admin/item-sourcing-header/selectedAlternativeOption') }}',
+                            type: "GET",
+                            data: { 
+                                    opt_id: data_id,
+                                    header_id:header_id
+                                },
+                            dataType: 'json',
+                            success: function(data){    
+                                if (data.status == "success") {
+                                    swal({
+                                        type: data.status,
+                                        title: data.message,
+                                    });
+                                    setTimeout(function(){
+                                        location.reload();
+                                    }, 1000); 
+                                    } else if (data.status == "error") {
+                                    swal({
+                                        type: data.status,
+                                        title: data.message,
+                                    });
+                                }
+                            }
+                        });   
+                   }else{
+                    uncheckSelectedAlternativeOption();
+                    }                         
+                });
+            }
+             
+            }
+        });
+        function uncheckSelectedAlternativeOption(){
+            $(".selectAlternative").prop('checked', false);
         }
     });
 

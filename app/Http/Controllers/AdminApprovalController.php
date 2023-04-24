@@ -379,22 +379,28 @@
 			$dataLines = array();
 
 			$approval_action 		= $fields['approval_action'];
-
-			
-
 			$approver_comments 		= $fields['approver_comments'];
+			$body_ids 		        = $fields['body_ids'];
+			$wh_qty 		        = $fields['wh_qty'];
 
-			$approved       =  DB::table('statuses')->where('id', 4)->value('id');
-			$rejected       =  DB::table('statuses')->where('id', 5)->value('id');
-			$for_move_order =  DB::table('statuses')->where('id', 14)->value('id');
+			$approved               =  DB::table('statuses')->where('id', 4)->value('id');
+			$rejected               =  DB::table('statuses')->where('id', 5)->value('id');
+			$for_move_order         =  DB::table('statuses')->where('id', 14)->value('id');
 
 			$arf_header = HeaderRequest::where(['id' => $id])->first();
 
 			$arf_body = BodyRequest::where(['header_request_id' => $id])->whereNull('deleted_at')->get();
 
 			if($approval_action  == 1){
-
-				$postdata['status_id']          = $for_move_order;
+				
+                if(in_array($arf_header->request_type_id, [7])){
+				    $postdata['status_id']          = $for_move_order;
+				}else{
+					$postdata['status_id']		    = StatusMatrix::where('current_step', 2)
+														->where('request_type', $arf_header->request_type_id)
+														->value('status_id');
+				}
+				
 				$postdata['approver_comments'] 	= $approver_comments;
 				$postdata['approved_by'] 		= CRUDBooster::myId();
 				$postdata['approved_at'] 		= date('Y-m-d H:i:s');
@@ -405,6 +411,13 @@
 					}
 
 				}
+
+				for ($i = 0; $i < count($body_ids); $i++) {
+					BodyRequest::where('id', $body_ids[$i])
+					->update([
+						'wh_qty'=> 		$wh_qty[$i],
+					]);	
+		    	}
 
 				if(in_array($arf_header->request_type_id, [7])){
 					//Get the inventory value per digits code

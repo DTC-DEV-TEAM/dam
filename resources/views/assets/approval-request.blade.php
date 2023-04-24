@@ -27,7 +27,8 @@
     <form method='post' id="myform" action='{{CRUDBooster::mainpath('edit-save/'.$Header->requestid)}}'>
         <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
         <input type="hidden" value="" name="approval_action" id="approval_action">
-
+        <input type="hidden" value="{{$Header->request_type_id}}"  id="request_type_id">
+        
         <div class='panel-body'>
 
             <div class="row">                           
@@ -121,27 +122,29 @@
                 <tbody>
                     @foreach($Body as $rowresult)
                         <tr>
+                            <input type="hidden" value="{{$rowresult->id}}" name="body_ids[]">
+                            <input type="hidden" value="{{$rowresult->wh_qty}}" name="wh_qty[]">
                             <td style="text-align:center">{{$rowresult->digits_code}}</td>
                             <td style="text-align:center">{{$rowresult->item_description}}</td>
                             <td style="text-align:center">{{$rowresult->category_id}}</td>
                             <td style="text-align:center">{{$rowresult->sub_category_id}}</td>
                             <td style="text-align:center">{{$rowresult->wh_qty}}</td>
-                            <td style="text-align:center">{{$rowresult->quantity}}</td>
+                            <td style="text-align:center" class="qty">{{$rowresult->quantity}}</td>
 
                             @if(in_array($Header->request_type_id, [6,7]))
-                                <td style="text-align:center">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
-                                <td style="text-align:center">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                           
-                                <td style="text-align:center">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>
-                                <td style="text-align:center">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td>
-                                <td style="text-align:center" height="10">{{$rowresult->unit_cost}}</td>
-                                <td style="text-align:center" height="10" class="cost">{{$rowresult->unit_cost * $rowresult->serve_qty}}</td>
+                                <td style="text-align:center" class="rep_qty">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
+                                <td style="text-align:center" class="ro_qty">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                           
+                                <td style="text-align:center" class="served_qty">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>
+                                <td style="text-align:center" class="unserved_qty">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td>
+                                <td style="text-align:center" class="unit_cost">{{$rowresult->unit_cost ? $rowresult->unit_cost : 0}}</td>
+                                <td style="text-align:center" class="total_cost">{{$rowresult->unit_cost * $rowresult->serve_qty}}</td>
                                 <td style="text-align:center" height="10">{{$rowresult->mo_so_num}}</td>   
                                 
                             @endif
                         </tr>
                     @endforeach
 
-                    <tr>
+                    {{-- <tr>
                         <td colspan="5" style="text-align:right">
                             <label>{{ trans('message.table.total_quantity') }}:</label>
                         </td>
@@ -149,7 +152,7 @@
                         <td style="text-align:center">
                             <label>{{$Header->quantity_total}}</label>
                         </td>
-                    </tr>
+                    </tr> --}}
                 </tbody>
                 
             </table> 
@@ -256,6 +259,100 @@
         });
         
     });
+
+    if($('#request_type_id').val() == 1){ 
+        var tds = document.getElementById("approval-table").getElementsByTagName("td");
+        var sumqty       = 0;
+        for (var i = 0; i < tds.length; i++) {
+            if(tds[i].className == "qty") {
+                sumqty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+            }
+        }
+        document.getElementById("approval-table").innerHTML +=
+        "<tr>"+
+            "<td colspan='5' style='text-align:right'>"+
+                    "<strong>TOTAL</strong>"+
+                "</td>"+
+                
+                "<td style='text-align:center'>"+
+                    "<strong>" +
+                    sumqty +
+                    "</strong>"+
+                "</td>"+
+               
+         
+        "</tr>";
+        }else{
+            var tds = document.getElementById("approval-table").getElementsByTagName("td");
+            var sumqty       = 0;
+            var rep_qty      = 0;
+            var ro_qty       = 0;
+            var served_qty   = 0;
+            var unserved_qty = 0;
+            var dr_qty       = 0;
+            var po_qty       = 0;
+            for (var i = 0; i < tds.length; i++) {
+                if(tds[i].className == "qty") {
+                    sumqty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+                }else if(tds[i].className == "rep_qty"){
+                    rep_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+                }else if(tds[i].className == "ro_qty"){
+                    ro_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+                }else if(tds[i].className == "served_qty"){
+                    served_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+                }else if(tds[i].className == "unserved_qty"){
+                    unserved_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+                }else if(tds[i].className == "dr_qty"){
+                    dr_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+                }else if(tds[i].className == "po_qty"){
+                    po_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+                }
+            }
+            document.getElementById("approval-table").innerHTML +=
+            "<tr>"+
+                "<td colspan='5' style='text-align:right'>"+
+                        "<strong>TOTAL</strong>"+
+                    "</td>"+
+                    
+                    "<td style='text-align:center'>"+
+                        "<strong>" +
+                        sumqty +
+                        "</strong>"+
+                    "</td>"+
+                    "<td style='text-align:center'>"+
+                        "<strong>" +
+                        rep_qty +
+                        "</strong>"+
+                    "</td>"+
+                    "<td style='text-align:center'>"+
+                        "<strong>" +
+                        ro_qty +
+                        "</strong>"+
+                    "</td>"+
+                    "<td style='text-align:center'>"+
+                        "<strong>" +
+                        served_qty +
+                        "</strong>"+
+                    "</td>"+
+                    "<td style='text-align:center'>"+
+                        "<strong>" +
+                        unserved_qty +
+                        "</strong>"+
+                    "</td>"+
+                    "<td style='text-align:center'>"+
+                        "<strong>" +
+                            dr_qty +
+                        "</strong>"+
+                    "</td>"+
+                    "<td style='text-align:center'>"+
+                        "<strong>" +
+                            po_qty +
+                        "</strong>"+
+                    "</td>"+
+                    "<td style='text-align:center'>"+
+                    "</td>"+
+            "</tr>";
+        }
 
 
 </script>

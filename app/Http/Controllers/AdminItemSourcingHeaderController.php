@@ -823,6 +823,28 @@
 			
 		}
 
+		//Select row in option
+		public function selectedAlternativeOption(Request $request){
+			$data   = Request::all();	
+			$header_id = $data['header_id'];
+			$opt_id    = $data['opt_id'];
+
+			ItemSourcingOptions::where('id', $opt_id)
+			->update([
+				'selected_alternative_at'=> 	date('Y-m-d H:i:s'),
+				'selected_alternative_by'=> 	CRUDBooster::myId()
+			]);	
+
+			ItemHeaderSourcing::where('id', $header_id)
+			->update([
+				'if_selected_alternative'=> 	1
+			]);	
+
+			$message = ['status'=>'success', 'message' => 'Selected Alternative Successfully!'];
+			echo json_encode($message);
+			
+		}
+
 		public function getRequestCancelNis($id) {
 			ItemHeaderSourcing::where('id',$id)
 			->update([

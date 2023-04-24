@@ -30,7 +30,7 @@
             }
 
             input.sinput:read-only {
-                background-color: #fff;
+                background-color: #f5f5f5;
             }
 
             input.addinput:read-only {
@@ -113,6 +113,20 @@
 
             </div>
 
+            @if(CRUDBooster::myPrivilegeId() == 8)
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label require">{{ trans('message.form-label.store_branch') }}</label>
+                            
+                            <input type="text" class="form-control finput"  id="store_branch" name="store_branch"  required readonly value="{{$stores->store_name}}"> 
+                            <input type="hidden" class="form-control"  id="store_branch_id" name="store_branch_id"  required readonly value="{{$stores->id}}"> 
+
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <hr/>
 
             <div class="row"> 
@@ -174,7 +188,7 @@
                                                                 <input type="button" id="add-Row" name="add-Row" class="btn btn-primary add" value='Add Item' />
                                                             </td>
                                                             <td align="left" colspan="1">
-                                                                <input type='text' name="quantity_total" class="form-control text-center" id="quantity_total" readonly>
+                                                                <input type='text' name="quantity_total" class="form-control sinput text-center" id="quantity_total" readonly>
                                                             </td>
                                                         </tr>
                                                     </tfoot>
@@ -309,18 +323,18 @@
                         '</td>' +  
 
                         '<td>' + 
-                            '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control text-center digits_code finput" data-id="'+ tableRow +'" id="digits_code'+ tableRow +'"  name="digits_code[]"   maxlength="100" readonly>' +
+                            '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control text-center digits_code sinput" data-id="'+ tableRow +'" id="digits_code'+ tableRow +'"  name="digits_code[]"   maxlength="100" readonly>' +
                         '</td>' +
                         '<td style="display:none">' + 
                             '<input type="hidden" class="form-control cost" data-id="'+ tableRow +'" id="cost'+ tableRow +'"  name="supplies_cost[]"   maxlength="100" readonly>' +
-                            '<input type="hidden" onkeyup="this.value = this.value.toUpperCase();" class="form-control fixed_description finput" data-id="'+ tableRow +'" id="fixed_description'+ tableRow +'"  name="fixed_description[]"   maxlength="100" readonly>' +
+                            '<input type="hidden" onkeyup="this.value = this.value.toUpperCase();" class="form-control fixed_description sinput" data-id="'+ tableRow +'" id="fixed_description'+ tableRow +'"  name="fixed_description[]"   maxlength="100" readonly>' +
                         '</td>' +
 
                         '<td>' + 
-                            '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control text-center category_id finput" data-id="'+ tableRow +'" id="category_id'+ tableRow +'"  name="category_id[]"   maxlength="100" readonly>' +
+                            '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control text-center category_id sinput" data-id="'+ tableRow +'" id="category_id'+ tableRow +'"  name="category_id[]"   maxlength="100" readonly>' +
                         '</td>' +
                         '<td>' + 
-                            '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control text-center sub_category_id finput" data-id="'+ tableRow +'" id="sub_category_id'+ tableRow +'"  name="sub_category_id[]"   maxlength="100" readonly>' +
+                            '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control text-center sub_category_id sinput" data-id="'+ tableRow +'" id="sub_category_id'+ tableRow +'"  name="sub_category_id[]"   maxlength="100" readonly>' +
                         '</td>' +
                         // '<td>'+
                         //     '<select class="form-control drop'+ tableRow + '" name="category_id[]" data-id="' + tableRow + '" id="category_id' + tableRow + '" required style="width:100%">' +
@@ -340,9 +354,9 @@
                         //     '</select>'+
                         // '</td>' +   
 
-                        '<td><input class="form-control text-center finput wh_quantity" type="text" required name="wh_quantity[]" id="wh_quantity' + tableRow + '" data-id="' + tableRow  + '" readonly></td>' +
+                        '<td><input class="form-control text-center sinput wh_quantity" type="text" required name="wh_quantity[]" id="wh_quantity' + tableRow + '" data-id="' + tableRow  + '" readonly></td>' +
                         
-                        '<td><input class="form-control text-center finput unserved_quantity" type="text" required name="unserved_quantity[]" id="unserved_quantity' + tableRow + '" data-id="' + tableRow  + '" readonly></td>' +
+                        '<td><input class="form-control text-center sinput unserved_quantity" type="text" required name="unserved_quantity[]" id="unserved_quantity' + tableRow + '" data-id="' + tableRow  + '" readonly></td>' +
                         
                         '<td><input class="form-control text-center finput quantity_item" type="text" required name="quantity[]" id="quantity' + tableRow + '" data-id="' + tableRow  + '"  value="1" max="9999999999" step="any" onKeyPress="if(this.value.length==11) return false;" oninput="validity.valid;"></td>' +
             
@@ -361,6 +375,32 @@
                     // $('#category_id'+tableRow).select2({minimumResultsForSearch: -1});
                     // $('#sub_category_id'+tableRow).select2({
                     // placeholder_text_single : "- Select Sub Category -"});
+
+                    $(document).on("keyup","#quantity"+tableRow, function (e) {
+                        if (e.which >= 37 && e.which <= 40) return;
+                            if (this.value.charAt(0) == ".") {
+                                this.value = this.value.replace(
+                                /\.(.*?)(\.+)/,
+                                function (match, g1, g2) {
+                                    return "." + g1;
+                                }
+                                );
+                            }
+                            if (e.key == "." && this.value.split(".").length > 2) {
+                                this.value =
+                                this.value.replace(/([\d,]+)([\.]+.+)/, "$1") +
+                                "." +
+                                this.value.replace(/([\d,]+)([\.]+.+)/, "$2").replace(/\./g, "");
+                                return;
+                            }
+                        $(this).val(function (index, value) {
+                            value = value.replace(/[^-0-9.]+/g, "");
+                            let parts = value.toString().split(".");
+                            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                            return parts.join(".");
+                        });
+                    });
+
                     $('#app_id'+tableRow).change(function(){
 
                             if($('#app_id'+$(this).attr("data-id")).val() != null){

@@ -32,13 +32,16 @@ class ExportConso implements FromCollection, WithHeadings
           'body_request.item_description',
           'body_request.category_id',
           'body_request.sub_category_id',
+          'body_request.po_no',
+          'body_request.wh_qty',
           'body_request.quantity',
           'body_request.replenish_qty',
           'body_request.reorder_qty',
           'body_request.serve_qty',
-          'body_request.unserved_qty'
+          'body_request.unserved_qty',
+          'header_request.created_at as requested_at'
         )
-        ->where('header_request.request_type_id', 7)
+        ->whereNull('body_request.deleted_at')
         ->get();
     }
 
@@ -51,11 +54,14 @@ class ExportConso implements FromCollection, WithHeadings
                 "Item Description",
                 "Category", 
                 "Sub Category",
+                "Po No",
+                "Wh Qty",
                 "Quantity",
                 "Replenish Qty",
                 "Re Order Qty",
                 "Served Qty",
-                "Unserved Qty"
+                "Unserved Qty",
+                "Requested Date"
                ];
     }
 }

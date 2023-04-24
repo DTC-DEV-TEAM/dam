@@ -622,85 +622,127 @@
     
         }
     
-        var tds = document
-        .getElementById("asset-items1")
-        .getElementsByTagName("td");
-        var sumqty       = 0;
-        var rep_qty      = 0;
-        var ro_qty       = 0;
-        var served_qty   = 0;
-        var unserved_qty = 0;
-        var dr_qty       = 0;
-        var po_qty       = 0;
-        for (var i = 0; i < tds.length; i++) {
-            if(tds[i].className == "qty") {
-                sumqty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-            }else if(tds[i].className == "rep_qty"){
-                rep_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-            }else if(tds[i].className == "ro_qty"){
-                ro_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-            }else if(tds[i].className == "served_qty"){
-                served_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-            }else if(tds[i].className == "unserved_qty"){
-                unserved_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-            }else if(tds[i].className == "dr_qty"){
-                dr_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-            }else if(tds[i].className == "po_qty"){
-                po_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+        if($('#request_type_id').val() == 1){
+            var tds = document
+            .getElementById("asset-items1")
+            .getElementsByTagName("td");
+            var sumqty       = 0;
+            var rep_qty      = 0;
+            var ro_qty       = 0;
+            var served_qty   = 0;
+            var unserved_qty = 0;
+            var dr_qty       = 0;
+            var po_qty       = 0;
+            for (var i = 0; i < tds.length; i++) {
+                if(tds[i].className == "qty") {
+                    sumqty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+                }else if(tds[i].className == "rep_qty"){
+                    rep_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+                }else if(tds[i].className == "ro_qty"){
+                    ro_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+                }else if(tds[i].className == "served_qty"){
+                    served_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+                }else if(tds[i].className == "unserved_qty"){
+                    unserved_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+                }else if(tds[i].className == "dr_qty"){
+                    dr_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+                }else if(tds[i].className == "po_qty"){
+                    po_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+                }
             }
+            document.getElementById("asset-items1").innerHTML +=
+            "<tr>"+
+                "<td colspan='4' style='text-align:right'>"+
+                        "<strong>TOTAL</strong>"+
+                    "</td>"+
+                    
+                    "<td style='text-align:center'>"+
+                        "<strong>" +
+                        sumqty +
+                        "</strong>"+
+                    "</td>"+
+
+                    "<td style='text-align:center'>"+
+                    
+                    "</td>"+
+                    
+            "</tr>";
+        }else{
+            var tds = document.getElementById("asset-items1").getElementsByTagName("td");
+            var sumqty       = 0;
+            var rep_qty      = 0;
+            var ro_qty       = 0;
+            var served_qty   = 0;
+            var unserved_qty = 0;
+            var dr_qty       = 0;
+            var po_qty       = 0;
+            for (var i = 0; i < tds.length; i++) {
+                if(tds[i].className == "qty") {
+                    sumqty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+                }else if(tds[i].className == "rep_qty"){
+                    rep_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+                }else if(tds[i].className == "ro_qty"){
+                    ro_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+                }else if(tds[i].className == "served_qty"){
+                    served_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+                }else if(tds[i].className == "unserved_qty"){
+                    unserved_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+                }else if(tds[i].className == "dr_qty"){
+                    dr_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+                }else if(tds[i].className == "po_qty"){
+                    po_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+                }
+            }
+            document.getElementById("asset-items1").innerHTML +=
+            "<tr>"+
+                "<td colspan='4' style='text-align:right'>"+
+                        "<strong>TOTAL</strong>"+
+                    "</td>"+
+                    
+                    "<td style='text-align:center'>"+
+                        "<strong>" +
+                        sumqty +
+                        "</strong>"+
+                    "</td>"+
+                    "<td style='text-align:center'>"+
+                        "<strong>" +
+                        rep_qty +
+                        "</strong>"+
+                    "</td>"+
+                    "<td style='text-align:center'>"+
+                        "<strong>" +
+                        ro_qty +
+                        "</strong>"+
+                    "</td>"+
+                    "<td style='text-align:center'>"+
+                        "<strong>" +
+                        served_qty +
+                        "</strong>"+
+                    "</td>"+
+                    "<td style='text-align:center'>"+
+                        "<strong>" +
+                        unserved_qty +
+                        "</strong>"+
+                    "</td>"+
+                    "<td style='text-align:center'>"+
+                        "<strong>" +
+                            dr_qty +
+                        "</strong>"+
+                    "</td>"+
+                    "<td style='text-align:center'>"+
+                        "<strong>" +
+                            po_qty +
+                        "</strong>"+
+                    "</td>"+
+                    "<td style='text-align:center'>"+
+                    "</td>"+
+                    "<td style='text-align:center'>"+
+                    "</td>"+
+                    "<td style='text-align:center'>"+
+                    "</td>"+
+            "</tr>";
         }
-        document.getElementById("asset-items1").innerHTML +=
-        "<tr>"+
-            "<td colspan='4' style='text-align:right'>"+
-                    "<strong>TOTAL</strong>"+
-                "</td>"+
-                
-                "<td style='text-align:center'>"+
-                    "<strong>" +
-                    sumqty +
-                    "</strong>"+
-                "</td>"+
-                "<td style='text-align:center'>"+
-                    "<strong>" +
-                    rep_qty +
-                    "</strong>"+
-                "</td>"+
-                "<td style='text-align:center'>"+
-                    "<strong>" +
-                    ro_qty +
-                    "</strong>"+
-                "</td>"+
-                "<td style='text-align:center'>"+
-                    "<strong>" +
-                    served_qty +
-                    "</strong>"+
-                "</td>"+
-                "<td style='text-align:center'>"+
-                    "<strong>" +
-                    unserved_qty +
-                    "</strong>"+
-                "</td>"+
-                "<td style='text-align:center'>"+
-                    "<strong>" +
-                        dr_qty +
-                    "</strong>"+
-                "</td>"+
-                "<td style='text-align:center'>"+
-                    "<strong>" +
-                        po_qty +
-                    "</strong>"+
-                "</td>"+
-                "<td style='text-align:center'>"+
-                
-                "</td>"+
-                "<td style='text-align:center'>"+
-                
-                "</td>"+
-                "<td style='text-align:center'>"+
-                
-                "</td>"+
-                
-        "</tr>";
+       
         
 </script>
 @endpush

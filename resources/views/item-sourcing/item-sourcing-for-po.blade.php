@@ -445,7 +445,7 @@
 
 @endsection
 @push('bottom')
-
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js"></script>
 <script type="text/javascript">
     
     $(function(){
@@ -792,6 +792,7 @@
                 $('#item-sourcing-options tbody').append(newrow);
         }
      }
+    
     });
 
       //cost fields validation
