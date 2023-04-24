@@ -1,8 +1,9 @@
 @extends('crudbooster::admin_template')
 @push('head')
 <style type="text/css">   
-    /* .select2-selection__choice{
+    .select2-selection__choice{
             font-size:14px !important;
+            /* color:black !important; */
             color: #fff !important;
     }
     .select2-selection__rendered {
@@ -16,7 +17,7 @@
     .select2-selection__arrow {
         height: 34px !important;
         background-color: #fff !important;
-    } */
+    }
     img[data-action="zoom"] {
         z-index: 1000;
     cursor: pointer;
@@ -127,11 +128,6 @@
         input.finput:read-only {
             background-color: #fff;
         }
-
-        #table_dashboard th, td {
-            border: 1px solid rgba(000, 0, 0, .5);
-            padding: 8px;
-        }
       
 </style>
 @endpush
@@ -233,35 +229,21 @@
 
         <div class="box-body">
             <div class="table-responsive">           
-                <table id='table_dashboard' >
+                <table id='table_dashboard' class="table table-hover table-striped table-bordered">
                     <thead>
                         <tr>
-                            <th class="text-center" width="5%">Assign ARF</th> 
-                            <th class="text-center" width="7%">Digits Code</th>   
-                            <th class="text-center" width="20%">Item Description</th>    
-                            <th class="text-center" width="7%">Value</th>                                            
-                            <th class="text-center" width="5%">Quantity</th> 
-                            <th class="text-center" width="10%">Serial No</th>   
-                            <th class="text-center" width="5%">Warranty Expiry Month</th>   
-                            <th class="text-center" width="8%">UPC Code</th>     
-                            <th class="text-center" width="7%">Brand</th>
-                            <th class="text-center" width="15%">Specs</th>                                    
+                            <th>Digits Code</th>   
+                            <th>Item Condition</th>    
+                            <th width="15%"">Value</th>                                            
+                            <th width="10%">Quantity</th> 
+                            <th>Serial No</th>   
+                            <th>Warranty Expiry Month</th>                                            
                             
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($Body as $res)
                             <tr class="text-center">
-                                <td>
-                                    <select required selected data-placeholder="-- Please Select Location --" id="arf_tag" name="arf_tag[]" class="form-select select2" style="width:100%;">
-                                        @if($res->reserved_id == NULL)
-                                        <option value="{{ $res->reserved_id }}"><?= $res->reference_number." | ". $res->reserved_digits_code?></option>
-                                        @endif
-                                        <?php foreach($reserved_assets as $reserved):?>
-                                        <option value="{{ $reserved->id }}" {{ isset($res->reserved_id) && $res->reserved_id == $reserved->id ? 'selected' : '' }}>{{ $reserved->reference_number . ' | ' . $reserved->digits_code }}</option>
-                                        <?php endforeach;?>
-                                    </select>
-                                </td>
                             <td style="display:none">
                                 <input class="form-control" type="text"name="body_id[]" value="{{$res->for_approval_body_id}}">
                                 <input class="form-control text-center" type="text" id="dc" name="digits_code[]" value="{{$res->digits_code}}">
@@ -272,21 +254,10 @@
                             <td>
                                 <input class="form-control text-center finput_qty quantity"  type="number"  value="{{$res->quantity}}" readonly>
                             </td> 
-                            
                             <td>
-                                <input class="form-control serial_no finput" oninput="validate(this)" type="text" placeholder="Serial No (Put N/A if not applicable)" name="serial_no[]" style="width:100%" data-index="1" value="{{ $res->serial_no ? $res->serial_no : "" }}">
+                                <input class="form-control serial_no finput"  type="text" placeholder="Serial No (Put N/A if not applicable)" name="serial_no[]" style="width:100%" data-index="1" value="{{ $res->serial_no ? $res->serial_no : "" }}">
                             </td>    
-                            <td>{{$res->warranty_coverage}}</td>   
-                            <td>
-                                <input class="form-control upc_code finput" oninput="validate(this)" type="text" placeholder="UPC Code" name="upc_code[]" style="width:100%" data-index="1">
-                            </td> 
-                            <td>
-                                <input class="form-control brand finput" oninput="validate(this)" type="text" placeholder="Brand" name="brand[]" style="width:100%" data-index="1">
-                            </td> 
-                            <td>
-                                <input class="form-control specs finput" oninput="validate(this)" type="text" placeholder="ADM Ryzen 5 3rd Gen/8 GB DDR4 RAM 512 GB SSD" name="specs[]" style="width:100%" data-index="1">
-                            </td>  
-                                                                                                                                           
+                            <td>{{$res->warranty_coverage}}</td>                                                                                                                  
                             </tr>
                         @endforeach
                     </tbody>
@@ -294,13 +265,12 @@
 
                         <tr id="tr-table1" class="bottom">
 
-                            <td colspan="4" class="text-center">
+                            <td colspan="3" class="text-center">
                              <span ><strong>Total</strong></span>
                             </td>
                             <td align="left">
                                 <input type='number' name="total_quantity" class="form-control text-center finput_qty" id="total_quantity" readonly>
-                            </td"> 
-                            <td colspan="5"></td>
+                            </td> 
                         </tr>
                     </tfoot>
                 </table> 
@@ -348,12 +318,6 @@
          window.onunload = function() {
             null;
         };
-
-        function validate(input){
-        if(/^\s/.test(input.value))
-            input.value = '';
-        }
-
         setTimeout("preventBack()", 0);
     //preview image before save
     item_source_value();
@@ -399,8 +363,7 @@
             type: 'error',
             title: 'Invoice Date required!',
             icon: 'error',
-            customClass: 'swal-wide',
-            confirmButtonColor: "#367fa9"
+            customClass: 'swal-wide'
         });
         event.preventDefault();
     }else if($('#invoice_no').val() === ""){
@@ -408,8 +371,7 @@
             type: 'error',
             title: 'Invoice No required!',
             icon: 'error',
-            customClass: 'swal-wide',
-            confirmButtonColor: "#367fa9"
+            customClass: 'swal-wide'
         });
         event.preventDefault();
     }else if($('#rr_date').val() === ""){
@@ -417,8 +379,7 @@
             type: 'error',
             title: 'RR Date required!',
             icon: 'error',
-            customClass: 'swal-wide',
-            confirmButtonColor: "#367fa9"
+            customClass: 'swal-wide'
         });
         event.preventDefault();
     }else if($('#si_dr').val() === ""){
@@ -426,8 +387,7 @@
             type: 'error',
             title: 'Upload SR/DR required!',
             icon: 'error',
-            customClass: 'swal-wide',
-            confirmButtonColor: "#367fa9"
+            customClass: 'swal-wide'
         });
         event.preventDefault();
     }else{
@@ -482,8 +442,7 @@
                                     type: 'error',
                                     title: 'Invalid Image Extension for SI/DR!',
                                     icon: 'error',
-                                    customClass: 'swal-wide',
-                                    confirmButtonColor: "#367fa9"
+                                    customClass: 'swal-wide'
                                 });
                                 event.preventDefault();
                                 return false;
@@ -506,8 +465,7 @@
                             swal({
                                     type: 'error',
                                     title: 'Not allowed duplicate Serial No. and Digits Code!/Put N/A(not NA, na)',
-                                    icon: 'error',
-                                    confirmButtonColor: "#367fa9"
+                                    icon: 'error'
                                 }); 
                                 event.preventDefault();
                                 return false;
@@ -520,83 +478,29 @@
                  //each value validation
                  var v = $("input[name^='serial_no']").length;
                  var value = $("input[name^='serial_no']");
-                 for(i=0;i<v;i++){
-                    if(value.eq(i).val() == 0){
-                        swal({  
-                                type: 'error',
-                                title: 'Put N/A in Serial No if not available/Put N/A(not NA, na)',
-                                icon: 'error',
-                                confirmButtonColor: "#367fa9"
-                            });
-                            event.preventDefault();
-                            return false;
+                    for(i=0;i<v;i++){
+                        if(value.eq(i).val() == 0){
+                            swal({  
+                                    type: 'error',
+                                    title: 'Put N/A in Serial No if not available/Put N/A(not NA, na)',
+                                    icon: 'error',
+                                    customClass: 'swal-wide'
+                                });
+                                event.preventDefault();
+                                return false;
+                        }
+                
                     }
-            
-                 }
- 
-                 //upc code each value validation
-                 var u = $("input[name^='upc_code']").length;
-                 var upcValue = $("input[name^='upc_code']");
-                 for(i=0;i<u;i++){
-                    if(upcValue.eq(i).val() == 0){
-                        swal({  
-                                type: 'error',
-                                title: 'UPC Code Required!',
-                                icon: 'error',
-                                customClass: 'swal-wide',
-                                confirmButtonColor: "#367fa9"
-                            });
-                            event.preventDefault();
-                            return false;
-                    }
-             
-                 }
-
-                 //upc code each value validation
-                 var b = $("input[name^='brand']").length;
-                 var brandValue = $("input[name^='brand']");
-                 for(i=0;i<b;i++){
-                    if(brandValue.eq(i).val() == 0){
-                        swal({  
-                                type: 'error',
-                                title: 'Brand Required!',
-                                icon: 'error',
-                                customClass: 'swal-wide',
-                                confirmButtonColor: "#367fa9"
-                            });
-                            event.preventDefault();
-                            return false;
-                    }
-             
-                 }
-
-                 //upc code each value validation
-                 var s = $("input[name^='specs']").length;
-                 var specsValue = $("input[name^='specs']");
-                 for(i=0;i<s;i++){
-                    if(specsValue.eq(i).val() == 0){
-                        swal({  
-                                type: 'error',
-                                title: 'Specs Required!',
-                                icon: 'error',
-                                customClass: 'swal-wide',
-                                confirmButtonColor: "#367fa9"
-                            });
-                            event.preventDefault();
-                            return false;
-                    }
-             
-                 }
 
                
+       
                 //check existing
                 $.each(checkRowFinal, function(index, item) {
                     if($.inArray(item, data.items) != -1){
                         swal({
                                 type: 'error',
                                 title: 'Digits Code and Serial Already Exist! (' + item + ')',
-                                icon: 'error',
-                                confirmButtonColor: "#367fa9",
+                                icon: 'error'
                             }); 
                             event.preventDefault();
                             return false;

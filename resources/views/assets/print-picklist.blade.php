@@ -63,7 +63,7 @@
 
                         <tr>
                             <td colspan="4">
-                                <table id="print-picklist" border="1" width="100%" style="text-align:center;border-collapse: collapse; font-size: 13px;">
+                                <table border="1" width="100%" style="text-align:center;border-collapse: collapse; font-size: 13px;">
                                     
                                     <thead>
 
@@ -103,7 +103,7 @@
                                                     <td height="10">{{$rowresult->item_description}}</td>
                                                     <td height="10">{{$rowresult->category_id}}</td>
                                                     <td height="10">{{$rowresult->sub_category_id}}</td>
-                                                    <td height="10" class="mo_qty">{{$rowresult->quantity}}</td>
+                                                    <td height="10">{{$rowresult->quantity}}</td>
                                                     <td height="10"></td>
                                                 @endif
                                             </tr>
@@ -113,7 +113,7 @@
                                 
                                     </tbody>
 
-                                    {{-- <tr>
+                                    <tr>
                                         <td colspan="7" style="text-align:right">
                                             <label>Total Qty:</label>
                                         </td>
@@ -133,7 +133,7 @@
                                             <label></label>
                                         </td>
 
-                                    </tr> --}}
+                                    </tr>
 
                                 </table> 
                             </td>
@@ -212,33 +212,6 @@
                   });
                   return false;
         });
-
-        var tds = document.getElementById("print-picklist").getElementsByTagName("td");
-        var moQty        = 0;
-        var moUnitCost   = 0;
-        var moTotalCost  = 0;
-
-        for (var i = 0; i < tds.length; i++) {
-            if(tds[i].className == "mo_qty") {
-                moQty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-            }else if(tds[i].className == "mo_unit_cost"){
-                moUnitCost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-            }else if(tds[i].className == "mo_total_cost"){
-                moTotalCost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-            }
-        }
-        document.getElementById("print-picklist").innerHTML +=
-        "<tr>"+
-            "<td colspan='7' style='text-align:right'>"+
-                    "<strong>TOTAL</strong>"+
-                "</td>"+
-                
-                "<td style='text-align:center'>"+
-                    "<strong>" +
-                        moQty +
-                    "</strong>"+
-                "</td>"+   
-        "</tr>";
 
     </script>
 @endpush

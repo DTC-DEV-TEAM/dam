@@ -22,7 +22,6 @@
 	use App\MoveOrder;
 	use App\HeaderRequest;
 	use App\BodyRequest;
-	use App\Models\AssetsInventoryReserved;
 	use App\WarehouseLocationModel;
 	use App\Exports\ExportHeaderInventory;
 	use Illuminate\Support\Facades\File;
@@ -415,24 +414,12 @@
 			$rr_date = $fields['rr_date'];
 			$location = $fields['location'];
 			$warranty_coverage = $fields['warranty_coverage'];
-			$arf_tag = $fields['arf_tag'];
 
-			//update reserved table
-			if($arf_tag){
-				for ($i = 0; $i < count($arf_tag); $i++) {
-					AssetsInventoryReserved::where(['id' => $arf_tag[$i]])
-					   ->update([
-							   'reserved' => 1
-							   ]);
-				}
-			}
-			
 			//MAKE ARRAY DATA
 			$allData = [];
 			$container = [];
 			foreach($digits_code as $key => $val){
 				$container['item_id'] = $item_id[$key];
-				$container['reserved_id'] = $arf_tag[$key];
 				$container['header_id'] = $header->id;
 				$container['serial_no'] = $serial_no[$key];
 				$container['statuses_id'] = 20;	
@@ -545,8 +532,7 @@
 			$data['page_title'] = 'Add Inventory';
 
 			$data['warehouse_location'] = WarehouseLocationModel::where('id','!=',4)->get();;
-			$data['reserved_assets'] = AssetsInventoryReserved::whereNotNull('for_po')->get();
-		
+
 			return $this->view("assets.add-inventory", $data);
 
 		}
@@ -584,7 +570,6 @@
 			    ->leftjoin('assets_inventory_header_for_approval', 'assets_inventory_body_for_approval.header_id', '=', 'assets_inventory_header_for_approval.id')
 			    ->leftjoin('assets', 'assets_inventory_body_for_approval.item_id', '=', 'assets.id')
 				->leftjoin('cms_users as cms_users_updated_by', 'assets_inventory_body_for_approval.updated_by', '=', 'cms_users_updated_by.id')
-				->leftjoin('assets_inventory_reserved', 'assets_inventory_body_for_approval.reserved_id', '=', 'assets_inventory_reserved.id')
 				->select(
 				  'assets_inventory_body_for_approval.*',
 				  'assets_inventory_body_for_approval.id as for_approval_body_id',
@@ -594,15 +579,11 @@
 				  'assets.item_type as itemType',
 				  'assets.image as itemImage',
 				  'assets_inventory_body_for_approval.updated_at as date_updated',
-				  'cms_users_updated_by.name as updated_by',
-				  'assets_inventory_reserved.reference_number as reference_number',
-				  'assets_inventory_reserved.digits_code as reserved_digits_code'
+				  'cms_users_updated_by.name as updated_by'
 				)
 				->where('assets_inventory_body_for_approval.header_id', $id)
 				->get();
 				$data['warehouse_location'] = WarehouseLocationModel::where('id','!=',4)->get();
-				$data['reserved_assets'] = AssetsInventoryReserved::whereNotNull('for_po')->get();
-         
 				return $this->view("assets.edit-inventory-list-for-approval", $data);
 		}
 
@@ -654,7 +635,6 @@
 				->where('assets_inventory_body_for_approval.header_id', $id)
 				->get();
 				$data['warehouse_location'] = WarehouseLocationModel::where('id','!=',4)->get();
-				
 				return $this->view("assets.inventory_list_for_approval", $data);
 		}
 
@@ -719,11 +699,10 @@
 			try {
 				$lock->block(5);
 			$fields = Request::all();
-		    
 			$files = $fields['si_dr'];
 			$id = $fields['id'];
 			$remarks = $fields['remarks'];
-	     
+	
 			$images = [];
 			if (isset($files)) {
 				$counter = 0;
@@ -745,15 +724,11 @@
 	        //parse data in form
 			parse_str($fields['form_data'], $fields);
 			$invoice_date = $fields['invoice_date'];
-			$invoice_no   = $fields['invoice_no'];
-			$rr_date      = $fields['rr_date'];
-			$body_id      = $fields['body_id'];
-			$serial_no    = $fields['serial_no'];
-			$tag_id       = $fields['arf_tag'];
-			$upc_code     = $fields['upc_code'];
-			$brand        = $fields['brand'];
-			$specs        = $fields['specs'];
-
+			$invoice_no = $fields['invoice_no'];
+			$rr_date = $fields['rr_date'];
+			$body_id = $fields['body_id'];
+			$serial_no = $fields['serial_no'];
+		
 			//update header status
 			AssetsInventoryHeaderForApproval::where('id', $id)
 											->update([
@@ -796,23 +771,9 @@
 				AssetsInventoryBodyForApproval::where(['id' => $body_id[$i]])
 				   ->update([
 					       'statuses_id' => 22, 
-						   'quantity'    => 1,
-					       'serial_no'   => $serial_no[$i],
-						   'upc_code'    => $upc_code[$i],
-						   'brand'       => $brand[$i],
-						   'specs'       => $specs[$i]
+						   'quantity' => 1,
+					       'serial_no' => $serial_no[$i]
 				           ]);
-			}
-
-			//update reserved table
-			if($tag_id){
-				for ($t = 0; $t < count($tag_id); $t++) {
-					AssetsInventoryReserved::where(['id' => $tag_id[$t]])
-					   ->update([
-							   'reserved' => 1,
-							   'for_po'   => NULL
-							   ]);
-				}
 			}
 
 	        //Body details
@@ -967,27 +928,24 @@
 			$saveData = [];
 			$saveContainerData = [];
 			foreach($finalDataofSplittingArray as $frKey => $frData){		
-				$saveContainerData['header_id']             = $frData['header_id'];
-				//$saveContainerData['header_approval_id']  = $id;
-				$saveContainerData['item_id']               = $frData['item_id'];
-				$saveContainerData['statuses_id']           = 6;
-				$saveContainerData['location']              = $frData['location'];
-				$saveContainerData['digits_code']           = $frData['digits_code'];
-				$saveContainerData['item_description']      = $frData['item_description'];
-				$saveContainerData['value']                 = $frData['value'];
-				$saveContainerData['quantity']              = 1;	
-				$saveContainerData['serial_no']             = $frData['serial_no'];
-				$saveContainerData['warranty_coverage']     = $frData['warranty_coverage'];
-				$saveContainerData['asset_code']            = $frData['asset_code'];
-				$saveContainerData['barcode']               = $frData['digits_code'].''.$frData['asset_code'];
-				$saveContainerData['item_condition']        = $frData['item_condition'];
-				$saveContainerData['item_category']         = $frData['item_category'];
+				$saveContainerData['header_id'] = $frData['header_id'];
+				//$saveContainerData['header_approval_id'] = $id;
+				$saveContainerData['item_id'] = $frData['item_id'];
+				$saveContainerData['statuses_id'] = 6;
+				$saveContainerData['location'] = $frData['location'];
+				$saveContainerData['digits_code'] = $frData['digits_code'];
+				$saveContainerData['item_description'] = $frData['item_description'];
+				$saveContainerData['value'] = $frData['value'];
+				$saveContainerData['quantity'] = 1;	
+				$saveContainerData['serial_no'] = $frData['serial_no'];
+				$saveContainerData['warranty_coverage'] = $frData['warranty_coverage'];
+				$saveContainerData['asset_code'] = $frData['asset_code'];
+				$saveContainerData['barcode'] = $frData['digits_code'].''.$frData['asset_code'];
+				$saveContainerData['item_condition'] = $frData['item_condition'];
+				$saveContainerData['item_category'] = $frData['item_category'];
 				$saveContainerData['transaction_per_asset'] = $frData['transaction_per_asset'];
-				$saveContainerData['upc_code']              = $frData['upc_code'];
-				$saveContainerData['brand']                 = $frData['brand'];
-				$saveContainerData['specs']                 = $frData['specs'];
-				$saveContainerData['created_by']            = $frData['created_by'];
-				$saveContainerData['created_at']            = Carbon::parse($frData['created_at'])->toDateTimeString();
+				$saveContainerData['created_by'] = $frData['created_by'];
+				$saveContainerData['created_at'] = Carbon::parse($frData['created_at'])->toDateTimeString();
 			
 				$saveData[] = $saveContainerData;
 			}

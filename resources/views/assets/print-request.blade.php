@@ -78,7 +78,7 @@
 
                         <tr>
                             <td colspan="4">
-                                <table id="print-mo" border="1" width="100%" style="text-align:center;border-collapse: collapse; table-layout: fixed; font-size: 13px;">
+                                <table border="1" width="100%" style="text-align:center;border-collapse: collapse; table-layout: fixed; font-size: 13px;">
                                     
                                     <thead>
                                         <tr><th colspan="5"><h4 align="center" ><strong>Item Details</strong></h4></th></tr>
@@ -115,8 +115,8 @@
                                                     </td>
                                                     <td height="10">{{$rowresult->item_description}}</td>
                                                     <td height="10">{{$rowresult->serial_no}}</td>
-                                                    <td height="10" class="mo_qty">{{$rowresult->quantity}}</td>
-                                                    <td height="10" class="mo_unit_cost">{{$rowresult->unit_cost}}</td>
+                                                    <td height="10">{{$rowresult->quantity}}</td>
+                                                    <td height="10">{{$rowresult->unit_cost}}</td>
                                                 @endif
                                             </tr>
 
@@ -126,7 +126,7 @@
                                 
                                     </tbody>
 
-                                    {{-- <tr>
+                                    <tr>
                                         <td colspan="5" style="text-align:right">
                                             <label>Total:</label>
                                         </td>
@@ -139,7 +139,7 @@
                                             @endif
                                         </td>
 
-                                    </tr> --}}
+                                    </tr>
 
                                 </table> 
                             </td>
@@ -313,37 +313,7 @@
                   return false;
         });
 
-        var tds = document.getElementById("print-mo").getElementsByTagName("td");
-        var moQty        = 0;
-        var moUnitCost   = 0;
-        var moTotalCost  = 0;
-
-        for (var i = 0; i < tds.length; i++) {
-            if(tds[i].className == "mo_qty") {
-                moQty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-            }else if(tds[i].className == "mo_unit_cost"){
-                moUnitCost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-            }else if(tds[i].className == "mo_total_cost"){
-                moTotalCost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-            }
-        }
-        document.getElementById("print-mo").innerHTML +=
-        "<tr>"+
-            "<td colspan='4' style='text-align:right'>"+
-                    "<strong>TOTAL</strong>"+
-                "</td>"+
-                
-                "<td style='text-align:center'>"+
-                    "<strong>" +
-                        moQty +
-                    "</strong>"+
-                "</td>"+
-                "<td style='text-align:center'>"+
-                    "<strong>" +
-                        moUnitCost +
-                    "</strong>"+
-                "</td>"+    
-        "</tr>";
+        
 
     </script>
 @endpush

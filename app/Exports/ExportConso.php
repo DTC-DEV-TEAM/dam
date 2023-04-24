@@ -38,6 +38,7 @@ class ExportConso implements FromCollection, WithHeadings
           'body_request.serve_qty',
           'body_request.unserved_qty'
         )
+        ->where('header_request.request_type_id', 7)
         ->get();
     }
 

@@ -321,15 +321,15 @@
                                                                         {{$rowresult->serial_no}}
                                                                     </td>
 
-                                                                    <td style="text-align:center" height="10" class="mo_qty">
+                                                                    <td style="text-align:center" height="10">
                                                                         {{$rowresult->quantity}}
                                                                     </td>
 
-                                                                    <td style="text-align:center" height="10" class="mo_unit_cost">
+                                                                    <td style="text-align:center" height="10">
                                                                         {{$rowresult->unit_cost}}
                                                                     </td>
 
-                                                                    <td style="text-align:center" height="10" class="mo_total_cost">
+                                                                    <td style="text-align:center" height="10">
                                                                         {{$rowresult->total_unit_cost}}
                                                                     </td>
 
@@ -343,12 +343,12 @@
 
                                                         @endif
                                                         
-                                                        {{-- <tr class="tableInfo">
+                                                        <tr class="tableInfo">
                                                             <td colspan="8" align="right"><strong>{{ trans('message.table.total') }}</strong></td>
                                                             <td align="center" colspan="1">
                                                                 <label>{{$Header->total}}</label>
                                                             </td>
-                                                        </tr> --}}
+                                                        </tr>
                                                     
                                                     </tbody>
                                                 </table>
@@ -363,28 +363,12 @@
             </div> 
 
             <br>
-            @if( $Header->mo_by != null )
+            @if( $Header->processedby != null )
                 <div class="row">
                     <div class="col-md-6">
                         <table style="width:100%">
                             <tbody>
                                 <tr>
-                                    <th class="control-label col-md-2">{{ trans('message.form-label.mo_by') }}:</th>
-                                    <td class="col-md-4">{{$Header->mo_by}} / {{$Header->mo_at}}</td>     
-                                </tr>
-                                @if($Header->ac_comments != null)
-                                    <tr>
-                                        <th class="control-label col-md-2">{{ trans('message.table.ac_comments') }}:</th>
-                                        <td class="col-md-4">{{$Header->ac_comments}}</td>
-                                    </tr>
-                                @endif
-                                @if( $Header->pickedby != null )
-                                    <tr>
-                                        <th class="control-label col-md-2">{{ trans('message.form-label.picked_by') }}:</th>
-                                        <td class="col-md-4">{{$Header->pickedby}} / {{$Header->picked_at}}</td>
-                                    </tr>
-                                @endif
-                                {{-- <tr>
                                     <th class="control-label col-md-2">{{ trans('message.form-label.po_number') }}:</th>
                                     <td class="col-md-4">{{$Header->po_number}}</td>     
                                 </tr>
@@ -403,7 +387,7 @@
                                         <th class="control-label col-md-2">{{ trans('message.form-label.processed_by') }}:</th>
                                         <td class="col-md-4">{{$Header->processedby}} / {{$Header->purchased2_at}}</td>
                                     </tr>
-                                @endif --}}
+                                @endif
                             </tbody>
                         </table>
                     </div>
@@ -411,11 +395,23 @@
                     <div class="col-md-6">
                         <table style="width:100%">
                             <tbody>
+                                @if($Header->ac_comments != null)
+                                    <tr>
+                                        <th class="control-label col-md-2">{{ trans('message.table.ac_comments') }}:</th>
+                                        <td class="col-md-4">{{$Header->ac_comments}}</td>
+                                    </tr>
+                                @endif
+                                @if( $Header->pickedby != null )
+                                    <tr>
+                                        <th class="control-label col-md-2">{{ trans('message.form-label.picked_by') }}:</th>
+                                        <td class="col-md-4">{{$Header->pickedby}} / {{$Header->picked_at}}</td>
+                                    </tr>
+                                @endif
                                 @if( $Header->receivedby != null )
-                                <tr>
-                                    <th class="control-label col-md-2">{{ trans('message.form-label.received_by') }}:</th>
-                                    <td class="col-md-4">{{$Header->receivedby}} / {{$Header->received_at}}</td>
-                                </tr>
+                                    <tr>
+                                        <th class="control-label col-md-2">{{ trans('message.form-label.received_by') }}:</th>
+                                        <td class="col-md-4">{{$Header->receivedby}} / {{$Header->received_at}}</td>
+                                    </tr>
                                 @endif
                                 @if( $Header->closedby != null )
                                     <tr>
@@ -486,43 +482,6 @@
         });
 
     });
-
-    var tds = document.getElementById("asset-items").getElementsByTagName("td");
-    var moQty        = 0;
-    var moUnitCost   = 0;
-    var moTotalCost  = 0;
-
-    for (var i = 0; i < tds.length; i++) {
-        if(tds[i].className == "mo_qty") {
-            moQty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-        }else if(tds[i].className == "mo_unit_cost"){
-            moUnitCost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-        }else if(tds[i].className == "mo_total_cost"){
-            moTotalCost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-        }
-    }
-    document.getElementById("asset-items").innerHTML +=
-    "<tr>"+
-        "<td colspan='6' style='text-align:right'>"+
-                "<strong>TOTAL</strong>"+
-            "</td>"+
-            
-            "<td style='text-align:center'>"+
-                "<strong>" +
-                    moQty +
-                "</strong>"+
-            "</td>"+
-            "<td style='text-align:center'>"+
-                "<strong>" +
-                    moUnitCost +
-                "</strong>"+
-            "</td>"+ 
-            "<td style='text-align:center'>"+
-                "<strong>" +
-                    moTotalCost +
-                "</strong>"+
-            "</td>"+    
-    "</tr>";
 
 </script>
 @endpush

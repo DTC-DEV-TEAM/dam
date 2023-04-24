@@ -613,7 +613,6 @@
 				->leftjoin('cms_users as requested', 'header_request.created_by','=', 'requested.id')
 				->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
 				->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
-				->leftjoin('cms_users as mo_by', 'header_request.mo_by','=', 'mo_by.id')
 				->leftjoin('cms_users as processed', 'header_request.purchased2_by','=', 'processed.id')
 				->select(
 						'header_request.*',
@@ -629,7 +628,6 @@
 						'stores.bea_mo_store_name as store_branch',
 						'approved.name as approvedby',
 						'recommended.name as recommendedby',
-						'mo_by.name as mo_by',
 						'processed.name as processedby',
 						'header_request.created_at as created_at'
 						)

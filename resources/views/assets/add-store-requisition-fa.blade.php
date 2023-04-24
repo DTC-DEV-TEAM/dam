@@ -1,6 +1,7 @@
 @extends('crudbooster::admin_template')
     @push('head')
         <style type="text/css">   
+
             .select2-selection__choice{
                     font-size:14px !important;
                     color:black !important;
@@ -14,7 +15,6 @@
             .select2-selection__arrow {
                 height: 34px !important;
             }
-
             .firstRow {
                 padding: 10px;
                 margin-left: 10px;
@@ -53,7 +53,6 @@
             :-ms-input-placeholder {  
             font-style: italic; 
             }
-
         </style>
     @endpush
 @section('content')
@@ -70,19 +69,15 @@
 
     <form action="{{ CRUDBooster::mainpath('add-save') }}" method="POST" id="AssetRequest" enctype="multipart/form-data">
         <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
-        <input type="hidden" value="7" name="request_type_id" id="request_type_id">
+        <input type="hidden" value="5" name="request_type_id" id="request_type_id">
 
         <div class='panel-body'>
-
             <div class="row">
-
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label require">{{ trans('message.form-label.employee_name') }}</label>
-                         
                         <input type="text" class="form-control finput"  id="employee_name" name="employee_name"  required readonly value="{{$employeeinfos->bill_to}}"> 
                     </div>
-
                 </div>
 
                 <div class="col-md-6">
@@ -99,11 +94,10 @@
                     <div class="form-group">
                         <label class="control-label require">{{ trans('message.form-label.department') }}</label>
                         <input type="text" class="form-control finput"  id="department" name="department"  required readonly value="{{$employeeinfos->department_name}}">
+
                     </div>
-
                 </div>
-
-
+                
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label require">{{ trans('message.form-label.position') }}</label>
@@ -111,6 +105,18 @@
                     </div>
                 </div>
 
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label require">{{ trans('message.form-label.store_branch') }}</label>
+                         
+                        <input type="text" class="form-control finput"  id="store_branch" name="store_branch"  required readonly value="{{$stores->store_name}}"> 
+                        <input type="hidden" class="form-control"  id="store_branch_id" name="store_branch_id"  required readonly value="{{$stores->id}}"> 
+
+                    </div>
+                </div>
             </div>
 
             <hr/>
@@ -148,16 +154,14 @@
                                                 <table class="table table-bordered" id="asset-items">
                                                     <tbody id="bodyTable">
                                                         <tr class="tbl_header_color dynamicRows">
-                                                            <th width="30%" class="text-center">*{{ trans('message.table.item_description') }}</th>
+                                                            <th width="35%" class="text-center">*{{ trans('message.table.item_description') }}</th>
                                                             <th width="20%" class="text-center">Digits Code</th>
-                                                            <th width="20%" class="text-center">{{ trans('message.table.category_id_text') }}</th>     
+                                                            <th width="20%" class="text-center">{{ trans('message.table.category_id_text') }}</th>      
                                                             <th width="20%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
-                                                            <th width="15%" class="text-center"> Wh Quantity</th>
-                                                            <th width="15%" class="text-center"> Unserved Quantity</th> 
-                                                            <th width="15%" class="text-center">*{{ trans('message.table.quantity_text') }}</th> 
+                                                            <th width="7%" class="text-center">*{{ trans('message.table.quantity_text') }}</th> 
                                                             <th width="5%" class="text-center">{{ trans('message.table.action') }}</th>
                                                         </tr>
-                                                        
+                
                                                         <tr id="tr-table">
                                                             <tr>
                                             
@@ -170,11 +174,11 @@
 
                                                         <tr id="tr-table1" class="bottom">
             
-                                                            <td colspan="6">
+                                                            <td colspan="4">
                                                                 <input type="button" id="add-Row" name="add-Row" class="btn btn-primary add" value='Add Item' />
                                                             </td>
                                                             <td align="left" colspan="1">
-                                                                <input type='text' name="quantity_total" class="form-control text-center" id="quantity_total" readonly>
+                                                                <input type='number' name="quantity_total" class="form-control text-center" id="quantity_total" readonly>
                                                             </td>
                                                         </tr>
                                                     </tfoot>
@@ -215,8 +219,9 @@
 
 
 @endsection
+
+
 @push('bottom')
-      
     <script type="text/javascript">
 
         function preventBack() {
@@ -227,11 +232,7 @@
         };
         setTimeout("preventBack()", 0);
 
-        var tableRow = <?php echo json_encode($tableRow); ?>;
-    
-        var tableRow1 = tableRow;
-
-        tableRow1++;
+        var tableRow = 1;
 
         $(document).ready(function() {
 
@@ -244,8 +245,7 @@
                 $('.itemDesc').each(function() {
                     description = $(this).val();
                     if (description == null) {
-
-                         swal({  
+                        swal({  
                             type: 'error',
                             title: 'Please fill all Fields!',
                             icon: 'error',
@@ -254,8 +254,7 @@
                         count_fail++;
 
                     } else if (description == "") {
-
-                         swal({  
+                        swal({  
                             type: 'error',
                             title: 'Please fill all Fields!',
                             icon: 'error',
@@ -300,52 +299,38 @@
                     var newrow =
                     '<tr>' +
 
-                         '<td >' +
-                            '<input type="text" class="form-control finput itemDesc" id="itemDesc'+ tableRow +'" data-id="'+ tableRow +'"   name="item_description[]"  required maxlength="100">' +
-                            '<ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" data-id="'+ tableRow +'" id="ui-id-2'+ tableRow +'" style="display: none; top: 60px; left: 15px; width: 100%;">' +
-                            '<li>Loading...</li>' +
-                            '</ul>' +
-                            '<div id="display-error'+ tableRow +'"></div>'+
+                        '<td >' +
+                        '  <input type="text" placeholder="Search Item ..." class="form-control finput" id="itemDesc'+ tableRow +'" data-id="'+ tableRow +'"   name="item_description[]"  required maxlength="100">' +
+                          '<ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" data-id="'+ tableRow +'" id="ui-id-2'+ tableRow +'" style="display: none; top: 60px; left: 15px; width: 100%;">' +
+                          '<li>Loading...</li>' +
+                        '</ul>' +
+                        '<div id="display-error'+ tableRow +'"></div>'+
+                        '<td>' + 
+                            '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control digits_code finput" data-id="'+ tableRow +'" id="digits_code'+ tableRow +'"  name="digits_code[]"   maxlength="100" readonly>' +
+                            '<input type="hidden" onkeyup="this.value = this.value.toUpperCase();" class="form-control fixed_description finput" data-id="'+ tableRow +'" id="fixed_description'+ tableRow +'"  name="fixed_description[]"   maxlength="100" readonly>' +                       
+                        '</td>' +
+
+                        '<td>'+
+                            '<select selected data-placeholder="- Select Category -" class="form-control category_id" name="category_id[]" data-id="' + tableRow + '" id="category_id' + tableRow + '" required style="width:100%">' +
+                            //'  <option value=""></option>' +
+                            '        @foreach($categories as $data)'+
+                            '        <option value="{{$data->category_description}}">{{$data->category_description}}</option>'+
+                            '         @endforeach'+
+                            '</select>'+
+                        '</td>' +
+
+                        '<td>'+
+                            '<select selected data-placeholder="- Select Sub Category -" class="form-control sub_category_id" name="sub_category_id[]" data-id="' + tableRow + '" id="sub_category_id' + tableRow + '" required style="width:100%">' +
+                            '  <option value=""></option>' +
+                            '        @foreach($sub_categories as $data)'+
+                            '        <option value="{{$data->class_description}}">{{$data->class_description}}</option>'+
+                            '         @endforeach'+
+                            '</select>'+
                         '</td>' +  
-
-                        '<td>' + 
-                            '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control text-center digits_code finput" data-id="'+ tableRow +'" id="digits_code'+ tableRow +'"  name="digits_code[]"   maxlength="100" readonly>' +
-                        '</td>' +
-                        '<td style="display:none">' + 
-                            '<input type="hidden" class="form-control cost" data-id="'+ tableRow +'" id="cost'+ tableRow +'"  name="supplies_cost[]"   maxlength="100" readonly>' +
-                            '<input type="hidden" onkeyup="this.value = this.value.toUpperCase();" class="form-control fixed_description finput" data-id="'+ tableRow +'" id="fixed_description'+ tableRow +'"  name="fixed_description[]"   maxlength="100" readonly>' +
-                        '</td>' +
-
-                        '<td>' + 
-                            '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control text-center category_id finput" data-id="'+ tableRow +'" id="category_id'+ tableRow +'"  name="category_id[]"   maxlength="100" readonly>' +
-                        '</td>' +
-                        '<td>' + 
-                            '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control text-center sub_category_id finput" data-id="'+ tableRow +'" id="sub_category_id'+ tableRow +'"  name="sub_category_id[]"   maxlength="100" readonly>' +
-                        '</td>' +
-                        // '<td>'+
-                        //     '<select class="form-control drop'+ tableRow + '" name="category_id[]" data-id="' + tableRow + '" id="category_id' + tableRow + '" required style="width:100%">' +
-                        //     '  ' +
-                        //     '        @foreach($categories as $data)'+
-                        //     '        <option value="{{$data->category_description}}">{{$data->category_description}}</option>'+
-                        //     '         @endforeach'+
-                        //     '</select>'+
-                        // '</td>' +
-
-                        // '<td>'+
-                        //     '<select selected data-placeholder="Select Sub Category" class="form-control sub_category_id" name="sub_category_id[]" data-id="' + tableRow + '" id="sub_category_id' + tableRow + '" required style="width:100%">' +
-                        //     '  <option value=""></option>' +
-                        //     '        @foreach($sub_categories as $data)'+
-                        //     '        <option value="{{$data->class_description}}">{{$data->class_description}}</option>'+
-                        //     '         @endforeach'+
-                        //     '</select>'+
-                        // '</td>' +   
-
-                        '<td><input class="form-control text-center finput wh_quantity" type="text" required name="wh_quantity[]" id="wh_quantity' + tableRow + '" data-id="' + tableRow  + '" readonly></td>' +
+ 
                         
-                        '<td><input class="form-control text-center finput unserved_quantity" type="text" required name="unserved_quantity[]" id="unserved_quantity' + tableRow + '" data-id="' + tableRow  + '" readonly></td>' +
-                        
-                        '<td><input class="form-control text-center finput quantity_item" type="text" required name="quantity[]" id="quantity' + tableRow + '" data-id="' + tableRow  + '"  value="1" max="9999999999" step="any" onKeyPress="if(this.value.length==11) return false;" oninput="validity.valid;"></td>' +
-            
+                        '<td><input class="form-control text-center quantity_item" type="number" required name="quantity[]" id="quantity' + tableRow + '" data-id="' + tableRow  + '"  value="1" min="0" max="9999999999" step="any" onKeyPress="if(this.value.length==4) return false;" oninput="validity.valid;" readonly></td>' +
+                                       
                         '<td>' +
                             '<button id="deleteRow" name="removeRow" class="btn btn-danger removeRow"><i class="glyphicon glyphicon-trash"></i></button>' +
                         '</td>' +
@@ -356,11 +341,14 @@
                     $('#app_id'+tableRow).attr('disabled', true);
 
                     $('.js-example-basic-multiple').select2();
-                    // $('#itemDesc'+tableRow).select2({
-                    // placeholder_text_single : "- Select Item Description -"});
-                    // $('#category_id'+tableRow).select2({minimumResultsForSearch: -1});
-                    // $('#sub_category_id'+tableRow).select2({
-                    // placeholder_text_single : "- Select Sub Category -"});
+                    $('#category_id'+tableRow).select2({
+                    placeholder_text_single : "- Select Category -",
+                    minimumResultsForSearch: -1});
+                    $('#sub_category_id'+tableRow).select2({
+                    placeholder_text_single : "- Select Sub Category -"});
+
+                    //$('#sub_category_id'+tableRow).attr('disabled', true);
+
                     $('#app_id'+tableRow).change(function(){
 
                             if($('#app_id'+$(this).attr("data-id")).val() != null){
@@ -386,105 +374,93 @@
 
                     });
 
-
                     var stack = [];
                     var token = $("#token").val();
                     var searchcount = <?php echo json_encode($tableRow); ?>;
 
                     let countrow = 1;
-
-                        $(function(){
-
-                                countrow++;
-                                
-                                //$('#search'+countrow).attr('disabled', true);
-
-                                $('#itemDesc'+tableRow).autocomplete({
-                                    source: function (request, response) {
-                                    $.ajax({
-                                        url: "{{ route('item.supplies.search') }}",
-                                        dataType: "json",
-                                        type: "POST",
-                                        data: {
-                                            "_token": token,
-                                            "search": request.term
-                                        },
-                                        success: function (data) {
-                                            if(data.items === null){
-                                                swal({  
-                                                    type: 'error',
-                                                    title: 'No Found Item',
-                                                    icon: 'error',
-                                                    confirmButtonColor: "#367fa9",
-                                                });
-                                            }else{  
-                            
-                                            if (data.status_no == 1) {
-
-                                                $("#val_item").html();
-                                                var data = data.items;
-                                                $('#ui-id-2'+tableRow).css('display', 'none');
-
-                                                response($.map(data, function (item) {
-                                                    return {
-                                                        id:                         item.id,
-                                                        asset_code:                 item.asset_code,
-                                                        digits_code:                item.digits_code,
-                                                        asset_tag:                  item.asset_tag,
-                                                        serial_no:                  item.serial_no,
-                                                        value:                      item.item_description,
-                                                        category_description:       item.category_description,
-                                                        class_description:          item.class_description,
-                                                        item_cost:                  item.item_cost,
-                                                        wh_qty:                     item.wh_qty,
-                                                        unserved_qty:               item.unserved_qty,
-                                                    }
-
-                                                }));
-
-                                            } else {
-
-                                                $('.ui-menu-item').remove();
-                                                $('.addedLi').remove();
-                                                $("#ui-id-2"+tableRow).append($("<li class='addedLi'>").text(data.message));
-                                                var searchVal = $('#itemDesc'+tableRow).val();
-                                                if (searchVal.length > 0) {
-                                                    $("#ui-id-2"+tableRow).css('display', 'block');
-                                                } else {
-                                                    $("#ui-id-2"+tableRow).css('display', 'none');
-                                                }
-                                            }
-                                        }
-                                      }
-                                    })
-                                    },
-                                    select: function (event, ui) {
-                                        var e = ui.item;
-
-                                        if (e.id) {
-                                          
-                                            $("#digits_code"+$(this).attr("data-id")).val(e.digits_code);
-                                            $("#cost"+$(this).attr("data-id")).val(e.item_cost);
-                                            $('#itemDesc'+$(this).attr("data-id")).val(e.value);
-                                            $('#itemDesc'+$(this).attr("data-id")).attr('readonly','readonly');
-                                            $('#fixed_description'+$(this).attr("data-id")).val(e.value);
-                                            $('#category_id'+$(this).attr("data-id")).val(e.category_description);
-                                            $('#sub_category_id'+$(this).attr("data-id")).val(e.class_description);
-                                            $('#wh_quantity'+$(this).attr("data-id")).val(e.wh_qty);
-                                            $('#unserved_quantity'+$(this).attr("data-id")).val(e.unserved_qty);
-                                            $('#val_item').html('');
-                                            return false;
-                
-                                        }
-                                    },
-
-                                    minLength: 1,
-                                    autoFocus: true
+                    $(function(){
+                    countrow++;
+                    //$('#search'+countrow).attr('disabled', true);
+                    $('#itemDesc'+tableRow).autocomplete({
+                        source: function (request, response) {
+                        $.ajax({
+                            url: "{{ route('item.fa.search') }}",
+                            dataType: "json",
+                            type: "POST",
+                            data: {
+                                "_token": token,
+                                "search": request.term
+                            },
+                            success: function (data) {
+                                if(data.items === null){
+                                    swal({  
+                                        type: 'error',
+                                        title: 'No Found Item',
+                                        icon: 'error',
+                                        confirmButtonColor: "#367fa9",
                                     });
+                                }else{ 
+                             
+                                if (data.status_no == 1) {
 
+                                    $("#val_item").html();
+                                    var data = data.items;
+                                    $('#ui-id-2'+tableRow).css('display', 'none');
+
+                                    response($.map(data, function (item) {
+                                        return {
+                                            id:                         item.id,
+                                            asset_code:                 item.asset_code,
+                                            digits_code:                item.digits_code,
+                                            asset_tag:                  item.asset_tag,
+                                            serial_no:                  item.serial_no,
+                                            value:                      item.item_description,
+                                            category_description:       item.category_description,
+                                            item_cost:                  item.item_cost,
+                                        
+                                        }
+
+                                    }));
+
+                                } else {
+
+                                    $('.ui-menu-item').remove();
+                                    $('.addedLi').remove();
+                                    $("#ui-id-2"+tableRow).append($("<li class='addedLi'>").text(data.message));
+                                    var searchVal = $('#itemDesc'+tableRow).val();
+                                    if (searchVal.length > 0) {
+                                        $("#ui-id-2"+tableRow).css('display', 'block');
+                                    } else {
+                                        $("#ui-id-2"+tableRow).css('display', 'none');
+                                    }
+                                }
+                            }
+                           }
+                        })
+                        },
+                        select: function (event, ui) {
+                            var e = ui.item;
+
+                            if (e.id) {
+                            
+                                $("#digits_code"+$(this).attr("data-id")).val(e.digits_code);
+                                $("#supplies_cost"+$(this).attr("data-id")).val(e.item_cost);
+                                $('#itemDesc'+$(this).attr("data-id")).val(e.value);
+                                $('#itemDesc'+$(this).attr("data-id")).attr('readonly','readonly');
+                                $('#fixed_description'+$(this).attr("data-id")).val(e.value);
+                                $('#val_item').html('');
+                                return false;
+
+                            }
+                        },
+
+                        minLength: 1,
+                        autoFocus: true
                         });
 
-                  
+                    });
+
                     $(document).on('keyup', '#itemDesc'+tableRow, function(ev) {
 
                         var category =  $('#category_id'+$(this).attr("data-id")).val();
@@ -500,6 +476,7 @@
                         
                             $('#app_id'+$(this).attr("data-id")).attr('disabled', true);
                         }
+
 
                     });
 
@@ -555,7 +532,6 @@
             //deleteRow
             $(document).on('click', '.removeRow', function() {
                 if ($('#asset-items tbody tr').length != 1) { //check if not the first row then delete the other rows
-               
                     tableRow--;
                     $(this).closest('tr').remove();
                     $("#quantity_total").val(calculateTotalQuantity());
@@ -565,11 +541,15 @@
 
         });
 
+   
         
         $('#employee_name').change(function() {
     
                 var employee_name =  this.value;
                 
+                //var id_data = $(this).attr("data-id");
+                // $('.account'+id_data).prop("disabled", false);
+
                 $.ajax
                 ({ 
                     url: "{{ URL::to('/employees')}}",
@@ -588,18 +568,19 @@
                         $('#company_name').val(result[0].company_name);
                         $('#position').val(result[0].position_description);
                         $('#department').val(result[0].department_name);
+                        
+                        
                     }
                 });
 
         });
 
         $(document).on('keyup', '.quantity_item', function(ev) {
+
             $("#quantity_total").val(calculateTotalQuantity());
         });
 
         $(document).on('keyup', '.cost_item', function(ev) {
-
-       
 
                 var id = $(this).attr("data-id");
                 var rate = parseFloat($(this).val());
@@ -716,6 +697,22 @@
                 
                     } 
 
+                    var sub_cat = $(".category_id option").length;
+                    var sub_cat_value = $('.category_id').find(":selected");
+                    for(i=0;i<sub_cat;i++){
+                        if(sub_cat_value.eq(i).val() == ""){
+                            swal({  
+                                    type: 'error',
+                                    title: 'Please select Category!',
+                                    icon: 'error',
+                                    confirmButtonColor: "#367fa9",
+                                });
+                                event.preventDefault();
+                                return false;
+                        } 
+                
+                    } 
+
                     var sub_cat = $(".sub_category_id option").length;
                     var sub_cat_value = $('.sub_category_id').find(":selected");
                     for(i=0;i<sub_cat;i++){
@@ -730,43 +727,7 @@
                                 return false;
                         } 
                 
-                    } 
-
-                    //quantity validation
-                    var v = $("input[name^='quantity']").length;
-                    var value = $("input[name^='quantity']");
-                    var reg = /^0/gi;
-                        for(i=0;i<v;i++){
-                            if(value.eq(i).val() == 0){
-                                swal({  
-                                        type: 'error',
-                                        title: 'Quantity cannot be empty or zero!',
-                                        icon: 'error',
-                                        confirmButtonColor: "#367fa9",
-                                    });
-                                    event.preventDefault();
-                                    return false;
-                            }else if(value.eq(i).val() < 0){
-                                swal({
-                                    type: 'error',
-                                    title: 'Negative Value is not allowed!',
-                                    icon: 'error',
-                                    confirmButtonColor: "#367fa9",
-                                }); 
-                                event.preventDefault(); // cancel default behavior
-                                return false;
-                            }else if(value.eq(i).val().match(reg)){
-                                swal({
-                                    type: 'error',
-                                    title: 'Invalid Quantity Value!',
-                                    icon: 'error',
-                                    confirmButtonColor: "#367fa9",
-                                }); 
-                                event.preventDefault(); // cancel default behavior
-                                return false;     
-                            }  
-                    
-                        } 
+                    }  
                                           
                         swal({
                             title: "Are you sure?",
@@ -783,6 +744,8 @@
                     
                 }     
         });
+
+
 
     </script>
 @endpush

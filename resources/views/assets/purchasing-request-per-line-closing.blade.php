@@ -577,14 +577,16 @@
         }
     });
 
-    var tds = document.getElementById("asset-items1").getElementsByTagName("td");
+    var tds = document
+        .getElementById("asset-items1")
+        .getElementsByTagName("td");
         var sumqty       = 0;
         var rep_qty      = 0;
         var ro_qty       = 0;
         var served_qty   = 0;
         var unserved_qty = 0;
-        var unit_cost    = 0;
-        var total_cost   = 0;
+        var unit_cost       = 0;
+        var total_cost       = 0;
         for (var i = 0; i < tds.length; i++) {
             if(tds[i].className == "qty") {
                 sumqty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
@@ -610,27 +612,27 @@
                 
                 "<td style='text-align:center'>"+
                     "<strong>" +
-                        sumqty +
+                    sumqty +
                     "</strong>"+
                 "</td>"+
                 "<td style='text-align:center'>"+
                     "<strong>" +
-                        rep_qty +
+                    rep_qty +
                     "</strong>"+
                 "</td>"+
                 "<td style='text-align:center'>"+
                     "<strong>" +
-                        ro_qty +
+                    ro_qty +
                     "</strong>"+
                 "</td>"+
                 "<td style='text-align:center'>"+
                     "<strong>" +
-                        served_qty +
+                    served_qty +
                     "</strong>"+
                 "</td>"+
                 "<td style='text-align:center'>"+
                     "<strong>" +
-                        unserved_qty +
+                    unserved_qty +
                     "</strong>"+
                 "</td>"+
                 "<td style='text-align:center'>"+

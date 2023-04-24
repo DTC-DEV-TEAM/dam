@@ -16,13 +16,6 @@
             .select2-selection__arrow {
                 height: 34px !important;
             }
-       
-            /* .select2-results__option--highlighted { 
-                background-color: #41B314! important; 
-                border-radius: 10px;
-            }
-
-            .select2-results__option[aria-selected=true] { background-color: #41B314 !important; } */
 
             img[data-action="zoom"] {
             cursor: pointer;
@@ -123,7 +116,6 @@
                 input.finput:read-only {
                     background-color: #fff;
                 }
-              
         </style>
     @endpush
 @section('content')
@@ -270,16 +262,15 @@
                                                     <tbody id="bodyTable">
                                                         <tr class="tbl_header_color dynamicRows">
                                                             <th width="10%" class="text-center">{{ trans('message.table.digits_code') }}</th>
-                                                            <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
+                                                            <th width="30%" class="text-center">{{ trans('message.table.item_description') }}</th>
                                                            
                                                             <th width="10%" class="text-center">Category</th>
                                                             <!-- <th width="10%" class="text-center">{{ trans('message.table.item_type') }}</th>      -->
-                                                            <th width="5%" class="text-center">{{ trans('message.table.quantity_text') }}</th>
+                                                            <th width="15%" class="text-center">{{ trans('message.table.quantity_text') }}</th>
                                                             <!-- <th width="15%" class="text-center"> Serial No</th>  -->
                                                             <th width="10%" class="text-center">Value</th>
-                                                            <th width="5%" class="text-center"> Warranty Month Expiration</th>                                                     
+                                                            <th width="15%" class="text-center"> Warranty Month Expiration</th>                                                     
                                                             <!-- <th width="10%" class="text-center">{{ trans('message.table.image') }}</th>  -->
-                                                            <th width="10%" class="text-center">Assign ARF</th>
                                                             <th width="3%" class="text-center">Action</th>
                                                         </tr>
                                                 
@@ -309,7 +300,7 @@
 
                                                         <tr id="tr-table1" class="bottom">
             
-                                                            <td colspan="4" class="text-center">
+                                                            <td colspan="3" class="text-center">
                                                              <span ><strong>Total</strong></span>
                                                             </td>
                                                             <td align="left">
@@ -346,7 +337,6 @@
 @endsection
 
 @push('bottom')
-
     <script type="text/javascript">
         //preview image before save
         $(function() {
@@ -389,7 +379,6 @@
          window.onunload = function() {
             null;
         };
-        var tableRow = 1;
         setTimeout("preventBack()", 0);
         function selectRefresh() {
         $('.main .select2').select2({
@@ -402,7 +391,6 @@
         }
         $(document).ready(function() {
             $('.select2').select2({placeholder_text_single : "-- Select --"})
-            
             $("#InventoryForm").submit(function(event) {
                 $("#btnSubmit").attr("disabled", true);
                 return true;
@@ -867,12 +855,10 @@
                                         //     });
 
                                         // }else{
-                               
                                             var new_row = '<tr class="nr" id="rowid' + e.id + '" rows>' +
-                                              
                                                 '<td><input class="form-control text-center finput" type="text" id="dc" name="digits_code[]" readonly value="' + e.digits_code + '"></td>' +
-                                                '<td><input class="form-control text-center finput" type="text" name="item_description[]" readonly value="' + e.value + '"></td>' +
-                                                '<td><input class="form-control text-center finput amount" placeholder="Value" type="text" readonly value="' + e.category_description + '"></td>' +
+                                                '<td><input class="form-control finput" type="text" name="item_description[]" readonly value="' + e.value + '"></td>' +
+                                                '<td><input class="form-control finput amount" placeholder="Value" type="text" readonly value="' + e.category_description + '"></td>' +
                                                 //'<td><select required selected data-placeholder="-- Select Type --" id="item_type' + e.id + '" name="item_type[]" class="select2 item_type" style="width:150px;"><option value=""></option><option value="Serial" data-id="' + e.digits_code + '">Serial</option><option value="General" data-id="' + e.digits_code + '">GENERAL</option></select></td>' +
                                                 '<td><input class="form-control text-center finput add_quantity" placeholder="Quantity" type="number" value="1" readonly name="add_quantity[]" id="add_quantity' + e.id  + '" data-id="' + e.id  + '"  min="0" max="9999999999" step="1" onkeypress="return event.charCode >= 48 && event.charCode <= 57" oninput="validity.valid||(value=1);"></td>' +   
                                                 // '<td><input class="form-control serial_no" type="text" placeholder="Serial No (Optional)" name="serial_no[]" value="" style="width:150px;" data-index="1"></td>' + 
@@ -880,14 +866,6 @@
                                                 '<td><input class="form-control finput text-center" type="text" placeholder="(Month)" name="warranty_coverage[]" id="warranty_coverage" min="1" max="9999999999" step="1" onkeypress="return event.charCode <= 57" value="0"></td>' +                                                                                                                                       
                                                 //'<td class="images_flex"><input type="file" class="form-control body_image" onchange="readURL(this);" id="body_image_body' + e.id + '" name="item_photo[]" style="width:200px;" accept="image/png, image/gif, image/jpeg"><br><div class="body_gallery_image' + e.id + '"></div></td>' + 
                                                 //'<td><img width="50px"; height="50px"; src="{{URL::to('+e.image+')}}" alt="" data-action="zoom"></td>' +
-                                                '<td>'+
-                                                    '<select selected data-placeholder="Assign ARF" class="form-control arf_tag" name="arf_tag[]" data-id="' +  e.id + '" id="arf_tag' + e.id + '" required style="width:100%">' +
-                                                    '  <option value=""></option>' +
-                                                    '        @foreach($reserved_assets as $reserve)'+
-                                                    '          <option value="{{$reserve->id}}" data-code="{{$reserve->digits_code}}">{{$reserve->reference_number}} | <span> {{$reserve->digits_code}} </span></option>'+
-                                                    '         @endforeach'+
-                                                    '</select>'+
-                                                '</td>' +
                                                 '<td style="text-align:center"><a id="delete_item' +e.id + '" class="btn btn-xs btn-danger delete_item btn-lg" style="margin-top:5px;" ><i class="fa fa-trash"></i></a></td>' +
                                                 '<input type="hidden" name="item_id[]" readonly value="' +e.id + '">' +
                                                 '<input type="hidden" id="checkImage" value="' + e.image + '" readonly>' +
@@ -899,23 +877,8 @@
                          
                                     //$(new_row).insertAfter($('table tr.dynamicRows:last'));
                                     $("table tbody").append(new_row);
-                                    // function formatState (state) {
-                                    //     if (!state.id) {
-                                    //         return state.text;
-                                    //     }
-                                      
-                                    //     var $state = $(
-                                    //         '<span style="background-color:#41B314">' + state.text + '</span>'
-                                    //     );
-                                    //     return $state;
-                                    // };
-                                    $('#arf_tag'+ e.id).select2({
-                                        allowClear:true,
-                                        tags: true
-                                    });
-                                    
-                                    
-                                    
+                                    $('.select2').select2({placeholder_text_single : "-- Select --"})
+
                                     $(document).on('click', '#delete_item' + e.id, function () {
                                         var parentTR = $(this).parents('tr');  
                                         $(parentTR).remove();
@@ -928,12 +891,6 @@
                                         $("#quantity_total").val(calculateTotalQuantity());
                                        
                                     });
-
-                                   
-                                    $('#arf_tag'+ e.id)
-                                    .parent()
-                                    .siblings('.select2-search')
-                                    .css('background-color', 'red');
                                    
                                     $(".date").datetimepicker({
                                             viewMode: "days",
@@ -967,27 +924,6 @@
                                      });
                                      $("#quantity_total").val(calculateTotalQuantity());
                                     $(document).ready(function() {
-                                        var $selects = $('select');
-                                        $selects.select2();
-                                        $('.arf_tag').change(function () {
-                                            $('option:hidden', $selects).each(function () {
-                                                var self = this,
-                                                    toShow = true;
-                                                $selects.not($(this).parent()).each(function () {
-                                                    if (self.value == this.value) toShow = false;
-                                                })
-                                                if (toShow) {
-                                                    $(this).removeAttr('disabled');
-                                                    $(this).parent().select2();
-                                                }
-                                            });
-                                            if (this.value != "") {
-                                                 //$selects.not(this).children('option[value=' + this.value + ']').attr('disabled', 'disabled');
-                                                $selects.not(this).children('option[value=' + this.value + ']').remove();
-                                                $selects.select2();
-                                            }
-                                        });
-                                      
                                         // $('#item_type' + e.id).change(function() {
                                         // var parentTR = $(this).parents('tr');   
                                         // var item_type = $('#item_type' + e.id).val().toLowerCase().replace(/\s/g, '');

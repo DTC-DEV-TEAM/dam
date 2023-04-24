@@ -202,7 +202,7 @@
                                             <th width="10%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
                                             <th width="5%" class="text-center">{{ trans('message.table.quantity_text') }}</th> 
                                             
-                                            {{-- @if(in_array($Header->request_type_id, [6,7]))        --}}
+                                            @if(in_array($Header->request_type_id, [6,7]))       
                                                 <th width="5%" class="text-center">For Replenish Qty</th> 
                                                 <th width="5%" class="text-center">For ReOrder Qty</th> 
                                                 <th width="5%" class="text-center">Fulfilled Qty</th> 
@@ -211,7 +211,7 @@
                                                 <th width="5%" class="text-center">PO Qty</th>     
                                                 <th width="10%" class="text-center">DR#</th>         
                                                 <th width="10%" class="text-center">PO#</th>                                   
-                                            {{-- @endif  --}}
+                                            @endif 
 
                                             @if($Header->recommendedby != null || $Header->recommendedby != "")
                                                 <th width="13%" class="text-center">{{ trans('message.table.recommendation_text') }}</th> 
@@ -251,7 +251,7 @@
                                                                     {{-- <input type='hidden' name="quantity" class="form-control text-center quantity_item" id="quantity" readonly value="{{$rowresult->quantity}}">
                                                                     <input type='hidden' name="quantity_body" id="quantity{{$tableRow}}" readonly value="{{$rowresult->quantity}}"> --}}
                                                                 </td>
-                                                                {{-- @if(in_array($Header->request_type_id, [6,7])) --}}
+                                                                @if(in_array($Header->request_type_id, [6,7]))
                                                                     <td style="text-align:center" class="rep_qty">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
                                                                     <td style="text-align:center" class="ro_qty">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                           
                                                                     <td style="text-align:center" class="served_qty">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>
@@ -261,7 +261,7 @@
                                                                     <td style="text-align:center">{{$rowresult->mo_so_num}}</td>   
                                                                     <td style="text-align:center">{{$rowresult->po_no}}</td>  
                                                                     
-                                                                {{-- @endif --}}
+                                                                @endif
 
                                                                 @if($Header->recommendedby != null || $Header->recommendedby != "")                                                                               
                                                                     <td style="text-align:center" height="10">
@@ -302,7 +302,7 @@
                                                                         {{-- <input type='hidden' name="quantity" class="form-control text-center quantity_item" id="quantity" readonly value="{{$rowresult->quantity}}">
                                                                         <input type='hidden' name="quantity_body" id="quantity{{$tableRow}}" readonly value="{{$rowresult->quantity}}"> --}}
                                                                 </td>
-                                                                {{-- @if(in_array($Header->request_type_id, [6,7])) --}}
+                                                                @if(in_array($Header->request_type_id, [6,7]))
                                                                     <td style="text-align:center" class="rep_qty">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
                                                                     <td style="text-align:center" class="ro_qty">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                           
                                                                     <td style="text-align:center" class="served_qty">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>
@@ -312,7 +312,7 @@
                                                                     <td style="text-align:center">{{$rowresult->mo_so_num}}</td>   
                                                                     <td style="text-align:center">{{$rowresult->po_no}}</td>     
                                                                 
-                                                                {{-- @endif --}}
+                                                                @endif
                                                                 @if($Header->recommendedby != null || $Header->recommendedby != "")                                                                               
                                                                     <td style="text-align:center" height="10">
                                                                         {{$rowresult->recommendation}}
@@ -325,7 +325,7 @@
                                                                     </td>
                                                                 @endif
                                                         
-                                                                @if($Header->status_id == 1)    
+                                                                @if($Header->po_number == null || $Header->po_number == "")    
                                                                         <td style="text-align:center" height="10">
                                                                             <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow btn-sm" data-toggle="tooltip" data-placement="bottom" title="Cancel"><i class="fa fa-trash"></i></button>
                                                                         </td>
@@ -425,25 +425,25 @@
                                                         <td style="text-align:center" height="10">
                                                                         {{$rowresult->serial_no}}
                                                         </td>
-                                                        <td style="text-align:center" height="10" class="mo_qty">
+                                                        <td style="text-align:center" height="10">
                                                                         {{$rowresult->quantity}}
                                                         </td>
-                                                        <td style="text-align:center" height="10" class="mo_unit_cost">
+                                                        <td style="text-align:center" height="10">
                                                                         {{$rowresult->unit_cost}}
                                                         </td>
-                                                        <td style="text-align:center" height="10" class="mo_total_cost">
+                                                        <td style="text-align:center" height="10">
                                                                         {{$rowresult->total_unit_cost}}
                                                         </td>
                                                     </tr>
                                                 @endforeach
                                             @endif       
-                                            {{-- <tr class="tableInfo">
+                                            <tr class="tableInfo">
                                                 <td colspan="6" align="right"><strong>{{ trans('message.table.total') }}</strong></td>
                                                 <td align="center">
                                                     <label>{{$Header->quantity_total}}</label>
                                                 </td>
                                                 <td colspan="1"></td>
-                                            </tr> --}}
+                                            </tr>
     
                                         </tbody>
                                     </table>
@@ -455,28 +455,12 @@
             @endif
             <hr>
             <br>
-            @if( $Header->mo_by != null )
+            @if( $Header->processedby != null )
                 <div class="row">
                     <div class="col-md-6">
                         <table style="width:100%">
                             <tbody id="footer">
                                 <tr>
-                                    <th class="control-label col-md-2">{{ trans('message.form-label.mo_by') }}:</th>
-                                    <td class="col-md-4">{{$Header->mo_by}} / {{$Header->mo_at}}</td>     
-                                </tr>
-                                @if($Header->ac_comments != null)
-                                    <tr>
-                                        <th class="control-label col-md-2">{{ trans('message.table.ac_comments') }}:</th>
-                                        <td class="col-md-4">{{$Header->ac_comments}}</td>
-                                    </tr>
-                                @endif
-                                @if( $Header->pickedby != null )
-                                    <tr>
-                                        <th class="control-label col-md-2">{{ trans('message.form-label.picked_by') }}:</th>
-                                        <td class="col-md-4">{{$Header->pickedby}} / {{$Header->picked_at}}</td>
-                                    </tr>
-                                @endif
-                                {{-- <tr>
                                     <th class="control-label col-md-2">{{ trans('message.form-label.po_number') }}:</th>
                                     <td class="col-md-4">{{$Header->po_number}}</td>     
                                 </tr>
@@ -495,7 +479,7 @@
                                         <th class="control-label col-md-2">{{ trans('message.form-label.processed_by') }}:</th>
                                         <td class="col-md-4">{{$Header->processedby}} / {{$Header->purchased2_at}}</td>
                                     </tr>
-                                @endif --}}
+                                @endif
                             </tbody>
                         </table>
                     </div>
@@ -503,6 +487,18 @@
                     <div class="col-md-6">
                         <table style="width:100%">
                             <tbody id="footer">
+                                @if($Header->ac_comments != null)
+                                    <tr>
+                                        <th class="control-label col-md-2">{{ trans('message.table.ac_comments') }}:</th>
+                                        <td class="col-md-4">{{$Header->ac_comments}}</td>
+                                    </tr>
+                                @endif
+                                @if( $Header->pickedby != null )
+                                    <tr>
+                                        <th class="control-label col-md-2">{{ trans('message.form-label.picked_by') }}:</th>
+                                        <td class="col-md-4">{{$Header->pickedby}} / {{$Header->picked_at}}</td>
+                                    </tr>
+                                @endif
                                 @if( $Header->receivedby != null )
                                     <tr>
                                         <th class="control-label col-md-2">{{ trans('message.form-label.received_by') }}:</th>
@@ -626,7 +622,9 @@
     
         }
     
-        var tds = document.getElementById("asset-items1").getElementsByTagName("td");
+        var tds = document
+        .getElementById("asset-items1")
+        .getElementsByTagName("td");
         var sumqty       = 0;
         var rep_qty      = 0;
         var ro_qty       = 0;
@@ -701,44 +699,7 @@
                 "<td style='text-align:center'>"+
                 
                 "</td>"+
-        "</tr>";
-
-
-        var tds = document.getElementById("asset-items").getElementsByTagName("td");
-        var moQty        = 0;
-        var moUnitCost   = 0;
-        var moTotalCost  = 0;
-
-        for (var i = 0; i < tds.length; i++) {
-            if(tds[i].className == "mo_qty") {
-                moQty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-            }else if(tds[i].className == "mo_unit_cost"){
-                moUnitCost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-            }else if(tds[i].className == "mo_total_cost"){
-                moTotalCost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-            }
-        }
-        document.getElementById("asset-items").innerHTML +=
-        "<tr>"+
-            "<td colspan='6' style='text-align:right'>"+
-                    "<strong>TOTAL</strong>"+
-                "</td>"+
                 
-                "<td style='text-align:center'>"+
-                    "<strong>" +
-                        moQty +
-                    "</strong>"+
-                "</td>"+
-                "<td style='text-align:center'>"+
-                    "<strong>" +
-                        moUnitCost +
-                    "</strong>"+
-                "</td>"+
-                "<td style='text-align:center'>"+
-                    "<strong>" +
-                        moTotalCost +
-                    "</strong>"+
-                "</td>"+       
         "</tr>";
         
 </script>

@@ -231,15 +231,15 @@
                                                                             {{$rowresult->serial_no}}
                                                                         </td>
     
-                                                                        <td style="text-align:center" height="10" class="mo_qty">
+                                                                        <td style="text-align:center" height="10">
                                                                             {{$rowresult->quantity}}
                                                                         </td>
     
-                                                                        <td style="text-align:center" height="10" class="mo_unit_cost">
+                                                                        <td style="text-align:center" height="10">
                                                                             {{$rowresult->unit_cost}}
                                                                         </td>
     
-                                                                        <td style="text-align:center" height="10" class="mo_total_cost">
+                                                                        <td style="text-align:center" height="10">
                                                                             {{$rowresult->total_unit_cost}}
                                                                         </td>
     
@@ -253,12 +253,12 @@
     
                                                             @endif
                                                             
-                                                            {{-- <tr class="tableInfo">
+                                                            <tr class="tableInfo">
                                                                 <td colspan="7" align="right"><strong>{{ trans('message.table.total') }}</strong></td>
                                                                 <td align="center" colspan="1">
                                                                     <label>{{$Header->total}}</label>
                                                                 </td>
-                                                            </tr> --}}
+                                                            </tr>
                                                         
                                                         </tbody>
                                                     </table>
@@ -457,43 +457,6 @@
         });
 
     });
-
-    var tds = document.getElementById("asset-items").getElementsByTagName("td");
-    var moQty        = 0;
-    var moUnitCost   = 0;
-    var moTotalCost  = 0;
-
-    for (var i = 0; i < tds.length; i++) {
-        if(tds[i].className == "mo_qty") {
-            moQty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-        }else if(tds[i].className == "mo_unit_cost"){
-            moUnitCost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-        }else if(tds[i].className == "mo_total_cost"){
-            moTotalCost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-        }
-    }
-    document.getElementById("asset-items").innerHTML +=
-    "<tr>"+
-        "<td colspan='5' style='text-align:right'>"+
-                "<strong>TOTAL</strong>"+
-            "</td>"+
-            
-            "<td style='text-align:center'>"+
-                "<strong>" +
-                    moQty +
-                "</strong>"+
-            "</td>"+
-            "<td style='text-align:center'>"+
-                "<strong>" +
-                    moUnitCost +
-                "</strong>"+
-            "</td>"+ 
-            "<td style='text-align:center'>"+
-                "<strong>" +
-                    moTotalCost +
-                "</strong>"+
-            "</td>"+    
-    "</tr>";
 
 </script>
 @endpush
