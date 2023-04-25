@@ -15,7 +15,7 @@ use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use DB;
 use CRUDBooster;
-class FulfillmentUpload implements ToCollection, WithHeadingRow
+class FulfillmentRoUpload implements ToCollection, WithHeadingRow
 {
     /**
      * @param array $row
@@ -27,7 +27,7 @@ class FulfillmentUpload implements ToCollection, WithHeadingRow
         foreach ($rows->toArray() as $key => $row){
             
             $header   = DB::table('header_request')->where(['reference_number' => $row['arf_number']])->first();
-            $checkQty = DB::table('body_request')->where(['header_request_id'=>$header->id,'digits_code'=>$row['digits_code']])->value('unserved_rep_qty');
+            $checkQty = DB::table('body_request')->where(['header_request_id'=>$header->id,'digits_code'=>$row['digits_code']])->value('unserved_ro_qty');
             
             $checkRowDbDigitsCode       = DB::table('assets')->select("digits_code AS codes")->get()->toArray();
             $checkRowDbColumnDigitsCode = array_column($checkRowDbDigitsCode, 'codes');
@@ -44,7 +44,7 @@ class FulfillmentUpload implements ToCollection, WithHeadingRow
             }
             
             if($row['dr_qty'] > $checkQty){
-                return CRUDBooster::redirect(CRUDBooster::adminpath('for_purchasing'),"Replenishment Fullfill Qty Exceed! at line: ".($key+2),"danger");
+                return CRUDBooster::redirect(CRUDBooster::adminpath('for_purchasing'),"ReOrder Fullfill Qty Exceed! at line: ".($key+2),"danger");
             }
 
             if(empty($row['dr_qty'])){
@@ -58,11 +58,11 @@ class FulfillmentUpload implements ToCollection, WithHeadingRow
             BodyRequest::where(['header_request_id'=>$header->id,'digits_code'=>$row['digits_code']])
             ->update(
                         [
-                        'mo_so_num'        => DB::raw('CONCAT_WS(",",mo_so_num, "'. $row['dr_number'].'")'),
-                        'serve_qty'        => DB::raw("IF(serve_qty IS NULL, '".(int)$row['dr_qty']."', serve_qty + '".(int)$row['dr_qty']."')"), 
-                        'unserved_rep_qty' => DB::raw("unserved_rep_qty - '".(int)$row['dr_qty']."'"), 
-                        'unserved_qty'     => DB::raw("unserved_qty - '".(int)$row['dr_qty']."'"),
-                        'dr_qty'           => DB::raw("IF(dr_qty IS NULL, '".(int)$row['dr_qty']."', dr_qty + '".(int)$row['dr_qty']."')")           
+                        'mo_so_num'       => DB::raw('CONCAT_WS(",",mo_so_num, "'. $row['dr_number'].'")'),
+                        'serve_qty'       => DB::raw("IF(serve_qty IS NULL, '".(int)$row['dr_qty']."', serve_qty + '".(int)$row['dr_qty']."')"), 
+                        'unserved_ro_qty' => DB::raw("unserved_ro_qty - '".(int)$row['dr_qty']."'"), 
+                        'unserved_qty'    => DB::raw("unserved_qty - '".(int)$row['dr_qty']."'"),
+                        'dr_qty'          => DB::raw("IF(dr_qty IS NULL, '".(int)$row['dr_qty']."', dr_qty + '".(int)$row['dr_qty']."')")            
                         ]
                     );
 
@@ -91,20 +91,18 @@ class FulfillmentUpload implements ToCollection, WithHeadingRow
             if(empty($resData)){
                 HeaderRequest::where('id',$header->id)
 				->update([
-                    'status_id'      => 19,
-                    'purchased2_by'	 => CRUDBooster::myId(),
-                    'purchased2_at'  => date('Y-m-d H:i:s')
+						'status_id'      => 19,
+                        'purchased2_by'	 => CRUDBooster::myId(),
+				        'purchased2_at'  => date('Y-m-d H:i:s')
 				]);	
             }
        
         }
     }
-
     public function rules(): array
     {
         return [ 
             '*.dr_qty' => 'required|numeric',
         ];
     }
-
 }

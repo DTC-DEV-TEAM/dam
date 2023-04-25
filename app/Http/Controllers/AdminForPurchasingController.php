@@ -10,6 +10,12 @@
 	use App\StatusMatrix;
 	use App\MoveOrder;
 	use App\Imports\FulfillmentUpload;
+	use App\Exports\ExportConso;
+	use Maatwebsite\Excel\Facades\Excel;
+	use PhpOffice\PhpSpreadsheet\Spreadsheet;
+	use PhpOffice\PhpSpreadsheet\Reader\Exception;
+	use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+	use PhpOffice\PhpSpreadsheet\IOFactory;
 	//use Illuminate\Http\Request;
 	//use Illuminate\Support\Facades\Input;
 	use Illuminate\Support\Facades\Log;
@@ -75,33 +81,6 @@
 
 			# OLD START FORM
 			//$this->form = [];
-			//$this->form[] = ["label"=>"Reference Number","name"=>"reference_number","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Status Id","name"=>"status_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"status,id"];
-			//$this->form[] = ["label"=>"Employee Name","name"=>"employee_name","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Company Name","name"=>"company_name","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Position","name"=>"position","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Department","name"=>"department","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Store Branch","name"=>"store_branch","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Purpose","name"=>"purpose","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Conditions","name"=>"conditions","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Quantity Total","name"=>"quantity_total","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Cost Total","name"=>"cost_total","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Total","name"=>"total","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Approved By","name"=>"approved_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Approved At","name"=>"approved_at","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
-			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Updated By","name"=>"updated_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Rejected At","name"=>"rejected_at","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Requestor Comments","name"=>"requestor_comments","type"=>"textarea","required"=>TRUE,"validation"=>"required|string|min:5|max:5000"];
-			//$this->form[] = ["label"=>"Request Type Id","name"=>"request_type_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"request_type,id"];
-			//$this->form[] = ["label"=>"Privilege Id","name"=>"privilege_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"privilege,id"];
-			//$this->form[] = ["label"=>"Approver Comments","name"=>"approver_comments","type"=>"textarea","required"=>TRUE,"validation"=>"required|string|min:5|max:5000"];
-			//$this->form[] = ["label"=>"To Reco","name"=>"to_reco","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"It Comments","name"=>"it_comments","type"=>"textarea","required"=>TRUE,"validation"=>"required|string|min:5|max:5000"];
-			//$this->form[] = ["label"=>"Recommended By","name"=>"recommended_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Recommended At","name"=>"recommended_at","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
-			//$this->form[] = ["label"=>"Cancelled By","name"=>"cancelled_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Cancelled At","name"=>"cancelled_at","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
 			# OLD END FORM
 
 			/* 
@@ -132,36 +111,29 @@
 	        */
 	        $this->addaction = array();
 			if(CRUDBooster::isUpdate()) {
-
-				$processing  = 		DB::table('statuses')->where('id', 11)->value('id');
-
-				$picked =  			DB::table('statuses')->where('id', 15)->value('id');
-
-				$for_closing =  			DB::table('statuses')->where('id', 19)->value('id');
+				$for_tagging    =  DB::table('statuses')->where('id', 7)->value('id');
+				$processing     =  DB::table('statuses')->where('id', 11)->value('id');
+				$for_move_order =  DB::table('statuses')->where('id', 14)->value('id');
+				$for_closing    =  DB::table('statuses')->where('id', 19)->value('id');
 
 				if(CRUDBooster::myPrivilegeId() == 14){
 					$this->addaction[] = ['title'=>'View','url'=>CRUDBooster::mainpath('getRequestPurchasingManagerView/[id]'),'icon'=>'fa fa-eye'];
-				}else if(CRUDBooster::myPrivilegeId() == 19){
-					$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailPurchasing/[id]'),'icon'=>'fa fa-eye'];
+				}else if(CRUDBooster::myPrivilegeId() == 19 || CRUDBooster::myPrivilegeId() == 18){
+					//$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailPurchasing/[id]'),'icon'=>'fa fa-eye'];
 					//option 2
-					$this->addaction[] = ['title'=>'Add MO/SO','url'=>CRUDBooster::adminpath('[id]'),'icon'=>'fa fa-plus-circle', "showIf"=>"[status_id] == $for_closing && [mo_so_num] == null"];
+					//$this->addaction[] = ['title'=>'Add MO/SO','url'=>CRUDBooster::adminpath('[id]'),'icon'=>'fa fa-plus-circle', "showIf"=>"[status_id] == $for_closing && [mo_so_num] == null"];
 					//option 3
-					$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::mainpath('getRequestPurchasingForMoSo/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[status_id] == $for_closing && [mo_so_num] != null"];
-				}else{
+					$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::mainpath('getRequestPurchasingForMoSo/[id]'),'icon'=>'fa fa-eye' , "showIf"=>"[status_id] == $for_move_order || [status_id] == $for_closing || [status_id] == $for_tagging"];
+				}else{			
+					$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailPurchasing/[id]'),'icon'=>'fa fa-eye'];
 					$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getRequestPurchasing/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[purchased2_by] == null"];
-					$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailPurchasing/[id]'),'icon'=>'fa fa-eye'];
 					//option 2
-					$this->addaction[] = ['title'=>'Add MO/SO','url'=>CRUDBooster::adminpath('[id]'),'icon'=>'fa fa-plus-circle', "showIf"=>"[status_id] == $for_closing && [mo_so_num] == null"];
+					//$this->addaction[] = ['title'=>'Add MO/SO','url'=>CRUDBooster::adminpath('[id]'),'icon'=>'fa fa-plus-circle', "showIf"=>"[status_id] == $for_closing && [mo_so_num] == null"];
 					//option 3
-					$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::mainpath('getRequestPurchasingForMoSo/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[status_id] == $for_closing && [mo_so_num] != null"];
+					//$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::mainpath('getRequestPurchasingForMoSo/[id]'),'icon'=>'fa fa-eye' , "showIf"=>"[status_id] == $for_move_order || [status_id] == $for_closing || [status_id] == $for_tagging"];
 				}
 				
-				//$this->addaction[] = ['title'=>'Print','url'=>CRUDBooster::mainpath('getRequestPrintPickList/[id]'),'icon'=>'fa fa-print', "showIf"=>"[purchased2_by] != null && [status_id] == $processing"];
-				
-				//$this->addaction[] = ['title'=>'Print','url'=>CRUDBooster::mainpath('getRequestPrint/[id]'),'icon'=>'fa fa-print', "showIf"=>"[status_id] == $picked"];
-
-				//$this->addaction[] = ['title'=>'Print','url'=>CRUDBooster::mainpath('getRequestPrint/[id]'),'icon'=>'fa fa-print', "showIf"=>"[purchased2_by] != null"];
-				//$this->addaction[] = ['title'=>'Edit','url'=>CRUDBooster::mainpath('getRequestEdit/[id]'),'icon'=>'fa fa-pencil', "showIf"=>"[status_id] == $Rejected"]; //, "showIf"=>"[status_level1] == $inwarranty"
+			
 			}
 
 
@@ -202,6 +174,8 @@
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex') {
 			   $this->index_button[] = ["label"=>"Upload Fulfillment","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('fulfillment-upload')];
+			   $this->index_button[] = ["label"=>"Consolidation","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('conso-export')];
+			   $this->index_button[] = ["label"=>"Upload PO","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('po-upload')];
 			}
 
 	        /* 
@@ -457,23 +431,20 @@
 			}else if(in_array(CRUDBooster::myPrivilegeId(),[18,19])){ 
 				$query->where(function($sub_query){
 
-					$approved =  		DB::table('statuses')->where('id', 7)->value('id');
+					$for_tagging    =  DB::table('statuses')->where('id', 7)->value('id');
+					$processing     =  DB::table('statuses')->where('id', 11)->value('id');
+					$for_move_order =  DB::table('statuses')->where('id', 14)->value('id');
+					$for_closing    =  DB::table('statuses')->where('id', 19)->value('id');
 
-					$it_reco  = 		DB::table('statuses')->where('id', 4)->value('id');
-
-					$processing = 		DB::table('statuses')->where('id', 11)->value('id');
-
-					$picked =  			DB::table('statuses')->where('id', 15)->value('id');
-
-					$sub_query->where('header_request.request_type_id', 7)->where('header_request.to_reco', 0)->where('header_request.status_id', $approved)->whereNull('header_request.deleted_at')->whereNull('mo_by'); 
-					$sub_query->where('header_request.status_id', $approved)->where('header_request.request_type_id', 7)->whereNull('header_request.deleted_at')->whereNull('mo_by');
-					$sub_query->orwhere('header_request.status_id', $processing)->where('header_request.request_type_id', 7)->whereNull('header_request.deleted_at')->whereNull('mo_by');
-					$sub_query->orwhereNotNull('header_request.purchased2_by')->where('header_request.request_type_id', 7)->where('header_request.closing_plug', 0)->whereNull('mo_by');
+					//$sub_query->where('header_request.request_type_id', 7)->where('header_request.to_reco', 0)->where('header_request.status_id', $approved)->whereNull('header_request.deleted_at')->whereNull('mo_by'); 
+					$sub_query->whereIn('header_request.status_id', [$for_tagging, $for_move_order, $for_closing])->where('header_request.request_type_id', 7)->whereNull('header_request.deleted_at')->whereNull('mo_by');
+					//$sub_query->orwhere('header_request.status_id', $processing)->where('header_request.request_type_id', 7)->whereNull('header_request.deleted_at')->whereNull('mo_by');
+					//$sub_query->orwhereNotNull('header_request.purchased2_by')->where('header_request.request_type_id', 7)->where('header_request.closing_plug', 0)->whereNull('mo_by');
 
 					//$sub_query->orwhere('header_request.status_id', $picked)->whereNull('header_request.deleted_at');
 				});
 
-				$query->orderBy('header_request.status_id', 'asc')->orderBy('header_request.id', 'desc');
+				$query->orderBy('header_request.status_id', 'desc')->orderBy('header_request.id', 'asc');
 
 			}
 			// else if(in_array(CRUDBooster::myPrivilegeId(),[5,17])){ 
@@ -598,28 +569,35 @@
 	    |
 	    */
 	    public function hook_before_add(&$postdata) {        
-			$fields = Request::all();
-			$ids = $fields['ids'];
+			$fields    = Request::all();
+			$ids       = $fields['ids'];
 			$header_id = $fields['header_id'];
 			$mo_so_num = $fields['mo_so_num'];
 			$serve_qty = $fields['reserve_qty'];
-    
-			HeaderRequest::where('id',$header_id)
-			->update([
-				    'closing_plug'=> 1,
-					'status_id'=> 13,
-					'closed_by'=> CRUDBooster::myId(),
-					'closed_at'=> date('Y-m-d H:i:s'),
+			$action    = $fields['action'];
 
-			]);	
-			for ($i = 0; $i < count($ids); $i++) {
-				BodyRequest::where(['id' => $ids[$i]])
-					->update([
-							'mo_so_num' => $mo_so_num[$i],
-							'serve_qty' => $serve_qty[$i]
-							]);
-			}  
-            CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Request has been closed successfully!"), 'info');
+			if($action == 1){
+				HeaderRequest::where('id',$header_id)
+				->update([
+						'closing_plug'=> 1,
+						'status_id'=> 13,
+						'closed_by'=> CRUDBooster::myId(),
+						'closed_at'=> date('Y-m-d H:i:s'),
+	
+				]);	
+				 CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Request has been closed successfully!"), 'success');
+			}else{
+				for ($i = 0; $i < count($ids); $i++) {
+					BodyRequest::where(['id' => $ids[$i]])
+						->update([
+								'mo_so_num'    => $mo_so_num[$i],
+								'serve_qty'    => DB::raw("IF(serve_qty IS NULL, '".(int)$serve_qty[$i]."', serve_qty + '".(int)$serve_qty[$i]."')"), 
+								'unserved_qty' => DB::raw("unserved_qty - '".(int)$serve_qty[$i]."'")
+								]);
+				}  
+				 CRUDBooster::redirect(CRUDBooster::mainpath('getRequestPurchasingForMoSo/'.$header_id), trans("Request updated successfully!"), 'success');
+			}
+			
 	    }
 
 	    /* 
@@ -1386,10 +1364,10 @@
 				->where('assets_inventory_body.quantity','>', 0)
 				->where('assets_inventory_body.statuses_id', 6)
 				->where('assets_inventory_body.item_condition', "Good")
-				->orWhere('assets_inventory_body.item_description','LIKE','%'.$search.'%')
-				->where('assets_inventory_body.quantity','>', 0)
-				->where('assets_inventory_body.statuses_id', 6)
-				->where('assets_inventory_body.item_condition', "Good")
+				// ->orWhere('assets_inventory_body.item_description','LIKE','%'.$search.'%')
+				// ->where('assets_inventory_body.quantity','>', 0)
+				// ->where('assets_inventory_body.statuses_id', 6)
+				// ->where('assets_inventory_body.item_condition', "Good")
 				//->join('category', 'assets_inventory_body.category_id','=', 'category.id')
 				//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
 				->select(	'assets_inventory_body.*'
@@ -1607,5 +1585,17 @@
 			$data['page_title']= 'Fulfillment Upload';
 			return view('import.fulfillment-upload', $data)->render();
 		}
+
+		//Export Conso
+		public function getConsoExport(){
+			return Excel::download(new ExportConso, 'Consolidation-'.date('Y-m-d') .'.xlsx');
+		}
+
+		//UPLOAD PO
+		public function UploadPo() {
+			$data['page_title']= 'PO Upload';
+			return view('import.po-upload', $data)->render();
+		}
+       
 
 	}

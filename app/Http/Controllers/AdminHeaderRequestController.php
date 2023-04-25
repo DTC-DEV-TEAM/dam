@@ -660,6 +660,7 @@
 				$dataLines[$x]['total_unit_cost'] 	= $total_unit_cost[$x];
 				$dataLines[$x]['item_id'] 			= $item_id[$x];
 				*/
+				$dataLines[$x]['created_by'] 		= CRUDBooster::myId();
 				$dataLines[$x]['created_at'] 		= date('Y-m-d H:i:s');
 
 
@@ -1647,11 +1648,22 @@
 					->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',2)->where('assets.status','!=','INACTIVE')
 					
 						->join('category', 'assets.category_id','=', 'category.id')
+						->join('class', 'assets.class_id','=', 'class.id')
+						->leftjoin('assets_supplies_inventory', 'assets.digits_code','=', 'assets_supplies_inventory.digits_code')
+	
+						->leftJoin('body_request', function($join) 
+						{
+							$join->on('assets.digits_code', '=', 'body_request.digits_code')
+							->where('body_request.created_by',CRUDBooster::myId());
+						})
 						//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
 						->select(	'assets.*',
 									'assets.id as assetID',
+									'assets_supplies_inventory.quantity as wh_qty',
+									DB::raw('SUM(body_request.unserved_qty) as unserved_qty'),
 									//'digits_imfs.digits_code as dcode',
-									'category.category_description as category_description'
+									'category.category_description as category_description',
+									'class.class_description as class_description'
 								)->take(10)->get();
 					
 					if($items){
@@ -1662,19 +1674,21 @@
 						$i = 0;
 						foreach ($items as $key => $value) {
 		
-							$return_data[$i]['id'] = 				$value->assetID;
-							$return_data[$i]['asset_code'] = 		$value->asset_code;
-							$return_data[$i]['digits_code'] = 		$value->digits_code;
-							$return_data[$i]['asset_tag'] = 		$value->asset_tag;
-							$return_data[$i]['serial_no'] = 		$value->serial_no;
-							$return_data[$i]['item_description'] = 	$value->item_description;
-							$return_data[$i]['category_description'] = 		$value->category_description;
-							$return_data[$i]['item_cost'] = 				$value->item_cost;
-							$return_data[$i]['item_type'] = 				$value->item_type;
-							$return_data[$i]['image'] = 				$value->image;
-							$return_data[$i]['quantity'] = 				$value->quantity;
-							$return_data[$i]['total_quantity'] = 				$value->total_quantity;
-		
+							$return_data[$i]['id']                   = $value->assetID;
+							$return_data[$i]['asset_code']           = $value->asset_code;
+							$return_data[$i]['digits_code']          = $value->digits_code;
+							$return_data[$i]['asset_tag']            = $value->asset_tag;
+							$return_data[$i]['serial_no']            = $value->serial_no;
+							$return_data[$i]['item_description']     = $value->item_description;
+							$return_data[$i]['category_description'] = $value->category_description;
+							$return_data[$i]['class_description']    = $value->class_description;
+							$return_data[$i]['item_cost']            = $value->item_cost;
+							$return_data[$i]['item_type']            = $value->item_type;
+							$return_data[$i]['image']                = $value->image;
+							$return_data[$i]['quantity']             = $value->quantity;
+							$return_data[$i]['total_quantity']       = $value->total_quantity;
+							$return_data[$i]['wh_qty']               = $value->wh_qty  ? $value->wh_qty : 0;
+							$return_data[$i]['unserved_qty']         = $value->unserved_qty  ? $value->unserved_qty : 0;
 							$i++;
 		
 						}

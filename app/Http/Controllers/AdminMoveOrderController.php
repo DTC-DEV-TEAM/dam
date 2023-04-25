@@ -314,7 +314,7 @@
 	        |
 	        */
 	        $this->load_css = array();
-	        
+			$this->load_css[] = asset("css/font-family.css");
 	        
 	    }
 
@@ -403,10 +403,13 @@
 			$list_string = implode(",",$id_array);
 
 			$MOList = array_map('intval',explode(",",$list_string));
-				
-
-			$query->whereIn('mo_body_request.id', $MOList)->where('mo_body_request.created_by',CRUDBooster::myId());
-
+			if(in_array(CRUDBooster::myPrivilegeId(),[5,17])){
+			    $query->whereIn('mo_body_request.id', $MOList)->where('header_request.request_type_id', 1);
+			}else if(in_array(CRUDBooster::myPrivilegeId(),[9])){
+				$query->whereIn('mo_body_request.id', $MOList)->where('header_request.request_type_id', 5);
+			}else{
+				$query->whereIn('mo_body_request.id', $MOList);
+			}
 			//dd($list_string);
 	            
 	    }
@@ -1070,9 +1073,15 @@
 				->whereNotNull('created_by')
 				->orwhere('to_mo', 1)
 				->get();
-			}else{
+			}else if(in_array(CRUDBooster::myPrivilegeId(),[9])){
 				$data['AssetRequest'] = HeaderRequest::whereNotNull('purchased2_by')->where('mo_plug', 0)
 				->where('request_type_id' , 5)
+				->where('status_id','!=',13)
+				->whereNotNull('created_by')
+				->orwhere('to_mo', 1)
+				->get();
+			}else{
+				$data['AssetRequest'] = HeaderRequest::whereNotNull('purchased2_by')->where('mo_plug', 0)
 				->where('status_id','!=',13)
 				->whereNotNull('created_by')
 				->orwhere('to_mo', 1)

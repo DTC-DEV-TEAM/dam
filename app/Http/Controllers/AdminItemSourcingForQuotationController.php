@@ -13,7 +13,15 @@
 	use App\HeaderRequest;
 	use App\BodyRequest;
 	use App\Statuses;
+	use App\Exports\ExportItemSource;
+	use Maatwebsite\Excel\Facades\Excel;
+	use PhpOffice\PhpSpreadsheet\Spreadsheet;
+	use PhpOffice\PhpSpreadsheet\Reader\Exception;
+	use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+	use PhpOffice\PhpSpreadsheet\IOFactory;
 	use Illuminate\Support\Facades\Response;
+	use App\Mail\EmailForPo;
+	use Mail;
 
 	class AdminItemSourcingForQuotationController extends \crocodicstudio\crudbooster\controllers\CBController {
 		private $forApproval;
@@ -24,6 +32,7 @@
 		private $forStreamlining;
 		private $forItemCreation;
 		private $forArfCreation;
+		private $rejected;
 
 		public function __construct() {
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
@@ -35,7 +44,7 @@
 			$this->forStreamlining  =  39;   
 			$this->forItemCreation  =  40;        
 			$this->forArfCreation   =  41;
-		
+		    $this->rejected         =  5;
 		}
 	    public function cbInit() {
 
@@ -141,7 +150,9 @@
 	        | 
 	        */
 	        $this->index_button = array();
-
+			if(CRUDBooster::getCurrentMethod() == 'getIndex') {
+				$this->index_button[] = ["label"=>"Export Data","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('item-source-export')];
+			 }
 
 
 	        /* 
@@ -211,7 +222,7 @@
 	        */
 	        $this->load_js = array();
 	        //$this->load_js[] = asset("datetimepicker/bootstrap-datetimepicker.min.js");
-	        
+	        $this->load_js[] = asset("js/spinner.js");
 	        
 	        /*
 	        | ---------------------------------------------------------------------- 
@@ -236,7 +247,7 @@
 	        $this->load_css = array();
 			//$this->load_css[] = asset("datetimepicker/bootstrap-datetimepicker.min.css");
 			$this->load_css[] = asset("css/chatbox.css");
-	        
+	        $this->load_css[] = asset("css/spinner.css");
 	    }
 
 
@@ -295,7 +306,7 @@
 			$forStreamlining    = DB::table('statuses')->where('id', $this->forStreamlining)->value('status_description');
 			$forItemCreation    = DB::table('statuses')->where('id', $this->forItemCreation)->value('status_description');
 			$forArfCreation     = DB::table('statuses')->where('id', $this->forArfCreation)->value('status_description');
-		
+			$rejected           = DB::table('statuses')->where('id', $this->rejected)->value('status_description');	
 			
 			if($column_index == 1){
 				if($column_value == $forApproval){
@@ -314,6 +325,8 @@
 					$column_value = '<span class="label label-info">'.$forItemCreation.'</span>';
 				}else if($column_value == $forArfCreation){
 					$column_value = '<span class="label label-info">'.$forArfCreation.'</span>';
+				}else if($column_value == $rejected){
+					$column_value = '<span class="label label-danger">'.$rejected.'</span>';
 				}
 			}
 	    }
@@ -503,6 +516,87 @@
 					);
 
 			return Response::download($file, $getFile->file_name, $headers);
+		}
+
+		//Export Conso
+		public function getItemSourceExport(){
+			return Excel::download(new ExportItemSource, 'item-source-data-'.date('Y-m-d') .'.xlsx');
+		}
+
+		//Select row in option
+		public function addDigitsCode(Request $request){
+			$data            = Request::all();	
+			$id              = $data['header_id'];
+			$digits_code     = $data['digits_code'];
+			$request_type_id = $data['request_type_id'];
+
+			ItemBodySourcing::where('header_request_id', $id)
+			->update([
+				'digits_code'=> 		$digits_code
+			]);	
+
+			ItemHeaderSourcing::where('id',$id)
+			->update([
+				'status_id'		    => 40,
+				'processed_by'      => CRUDBooster::myId(),
+				'processed_at'      => date('Y-m-d H:i:s'),
+			]);	
+
+			$header_info   = ItemHeaderSourcing::headerInfo($id);
+			$body_info     = ItemBodySourcing::bodyInfo($id);
+			
+			$option_into   = DB::table('item_sourcing_options')->where('header_id',$id)->whereNotNull('selected_at')->first();
+			$file_info     = DB::table('item_sourcing_option_file')->where('opt_body_id',$option_into->id)->first();
+		
+			//SEND EMAIL
+			$infos['reference_number'] = $header_info->reference_number;
+			$infos['created_at']       = $header_info->created_at;
+			$infos['employee_name']    = $header_info->bill_to;
+			$infos['company_name']     = $header_info->company_name;
+			$infos['department']       = $header_info->department_name;
+			$infos['position']         = $header_info->position;
+			$infos['date_needed']      = $header_info->date_needed;
+			$infos['status']           = $header_info->status_description;
+			$infos['digits_code']      = $body_info->digits_code;
+			$infos['item_description'] = $body_info->item_description;
+			$infos['category']         = $body_info->category_description;
+			$infos['sub_category']     = $body_info->sub_category_description;
+			$infos['class']            = $body_info->class_description;
+			$infos['sub_class']        = $body_info->sub_class_description;
+			$infos['brand']            = $body_info->brand;
+			$infos['model']            = $body_info->model;
+			$infos['size']             = $body_info->size;
+			$infos['actual_color']     = $body_info->actual_color;
+			$infos['quantity']         = $body_info->quantity;
+			$infos['budget']           = $body_info->budget;
+			$infos['attachment']       = $file_info->file_name;
+			$sdm                       = "marvinmosico@digits.ph";
+			$purchasing                = "marvinmosico@digits.ph";
+			$it                        = "marvinmosico@digits.ph";
+     
+			if($request_type_id == 7){
+				$infos['subject'] = "SUPPLIES-NEW ORDER-REF#";
+				$infos['assign_to'] = $sdm;
+				Mail::to($sdm)
+				//->cc([$fhil])
+				->send(new EmailForPo($infos));
+			}else if($request_type_id == 1){
+				$infos['subject'] = "IT ASSETS-NEW ORDER-REF#";
+				$infos['assign_to'] = $purchasing;
+				Mail::to($purchasing)
+				//->cc([$fhil])
+				->send(new EmailForPo($infos));
+			}else if($request_type_id == 5){
+				$infos['subject'] = "ADMIN ASSETS-NEW ORDER-REF#";
+				$infos['assign_to'] = $purchasing;
+				Mail::to($purchasing)
+				//->cc([$fhil])
+				->send(new EmailForPo($infos));
+			}
+
+			$message = ['status'=>'success', 'message' => 'Save Successfully!'];
+			echo json_encode($message);
+			
 		}
 
 

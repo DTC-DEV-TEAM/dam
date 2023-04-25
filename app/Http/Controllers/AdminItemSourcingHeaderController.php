@@ -803,10 +803,11 @@
 
 		//Select row in option
 		public function SelectedOption(Request $request){
+			
 			$data   = Request::all();	
 			$header_id = $data['header_id'];
 			$opt_id    = $data['opt_id'];
-
+			
 			ItemSourcingOptions::where('id', $opt_id)
 			->update([
 				'selected_at'=> 	date('Y-m-d H:i:s'),
@@ -818,7 +819,38 @@
 				'if_selected'=> 	1
 			]);	
 
+			$getDelete = ItemSourcingOptions::where('header_id',$header_id)->where('id','!=',$opt_id)->get();
+			foreach($getDelete as $key => $val){
+				ItemSourcingOptions::where('id', $val->id)
+				->update([
+					'deleted_at'=> 		date('Y-m-d H:i:s'),
+					'deleted_by'=> 		CRUDBooster::myId()
+				]);	
+			}
+
 			$message = ['status'=>'success', 'message' => 'Selected Successfully!'];
+			echo json_encode($message);
+			
+		}
+
+		//Select row in option
+		public function selectedAlternativeOption(Request $request){
+			$data   = Request::all();	
+			$header_id = $data['header_id'];
+			$opt_id    = $data['opt_id'];
+
+			ItemSourcingOptions::where('id', $opt_id)
+			->update([
+				'selected_alternative_at'=> 	date('Y-m-d H:i:s'),
+				'selected_alternative_by'=> 	CRUDBooster::myId()
+			]);	
+
+			ItemHeaderSourcing::where('id', $header_id)
+			->update([
+				'if_selected_alternative'=> 	1
+			]);	
+
+			$message = ['status'=>'success', 'message' => 'Selected Alternative Successfully!'];
 			echo json_encode($message);
 			
 		}

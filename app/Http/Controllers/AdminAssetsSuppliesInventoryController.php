@@ -1,71 +1,70 @@
 <?php namespace App\Http\Controllers;
 
 	use Session;
-	use Request;
+	//use Request;
 	use DB;
 	use CRUDBooster;
-	use App\Models\AssetsSuppliesInventory;
+	use Excel;
+	use Illuminate\Http\Request;
+	use Illuminate\Support\Facades\Input;
+	use Illuminate\Support\Facades\Log;
+	use Illuminate\Support\Facades\Redirect;
+	use Maatwebsite\Excel\HeadingRowImport;
+	use App\Imports\SuppliesInventoryImport;
+	use PhpOffice\PhpSpreadsheet\Spreadsheet;
+	use PhpOffice\PhpSpreadsheet\Reader\Exception;
+	use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+	use PhpOffice\PhpSpreadsheet\IOFactory;
 
-	class AdminRequestsController extends \crocodicstudio\crudbooster\controllers\CBController {
-
-        public function __construct() {
-			// Register ENUM type
-			//$this->request = $request;
-			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
-		}
+	class AdminAssetsSuppliesInventoryController extends \crocodicstudio\crudbooster\controllers\CBController {
 
 	    public function cbInit() {
 
 			# START CONFIGURATION DO NOT REMOVE THIS LINE
-			$this->title_field = "request_name";
+			$this->title_field = "id";
 			$this->limit = "20";
 			$this->orderby = "id,desc";
 			$this->global_privilege = false;
 			$this->button_table_action = true;
-			$this->button_bulk_action = true;
+			$this->button_bulk_action = false;
 			$this->button_action_style = "button_icon";
-			$this->button_add = true;
+			$this->button_add = false;
 			$this->button_edit = true;
-			$this->button_delete = true;
+			$this->button_delete = false;
 			$this->button_detail = true;
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
 			$this->button_export = false;
-			$this->table = "requests";
+			$this->table = "assets_supplies_inventory";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Request Name","name"=>"request_name"];
+			$this->col[] = ["label"=>"Digits Code","name"=>"digits_code"];
+			$this->col[] = ["label"=>"Description","name"=>"description"];
+			$this->col[] = ["label"=>"Quantity","name"=>"quantity"];
 			$this->col[] = ["label"=>"Status","name"=>"status"];
-			$this->col[] = ["label" => "Created By", "name" => "created_by", "join" => "cms_users,name"];
-			$this->col[] = ["label" => "Created At", "name" => "created_at"];
-			$this->col[] = ["label" => "Updated By", "name" => "updated_by", "join" => "cms_users,name"];
-			$this->col[] = ["label" => "Updated At", "name" => "updated_at"];
+			$this->col[] = ["label"=>"Created By","name"=>"created_by", "join" => "cms_users,name"];
+			$this->col[] = ["label"=>"Created At","name"=>"created_at"];
+			$this->col[] = ["label"=>"Updated By","name"=>"updated_by", "join" => "cms_users,name"];
+			$this->col[] = ["label"=>"Updated At","name"=>"updated_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Request Name','name'=>'request_name','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
 			if(CRUDBooster::getCurrentMethod() == 'getEdit' || CRUDBooster::getCurrentMethod() == 'postEditSave' || CRUDBooster::getCurrentMethod() == 'getDetail') {
-				$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE'];
+				$this->form[] = ['label'=>'Digits Code','name'=>'digits_code','type'=>'text','validation'=>'required|integer|min:0','width'=>'col-sm-5','readonly'=>true];
+			}else{
+				$this->form[] = ['label'=>'Digits Code','name'=>'digits_code','type'=>'select','datatable'=>'assets,digits_code','validation'=>'required|integer|min:0','width'=>'col-sm-5'];
 			}
-
-			if(CRUDBooster::getCurrentMethod() == 'getDetail'){
-				$this->form[] = ["label"=>"Created By","name"=>"created_by",'type'=>'select',"datatable"=>"cms_users,name"];
-				$this->form[] = ['label'=>'Created Date','name'=>'created_at', 'type'=>'datetime'];
-				$this->form[] = ["label"=>"Updated By","name"=>"updated_by",'type'=>'select',"datatable"=>"cms_users,name"];
-				$this->form[] = ['label'=>'Updated Date','name'=>'updated_at', 'type'=>'datetime'];
-			}
+			
+			$this->form[] = ['label'=>'Description','name'=>'description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
+			$this->form[] = ['label'=>'Quantity','name'=>'quantity','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-5'];
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
 			//$this->form = [];
-			//$this->form[] = ["label"=>"Request Name","name"=>"request_name","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Status","name"=>"status","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Updated By","name"=>"updated_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
 			# OLD END FORM
 
 			/* 
@@ -132,7 +131,11 @@
 	        | 
 	        */
 	        $this->index_button = array();
-
+			if(CRUDBooster::getCurrentMethod() == 'getIndex') {
+				$this->index_button[] = ["label"=>"Add Data","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-supplies-inventory'),"color"=>"success"];
+				$this->index_button[] = ["label"=>"Upload Inventory","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('supplies-inventory-upload')];
+				// $this->index_button[] = ["label"=>"Consolidation","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('conso-export')];
+			 }
 
 
 	        /* 
@@ -166,13 +169,6 @@
 	        |
 	        */
 	        $this->script_js = NULL;
-			$this->script_js = "
-			$(document).ready(function() {
-				$('#request_name').keyup(function() {
-					this.value = this.value.toLocaleUpperCase();
-				});
-			});
-			";
 
 
             /*
@@ -280,9 +276,10 @@
 	    | @arr
 	    |
 	    */
-	    public function hook_before_add(&$postdata) {        
-	        //Your code here
+	    public function hook_before_add(&$postdata) {       
+			dd($postdata); 
 			$postdata['created_by']=CRUDBooster::myId();
+
 	    }
 
 	    /* 
@@ -306,7 +303,6 @@
 	    | 
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
-	        //Your code here
 			$postdata['updated_by']=CRUDBooster::myId();
 
 	    }
@@ -347,48 +343,50 @@
 
 	    }
 
-		public function getDescription(Request $request){
-			$data = Request::all();	
-			$digits_code = $data['digits_code'];
+		 //By the way, you can still create your own method in here... :) 
+		 public function getAddSuppliesInventory() {
 
-			$data = DB::table('assets')
-							->select('item_description')
-							->where('digits_code', $digits_code)
-							->get();
-	
-			return($data);
+			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
+				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
+			}
+
+			$this->cbLoader();
+			$data['page_title'] = 'Add Supplies Inventory';
+			$data['digits_code'] = DB::table('assets')->where('category_id', 2)->get();
+			return $this->view("inventory-supplies.add-supplies-inventory", $data);
+		
 		}
 
-		public function addSuppliesInventory(Request $request){
-			$data = Request::all();
-            $digits_code = $data['digits_code'];
-			$description = $data['description'];
-			$quantity    = $data['quantity'];
-	
-			$save = AssetsSuppliesInventory::updateOrcreate([
-                'digits_code'      => $digits_code 
-            ],
-            [
-                'digits_code'      => $digits_code,
-                'description'      => $description,
-                'quantity'         => DB::raw("IF(quantity IS NULL, '".(int)$quantity."', quantity + '".(int)$quantity."')"), 
-   
-
-            ]);
-
-            if ($save->wasRecentlyCreated) {
-                $save->created_by = CRUDBooster::myId();
-                $save->created_at = date('Y-m-d H:i:s');
-                $save->updated_at = NULL;
-            }else{
-                $save->updated_by = CRUDBooster::myId();
-                $save->updated_at = date('Y-m-d H:i:s');
-            }
-            $save->save();
-
-			$message = ['status'=>'success', 'message' => 'Save Successfully!'];
-			echo json_encode($message);
+		public function UploadSuppliesInventory() {
+			$data['page_title']= 'Assets Supplies Inventory Upload';
+			return view('import.asset-supplies-upload', $data)->render();
 		}
 
+		public function SuppliesInventoryUpload(Request $request) {
+			$path_excel = $request->file('import_file')->store('temp');
+			$path = storage_path('app').'/'.$path_excel;
+			Excel::import(new SuppliesInventoryImport, $path);	
+			CRUDBooster::redirect(CRUDBooster::adminpath('assets_supplies_inventory'), trans("Upload Successfully!"), 'success');
+		}
+
+		function downloadSuppliesInventoryTemplate() {
+			$arrHeader = [
+				"digits_code"        => "digits_code",
+				"quantity"           => "quantity"
+			];
+			$arrData = [
+				"digits_code"        => "40000054",
+				"quantity"           => "1"
+			];
+			$spreadsheet = new Spreadsheet();
+			$spreadsheet->getActiveSheet()->fromArray(array_values($arrHeader), null, 'A1');
+			$spreadsheet->getActiveSheet()->fromArray($arrData, null, 'A2');
+			$filename = "supplies-inventory";
+			header('Content-Type: application/vnd.ms-excel');
+			header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"');
+			header('Cache-Control: max-age=0');
+			$writer = new Xlsx($spreadsheet);
+			$writer->save('php://output');
+		}	
 
 	}

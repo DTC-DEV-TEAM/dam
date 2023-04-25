@@ -342,6 +342,8 @@
                             '         @endforeach'+
                             '</select>'+
                         '</td>' +   
+
+                        '<td><input class="form-control text-center finput wh_quantity" type="text" required name="wh_quantity[]" id="wh_quantity' + tableRow + '" data-id="' + tableRow  + '" readonly></td>' +
                         
                         '<td><input class="form-control text-center quantity_item" type="text" required name="quantity[]" id="quantity' + tableRow + '" data-id="' + tableRow  + '"  value="1" max="9999999999" step="any" onKeyPress="if(this.value.length==11) return false;" oninput="validity.valid;"></td>' +
             
@@ -434,7 +436,7 @@
                                                         value:                      item.item_description,
                                                         category_description:       item.category_description,
                                                         item_cost:                  item.item_cost,
-                                                    
+                                                        wh_qty:                     item.wh_qty,
                                                     }
 
                                                 }));
@@ -464,6 +466,7 @@
                                             $("#cost"+$(this).attr("data-id")).val(e.item_cost);
                                             $('#itemDesc'+$(this).attr("data-id")).val(e.value);
                                             $('#fixed_description'+$(this).attr("data-id")).val(e.value);
+                                            $('#wh_quantity'+$(this).attr("data-id")).val(e.wh_qty);
                                             $('#val_item').html('');
                                             return false;
                 

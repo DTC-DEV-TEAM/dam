@@ -8,21 +8,19 @@
 	use App\BodyRequest;
 	use App\ApprovalMatrix;
 	use App\StatusMatrix;
-	//use Illuminate\Http\Request;
-	//use Illuminate\Support\Facades\Input;
-	use Illuminate\Support\Facades\Log;
-	use Illuminate\Support\Facades\Redirect;
+	use App\GeneratedAssetsHistories;
+	use App\AssetsInventoryHeader;
+	use App\AssetsHeaderImages;
+	use App\AssetsInventoryBody;
 
-	class AdminRecommendationController extends \crocodicstudio\crudbooster\controllers\CBController {
-
-        public function __construct() {
-			// Register ENUM type
-			//$this->request = $request;
+	class AdminSuppliesReceivingController extends \crocodicstudio\crudbooster\controllers\CBController {
+		private $forClosing;
+		public function __construct() {
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
+			$this->forClosing      =  19;    
+		
+		
 		}
-
-		private static $apiContext; 
-
 	    public function cbInit() {
 
 			# START CONFIGURATION DO NOT REMOVE THIS LINE
@@ -33,9 +31,9 @@
 			$this->button_table_action = true;
 			$this->button_bulk_action = true;
 			$this->button_action_style = "button_icon";
-			$this->button_add = false;
-			$this->button_edit = false;
-			$this->button_delete = true;
+			$this->button_add = true;
+			$this->button_edit = true;
+			$this->button_delete = false;
 			$this->button_detail = false;
 			$this->button_show = true;
 			$this->button_filter = true;
@@ -59,7 +57,7 @@
 
 			$this->col[] = ["label"=>"Approved By","name"=>"approved_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Approved Date","name"=>"approved_at"];
-			//$this->col[] = ["label"=>"Rejected Date","name"=>"rejected_at"];
+			$this->col[] = ["label"=>"Rejected Date","name"=>"rejected_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
@@ -69,27 +67,6 @@
 
 			# OLD START FORM
 			//$this->form = [];
-			//$this->form[] = ["label"=>"Reference Number","name"=>"reference_number","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Status Id","name"=>"status_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"status,id"];
-			//$this->form[] = ["label"=>"Employee Name","name"=>"employee_name","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Company Name","name"=>"company_name","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Position","name"=>"position","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Department","name"=>"department","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Store Branch","name"=>"store_branch","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Purpose","name"=>"purpose","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Conditions","name"=>"conditions","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Quantity Total","name"=>"quantity_total","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Cost Total","name"=>"cost_total","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Total","name"=>"total","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Approved By","name"=>"approved_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Approved At","name"=>"approved_at","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
-			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Updated By","name"=>"updated_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Rejected At","name"=>"rejected_at","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Requestor Comments","name"=>"requestor_comments","type"=>"textarea","required"=>TRUE,"validation"=>"required|string|min:5|max:5000"];
-			//$this->form[] = ["label"=>"Request Type Id","name"=>"request_type_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"request_type,id"];
-			//$this->form[] = ["label"=>"Privilege Id","name"=>"privilege_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"privilege,id"];
-			//$this->form[] = ["label"=>"Approver Comments","name"=>"approver_comments","type"=>"textarea","required"=>TRUE,"validation"=>"required|string|min:5|max:5000"];
 			# OLD END FORM
 
 			/* 
@@ -119,13 +96,6 @@
 	        | 
 	        */
 	        $this->addaction = array();
-			if(CRUDBooster::isUpdate()) {
-				
-				$approved =  		DB::table('statuses')->where('id', 4)->value('id');
-
-				$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getRequestReco/[id]'),'icon'=>'fa fa-pencil', "showIf"=>"[status_id] == $approved"];
-				//$this->addaction[] = ['title'=>'Edit','url'=>CRUDBooster::mainpath('getRequestEdit/[id]'),'icon'=>'fa fa-pencil', "showIf"=>"[status_id] == $Rejected"]; //, "showIf"=>"[status_level1] == $inwarranty"
-			}
 
 
 	        /* 
@@ -256,7 +226,7 @@
 	        |
 	        */
 	        $this->load_css = array();
-			$this->load_css[] = asset("css/font-family.css");
+	        
 	        
 	    }
 
@@ -283,28 +253,25 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-	        //Your code here
-			if(CRUDBooster::isSuperadmin()){
+	        if(CRUDBooster::isSuperadmin()){
+				$query->whereNull('header_request.deleted_at')
+					  ->orderBy('header_request.status_id', 'ASC')
+					  ->orderBy('header_request.id', 'DESC');
 
-				$approved =  		DB::table('statuses')->where('id', 4)->value('id');
-
-				$query->whereNull('header_request.deleted_at')->orderBy('header_request.status_id', 'DESC')->where('header_request.status_id', $approved)->where('header_request.to_reco', 1)->orderBy('header_request.id', 'DESC');
-			
 			}else{
 
-				$approved =  		DB::table('statuses')->where('id', 4)->value('id');
+				$user = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
 
-				$user_data         = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-				
+				$query->where(function($sub_query){
+					$user = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
+					$sub_query->where('header_request.created_by', CRUDBooster::myId())
+					          ->where('header_request.status_id', $this->forClosing)
+	                          ->whereNull('header_request.deleted_at')
+							  ->where('header_request.request_type_id',7); 
+				});
 
-				//$query->whereIn('header_request.department', explode(",",$user_data->department_id))
-				//$query->whereIn('header_request.company_name', explode(",",$user_data->company_name_id))
-				$query->where('header_request.status_id', $approved)
-				->where('header_request.to_reco', 1)
-				->whereNull('header_request.deleted_at')
-				->orderBy('header_request.id', 'ASC');
-
-
+				$query->orderBy('header_request.status_id', 'asc')->orderBy('header_request.id', 'DESC');
+				//$query->orderByRaw('FIELD( header_request.status_id, "For Approval")');
 			}
 	            
 	    }
@@ -315,31 +282,11 @@
 	    | ---------------------------------------------------------------------- 
 	    |
 	    */    
-	    public function hook_row_index($column_index,&$column_value) {	        
-	    	//Your code here
-			$pending  =  		DB::table('statuses')->where('id', 1)->value('status_description');
-			$approved =  		DB::table('statuses')->where('id', 4)->value('status_description');
-			$rejected =  		DB::table('statuses')->where('id', 5)->value('status_description');
-			$it_reco  = 		DB::table('statuses')->where('id', 7)->value('status_description');
-
-			if($column_index == 2){
-				if($column_value == $pending){
-					$column_value = '<span class="label label-warning">'.$pending.'</span>';
-				}else if($column_value == $approved){
-					$column_value = '<span class="label label-info">'.$approved.'</span>';
-				}else if($column_value == $rejected){
-					$column_value = '<span class="label label-danger">'.$rejected.'</span>';
-				}else if($column_value == $it_reco){
-					$column_value = '<span class="label label-info">'.$it_reco.'</span>';
-				}
+	    public function hook_row_index($column_index,&$column_value) {	
+			$for_closing      = DB::table('statuses')->where('id', $this->forClosing)->value('status_description');        
+	    	if($column_value == $for_closing){
+				$column_value = '<span class="label label-info">'.$for_closing.'</span>';
 			}
-
-			if($column_index == 6){
-				if($column_value == null){
-					$column_value = "ERF";
-				}
-			}
-
 	    }
 
 	    /*
@@ -375,90 +322,15 @@
 	    | 
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
-	        //Your code here
-			$arf_header = HeaderRequest::where(['id' => $id])->first();
-
-			$it_reco 	= DB::table('statuses')->where('id', 7)->value('id');
-
-			$fields = Request::all();
-			$cont = (new static)->apiContext;
-      
-			$dataLines = array();
-			$from_erf               = $fields['from_erf'];
-			$it_comments 			= $fields['it_comments'];
-			$item_id 				= $fields['item_id'];
-			$recommendation 		= $fields['recommendation'];
-
-			$add_item_id 			= $fields['add_item_id'];
-			$recommendation_add 	= $fields['recommendation_add'];
-
-			$reco_digits_code 		= $fields['reco_digits_code'];
-			$reco_item_description 	= $fields['reco_item_description'];
-
-			//$postdata['status_id'] 				= $it_reco;
-
-			$postdata['status_id']		 			=	 StatusMatrix::where('current_step', 3)
-														->where('request_type', $arf_header->request_type_id)
-														//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
-														->value('status_id');
-
-			$postdata['it_comments'] 			= $it_comments;
-			$postdata['recommended_by'] 		= CRUDBooster::myId();
-			$postdata['recommended_at'] 		= date('Y-m-d H:i:s');
-
-
-            
-
-			for($x=0; $x < count((array)$item_id); $x++) {
-
-				BodyRequest::where('id', $item_id[$x])
-				->update([
-					'recommendation' 		=> $recommendation[$x],
-					'reco_digits_code' 		=> $reco_digits_code[$x],
-					'reco_item_description' => $reco_item_description[$x]
-				]);
-				
-			}
-
-			if($from_erf !== NULL){
-				for($x=0; $x < count((array)$item_id); $x++) {
-					BodyRequest::where('id', $item_id[$x])
-					->update([
-						'digits_code' 		    => $reco_digits_code[$x],
-						'item_description' 		=> $reco_item_description[$x],
-					]);
-					
-				}
-			}
-
-
-			if (!empty($add_item_id)) {
-
-				for($x=0; $x < count((array)$add_item_id); $x++) {
-					$dataLines[$x]['header_request_id'] 	= $arf_header->id;
-					$dataLines[$x]['body_request_id'] 		= $add_item_id[$x];
-					$dataLines[$x]['recommendation'] 		= $recommendation_add[$x];
-					$dataLines[$x]['created_at'] 			= date('Y-m-d H:i:s');
-				}
-
-			}
-
-
-			DB::beginTransaction();
 	
-			try {
-				DB::table('recommendation_request')->insert($dataLines);
-				DB::commit();
-				//CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_pullout_data_success",['mps_reference'=>$pullout_header->reference]), 'success');
-			} catch (\Exception $e) {
-				DB::rollback();
-
-
-				CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_database_error",['database_error'=>$e]), 'danger');
-			}
-
-
-
+			HeaderRequest::where('id',$id)
+				->update([
+						'closing_plug'=> 1,
+						'status_id'=> 13,
+						'closed_by'=> CRUDBooster::myId(),
+						'closed_at'=> date('Y-m-d H:i:s'),
+	
+				]);	
 
 	    }
 
@@ -471,12 +343,6 @@
 	    */
 	    public function hook_after_edit($id) {
 	        //Your code here 
-			$fields = Request::all();
-			$cont = (new static)->apiContext;
-			
-			$arf_header = HeaderRequest::where(['id' => $id])->first();
-
-			CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.arf_recommended_success",['reference_number'=>$arf_header->reference_number]), 'info');
 
 	    }
 
@@ -504,23 +370,16 @@
 
 	    }
 
-
-
-	    //By the way, you can still create your own method in here... :) 
-
-
-		public function getRequestReco($id){
+		public function getEdit($id){
 			
-
 			$this->cbLoader();
-			if(!CRUDBooster::isUpdate() && $this->global_privilege==FALSE) {    
-				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
-			}  
-
+            if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
+                CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+            }
 
 			$data = array();
 
-			$data['page_title'] = 'Recommendation Request';
+			$data['page_title'] = 'View Request';
 
 			$data['Header'] = HeaderRequest::
 				  leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
@@ -528,11 +387,14 @@
 				->leftjoin('cms_users as employees', 'header_request.employee_name', '=', 'employees.id')
 				->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
 				->leftjoin('departments', 'header_request.department', '=', 'departments.id')
-				->leftjoin('positions', 'header_request.position', '=', 'positions.id')
 				->leftjoin('locations', 'employees.location_id', '=', 'locations.id')
-
 				->leftjoin('cms_users as requested', 'header_request.created_by','=', 'requested.id')
 				->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
+				->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
+				->leftjoin('cms_users as processed', 'header_request.purchased2_by','=', 'processed.id')
+				->leftjoin('cms_users as picked', 'header_request.picked_by','=', 'picked.id')
+				->leftjoin('cms_users as received', 'header_request.received_by','=', 'received.id')
+				->leftjoin('cms_users as closed', 'header_request.closed_by','=', 'closed.id')
 				->select(
 						'header_request.*',
 						'header_request.id as requestid',
@@ -543,85 +405,45 @@
 						'employees.bill_to as employee_name',
 						'header_request.employee_name as header_emp_name',
 						'header_request.created_by as header_created_by',
-						// 'employees.company_name_id as company_name',
+						//'employees.company_name_id as company_name',
 						'departments.department_name as department',
-						//'positions.position_description as position',
 						'locations.store_name as store_branch',
-						'approved.name as approvedby'
+						'approved.name as approvedby',
+						'recommended.name as recommendedby',
+						'picked.name as pickedby',
+						'received.name as receivedby',
+						'processed.name as processedby',
+						'closed.name as closedby',
+						'header_request.created_at as created_at'
 						)
 				->where('header_request.id', $id)->first();
-
+		
 			$data['Body'] = BodyRequest::
 				select(
 				  'body_request.*'
 				)
 				->where('body_request.header_request_id', $id)
-				->whereNull('deleted_at')
 				->get();
 
-			$data['recommendations'] = DB::table('recommendations')->where('status', 'ACTIVE')->get();
-				
-			return $this->view("assets.reco-request", $data);
+			$data['Body1'] = BodyRequest::
+				select(
+				  'body_request.*'
+				)
+				->where('body_request.header_request_id', $id)
+				->wherenotnull('body_request.digits_code')
+				->orderby('body_request.id', 'desc')
+				->get();
+
+			$data['BodyReco'] = DB::table('recommendation_request')
+				->select(
+				  'recommendation_request.*'
+				)
+				->where('recommendation_request.header_request_id', $id)
+				->get();				
+
+			$data['recommendations'] = DB::table('recommendations')->where('status', 'ACTIVE')->get();		
+			return $this->view("assets.supplies-closed", $data);
 		}
 
-
-		public function itemSearch(Request $request) {
-
-			$request = Request::all();
-
-			$cont = (new static)->apiContext;
-
-			$search 		= $request['search'];
-
-			$data = array();
-
-			$data['status_no'] = 0;
-			$data['message']   ='No Item Found!';
-			$data['items'] = array();
-
-			//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
-
-			$items = DB::table('assets')
-				->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.status','!=','INACTIVE')
-				->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.status','!=','INACTIVE')
-				->join('category', 'assets.category_id','=', 'category.id')
-				//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
-				->select(	'assets.*',
-							'assets.id as assetID',
-							//'digits_imfs.digits_code as dcode',
-							'category.category_description as category_description'
-						)->take(10)->get();
-			
-			if($items){
-				$data['status'] = 1;
-				$data['problem']  = 1;
-				$data['status_no'] = 1;
-				$data['message']   ='Item Found';
-				$i = 0;
-				foreach ($items as $key => $value) {
-
-					$return_data[$i]['id'] = 				$value->assetID;
-					$return_data[$i]['asset_code'] = 		$value->asset_code;
-					$return_data[$i]['digits_code'] = 		$value->digits_code;
-					$return_data[$i]['asset_tag'] = 		$value->asset_tag;
-					$return_data[$i]['serial_no'] = 		$value->serial_no;
-					$return_data[$i]['item_description'] = 	$value->item_description;
-					$return_data[$i]['category_description'] = 		$value->category_description;
-					$return_data[$i]['item_cost'] = 				$value->item_cost;
-					$return_data[$i]['item_type'] = 				$value->item_type;
-					$return_data[$i]['image'] = 				$value->image;
-					$return_data[$i]['quantity'] = 				$value->quantity;
-					$return_data[$i]['total_quantity'] = 				$value->total_quantity;
-
-					$i++;
-
-				}
-				$data['items'] = $return_data;
-			}
-
-
-			echo json_encode($data);
-			exit;  
-		}
 
 	}

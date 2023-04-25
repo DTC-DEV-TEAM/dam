@@ -27,10 +27,10 @@
         border: 1px solid rgba(000, 0, 0, .5);
         padding: 8px;
     }
-    /* .finput {
+    .finput {
         border:none;
         border-bottom: 1px solid rgba(18, 17, 17, 0.5);
-    } */
+    }
     input.finput:read-only {
         background-color: #fff;
     }
@@ -49,7 +49,7 @@
         Request Form
     </div>
 
-    <form method='post' id="myform" action='{{CRUDBooster::mainpath('add-save/'.$Header->requestid)}}'>
+    {{-- <form method='post' id="myform" action='{{CRUDBooster::mainpath('add-save/'.$Header->requestid)}}'> --}}
         <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
         <input type="hidden" value="0" name="action" id="action">
 
@@ -95,7 +95,7 @@
 
         <div class='panel-body'>
 
-            <div class="row">
+            {{-- <div class="row">
 
                 <div class="col-md-4">
                     <div class="form-group">
@@ -138,9 +138,7 @@
 
                 </div>
 
-            </div>
- 
-            <hr/>
+            </div> --}}
 
             <div class="row">                           
                 <label class="control-label col-md-2">{{ trans('message.form-label.reference_number') }}:</label>
@@ -258,7 +256,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="box-header text-center">
-                        <h3 class="box-title"><b>{{ trans('message.form-label.asset_reco') }}</b></h3>
+                        <h3 class="box-title"><b>Item Details</b></h3>
                     </div>
                     <div class="box-body no-padding">
                         <div class="pic-container">
@@ -268,25 +266,21 @@
                                         <tr class="tbl_header_color dynamicRows">
 
                                             <!--<th width="5%" class="text-center">{{ trans('message.table.action') }}</th>-->
-                                            <th width="15%" class="text-center">Digits Code</th>
+                                            <th width="10%" class="text-center">Digits Code</th>
                                             <th width="15%" class="text-center">{{ trans('message.table.item_description') }}</th>
                                             <th width="9%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
                                             <th width="10%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
                                             <th width="5%" class="text-center">{{ trans('message.table.quantity_text') }}</th> 
                                            
-                                            {{-- <th width="5%" class="text-center">For Replenish Qty</th> 
+                                            <th width="5%" class="text-center">For Replenish Qty</th> 
                                             <th width="5%" class="text-center">For Re Order Qty</th> 
-                                            <th width="5%" class="text-center">UnServe Qty</th>  --}}
-
+                                            <th width="5%" class="text-center">Fulfilled Qty</th> 
+                                            <th width="5%" class="text-center">UnServed Qty</th> 
                                             <th width="7%" class="text-center">Item Cost</th> 
                                             <th width="7%" class="text-center">Total Cost</th>                                                                                                                                            
-                                            <th width="10%" class="text-center">MO/SO</th>    
-                                            <th width="5%" class="text-center">Serve Qty</th> 
-                                            @if($Header->recommendedby != null || $Header->recommendedby != "")
-                                                <th width="13%" class="text-center">{{ trans('message.table.recommendation_text') }}</th> 
-                                                <th width="14%" class="text-center">{{ trans('message.table.reco_digits_code_text_mo') }}</th> 
-                                                <th width="24%" class="text-center">{{ trans('message.table.reco_item_description_text_mo') }}</th>
-                                            @endif 
+                                            {{-- <th width="10%" class="text-center">DR#</th>     --}}
+                                            {{-- <th width="5%" class="text-center">Serve Qty</th>  --}}
+                                           
                                         </tr>
                                         
 
@@ -320,74 +314,36 @@
                                                         </td>
 
                                                         <td style="text-align:center" height="10" class="qty">
-                                                            <input type="text"  class="form-control mo_so_num" name="quantity{{$tableRow}}" value="{{$rowresult->quantity}}" id="quantity{{$tableRow}}" readonly>
-                                                                    <!-- {{$rowresult->quantity}} -->
+                                                            {{-- <input type="text"  class="form-control mo_so_num" name="quantity{{$tableRow}}" value="{{$rowresult->quantity}}" id="quantity{{$tableRow}}" readonly> --}}
+                                                                    {{$rowresult->quantity}} 
                                                         </td>
 
-                                                        {{-- <td style="text-align:center">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
-                                                        <td style="text-align:center">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                              
-                                                        <td style="text-align:center">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td> --}}
+                                                        <td style="text-align:center" class="rep_qty">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
+                                                        <td style="text-align:center" class="re_qty">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>     
+                                                        <td style="text-align:center" class="served_qty">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>                                                           
+                                                        <td style="text-align:center" class="unserved_qty">
+                                                            {{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}
+                                                            {{-- <input type="text"  class="form-control mo_so_num" name="unserved_qty{{$tableRow}}" value="{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}" id="unserved_qty{{$tableRow}}" readonly> --}}
+                                                        </td>
 
-                                                        <td style="text-align:center" height="10">{{$rowresult->unit_cost}}</td>
-                                                        <td style="text-align:center" height="10" class="cost">{{$rowresult->unit_cost * $rowresult->serve_qty}}</td>
+                                                        <td style="text-align:center" class="unit_cost">{{$rowresult->unit_cost}}</td>
+                                                        <td style="text-align:center" class="total_cost">{{$rowresult->unit_cost * $rowresult->serve_qty}}</td>
                                                       
-                                                        <td style="text-align:center" height="10">
-                                                            <input type="text"  class="form-control mo_so_num"  name="mo_so_num[]" id="mo_so_num{{$tableRow}}" value="{{$rowresult->mo_so_num}}" readonly>
+                                                        {{-- <td style="text-align:center" height="10">
+                                                            <input type="text"  class="form-control finput"  name="mo_so_num[]" id="mo_so_num{{$tableRow}}" value="{{$rowresult->mo_so_num}}">
+                                                            <input type="text"  class="form-control mo_so_num"  name="mo_so_num[]" id="mo_so_num{{$tableRow}}" value="{{$rowresult->mo_so_num}}" readonly> 
                                                             <input type="hidden"  class="form-control"  name="default_val[]" id="default_val{{$tableRow}}" value="{{$rowresult->mo_so_num}}" readonly>
-                                                        </td>
-                                                        <td style="text-align:center" height="10">
-                                                            <input type="text" style="text-align:center" class="form-control finput reserve_qty"  name="reserve_qty[]" id="reserve_qty{{$tableRow}}" value="{{$rowresult->quantity}}" data-id="{{$tableRow}}">
-                                                            <div id="display_error{{$tableRow}}" style="text-align:left"></div>
-                                                        </td>                       
-                                                                                                                
-                                                        @if($Header->recommendedby != null || $Header->recommendedby != "")
-                                                        
-                                                            <td>
-                                                                @if($rowresult->to_reco == 1)
-                                                                    <select class="js-example-basic-single recodropdown" style="width: 100%; height: 35px;" required name="recommendation[]" id="recommendation" data-id="{{$tableRow}}">
-                                                                        <option value="">-- Select Recommendation --</option>
-                            
-                                                                        @foreach($recommendations as $datas)    
-                                                                            @if($rowresult->recommendation == $datas->user_type)
-                                                                                <option  value="{{$datas->user_type}}" selected>{{$datas->user_type}}</option>
-                                                                            @else
-                                                                                <option  value="{{$datas->user_type}}">{{$datas->user_type}}</option>
-                                                                            @endif
-                                                                        @endforeach
-                            
-                                                                    </select>
-                                                                @else
-                                                                    <select class="js-example-basic-single recodropdown" style="width: 100%; height: 35px;"  name="recommendation[]" id="recommendation" data-id="{{$tableRow}}" disabled>
-                                                                        <option value="">-- Select Recommendation --</option>
-                            
-                                                                        @foreach($recommendations as $datas)    
-                                                                            @if($rowresult->recommendation == $datas->user_type)
-                                                                                <option  value="{{$datas->user_type}}" selected>{{$datas->user_type}}</option>
-                                                                            @else
-                                                                                <option  value="{{$datas->user_type}}">{{$datas->user_type}}</option>
-                                                                            @endif
-                                                                        @endforeach
-                            
-                                                                    </select>
-                                                                @endif
-
-                                                            </td>
-                                                            
-                                                            <td>
-                                                                    <div class="form-group">
-                                                                        <input class="form-control auto" type="text" style="width: 100%;" placeholder="Search Item" id="search{{$tableRow}}" data-id="{{$tableRow}}"  name="reco_digits_code[]" value="{{$rowresult->reco_digits_code}}">
-                                                                        <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" data-id="{{$tableRow}}" id="ui-id-2{{$tableRow}}" style="display: none; top: 60px; left: 15px; width: 100%;">
-                                                                            <li>Loading...</li>
-                                                                        </ul>
-                                                                    </div>
-                                                            </td>
-
-                                                            <td>
-                                                                <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control itemDesc" data-id="{{$tableRow}}" id="item_description{{$tableRow}}"  name="reco_item_description[]" maxlength="100" readonly value="{{$rowresult->reco_item_description}}">
-                                                            </td>
-
-                                                        @endif
-
+                                                        </td> --}}
+                                                         
+                                                        {{-- <td style="text-align:center" height="10">
+                                                            @if($rowresult->quantity === $rowresult->serve_qty)
+                                                            <input type="text" style="text-align:center" class="form-control finput reserve_qty"  name="reserve_qty[]" id="reserve_qty{{$tableRow}}" data-id="{{$tableRow}}" readonly>
+                                                            @else
+                                                            <input type="text" style="text-align:center" class="form-control finput reserve_qty"  name="reserve_qty[]" id="reserve_qty{{$tableRow}}" data-id="{{$tableRow}}">
+                                                            @endif
+                                                            <div id="display_error{{$tableRow}}" style="text-align:left"></div>   
+                                                        </td>                         --}}
+                                                                                                                                                                      
                                                     </tr>
 
                                                 @endforeach
@@ -398,7 +354,7 @@
                                     </tbody>
 
                                     <tfoot>
-                                    <tr>
+                                    {{-- <tr>
                                         <td colspan='4' style='text-align:right'>
                                         <strong>TOTAL</strong>
                                         </td>
@@ -409,7 +365,7 @@
                                             @endforeach
                                         </strong>
                                         </td>
-                                        </tr>
+                                        </tr> --}}
                                     </tfoot>
 
                                 </table>
@@ -486,12 +442,12 @@
 
         <div class='panel-footer'>
             <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
-            <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> Close</button>
+            {{-- <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-times-circle" ></i> Close</button>
             <!-- <button class="btn btn-warning pull-right" type="submit" id="btnPrint" style="margin-right: 10px;"> <i class="fa fa-print" ></i> {{ trans('message.form.print') }}</button> -->
-             <!-- <button class="btn btn-warning pull-right" type="submit" id="btnUpdate" style="margin-right: 10px;"> <i class="fa fa-circle-o" ></i> {{ trans('message.form.update') }}</button>  -->
+            <button class="btn btn-warning pull-right" type="submit" id="btnUpdate" style="margin-right: 10px;"> <i class="fa fa-refresh" ></i> {{ trans('message.form.update') }}</button> --}}
         </div>
 
-    </form>
+    {{-- </form> --}}
 
 
 
@@ -556,12 +512,29 @@
                     width: 450,
                     height: 200
                     }, function () {
+                        $("#action").val("1");
                         $("#myform").submit();                      
                 });
             }
         
         }
-
+    });
+    $("#btnUpdate").click(function(event) {
+       event.preventDefault();
+        swal({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#41B314",
+            cancelButtonColor: "#F9354C",
+            confirmButtonText: "Yes, update it!",
+            width: 450,
+            height: 200
+            }, function () {
+                $("#action").val("0");
+                $("#myform").submit();                       
+        });
     });
     var count_pick = 0;
     //reserve quantity
@@ -579,21 +552,24 @@
             var value =  this.value;
             var text = "OUT OF STOCK";
             var orig_val = $("#default_val"+$(this).attr("data-id")).val();
-            var quantity = parseFloat($("#quantity"+$(this).attr("data-id")).val());
+            //var quantity = parseFloat($("#quantity"+$(this).attr("data-id")).val());
+            var unserved_qty = parseFloat($("#unserved_qty"+$(this).attr("data-id")).val());
             var reserve_qty = parseFloat($("#reserve_qty"+$(this).attr("data-id")).val());
         
-            if(value <= 0){
-                $("#mo_so_num"+$(this).attr("data-id")).val(text);
-                //$("#mo_so_num"+countrow).val(text).trigger('change');
-            }else{
-                $("#mo_so_num"+$(this).attr("data-id")).val(orig_val);
-            }
+            // if(value <= 0){
+            //     $("#mo_so_num"+$(this).attr("data-id")).val(text);
+            //     //$("#mo_so_num"+countrow).val(text).trigger('change');
+            // }else{
+            //     $("#mo_so_num"+$(this).attr("data-id")).val(orig_val);
+            // }
 
-            if(value > quantity){
+            if(value > unserved_qty){
                 $('#btnSubmit').attr('disabled','disabled');
+                $('#btnUpdate').attr('disabled','disabled');
                 $('#display_error'+$(this).attr("data-id")).html("<span id='notif' class='label label-danger'> Serve Quantity Exceed!</span>")
             }else{
                 $('#btnSubmit').removeAttr('disabled');
+                $('#btnUpdate').removeAttr('disabled');
                 $('#display_error'+$(this).attr("data-id")).html('')
             }
 
@@ -601,20 +577,74 @@
         }
     });
 
-        // var tds = document
-        // .getElementById("asset-items1")
-        // .getElementsByTagName("td");
-        // var sumqty = 0;
-     
-        // for (var i = 0; i < tds.length; i++) {
-        //     console.log(tds[i].innerHTML);
-        // if (tds[i].className == "qty") {
-        //     sumqty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-        // }
-        // }
-        // document.getElementById("asset-items1").innerHTML +=
-        // "<tr><td colspan='4' style='text-align:right'><strong>TOTAL</strong></td><td style='text-align:center'><strong>" +
-        // sumqty +
-        // "</strong></td></tr>";
+    var tds = document
+        .getElementById("asset-items1")
+        .getElementsByTagName("td");
+        var sumqty       = 0;
+        var rep_qty      = 0;
+        var ro_qty       = 0;
+        var served_qty   = 0;
+        var unserved_qty = 0;
+        var unit_cost       = 0;
+        var total_cost       = 0;
+        for (var i = 0; i < tds.length; i++) {
+            if(tds[i].className == "qty") {
+                sumqty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+            }else if(tds[i].className == "rep_qty"){
+                rep_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+            }else if(tds[i].className == "ro_qty"){
+                ro_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+            }else if(tds[i].className == "served_qty"){
+                served_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+            }else if(tds[i].className == "unserved_qty"){
+                unserved_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+            }else if(tds[i].className == "unit_cost"){
+                unit_cost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+            }else if(tds[i].className == "total_cost"){
+                total_cost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+            }
+        }
+        document.getElementById("asset-items1").innerHTML +=
+        "<tr>"+
+            "<td colspan='4' style='text-align:right'>"+
+                    "<strong>TOTAL</strong>"+
+                "</td>"+
+                
+                "<td style='text-align:center'>"+
+                    "<strong>" +
+                    sumqty +
+                    "</strong>"+
+                "</td>"+
+                "<td style='text-align:center'>"+
+                    "<strong>" +
+                    rep_qty +
+                    "</strong>"+
+                "</td>"+
+                "<td style='text-align:center'>"+
+                    "<strong>" +
+                    ro_qty +
+                    "</strong>"+
+                "</td>"+
+                "<td style='text-align:center'>"+
+                    "<strong>" +
+                    served_qty +
+                    "</strong>"+
+                "</td>"+
+                "<td style='text-align:center'>"+
+                    "<strong>" +
+                    unserved_qty +
+                    "</strong>"+
+                "</td>"+
+                "<td style='text-align:center'>"+
+                    "<strong>" +
+                        unit_cost +
+                    "</strong>"+
+                "</td>"+
+                "<td style='text-align:center'>"+
+                    "<strong>" +
+                        total_cost +
+                    "</strong>"+
+                "</td>"+             
+        "</tr>";
 </script>
 @endpush

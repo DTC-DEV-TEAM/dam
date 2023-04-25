@@ -9,7 +9,7 @@
 	use App\ApprovalMatrix;
 	use App\StatusMatrix;
 	use App\Users;
-	//use App\Models\AssetsSuppliesInventory;
+	use App\Models\AssetsSuppliesInventory;
 	//use Illuminate\Http\Request;
 	//use Illuminate\Support\Facades\Input;
 	use Illuminate\Support\Facades\Log;
@@ -379,24 +379,28 @@
 			$dataLines = array();
 
 			$approval_action 		= $fields['approval_action'];
-
-			
-
 			$approver_comments 		= $fields['approver_comments'];
+			$body_ids 		        = $fields['body_ids'];
+			$wh_qty 		        = $fields['wh_qty'];
 
-			$approved =  		DB::table('statuses')->where('id', 4)->value('id');
-			$rejected =  		DB::table('statuses')->where('id', 5)->value('id');
-
+			$approved               =  DB::table('statuses')->where('id', 4)->value('id');
+			$rejected               =  DB::table('statuses')->where('id', 5)->value('id');
+			$for_move_order         =  DB::table('statuses')->where('id', 14)->value('id');
 
 			$arf_header = HeaderRequest::where(['id' => $id])->first();
 
-			$arf_body = BodyRequest::where(['header_request_id' => $id])->get();
+			$arf_body = BodyRequest::where(['header_request_id' => $id])->whereNull('deleted_at')->get();
 
 			if($approval_action  == 1){
-				$postdata['status_id']		    = StatusMatrix::where('current_step', 2)
-												  ->where('request_type', $arf_header->request_type_id)
-												  ->value('status_id');
-
+				
+                if(in_array($arf_header->request_type_id, [7])){
+				    $postdata['status_id']          = $for_move_order;
+				}else{
+					$postdata['status_id']		    = StatusMatrix::where('current_step', 2)
+														->where('request_type', $arf_header->request_type_id)
+														->value('status_id');
+				}
+				
 				$postdata['approver_comments'] 	= $approver_comments;
 				$postdata['approved_by'] 		= CRUDBooster::myId();
 				$postdata['approved_at'] 		= date('Y-m-d H:i:s');
@@ -407,57 +411,69 @@
 					}
 
 				}
-				// if(in_array($arf_header->request_type_id, [7])){
-				// 	//Get the inventory value per digits code
-				// 	$arraySearch = DB::table('assets_supplies_inventory')->select('*')->get()->toArray();
-				
-				// 	$finalBodyValue = [];
-				// 	foreach($arf_body as $bodyfKey => $bodyVal){
-				// 		$i = array_search($bodyVal['digits_code'], array_column($arraySearch,'digits_code'));
-				// 		if($i !== false){
-				// 			$bodyVal['inv_value'] = $arraySearch[$i];
-				// 			$finalBodyValue[] = $bodyVal;
-				// 		}else{
-				// 			$bodyVal['inv_value'] = "";
-				// 			$finalBodyValue[] = $bodyVal;
-				// 		}
-				// 	}
 
-				// 	//Set data in each qty
-				// 	$containerData = [];
-				// 	$finalContData = [];
-				// 	foreach($finalBodyValue as $fBodyKey => $fBodyVal){
-                //         if($fBodyVal['inv_value']->quantity > $fBodyVal['quantity']){
-				// 			//less quantity in inventory
-				// 			BodyRequest::where('id', $fBodyVal['id'])
-				// 			->update([
-				// 				'replenish_qty'   =>  $fBodyVal['quantity'],
-				// 				'reorder_qty'     =>  NULL,
-				// 				'serve_qty'       =>  $fBodyVal['quantity'],
-				// 				'unserved_qty'    =>  0,
-				// 			]);	
-				// 			DB::table('assets_supplies_inventory')
-				// 			->where('digits_code', $fBodyVal['digits_code'])
-				// 			->decrement('quantity', $fBodyVal['quantity']);
-				// 		}else{
-				// 			$reorder = $fBodyVal['quantity'] - $fBodyVal['inv_value']->quantity;
-				// 			$containerData['serve_qty']     = $fBodyVal['inv_value']->quantity;  
-				// 			$containerData['unserve_qty']   = $containerData['reorder_qty'];
-				// 			BodyRequest::where('id', $fBodyVal['id'])
-				// 			->update([
-				// 				'replenish_qty'   =>  $fBodyVal['inv_value']->quantity,
-				// 				'reorder_qty'     =>  $reorder,
-				// 				'serve_qty'       =>  $fBodyVal['inv_value']->quantity,
-				// 				'unserved_qty'    =>  $reorder
-				// 			]);	
-				// 			AssetsSuppliesInventory::where('digits_code', $fBodyVal['digits_code'])
-				// 			->update([
-				// 				'quantity'   =>  0,
-				// 			]);	
-				// 	    }
-				// 		$finalContData[] = $containerData;
-				// 	}
-			    // }
+				for ($i = 0; $i < count($body_ids); $i++) {
+					BodyRequest::where('id', $body_ids[$i])
+					->update([
+						'wh_qty'=> 		$wh_qty[$i],
+					]);	
+		    	}
+
+				if(in_array($arf_header->request_type_id, [7])){
+					//Get the inventory value per digits code
+					$arraySearch = DB::table('assets_supplies_inventory')->select('*')->get()->toArray();
+				
+					$finalBodyValue = [];
+					foreach($arf_body as $bodyfKey => $bodyVal){
+						$i = array_search($bodyVal['digits_code'], array_column($arraySearch,'digits_code'));
+						if($i !== false){
+							$bodyVal['inv_value'] = $arraySearch[$i];
+							$finalBodyValue[] = $bodyVal;
+						}else{
+							$bodyVal['inv_value'] = "";
+							$finalBodyValue[] = $bodyVal;
+						}
+					}
+
+					//Set data in each qty
+					$containerData = [];
+					$finalContData = [];
+					foreach($finalBodyValue as $fBodyKey => $fBodyVal){
+                        if($fBodyVal['inv_value']->quantity > $fBodyVal['quantity']){
+							//less quantity in inventory
+							BodyRequest::where('id', $fBodyVal['id'])
+							->update([
+								'replenish_qty'      =>  $fBodyVal['quantity'],
+								'reorder_qty'        =>  NULL,
+								'serve_qty'          =>  NULL,
+								'unserved_qty'       =>  $fBodyVal['quantity'],
+								'unserved_rep_qty'   =>  $fBodyVal['quantity'],
+								'unserved_ro_qty'    =>  NULL
+							]);	
+							DB::table('assets_supplies_inventory')
+							->where('digits_code', $fBodyVal['digits_code'])
+							->decrement('quantity', $fBodyVal['quantity']);
+						}else{
+							$reorder = $fBodyVal['quantity'] - $fBodyVal['inv_value']->quantity;
+							$containerData['serve_qty']     = $fBodyVal['inv_value']->quantity;  
+							$containerData['unserve_qty']   = $containerData['reorder_qty'];
+							BodyRequest::where('id', $fBodyVal['id'])
+							->update([
+								'replenish_qty'      =>  $fBodyVal['inv_value']->quantity,
+								'reorder_qty'        =>  $reorder,
+								'serve_qty'          =>  NULL,
+								'unserved_qty'       =>  $fBodyVal['quantity'],
+								'unserved_rep_qty'   =>  $fBodyVal['inv_value']->quantity,
+								'unserved_ro_qty'    =>  $reorder
+							]);	
+							AssetsSuppliesInventory::where('digits_code', $fBodyVal['digits_code'])
+							->update([
+								'quantity'   =>  0,
+							]);	
+					    }
+						$finalContData[] = $containerData;
+					}
+			    }
 
 			}else{
 
@@ -485,13 +501,16 @@
 
 			$arf_header = HeaderRequest::where(['id' => $id])->first();
 
-			$approved =  		DB::table('statuses')->where('id', 4)->value('id');
-			$rejected =  		DB::table('statuses')->where('id', 5)->value('id');
-			$for_tagging =  	DB::table('statuses')->where('id', 7)->value('id');
+			$approved       =  DB::table('statuses')->where('id', 4)->value('id');
+			$rejected       =  DB::table('statuses')->where('id', 5)->value('id');
+			$for_tagging    =  DB::table('statuses')->where('id', 7)->value('id');
+			$for_move_order =  DB::table('statuses')->where('id', 14)->value('id');
 
 			if($arf_header->status_id  == $approved){
 				CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_petty_cash_approve_success",['reference_number'=>$arf_header->reference_number]), 'info');
 			}elseif($arf_header->status_id  == $for_tagging){
+				CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_petty_cash_approve_success",['reference_number'=>$arf_header->reference_number]), 'info');
+			}elseif($arf_header->status_id  == $for_move_order){
 				CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_petty_cash_approve_success",['reference_number'=>$arf_header->reference_number]), 'info');
 			}else{
 				CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_petty_cash_reject_success",['reference_number'=>$arf_header->reference_number]), 'danger');
@@ -567,9 +586,10 @@
 						)
 				->where('header_request.id', $id)->first();
 
-			$data['Body'] = BodyRequest::
-				select(
-				  'body_request.*'
+			$data['Body'] = BodyRequest::leftjoin('assets_supplies_inventory', 'body_request.digits_code','=', 'assets_supplies_inventory.digits_code')
+				->select(
+				  'body_request.*',
+				  'assets_supplies_inventory.quantity as wh_qty'
 				)
 				->where('body_request.header_request_id', $id)
 				->whereNull('deleted_at')

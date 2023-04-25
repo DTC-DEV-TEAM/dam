@@ -71,4 +71,13 @@ class ItemHeaderSourcing extends Model
         ->where('item_sourcing_header.id', $id)->first();
 
     }
+
+    public function scopeHeaderInfo($query,$id){
+        return $query
+        ->leftjoin('cms_users as employees', 'item_sourcing_header.employee_name', '=', 'employees.id')
+        ->leftjoin('companies', 'item_sourcing_header.company_name', '=', 'companies.id')
+        ->leftjoin('departments', 'item_sourcing_header.department', '=', 'departments.id')
+        ->leftjoin('statuses', 'item_sourcing_header.status_id', '=', 'statuses.id')
+        ->where('item_sourcing_header.id',$id)->first();
+    }
 }

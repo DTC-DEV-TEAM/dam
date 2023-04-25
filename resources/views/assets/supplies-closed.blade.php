@@ -45,7 +45,7 @@
 @endif
 <div class='panel panel-default'>
     <div class='panel-heading'>
-        Detail Form
+        Detail Form (<span style="color:red">Kindly close the transaction within 15 days after you received the request</span>)
     </div>
 
     <form method='post' id="myform" action='{{CRUDBooster::mainpath('edit-save/'.$Header->requestid)}}'>
@@ -219,9 +219,6 @@
                                                 <th width="24%" class="text-center">{{ trans('message.table.reco_item_description_text') }}</th>
                                             @endif 
 
-                                            @if($Header->approved_by == null || $Header->approved_by == "")
-                                                <th width="5%" class="text-center">{{ trans('message.table.action') }}</th>
-                                            @endif 
                                         </tr>
                                         <tr id="tr-table">
                                             <?php   $tableRow = 1; ?>
@@ -274,12 +271,7 @@
                                                                         {{$rowresult->reco_item_description}}
                                                                     </td>
                                                                 @endif
-                                                                <td  style="text-align:center; color:#fff"><i class="fa fa-times-circle"></i></td>
-                                                                <!-- @if($Header->closed_by == null)
-                                                                    <td style="text-align:center">
-                                                                        <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow btn-sm" disabled><i class="fa fa-trash"></i></button>
-                                                                    </td>   
-                                                                @endif               -->
+                                                          
                                                             </tr>
                                                         @else
                                                             <tr>
@@ -324,13 +316,7 @@
                                                                         {{$rowresult->reco_item_description}}
                                                                     </td>
                                                                 @endif
-                                                        
-                                                                @if($Header->status_id == 1)    
-                                                                        <td style="text-align:center" height="10">
-                                                                            <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow btn-sm" data-toggle="tooltip" data-placement="bottom" title="Cancel"><i class="fa fa-trash"></i></button>
-                                                                        </td>
-                                                                @endif
-                                                                                        
+                                                                                                                                         
                                                             </tr>
                                                         @endif
                                                     
@@ -363,98 +349,12 @@
                 </div>
             @endif 
            
-
-            @if( $MoveOrder->count() != 0 )
-            <hr>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="box-header text-center">
-                            <h3 class="box-title"><b>Item Mo Details</b></h3>
-                        </div>
-                        <div class="box-body no-padding">
-                            <div class="pic-container">
-                                <div class="pic-row">
-                                    <table id="asset-items">
-                                        <tbody>
-                                            <tr class="tbl_header_color dynamicRows">
-                                                <th width="10%" class="text-center">{{ trans('message.table.mo_reference_number') }}</th>
-                                                <th width="13%" class="text-center">{{ trans('message.table.status_id') }}</th>
-                                                <th width="10%" class="text-center">{{ trans('message.table.digits_code') }}</th>
-                                                <th width="10%" class="text-center">{{ trans('message.table.asset_tag') }}</th>
-                                                <th width="26%" class="text-center">{{ trans('message.table.item_description') }}</th>
-                                                <th width="13%" class="text-center">{{ trans('message.table.serial_no') }}</th>
-                                                <th width="4%" class="text-center">{{ trans('message.table.item_quantity') }}</th>
-                                                <th width="8%" class="text-center">{{ trans('message.table.item_cost') }}</th>
-                                                <th width="16%" class="text-center">{{ trans('message.table.item_total_cost') }}</th>         
-                                            </tr>
-                                            <?php   $tableRow1 = 0; ?>
-                                            @if( !empty($MoveOrder) )
-                                                @foreach($MoveOrder as $rowresult)
-                                                    <?php   $tableRow1++; ?>
-                                                    <tr>
-                                                        <td style="text-align:center" height="10">
-
-                                                                        <input type="hidden" value="{{$rowresult->id}}" name="item_id[]">
-
-                                                                        {{$rowresult->mo_reference_number}}
-                                                                        
-                                                        </td>
-                                                        <td style="text-align:center" height="10">
-
-                                                                        <label style="color: #3c8dbc;">
-                                                                            {{$rowresult->status_description}}
-                                                                        </label>
-                                                                    
-
-                                                        </td>
-                                                        <td style="text-align:center" height="10">
-                                                                        {{$rowresult->digits_code}}
-                                                        </td>
-                                                        <td style="text-align:center" height="10">
-                                                                        {{$rowresult->asset_code}}
-                                                        </td>
-                                                        <td style="text-align:center" height="10">
-                                                                        {{$rowresult->item_description}}
-                                                        </td>
-                                                        <td style="text-align:center" height="10">
-                                                                        {{$rowresult->serial_no}}
-                                                        </td>
-                                                        <td style="text-align:center" height="10" class="mo_qty">
-                                                                        {{$rowresult->quantity}}
-                                                        </td>
-                                                        <td style="text-align:center" height="10" class="mo_unit_cost">
-                                                                        {{$rowresult->unit_cost}}
-                                                        </td>
-                                                        <td style="text-align:center" height="10" class="mo_total_cost">
-                                                                        {{$rowresult->total_unit_cost}}
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            @endif       
-                                            {{-- <tr class="tableInfo">
-                                                <td colspan="6" align="right"><strong>{{ trans('message.table.total') }}</strong></td>
-                                                <td align="center">
-                                                    <label>{{$Header->quantity_total}}</label>
-                                                </td>
-                                                <td colspan="1"></td>
-                                            </tr> --}}
-    
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>         
-                        </div>
-                    </div>
-                </div> 
-            @endif
-            <hr>
             <br>
             @if( $Header->processedby != null )
                 <div class="row">
                     <div class="col-md-6">
                         <table style="width:100%">
                             <tbody id="footer">
-                                @if($Header->request_type_id == 1 || $Header->request_type_id == 5)
                                 <tr>
                                     <th class="control-label col-md-2">{{ trans('message.form-label.po_number') }}:</th>
                                     <td class="col-md-4">{{$Header->po_number}}</td>     
@@ -469,7 +369,6 @@
                                     <th class="control-label col-md-2">{{ trans('message.form-label.quote_date') }}:</th>
                                     <td class="col-md-4">{{$Header->quote_date}}</td>
                                 </tr>
-                                @endif
                                 @if( $Header->processedby != null )
                                     <tr>
                                         <th class="control-label col-md-2">{{ trans('message.form-label.processed_by') }}:</th>
@@ -517,7 +416,7 @@
         <div class='panel-footer'>
 
             <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.back') }}</a>
-
+            <button class="btn btn-success pull-right" type="submit" id="btnEditSubmit"> Receive</button>
         </div>
 
     </form>
@@ -540,85 +439,26 @@
     };
     setTimeout("preventBack()", 0);
 
-    $('#btnSubmit').click(function() {
-
-        var strconfirm = confirm("Are you sure you want to close this request?");
-        if (strconfirm == true) {
-
-            $(this).attr('disabled','disabled');
-
-            $('#myform').submit(); 
-            
-        }else{
-            return false;
-            window.stop();
-        }
-
+    $('#btnEditSubmit').click(function() {
+        event.preventDefault();
+        swal({
+            title: "Are you sure?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#41B314",
+            cancelButtonColor: "#F9354C",
+            confirmButtonText: "Yes, receive it!",
+            width: 450,
+            height: 200
+            }, function () {
+                $(this).attr('disabled','disabled');
+                $('#myform').submit();                                                  
+        });
     });
 
     var tableRow = <?php echo json_encode($tableRow); ?>;
-
-    $(document).ready(function() {
-            $(document).on('click', '.removeRow', function() {
-                
-                event.preventDefault();
-                if ($('#asset-items1 tbody tr').length != 1) { //check if not the first row then delete the other rows
-                var id_data = $(this).attr("data-id");    
-                $("#quantity_total").val(calculateTotalQuantity($("#quantity"+id_data).val()));
-                item_id = $("#ids"+id_data).val();
-                $("#bodyID").val(item_id);
-                var data = $('#myform').serialize();
-                swal({
-                    title: "Are you sure?",
-                    type: "warning",
-                    text: "You won't be able to revert this!",
-                    showCancelButton: true,
-                    confirmButtonColor: "#41B314",
-                    cancelButtonColor: "#F9354C",
-                    confirmButtonText: "Yes, cancel it!"
-                    }, function () {
-                    $.ajax
-                        ({ 
-                            url:  '{{ url('admin/header_request/RemoveItem') }}',
-                            type: "GET",
-                            data: data,
-                            success: function(data){    
-                                if (data.status == "success") {
-                                    swal({
-                                        type: data.status,
-                                        title: data.message,
-                                    });
-                                    setTimeout(function(){
-                                        window.location.replace(document.referrer);
-                                    }, 1000); 
-                                    } else if (data.status == "error") {
-                                    swal({
-                                        type: data.status,
-                                        title: data.message,
-                                    });
-                                }
-                            }
-                        });                            
-                    });
-                    $("#deleteRow"+id_data).attr('disabled', true);
-                    tableRow--;
-                    $(this).closest('tr').addClass("strikeout" );
-                    $(this).closest('tr').css('color','black'); 
-                    return false;   
-               }
-            });
-    });
-
-        function calculateTotalQuantity(...body_qty) {
-            var totalQuantity = 0;  
-            $('.quantity_item').each(function() {
-             totalQuantity = parseInt($("#quantity_total").val()) - parseInt(body_qty);
-            });
-            return totalQuantity;
     
-        }
-    
-        if($('#request_type_id').val() == 1 || $('#request_type_id').val() == 5){
+        if($('#request_type_id').val() == 1){
             var tds = document
             .getElementById("asset-items1")
             .getElementsByTagName("td");
@@ -648,14 +488,18 @@
             }
             document.getElementById("asset-items1").innerHTML +=
             "<tr>"+
-                "<td colspan='4' style='text-align:right;border:none'>"+
+                "<td colspan='4' style='text-align:right'>"+
                         "<strong>TOTAL</strong>"+
                     "</td>"+
                     
-                    "<td style='text-align:center;border:none'>"+
+                    "<td style='text-align:center'>"+
                         "<strong>" +
                         sumqty +
                         "</strong>"+
+                    "</td>"+
+
+                    "<td style='text-align:center'>"+
+                    
                     "</td>"+
                     
             "</tr>";
@@ -728,48 +572,10 @@
                     "</td>"+
                     "<td style='text-align:center'>"+
                     "</td>"+
-                    "<td colspan='2' style='text-align:center'>"+
+                    "<td style='text-align:center'>"+
                     "</td>"+
-                   
             "</tr>";
         }
-
-        var tds = document.getElementById("asset-items").getElementsByTagName("td");
-        var moQty        = 0;
-        var moUnitCost   = 0;
-        var moTotalCost  = 0;
-
-        for (var i = 0; i < tds.length; i++) {
-            if(tds[i].className == "mo_qty") {
-                moQty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-            }else if(tds[i].className == "mo_unit_cost"){
-                moUnitCost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-            }else if(tds[i].className == "mo_total_cost"){
-                moTotalCost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-            }
-        }
-        document.getElementById("asset-items").innerHTML +=
-        "<tr>"+
-            "<td colspan='6' style='text-align:right'>"+
-                    "<strong>TOTAL</strong>"+
-                "</td>"+
-                
-                "<td style='text-align:center'>"+
-                    "<strong>" +
-                        moQty +
-                    "</strong>"+
-                "</td>"+
-                "<td style='text-align:center'>"+
-                    "<strong>" +
-                        moUnitCost +
-                    "</strong>"+
-                "</td>"+
-                "<td style='text-align:center'>"+
-                    "<strong>" +
-                        moTotalCost +
-                    "</strong>"+
-                "</td>"+       
-        "</tr>";
        
         
 </script>
