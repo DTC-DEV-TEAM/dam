@@ -189,6 +189,7 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/item-sourcing-header/create-arf','AdminItemSourcingHeaderController@createArf')->name('create-arf');
     Route::get('admin/item-sourcing-header/RemoveItemSource','AdminItemSourcingHeaderController@RemoveItemSource');
     Route::get('admin/item-sourcing-header/SelectedOption','AdminItemSourcingHeaderController@SelectedOption');
+    Route::get('admin/item-sourcing-header/selectedAlternativeOption','AdminItemSourcingHeaderController@selectedAlternativeOption');
     Route::get('admin/item-sourcing-header/getRequestCancelNis/{id}','AdminItemSourcingHeaderController@getRequestCancelNis')->name('getRequestCancelNis');
     Route::post(config('crudbooster.ADMIN_PATH').'/item-sourcing-header/sub-categories','AdminItemSourcingHeaderController@SubCategories')->name('item.source.sub.categories');
     Route::post(config('crudbooster.ADMIN_PATH').'/item-sourcing-header/class','AdminItemSourcingHeaderController@Class')->name('item.source.class.categories');
@@ -196,6 +197,8 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/item-sourcing-header/save-message','AdminItemSourcingHeaderController@saveMessage')->name('save-message');
     Route::post(config('crudbooster.ADMIN_PATH').'/item-sourcing-header/edit-item-source','AdminItemSourcingHeaderController@editItemSource')->name('edit-item-source');
     Route::get(config('crudbooster.ADMIN_PATH').'/item-sourcing-header/get-versions','AdminItemSourcingHeaderController@getVersions')->name('get-versions');
+
+    Route::get('admin/item_sourcing_for_quotation/addDigitsCode','AdminItemSourcingForQuotationController@addDigitsCode');
     //view and edit
     Route::get('admin/item-sourcing-header/getDetail/{id}','AdminItemSourcingHeaderController@getDetail')->name('getDetail');
     Route::get('admin/item-sourcing-header/getDetailReject/{id}','AdminItemSourcingHeaderController@getDetailReject')->name('getDetailReject');

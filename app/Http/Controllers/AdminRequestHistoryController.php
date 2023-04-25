@@ -353,7 +353,7 @@
 
 			}else if(in_array(CRUDBooster::myPrivilegeId(), [18,19])){ 
 
-				$query->where('header_request.request_type_id', 7)->where('header_request.closed_by', CRUDBooster::myId())->orWhere('header_request.picked_by', CRUDBooster::myId())->whereNull('header_request.deleted_at')->orderBy('header_request.status_id', 'asc')->orderBy('header_request.id', 'DESC');
+				$query->where('header_request.request_type_id', 7)->where('header_request.purchased2_by', CRUDBooster::myId())->orWhere('header_request.picked_by', CRUDBooster::myId())->whereNull('header_request.deleted_at')->orderBy('header_request.status_id', 'asc')->orderBy('header_request.id', 'DESC');
 
 			}
 	            

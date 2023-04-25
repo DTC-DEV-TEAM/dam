@@ -22,6 +22,7 @@ class SuppliesInventoryImport implements ToCollection, WithHeadingRow
      */
     public function collection(Collection $rows)
     {
+        $updateToZero = DB::table('assets_supplies_inventory')->update(['quantity' => 0]);
         foreach ($rows->toArray() as $key => $row){
             $item 	                    = DB::table('assets')->where(['digits_code' => $row['digits_code']])->first();
             $checkRowDbDigitsCode       = DB::table('assets')->select("digits_code AS codes")->get()->toArray();
@@ -30,16 +31,14 @@ class SuppliesInventoryImport implements ToCollection, WithHeadingRow
             if(!in_array($row['digits_code'], $checkRowDbColumnDigitsCode)){
                 return CRUDBooster::redirect(CRUDBooster::mainpath(),"Digits Code not exist in Item Master: ".($key+2),"danger");
             }
-            
+
             $save = AssetsSuppliesInventory::updateOrcreate([
                 'digits_code'      => $row['digits_code'] 
             ],
             [
                 'digits_code'      => $row['digits_code'],
                 'description'      => $item->item_description,
-                'quantity'         => DB::raw("IF(quantity IS NULL, '".(int)$row['quantity']."', quantity + '".(int)$row['quantity']."')"), 
-   
-
+                'quantity'         => $row['quantity']
             ]);
 
             if ($save->wasRecentlyCreated) {

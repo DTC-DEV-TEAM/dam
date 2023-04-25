@@ -1,66 +1,68 @@
 <?php namespace App\Http\Controllers;
 
 	use Session;
-	//use Request;
+	use Request;
 	use DB;
 	use CRUDBooster;
-	use Excel;
-	use Illuminate\Http\Request;
-	use Illuminate\Support\Facades\Input;
-	use Illuminate\Support\Facades\Log;
-	use Illuminate\Support\Facades\Redirect;
-	use Maatwebsite\Excel\HeadingRowImport;
-	use App\Imports\SuppliesInventoryImport;
-	use PhpOffice\PhpSpreadsheet\Spreadsheet;
-	use PhpOffice\PhpSpreadsheet\Reader\Exception;
-	use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-	use PhpOffice\PhpSpreadsheet\IOFactory;
+	use App\HeaderRequest;
+	use App\BodyRequest;
+	use App\ApprovalMatrix;
+	use App\StatusMatrix;
+	use App\GeneratedAssetsHistories;
+	use App\AssetsInventoryHeader;
+	use App\AssetsHeaderImages;
+	use App\AssetsInventoryBody;
 
-	class AdminAssetsSuppliesInventoryController extends \crocodicstudio\crudbooster\controllers\CBController {
-
+	class AdminSuppliesReceivingController extends \crocodicstudio\crudbooster\controllers\CBController {
+		private $forClosing;
+		public function __construct() {
+			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
+			$this->forClosing      =  19;    
+		
+		
+		}
 	    public function cbInit() {
 
 			# START CONFIGURATION DO NOT REMOVE THIS LINE
-			$this->title_field = "id";
+			$this->title_field = "employee_name";
 			$this->limit = "20";
 			$this->orderby = "id,desc";
 			$this->global_privilege = false;
 			$this->button_table_action = true;
-			$this->button_bulk_action = false;
+			$this->button_bulk_action = true;
 			$this->button_action_style = "button_icon";
-			$this->button_add = false;
+			$this->button_add = true;
 			$this->button_edit = true;
 			$this->button_delete = false;
-			$this->button_detail = true;
+			$this->button_detail = false;
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
 			$this->button_export = false;
-			$this->table = "assets_supplies_inventory";
+			$this->table = "header_request";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Digits Code","name"=>"digits_code"];
-			$this->col[] = ["label"=>"Description","name"=>"description"];
-			$this->col[] = ["label"=>"Quantity","name"=>"quantity"];
-			$this->col[] = ["label"=>"Status","name"=>"status"];
-			$this->col[] = ["label"=>"Created By","name"=>"created_by", "join" => "cms_users,name"];
-			$this->col[] = ["label"=>"Created At","name"=>"created_at"];
-			$this->col[] = ["label"=>"Updated By","name"=>"updated_by", "join" => "cms_users,name"];
-			$this->col[] = ["label"=>"Updated At","name"=>"updated_at"];
+			$this->col[] = ["label"=>"Status","name"=>"status_id","join"=>"statuses,status_description"];
+			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
+			$this->col[] = ["label"=>"Request Type","name"=>"request_type_id","join"=>"requests,request_name"];
+			$this->col[] = ["label"=>"Company Name","name"=>"company_name"];
+			$this->col[] = ["label"=>"Employee Name","name"=>"employee_name","join"=>"cms_users,bill_to"];
+			$this->col[] = ["label"=>"Department","name"=>"department","join"=>"departments,department_name"];
+			$this->col[] = ["label"=>"Requested By","name"=>"created_by","join"=>"cms_users,name"];
+			$this->col[] = ["label"=>"Requested Date","name"=>"created_at"];
+			//$this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
+			//$this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
+
+			$this->col[] = ["label"=>"Approved By","name"=>"approved_by","join"=>"cms_users,name"];
+			$this->col[] = ["label"=>"Approved Date","name"=>"approved_at"];
+			$this->col[] = ["label"=>"Rejected Date","name"=>"rejected_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			if(CRUDBooster::getCurrentMethod() == 'getEdit' || CRUDBooster::getCurrentMethod() == 'postEditSave' || CRUDBooster::getCurrentMethod() == 'getDetail') {
-				$this->form[] = ['label'=>'Digits Code','name'=>'digits_code','type'=>'text','validation'=>'required|integer|min:0','width'=>'col-sm-5','readonly'=>true];
-			}else{
-				$this->form[] = ['label'=>'Digits Code','name'=>'digits_code','type'=>'select','datatable'=>'assets,digits_code','validation'=>'required|integer|min:0','width'=>'col-sm-5'];
-			}
-			
-			$this->form[] = ['label'=>'Description','name'=>'description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
-			$this->form[] = ['label'=>'Quantity','name'=>'quantity','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-5'];
+
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
@@ -131,11 +133,7 @@
 	        | 
 	        */
 	        $this->index_button = array();
-			if(CRUDBooster::getCurrentMethod() == 'getIndex') {
-				$this->index_button[] = ["label"=>"Add Data","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-supplies-inventory'),"color"=>"success"];
-				$this->index_button[] = ["label"=>"Upload Inventory","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('supplies-inventory-upload')];
-				// $this->index_button[] = ["label"=>"Consolidation","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('conso-export')];
-			 }
+
 
 
 	        /* 
@@ -255,7 +253,26 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-	        //Your code here
+	        if(CRUDBooster::isSuperadmin()){
+				$query->whereNull('header_request.deleted_at')
+					  ->orderBy('header_request.status_id', 'ASC')
+					  ->orderBy('header_request.id', 'DESC');
+
+			}else{
+
+				$user = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
+
+				$query->where(function($sub_query){
+					$user = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
+					$sub_query->where('header_request.created_by', CRUDBooster::myId())
+					          ->where('header_request.status_id', $this->forClosing)
+	                          ->whereNull('header_request.deleted_at')
+							  ->where('header_request.request_type_id',7); 
+				});
+
+				$query->orderBy('header_request.status_id', 'asc')->orderBy('header_request.id', 'DESC');
+				//$query->orderByRaw('FIELD( header_request.status_id, "For Approval")');
+			}
 	            
 	    }
 
@@ -265,8 +282,11 @@
 	    | ---------------------------------------------------------------------- 
 	    |
 	    */    
-	    public function hook_row_index($column_index,&$column_value) {	        
-	    	//Your code here
+	    public function hook_row_index($column_index,&$column_value) {	
+			$for_closing      = DB::table('statuses')->where('id', $this->forClosing)->value('status_description');        
+	    	if($column_value == $for_closing){
+				$column_value = '<span class="label label-info">'.$for_closing.'</span>';
+			}
 	    }
 
 	    /*
@@ -276,9 +296,8 @@
 	    | @arr
 	    |
 	    */
-	    public function hook_before_add(&$postdata) {       
-			dd($postdata); 
-			$postdata['created_by']=CRUDBooster::myId();
+	    public function hook_before_add(&$postdata) {        
+	        //Your code here
 
 	    }
 
@@ -303,7 +322,15 @@
 	    | 
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
-			$postdata['updated_by']=CRUDBooster::myId();
+	
+			HeaderRequest::where('id',$id)
+				->update([
+						'closing_plug'=> 1,
+						'status_id'=> 13,
+						'closed_by'=> CRUDBooster::myId(),
+						'closed_at'=> date('Y-m-d H:i:s'),
+	
+				]);	
 
 	    }
 
@@ -343,50 +370,80 @@
 
 	    }
 
-		 //By the way, you can still create your own method in here... :) 
-		 public function getAddSuppliesInventory() {
-
-			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
-				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
-			}
-
+		public function getEdit($id){
+			
 			$this->cbLoader();
-			$data['page_title'] = 'Add Supplies Inventory';
-			$data['digits_code'] = DB::table('assets')->where('category_id', 2)->get();
-			return $this->view("inventory-supplies.add-supplies-inventory", $data);
+            if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
+                CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+            }
+
+			$data = array();
+
+			$data['page_title'] = 'View Request';
+
+			$data['Header'] = HeaderRequest::
+				  leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
+				->leftjoin('condition_type', 'header_request.conditions', '=', 'condition_type.id')
+				->leftjoin('cms_users as employees', 'header_request.employee_name', '=', 'employees.id')
+				->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
+				->leftjoin('departments', 'header_request.department', '=', 'departments.id')
+				->leftjoin('locations', 'employees.location_id', '=', 'locations.id')
+				->leftjoin('cms_users as requested', 'header_request.created_by','=', 'requested.id')
+				->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
+				->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
+				->leftjoin('cms_users as processed', 'header_request.purchased2_by','=', 'processed.id')
+				->leftjoin('cms_users as picked', 'header_request.picked_by','=', 'picked.id')
+				->leftjoin('cms_users as received', 'header_request.received_by','=', 'received.id')
+				->leftjoin('cms_users as closed', 'header_request.closed_by','=', 'closed.id')
+				->select(
+						'header_request.*',
+						'header_request.id as requestid',
+						'header_request.created_at as created',
+						'request_type.*',
+						'condition_type.*',
+						'requested.name as requestedby',
+						'employees.bill_to as employee_name',
+						'header_request.employee_name as header_emp_name',
+						'header_request.created_by as header_created_by',
+						//'employees.company_name_id as company_name',
+						'departments.department_name as department',
+						'locations.store_name as store_branch',
+						'approved.name as approvedby',
+						'recommended.name as recommendedby',
+						'picked.name as pickedby',
+						'received.name as receivedby',
+						'processed.name as processedby',
+						'closed.name as closedby',
+						'header_request.created_at as created_at'
+						)
+				->where('header_request.id', $id)->first();
 		
+			$data['Body'] = BodyRequest::
+				select(
+				  'body_request.*'
+				)
+				->where('body_request.header_request_id', $id)
+				->get();
+
+			$data['Body1'] = BodyRequest::
+				select(
+				  'body_request.*'
+				)
+				->where('body_request.header_request_id', $id)
+				->wherenotnull('body_request.digits_code')
+				->orderby('body_request.id', 'desc')
+				->get();
+
+			$data['BodyReco'] = DB::table('recommendation_request')
+				->select(
+				  'recommendation_request.*'
+				)
+				->where('recommendation_request.header_request_id', $id)
+				->get();				
+
+			$data['recommendations'] = DB::table('recommendations')->where('status', 'ACTIVE')->get();		
+			return $this->view("assets.supplies-closed", $data);
 		}
 
-		public function UploadSuppliesInventory() {
-			$data['page_title']= 'Assets Supplies Inventory Upload';
-			return view('import.asset-supplies-upload', $data)->render();
-		}
-
-		public function SuppliesInventoryUpload(Request $request) {
-			$path_excel = $request->file('import_file')->store('temp');
-			$path = storage_path('app').'/'.$path_excel;
-			Excel::import(new SuppliesInventoryImport, $path);	
-			CRUDBooster::redirect(CRUDBooster::adminpath('assets_supplies_inventory'), trans("Upload Successfully!"), 'success');
-		}
-
-		function downloadSuppliesInventoryTemplate() {
-			$arrHeader = [
-				"digits_code"        => "digits_code",
-				"quantity"           => "quantity"
-			];
-			$arrData = [
-				"digits_code"        => "40000054",
-				"quantity"           => "1"
-			];
-			$spreadsheet = new Spreadsheet();
-			$spreadsheet->getActiveSheet()->fromArray(array_values($arrHeader), null, 'A1');
-			$spreadsheet->getActiveSheet()->fromArray($arrData, null, 'A2');
-			$filename = "supplies-inventory";
-			header('Content-Type: application/vnd.ms-excel');
-			header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"');
-			header('Cache-Control: max-age=0');
-			$writer = new Xlsx($spreadsheet);
-			$writer->save('php://output');
-		}	
 
 	}

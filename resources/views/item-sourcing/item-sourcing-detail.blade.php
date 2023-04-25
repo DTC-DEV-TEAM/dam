@@ -29,41 +29,19 @@
                 border:none;
                 background-color:#d4edda
             }
+            .selectedAlternative {
+                border:none;
+                background-color:#f0ad4e
+            }
             .green-color {
                 color:green;
                 margin-top:12px;
             }
 
-            table { border-collapse: collapse; empty-cells: show; }
-
-            td { position: relative; }
-
-            tr.strikeout td:before {
-            content: " ";
-            position: absolute;
-            top: 50%;
-            left: 0;
-            border-bottom: 1px solid #111;
-            width: 100%;
+            .checkbox label::before {
+             border: 1px solid #111111 !important;
             }
 
-            tr.strikeout td:after {
-            content: "\00B7";
-            font-size: 1px;
-            }
-
-            /* Extra styling */
-            td { width: 100px; }
-            th { text-align: left; }
-
-            /* .btn-circle.btn-sm {
-                width: 30px;
-                height: 30px;
-                padding: 6px 0px;
-                border-radius: 15px;
-                text-align: center;
-            } */
-     
         </style>
     @endpush
 @section('content')
@@ -268,16 +246,16 @@
                                 <th class="text-center">Vendor Name</th>
                                 <th class="text-center">Price</th> 
                                 <th class="text-center">Quotation</th> 
-                                <th width="5%" class="text-center"><i class="fa fa-check-circle text-success"></i></th>
-                                <th width="5%" class="text-center"><i class="fa fa-check-circle text-warning"></i></th>
+                                <th width="5%" class="text-center"><i class="fa fa-check-circle text-success"></i></th>        
                                 <th width="5%" class="text-center"><i class="fa fa-times-circle text-danger"></i></th>
+                                <th width="5%" class="text-center"><i class="fa fa-check-circle text-warning"></i></th>
                             </tr>  
               
                            @if($item_options->isNotEmpty())                                              
                                 <?php   $tableRow = 1; ?>
                                 @foreach($item_options as $res)
                                     <?php   $tableRow1++; ?>
-                                        @if($res->deleted_at != null || $res->deleted_at != "")
+                                        @if($res->deleted_at != null && $res->selected_alternative_at == null)
                                         <input type="hidden"  class="form-control"  name="opt_id" id="opt_id"  required  value="{{$res->optId}}" readonly>  
                                         <tr style="background-color: #dd4b39; color:#fff">                                    
                                             <td style="text-align:center" height="10">
@@ -292,9 +270,21 @@
                                             <td style="text-align:center" height="10">
                                                 {{$res->file_name}}                              
                                             </td>
-                                            <td colspan="3" style="text-align:center; color:white">
+                                            <td style="text-align:center" height="10">
+
+                                            </td>
+                                            <td style="text-align:center; color:white">
                                                 <i data-toggle="tooltip" data-placement="right" title="Cancelled" class="fa fa-times-circle"></i>
-                                            </td>   
+                                            </td> 
+                                            <td>
+                                                @if($Header->closed_at === null || $Header->closed_at === "")
+                                                {{-- <button type="button" data-toggle="tooltip" data-placement="right" title="Cancel" id="deleteRow" name="removeRow" data-id="' + tableRow + '" class="btn btn-danger btn-circle btn-sm removeRow" value="{{$res->optId}}"><i class="glyphicon glyphicon-remove-sign"></i></button> --}}
+                                                <div style="margin-left:10px" class="checkbox checkbox-warning checkbox-circle" data-toggle="tooltip" data-placement="bottom" title="Select as alternative">
+                                                    <input type="checkbox" id="chkWarning selected_alternative" class="selectAlternative" name="selectAlternative" value="{{$res->optId}}" />
+                                                    <label for="chkWarning"></label>
+                                                </div>
+                                                @endif
+                                            </td>
                                                                         
                                         </tr>
                                     @elseif($res->selected_at != null || $res->selected_at != "")
@@ -315,29 +305,8 @@
                                                 <i data-toggle="tooltip" data-placement="right" title="Selected" class="fa fa-check-circle text-success"></i>
                                             </td>                               
                                         </tr>
-                                    @elseif($Header->if_selected != null && $Header->if_selected_alternative != null)
-                                        <tr>                                    
-                                            <td style="text-align:center" height="10">
-                                                {{$res->options}}                               
-                                            </td>
-                                            <td style="text-align:center" height="10">
-                                                {{$res->vendor_name}}                               
-                                            </td>
-                                            <td style="text-align:center" height="10">
-                                                {{number_format($res->price, 2, '.', ',')}}                               
-                                            </td>
-                                            <td style="text-align:center" height="10">
-                                                {{$res->file_name}}                              
-                                            </td>
-                                            <td colspan="2"  style="text-align:center;">
-                                               
-                                            </td>     
-                                            {{-- <td>
-                                                <a class="word" href="//docs.google.com/gview?url={{asset('vendor/crudbooster/item_source/'.$res->file_name)}}&embedded=true">Open a Word document in Fancybox</a>
-                                            </td>                                                                                       --}}
-                                        </tr>
-                                    @elseif($Header->if_selected_alternative != null)
-                                        <tr style="background-color: #d4edda; color:#f0ad4e">                                    
+                                    @elseif($res->selected_alternative_at != null && $res->deleted_at != null)
+                                        <tr style="background-color: #f0ad4e; color:#fff">                                    
                                             <td style="text-align:center" height="10">
                                                 {{$res->options}}                               
                                             </td>
@@ -348,10 +317,10 @@
                                                 {{number_format($res->price, 2, '.', ',')}}                               
                                             </td>
                                             <td style="text-align:center;" height="10">
-                                                <a  href='{{CRUDBooster::adminpath("item_sourcing_for_quotation/download/".$res->file_id)."?return_url=".urlencode(Request::fullUrl())}}' class="form-control selected">{{$res->file_name}}   <i style="color:#007bff" class="fa fa-download"></i></a>                             
+                                                <a style="color:#fff" href='{{CRUDBooster::adminpath("item_sourcing_for_quotation/download/".$res->file_id)."?return_url=".urlencode(Request::fullUrl())}}' class="form-control selectedAlternative">{{$res->file_name}}   <i style="color:#007bff" class="fa fa-download"></i></a>                             
                                             </td>
                                             <td colspan="3"  style="text-align:center;">
-                                                <i data-toggle="tooltip" data-placement="right" title="Selected" class="fa fa-check-circle text-warning"></i>
+                                                <i data-toggle="tooltip" data-placement="right" title="Selected Alternative" class="fa fa-check-circle text-white"></i>
                                             </td>                               
                                         </tr>
                                     @else
@@ -371,7 +340,7 @@
                                             </td>
                                             <td>
                                                 @if($Header->closed_at === null || $Header->closed_at === "")
-                                                <div style="margin-left:10px" class="checkbox checkbox-success checkbox-circle" data-toggle="tooltip" data-placement="bottom" title="Selected">
+                                                <div style="margin-left:9px;" class="checkbox checkbox-success checkbox-circle" data-toggle="tooltip" data-placement="bottom" title="Selected">
                                                     <input  type="checkbox" id="chkSuccess" class="checkbox3" name="selectRow" value="{{$res->optId}}" />
                                                     <label for="chkSuccess"></label>
                                                 </div>
@@ -380,18 +349,18 @@
                                             <td>
                                                 @if($Header->closed_at === null || $Header->closed_at === "")
                                                 {{-- <button type="button" data-toggle="tooltip" data-placement="right" title="Cancel" id="deleteRow" name="removeRow" data-id="' + tableRow + '" class="btn btn-danger btn-circle btn-sm removeRow" value="{{$res->optId}}"><i class="glyphicon glyphicon-remove-sign"></i></button> --}}
-                                                <div style="margin-left:10px" class="checkbox checkbox-warning checkbox-circle" data-toggle="tooltip" data-placement="bottom" title="Other Option">
-                                                    <input type="checkbox" id="chkWarning selected_alternative" class="selectAlternative" name="selectAlternative" value="{{$res->optId}}" />
-                                                    <label for="chkWarning"></label>
+                                                <div style="margin-left:9px;" class="checkbox checkbox-danger checkbox-circle" data-toggle="tooltip" data-placement="bottom" title="Cancel">
+                                                    <input style="color:#000" type="checkbox" id="chkDanger deleteRow" class="removeRow" name="removeRow" value="{{$res->optId}}" />
+                                                    <label for="chkDanger"></label>
                                                 </div>
                                                 @endif
                                             </td>
                                             <td>
                                                 @if($Header->closed_at === null || $Header->closed_at === "")
                                                 {{-- <button type="button" data-toggle="tooltip" data-placement="right" title="Cancel" id="deleteRow" name="removeRow" data-id="' + tableRow + '" class="btn btn-danger btn-circle btn-sm removeRow" value="{{$res->optId}}"><i class="glyphicon glyphicon-remove-sign"></i></button> --}}
-                                                <div style="margin-left:10px" class="checkbox checkbox-danger checkbox-circle" data-toggle="tooltip" data-placement="bottom" title="Cancel">
-                                                    <input type="checkbox" id="chkDanger deleteRow" class="removeRow" name="removeRow" value="{{$res->optId}}" />
-                                                    <label for="chkDanger"></label>
+                                                <div style="margin-left:9px" class="checkbox checkbox-warning checkbox-circle" data-toggle="tooltip" data-placement="bottom" title="Other Option">
+                                                    <input type="checkbox" id="chkWarning selected_alternative" class="selectAlternative" name="selectAlternative" value="{{$res->optId}}" />
+                                                    <label for="chkWarning"></label>
                                                 </div>
                                                 @endif
                                             </td>

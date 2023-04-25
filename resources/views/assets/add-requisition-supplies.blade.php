@@ -65,7 +65,7 @@
 
 <div class='panel panel-default'>
     <div class='panel-heading'>
-        Asset Form
+        Asset Form (<span style="color:red">Kindly close the transaction within 15 days after you received the request</span>)
     </div>
 
     <form action="{{ CRUDBooster::mainpath('add-save') }}" method="POST" id="AssetRequest" enctype="multipart/form-data">

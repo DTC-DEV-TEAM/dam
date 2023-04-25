@@ -8,7 +8,7 @@ return [
         'orderdate'  =>  'Order Date',
         'reference'  =>  'Reference #',
         'purchase_items'  =>  'Replenishment Items',
-        'add_item'  =>  'Please indicate Digits Code or Item Description',
+        'add_item'  =>  'Please indicate Digits Code',
         'timer' => 'Time Remaining',
         'location_id' => 'Location',
         'department_id' => 'Department',
@@ -123,7 +123,7 @@ return [
         'received_by'  =>  'Received By',  
         'received_at'  =>  'Received Date',
 
-        'add_item1'  =>  'Please indicate Asset Code, Digits Code or Item Description',
+        'add_item1'  =>  'Please indicate Asset Code, Digits Code',
 
 
         'closed_by'  =>  'Closed By',  

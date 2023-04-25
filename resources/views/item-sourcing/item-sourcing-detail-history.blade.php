@@ -26,6 +26,11 @@
                 margin-top:12px;
             }
 
+            .selectedAlternative {
+                border:none;
+                background-color:#f0ad4e
+            }
+
             table { border-collapse: collapse; empty-cells: show; }
 
             td { position: relative; }
@@ -242,7 +247,7 @@
                                 <?php   $tableRow = 1; ?>
                                 @foreach($item_options as $res)
                                 <?php   $tableRow1++; ?>
-                                    @if($res->deleted_at != null || $res->deleted_at != "")
+                                    @if($res->deleted_at != null && $res->selected_alternative_at == null)
                                       <tr style="background-color: #dd4b39; color:#fff">                                    
                                         <td style="text-align:center" height="10">
                                             {{$res->options}}                               
@@ -279,7 +284,24 @@
                                             <i data-toggle="tooltip" data-placement="right" title="Selected" class="fa fa-check-circle text-success"></i>
                                         </td>                               
                                       </tr>
-                            
+                                    @elseif($res->selected_alternative_at != null && $res->deleted_at != null)
+                                      <tr style="background-color: #f0ad4e; color:#fff">                                    
+                                          <td style="text-align:center" height="10">
+                                              {{$res->options}}                               
+                                          </td>
+                                          <td style="text-align:center" height="10">
+                                              {{$res->vendor_name}}                               
+                                          </td>
+                                          <td style="text-align:center" height="10">
+                                              {{number_format($res->price, 2, '.', ',')}}                               
+                                          </td>
+                                          <td style="text-align:center;" height="10">
+                                              <a style="color:#fff" href='{{CRUDBooster::adminpath("item_sourcing_for_quotation/download/".$res->file_id)."?return_url=".urlencode(Request::fullUrl())}}' class="form-control selectedAlternative">{{$res->file_name}}   <i style="color:#007bff" class="fa fa-download"></i></a>                             
+                                          </td>
+                                          <td colspan="3"  style="text-align:center;">
+                                              <i data-toggle="tooltip" data-placement="right" title="Selected Alternative" class="fa fa-check-circle text-white"></i>
+                                          </td>                               
+                                      </tr>
                                    @else
                                    
                                     <tr id="tr-tableOption">                                    

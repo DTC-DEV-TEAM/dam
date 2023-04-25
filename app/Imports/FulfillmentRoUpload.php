@@ -33,14 +33,14 @@ class FulfillmentRoUpload implements ToCollection, WithHeadingRow
             $checkRowDbColumnDigitsCode = array_column($checkRowDbDigitsCode, 'codes');
           
             if(!in_array($row['digits_code'], $checkRowDbColumnDigitsCode)){
-                return CRUDBooster::redirect(CRUDBooster::mainpath('for_purchasing'),"Digits Code not exist in Item Master: ".($key+2),"danger");
+                return CRUDBooster::redirect(CRUDBooster::adminpath('for_purchasing'),"Digits Code not exist in Item Master: ".($key+2),"danger");
             }
 
             $checkRowDbRefNo       = DB::table('header_request')->select("reference_number AS ref_num")->get()->toArray();
             $checkRowDbColumnRefNo = array_column($checkRowDbRefNo, 'ref_num');
           
             if(!in_array($row['arf_number'], $checkRowDbColumnRefNo)){
-                return CRUDBooster::redirect(CRUDBooster::mainpath('for_purchasing'),"Arf Invalid! please check arf reference no: ".($key+2),"danger");
+                return CRUDBooster::redirect(CRUDBooster::adminpath('for_purchasing'),"Arf Invalid! please check arf reference no: ".($key+2),"danger");
             }
             
             if($row['dr_qty'] > $checkQty){
@@ -91,7 +91,9 @@ class FulfillmentRoUpload implements ToCollection, WithHeadingRow
             if(empty($resData)){
                 HeaderRequest::where('id',$header->id)
 				->update([
-						'status_id'=> 19,
+						'status_id'      => 19,
+                        'purchased2_by'	 => CRUDBooster::myId(),
+				        'purchased2_at'  => date('Y-m-d H:i:s')
 				]);	
             }
        

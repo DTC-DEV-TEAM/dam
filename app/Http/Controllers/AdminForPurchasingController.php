@@ -125,12 +125,12 @@
 					//option 3
 					$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::mainpath('getRequestPurchasingForMoSo/[id]'),'icon'=>'fa fa-eye' , "showIf"=>"[status_id] == $for_move_order || [status_id] == $for_closing || [status_id] == $for_tagging"];
 				}else{			
-					//$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailPurchasing/[id]'),'icon'=>'fa fa-eye'];
+					$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailPurchasing/[id]'),'icon'=>'fa fa-eye'];
 					$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getRequestPurchasing/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[purchased2_by] == null"];
 					//option 2
 					//$this->addaction[] = ['title'=>'Add MO/SO','url'=>CRUDBooster::adminpath('[id]'),'icon'=>'fa fa-plus-circle', "showIf"=>"[status_id] == $for_closing && [mo_so_num] == null"];
 					//option 3
-					$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::mainpath('getRequestPurchasingForMoSo/[id]'),'icon'=>'fa fa-eye' , "showIf"=>"[status_id] == $for_move_order || [status_id] == $for_closing || [status_id] == $for_tagging"];
+					//$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::mainpath('getRequestPurchasingForMoSo/[id]'),'icon'=>'fa fa-eye' , "showIf"=>"[status_id] == $for_move_order || [status_id] == $for_closing || [status_id] == $for_tagging"];
 				}
 				
 			
@@ -1364,10 +1364,10 @@
 				->where('assets_inventory_body.quantity','>', 0)
 				->where('assets_inventory_body.statuses_id', 6)
 				->where('assets_inventory_body.item_condition', "Good")
-				->orWhere('assets_inventory_body.item_description','LIKE','%'.$search.'%')
-				->where('assets_inventory_body.quantity','>', 0)
-				->where('assets_inventory_body.statuses_id', 6)
-				->where('assets_inventory_body.item_condition', "Good")
+				// ->orWhere('assets_inventory_body.item_description','LIKE','%'.$search.'%')
+				// ->where('assets_inventory_body.quantity','>', 0)
+				// ->where('assets_inventory_body.statuses_id', 6)
+				// ->where('assets_inventory_body.item_condition', "Good")
 				//->join('category', 'assets_inventory_body.category_id','=', 'category.id')
 				//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
 				->select(	'assets_inventory_body.*'

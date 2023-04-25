@@ -106,9 +106,9 @@
                         <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
                         <th width="10%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
                         <th width="10%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
-                        <th width="5%" class="text-center">WH Qty</th> 
                         <th width="5%" class="text-center">{{ trans('message.table.quantity_text') }}</th> 
-                        @if(in_array($Header->request_type_id, [6,7]))       
+                        @if(in_array($Header->request_type_id, [6,7]))     
+                            <th width="5%" class="text-center">WH Qty</th>   
                             <th width="5%" class="text-center">For Replenish Qty</th> 
                             <th width="5%" class="text-center">For Re Order Qty</th> 
                             <th width="5%" class="text-center">Serve Qty</th> 
@@ -128,10 +128,10 @@
                             <td style="text-align:center">{{$rowresult->item_description}}</td>
                             <td style="text-align:center">{{$rowresult->category_id}}</td>
                             <td style="text-align:center">{{$rowresult->sub_category_id}}</td>
-                            <td style="text-align:center">{{$rowresult->wh_qty}}</td>
                             <td style="text-align:center" class="qty">{{$rowresult->quantity}}</td>
 
                             @if(in_array($Header->request_type_id, [6,7]))
+                             <td style="text-align:center">{{$rowresult->wh_qty}}</td>
                                 <td style="text-align:center" class="rep_qty">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
                                 <td style="text-align:center" class="ro_qty">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                           
                                 <td style="text-align:center" class="served_qty">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>
@@ -260,7 +260,7 @@
         
     });
 
-    if($('#request_type_id').val() == 1){ 
+    if($('#request_type_id').val() == 1 || $('#request_type_id').val() == 5){ 
         var tds = document.getElementById("approval-table").getElementsByTagName("td");
         var sumqty       = 0;
         for (var i = 0; i < tds.length; i++) {

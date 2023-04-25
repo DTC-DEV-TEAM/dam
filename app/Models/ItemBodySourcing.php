@@ -43,4 +43,12 @@ class ItemBodySourcing extends Model{
         ->get();
      }
 
+     public function scopeBodyInfo($query,$id){
+      return $query->leftjoin('new_category', 'item_sourcing_body.category_id', '=', 'new_category.id')
+      ->leftjoin('new_sub_category', 'item_sourcing_body.sub_category_id', '=', 'new_sub_category.id')
+      ->leftjoin('new_class', 'item_sourcing_body.class_id', '=', 'new_class.id')
+      ->leftjoin('new_sub_class', 'item_sourcing_body.sub_class_id', '=', 'new_sub_class.id')
+      ->where('item_sourcing_body.header_request_id',$id)->first();
+  }
+
 }

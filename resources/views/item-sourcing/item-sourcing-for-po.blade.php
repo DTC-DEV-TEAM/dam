@@ -1,7 +1,11 @@
 @extends('crudbooster::admin_template')
     @push('head')
         <style type="text/css">   
-          
+          .modal-content  {
+                -webkit-border-radius: 10px !important;
+                -moz-border-radius: 10px !important;
+                border-radius: 10px !important; 
+            }
             #other-detail th, td {
                 border: 1px solid rgba(000, 0, 0, .5);
                 padding: 8px;
@@ -114,6 +118,10 @@
                 border:none;
                 background-color:#d4edda
             }
+            .selectedAlternative {
+                border:none;
+                background-color:#f0ad4e
+            }
         </style>
     @endpush
 @section('content')
@@ -132,7 +140,7 @@
         <input type="hidden" value="0" name="action" id="action">
         <input type="hidden" value="" name="button_action" id="button_action">
         <input type="hidden" value="{{$Header->requestid}}" name="headerID" id="headerID">
-
+        <input type="hidden" value="{{$Header->request_type_id}}" name="request_type_id" id="request_type_id">
         <input type="hidden" value="{{$countOptions}}" name="countRow" id="countRow">
         <input type="hidden" value="{{$allOptions}}" name="allcountOption" id="allcountOption">
         <input type="hidden" value="{{$Header->reference_number}}" name="ref_no" id="ref_no">
@@ -141,7 +149,9 @@
         <input type="hidden" value="" name="bodyID" id="bodyID">
 
         <div class='panel-body'>
-
+            <section id="loading">
+                <div id="loading-content"></div>
+            </section>
             <div class="row">                           
                 <label class="control-label col-md-2">{{ trans('message.form-label.reference_number') }}:</label>
                 <div class="col-md-4">
@@ -324,7 +334,7 @@
                                 <?php   $tableRow = 1; ?>
                                 @foreach($item_options as $res)
                                 <?php   $tableRow1++; ?>
-                                    @if($res->deleted_at != null || $res->deleted_at != "")
+                                    @if($res->deleted_at != null && $res->selected_alternative_at == null)
                                       <tr style="background-color: #dd4b39; color:#fff">                                    
                                         <td style="text-align:center" height="10">
                                             {{$res->options}}                               
@@ -360,6 +370,24 @@
                                             <i data-toggle="tooltip" data-placement="right" title="Selected" class="fa fa-check-circle text-success"></i>
                                         </td>                               
                                       </tr>
+                                    @elseif($res->selected_alternative_at != null && $res->deleted_at != null)
+                                    <tr style="background-color: #f0ad4e; color:#fff">                                    
+                                        <td style="text-align:center" height="10">
+                                            {{$res->options}}                               
+                                        </td>
+                                        <td style="text-align:center" height="10">
+                                            {{$res->vendor_name}}                               
+                                        </td>
+                                        <td style="text-align:center" height="10">
+                                            {{number_format($res->price, 2, '.', ',')}}                               
+                                        </td>
+                                        <td style="text-align:center;" height="10">
+                                            <a style="color:#fff" href='{{CRUDBooster::adminpath("item_sourcing_for_quotation/download/".$res->file_id)."?return_url=".urlencode(Request::fullUrl())}}' class="form-control selectedAlternative">{{$res->file_name}}   <i style="color:#007bff" class="fa fa-download"></i></a>                             
+                                        </td>
+                                        <td colspan="3"  style="text-align:center;">
+                                            <i data-toggle="tooltip" data-placement="right" title="Selected Alternative" class="fa fa-check-circle text-white"></i>
+                                        </td>                               
+                                    </tr>
                                    @else
                                     <tr id="tr-tableOption">                                    
                                         <td style="text-align:center" height="10">
@@ -426,6 +454,31 @@
                         <button type='button' id="closed" class="btn btn-primary btn-sm">
                          <i class="fa fa-save"></i> Close
                          </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+       {{-- FOR DIGITS CODE CREATION --}}
+        <div id="itemCreationModal" class="modal fade" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title text-center"><strong>Input Digits Code</strong></h4>
+                       
+                    </div>
+                    <div class="modal-body">
+                       <div class='row'>
+                         <div class='col-md-12'>
+                          <input oninput="validate(this)" type"text" class="form-control" name="digits_code"  id="digits_code" placeholder="Please input Digits Code">
+                         </div>
+                         <br>	
+                       </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type='button' id="digitsCodeBtn" class="btn btn-primary btn-sm">
+                         <i class="fa fa-save"></i> Save</button>
                     </div>
                 </div>
             </div>
@@ -551,14 +604,21 @@
 
     $('#status').change(function(){
         var status =  this.value;
-       if(status == 13){
-         $("#myModal").modal('show');	
-       }else{
-        $("#myModal").modal('hide');
-       }
+        if(status == 13){
+            $("#myModal").modal('show');	
+        }else if(status == 40){
+            $("#itemCreationModal").modal('show');
+        }
+        else{
+            $("#itemCreationModal").modal('hide');
+            $("#myModal").modal('hide');
+        }
     });
 
     $('#myModal').on('hidden.bs.modal', function () {
+      location.reload();
+    });
+    $('#itemCreationModal').on('hidden.bs.modal', function () {
       location.reload();
     });
 
@@ -989,6 +1049,72 @@
                     $(this).attr('disabled','disabled');
                     $('#button_action').val('0');
                     $("#myform").submit();                   
+            });
+        }
+    });
+
+    // ADD DIGITS CODE
+    $('#digitsCodeBtn').click(function(event) {
+        event.preventDefault();
+        var header_id       = $('#headerID').val();
+        var request_type_id = $('#request_type_id').val();
+        var digits_code     = $('#digits_code').val();
+        var rowCount        = $('#item-sourcing-options tr').length-1;
+
+        if(rowCount == 1) {
+            swal({
+                type: 'error',
+                title: 'Please add an item!',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            }); 
+            event.preventDefault(); // cancel default behavior
+        }else if($('#digits_code').val() == "") {
+            swal({
+                type: 'error',
+                title: 'Digits Code required!',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            }); 
+            event.preventDefault(); // cancel default behavior
+        }else{
+            swal({
+                title: "Are you sure?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#41B314",
+                cancelButtonColor: "#F9354C",
+                confirmButtonText: "Yes, save it!",
+                width: 450,
+                height: 200
+                }, function () {
+                    $.ajax({ 
+                        url:  '{{ url('admin/item_sourcing_for_quotation/addDigitsCode') }}',
+                        type: "GET",
+                        data: { 
+                            header_id: header_id,
+                            request_type_id : request_type_id,
+                            digits_code : digits_code
+                        },
+                        dataType: 'json',
+                        success: function(data){    
+                            if (data.status == "success") {
+                                swal({
+                                    type: data.status,
+                                    title: data.message,
+                                });
+                                setTimeout(function(){
+                                    location.reload();
+                                }, 1000); 
+                                } else if (data.status == "error") {
+                                swal({
+                                    type: data.status,
+                                    title: data.message,
+                                });
+                            }
+                        }
+                    });   
+                    showLoading();                 
             });
         }
     });
