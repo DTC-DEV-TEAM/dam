@@ -74,18 +74,17 @@
 
 <div class='panel panel-default'>
     <div class='panel-heading'>
-        IT Item Source Form
+        Subscription Item Source Form
     </div>
 
     <form action="{{ CRUDBooster::mainpath('add-save') }}" method="POST" id="AssetRequest" enctype="multipart/form-data">
         <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
-        <input type="hidden" value="1" name="request_type_id" id="request_type_id">
+        <input type="hidden" value="9" name="request_type_id" id="request_type_id">
 
         <div class='panel-body'>
-            @include('item-sourcing.item-sourcing-view-header-store',['Header'=>$Header])
-           
+            @include('item-sourcing.item-sourcing-view-header',['Header'=>$Header])
             <hr/>
-            @include('item-sourcing.item-sourcing-view-body',['categories'=>$categories])
+            @include('item-sourcing.item-sourcing-view-body-mkt-srvs-subs',['categories'=>$categories])
         </div>
 
         <div class='panel-footer'>
@@ -129,7 +128,6 @@
             format: "YYYY-MM-DD",
             dayViewHeaderFormat: "MMMM YYYY",
         });
-
         $(".date").val('');
 
         $('#category_id').select2({});

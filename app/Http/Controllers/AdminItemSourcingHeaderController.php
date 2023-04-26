@@ -617,7 +617,7 @@
 
 			$data['categories'] = DB::table('new_category')->where('id',1)->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
 			$data['budget_range'] = DB::table('sub_masterfile_budget_range')->where('status', 'ACTIVE')->get();
-			$privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
+			$privilegesMatrix = DB::table('cms_privileges')->get();
 			$privileges_array = array();
 			foreach($privilegesMatrix as $matrix){
 				array_push($privileges_array, $matrix->id);
@@ -627,12 +627,9 @@
 
 			if(in_array(CRUDBooster::myPrivilegeId(), $privilegeslist)){ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
+				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
 				return $this->view("item-sourcing.add-item-sourcing-it", $data);
 
-			}else{ 
-				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
-				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
-				return $this->view("item-sourcing.add-item-sourcing-it-store", $data);
 			}
 				
 		}
@@ -654,7 +651,7 @@
 
 			$data['categories'] = DB::table('new_category')->where('id',3)->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
 			$data['budget_range'] = DB::table('sub_masterfile_budget_range')->where('status', 'ACTIVE')->get();
-			$privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
+			$privilegesMatrix = DB::table('cms_privileges')->get();
 			$privileges_array = array();
 			foreach($privilegesMatrix as $matrix){
 				array_push($privileges_array, $matrix->id);
@@ -664,12 +661,9 @@
 
 			if(in_array(CRUDBooster::myPrivilegeId(), $privilegeslist)){ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
+				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
 				return $this->view("item-sourcing.add-item-sourcing-fa", $data);
 
-			}else{ 
-				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
-				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
-				return $this->view("item-sourcing.add-item-sourcing-fa-store", $data);
 			}
 				
 		}
@@ -691,7 +685,7 @@
 
 			$data['categories'] = DB::table('new_category')->where('id',3)->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
 			$data['budget_range'] = DB::table('sub_masterfile_budget_range')->where('status', 'ACTIVE')->get();
-			$privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
+			$privilegesMatrix = DB::table('cms_privileges')->get();
 			$privileges_array = array();
 			foreach($privilegesMatrix as $matrix){
 				array_push($privileges_array, $matrix->id);
@@ -701,12 +695,9 @@
 
 			if(in_array(CRUDBooster::myPrivilegeId(), $privilegeslist)){ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
+				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
 				return $this->view("item-sourcing.add-item-sourcing-mkt", $data);
 
-			}else{ 
-				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
-				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
-				return $this->view("item-sourcing.add-item-sourcing-mkt-store", $data);
 			}
 				
 		}
@@ -728,7 +719,7 @@
 
 			$data['categories'] = DB::table('new_category')->whereIn('id',[2,4])->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
 			$data['budget_range'] = DB::table('sub_masterfile_budget_range')->where('status', 'ACTIVE')->get();
-			$privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
+			$privilegesMatrix = DB::table('cms_privileges')->get();
 			$privileges_array = array();
 			foreach($privilegesMatrix as $matrix){
 				array_push($privileges_array, $matrix->id);
@@ -738,12 +729,78 @@
 
 			if(in_array(CRUDBooster::myPrivilegeId(), $privilegeslist)){ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
+				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
 				return $this->view("item-sourcing.add-item-sourcing-supplies", $data);
+			}
+				
+		}
 
-			}else{ 
+		//Serveices
+		public function getAddItemSourcingServices() {
+			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
+				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
+			}
+			$this->cbLoader();
+			$data['page_title'] = 'Create Services Item Sourcing';
+			$data['conditions'] = DB::table('condition_type')->where('status', 'ACTIVE')->get();
+			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
+			$data['stores'] = DB::table('stores')->where('status', 'ACTIVE')->get();
+			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
+			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
+
+			$data['employeeinfos'] = Users::user($data['user']->id);
+
+			$data['categories'] = DB::table('new_category')->whereIn('id',[2,4])->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
+			$data['budget_range'] = DB::table('sub_masterfile_budget_range')->where('status', 'ACTIVE')->get();
+			//$privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
+			$privilegesMatrix = DB::table('cms_privileges')->get();
+			$privileges_array = array();
+			foreach($privilegesMatrix as $matrix){
+				array_push($privileges_array, $matrix->id);
+			}
+			$privileges_string = implode(",",$privileges_array);
+			$privilegeslist = array_map('intval',explode(",",$privileges_string));
+
+			if(in_array(CRUDBooster::myPrivilegeId(), $privilegeslist)){ 
 				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
 				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
-				return $this->view("item-sourcing.add-item-sourcing-supplies-store", $data);
+				return $this->view("item-sourcing.add-item-sourcing-services", $data);
+
+			}
+				
+		}
+
+		//Subscription
+		public function getAddItemSourcingSubscription() {
+			if(!CRUDBooster::isCreate() && $this->global_privilege == false) {
+				CRUDBooster::redirect(CRUDBooster::adminPath(), trans('crudbooster.denied_access'));
+			}
+			$this->cbLoader();
+			$data['page_title'] = 'Create Subscription Item Sourcing';
+			$data['conditions'] = DB::table('condition_type')->where('status', 'ACTIVE')->get();
+			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
+			$data['stores'] = DB::table('stores')->where('status', 'ACTIVE')->get();
+			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
+			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
+
+			$data['employeeinfos'] = Users::user($data['user']->id);
+
+			$data['categories'] = DB::table('new_category')->whereIn('id',[2,4])->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
+			$data['budget_range'] = DB::table('sub_masterfile_budget_range')->where('status', 'ACTIVE')->get();
+			//$privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
+			$privilegesMatrix = DB::table('cms_privileges')->get();
+			$privileges_array = array();
+			foreach($privilegesMatrix as $matrix){
+				array_push($privileges_array, $matrix->id);
+			}
+			$privileges_string = implode(",",$privileges_array);
+			$privilegeslist = array_map('intval',explode(",",$privileges_string));
+
+			if(in_array(CRUDBooster::myPrivilegeId(), $privilegeslist)){ 
+				$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
+				$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
+				return $this->view("item-sourcing.add-item-sourcing-subscription", $data);
+
 			}
 				
 		}
