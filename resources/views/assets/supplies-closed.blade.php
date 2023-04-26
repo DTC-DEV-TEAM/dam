@@ -355,26 +355,29 @@
                     <div class="col-md-6">
                         <table style="width:100%">
                             <tbody id="footer">
-                                <tr>
-                                    <th class="control-label col-md-2">{{ trans('message.form-label.po_number') }}:</th>
-                                    <td class="col-md-4">{{$Header->po_number}}</td>     
-                                </tr>
+                                @if($Header->request_type_id == 1 || $Header->request_type_id == 5)
+                                    <tr>
+                                        <th class="control-label col-md-2">{{ trans('message.form-label.po_number') }}:</th>
+                                        <td class="col-md-4">{{$Header->po_number}}</td>     
+                                    </tr>
 
-                                <tr>
-                                    <th class="control-label col-md-2">{{ trans('message.form-label.po_date') }}:</th>
-                                    <td class="col-md-4">{{$Header->po_date}}</td>
-                                </tr>
+                                    <tr>
+                                        <th class="control-label col-md-2">{{ trans('message.form-label.po_date') }}:</th>
+                                        <td class="col-md-4">{{$Header->po_date}}</td>
+                                    </tr>
 
-                                <tr>
-                                    <th class="control-label col-md-2">{{ trans('message.form-label.quote_date') }}:</th>
-                                    <td class="col-md-4">{{$Header->quote_date}}</td>
-                                </tr>
+                                    <tr>
+                                        <th class="control-label col-md-2">{{ trans('message.form-label.quote_date') }}:</th>
+                                        <td class="col-md-4">{{$Header->quote_date}}</td>
+                                    </tr>
+                                @endif
                                 @if( $Header->processedby != null )
                                     <tr>
                                         <th class="control-label col-md-2">{{ trans('message.form-label.processed_by') }}:</th>
                                         <td class="col-md-4">{{$Header->processedby}} / {{$Header->purchased2_at}}</td>
                                     </tr>
                                 @endif
+                               
                             </tbody>
                         </table>
                     </div>
