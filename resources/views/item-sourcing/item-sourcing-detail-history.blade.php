@@ -163,6 +163,7 @@
                                     <table class="table table-bordered" id="item-sourcing">
                                         <tbody id="bodyTable">
                                             <tr class="tbl_header_color dynamicRows">
+                                                <th>Digits Code</th>
                                                 <th width="12%" class="text-center">Category</th> 
                                                 <th width="12%" class="text-center">Sub Category</th>
                                                 <th width="12%" class="text-center">Class</th> 
@@ -181,6 +182,9 @@
                                                     @foreach($Body as $rowresult)
                                                     <tr>
                                                             <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}" readonly>        
+                                                            <td style="text-align:center" height="10">
+                                                                {{$rowresult->digits_code}}                               
+                                                            </td>
                                                             <td style="text-align:center" height="10">
                                                                 {{$rowresult->category_description}}                               
                                                             </td>
