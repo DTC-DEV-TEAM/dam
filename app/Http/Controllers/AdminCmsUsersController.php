@@ -38,7 +38,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 		if(CRUDBooster::myPrivilegeId() == 4){ 
 			$this->button_edit = false;
 		}
-		$this->button_add = false;
+		$this->button_add = true;
 		# END CONFIGURATION DO NOT REMOVE THIS LINE
 	
 		# START COLUMNS DO NOT REMOVE THIS LINE

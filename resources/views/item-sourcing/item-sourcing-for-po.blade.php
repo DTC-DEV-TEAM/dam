@@ -252,11 +252,13 @@
                                     <table class="table table-bordered" id="item-sourcing">
                                         <tbody id="bodyTable">
                                             <tr class="tbl_header_color dynamicRows">
-                                                <th>Digits Code</th>
+                                                <th width="5%" class="text-center">Digits Code</th>
+                                                @if(in_array($Header->request_type_id,[1,5,7])) 
                                                 <th width="12%" class="text-center">Category</th> 
                                                 <th width="12%" class="text-center">Sub Category</th>
                                                 <th width="12%" class="text-center">Class</th> 
                                                 <th width="12%" class="text-center">Sub Class</th> 
+                                                @endif
                                                 <th width="12%" class="text-center">{{ trans('message.table.item_description') }}</th>   
                                                 <th width="7%" class="text-center">Brand</th> 
                                                 <th width="7%" class="text-center">Model</th>  
@@ -269,24 +271,53 @@
                                                 <?php   $tableRow = 1; ?>
                                             
                                                     @foreach($Body as $rowresult)
+                                                    @if(in_array($Header->request_type_id,[1,5,7])) 
                                                     <tr>
+                                                        <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}" readonly>        
+                                                        <td style="text-align:center" height="10">
+                                                            {{$rowresult->digits_code}}                               
+                                                        </td>
+                                                        <td style="text-align:center" height="10">
+                                                            {{$rowresult->category_description}}                               
+                                                        </td>
+                                                        <td style="text-align:center" height="10">
+                                                            {{$rowresult->sub_category_description}}                              
+                                                        </td>
+                                                        <td style="text-align:center" height="10">
+                                                            {{$rowresult->class_description}}                               
+                                                        </td>
+                                                        <td style="text-align:center" height="10">
+                                                            {{$rowresult->sub_class_description}}                               
+                                                        </td>
+                                                                                            
+                                                        <td style="text-align:center" height="10">                                                             
+                                                            {{$rowresult->item_description}} 
+                                                        </td>
+                                                        <td style="text-align:center" height="10">                                                             
+                                                            {{$rowresult->brand}} 
+                                                        </td>
+                                                        <td style="text-align:center" height="10">                                                             
+                                                            {{$rowresult->model}} 
+                                                        </td>
+                                                        <td style="text-align:center" height="10">                                                             
+                                                            {{$rowresult->size}} 
+                                                        </td>
+                                                        <td style="text-align:center" height="10">                                                             
+                                                            {{$rowresult->actual_color}}  
+                                                        </td>
+                                                        <td style="text-align:center" height="10" class="qty">
+                                                            {{$rowresult->quantity}} 
+                                                        </td>     
+                                                        <td style="text-align:center" height="10" class="cost">
+                                                                {{$rowresult->budget}}
+                                                        </td>                                                                                                           
+                                                    </tr>
+                                                    @else
+                                                        <tr>
                                                             <input type="hidden"  class="form-control"  name="ids[]" id="ids{{$tableRow}}"  required  value="{{$rowresult->id}}" readonly>        
                                                             <td style="text-align:center" height="10">
                                                                 {{$rowresult->digits_code}}                               
-                                                            </td>
-                                                            <td style="text-align:center" height="10">
-                                                                {{$rowresult->category_description}}                               
-                                                            </td>
-                                                            <td style="text-align:center" height="10">
-                                                                {{$rowresult->sub_category_description}}                              
-                                                            </td>
-                                                            <td style="text-align:center" height="10">
-                                                                {{$rowresult->class_description}}                               
-                                                            </td>
-                                                            <td style="text-align:center" height="10">
-                                                                {{$rowresult->sub_class_description}}                               
-                                                            </td>
-                                                                                                
+                                                            </td>                                                                                                                                                       
                                                             <td style="text-align:center" height="10">                                                             
                                                                 {{$rowresult->item_description}} 
                                                             </td>
@@ -309,7 +340,8 @@
                                                                     {{$rowresult->budget}}
                                                             </td>                                                                                                           
                                                         </tr>
-                                                                                                                         
+                                                    @endif
+
                                                     @endforeach     
                                                     
                                                     <input type='hidden' name="quantity_total" class="form-control text-center" id="quantity_total" readonly value="{{$Header->quantity_total}}">

@@ -74,7 +74,7 @@
 
 <div class='panel panel-default'>
     <div class='panel-heading'>
-        FA Item Source Form
+        Marketing Item Source Form
     </div>
 
     <form action="{{ CRUDBooster::mainpath('add-save') }}" method="POST" id="AssetRequest" enctype="multipart/form-data">
@@ -84,7 +84,7 @@
         <div class='panel-body'>
             @include('item-sourcing.item-sourcing-view-header',['Header'=>$Header])
             <hr/>
-            @include('item-sourcing.item-sourcing-view-body',['categories'=>$categories])
+            @include('item-sourcing.item-sourcing-view-body-mkt-srvs-subs',['categories'=>$categories])
         </div>
 
         <div class='panel-footer'>
