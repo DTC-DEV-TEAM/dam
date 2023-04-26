@@ -287,7 +287,7 @@
                                                 <i data-toggle="tooltip" data-placement="right" title="Selected" class="fa fa-check-circle text-success"></i>
                                             </td>                               
                                         </tr>
-                                    @elseif($res->selected_alternative_at != null && $res->deleted_at != null)
+                                    @elseif($res->selected_alternative_at != null)
                                       <tr style="background-color: #f0ad4e; color:#fff">                                    
                                           <td style="text-align:center" height="10">
                                               {{$res->options}}                               

@@ -270,7 +270,7 @@
         }
         document.getElementById("approval-table").innerHTML +=
         "<tr>"+
-            "<td colspan='5' style='text-align:right'>"+
+            "<td colspan='4' style='text-align:right'>"+
                     "<strong>TOTAL</strong>"+
                 "</td>"+
                 
