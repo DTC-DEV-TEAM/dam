@@ -215,6 +215,7 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('/admin/for_purchasing/fulfillment-upload','AdminForPurchasingController@UploadFulfillment');
     Route::post('/admin/admin_import/upload-fulfillment','AdminImportController@fulfillmentUpload')->name('upload-fulfillment');
     Route::get('/admin/admin_import/download-filfill-qty-template','AdminImportController@downloadFulfillQtyTemplate');
+    Route::post('/admin/for_purchasing/export-conso','AdminForPurchasingController@ExportConso')->name('export-conso');
     //PO UPLOAD
     Route::get('/admin/for_purchasing/po-upload','AdminForPurchasingController@UploadPo');
     Route::post('/admin/admin_import/upload-po','AdminImportController@poUpload')->name('upload-po');

@@ -450,12 +450,20 @@
                         
                         </tbody>
                         <tfoot>
+                            @if($Header->if_selected == null)
+                                <tr id="tr-tableOption1" class="bottom">
+                                    <td style="text-align:left" colspan="5">
+                                        <button class="red-tooltip" data-toggle="tooltip" data-placement="right" id="add-Row" name="add-Row" title="Add Row"><div class="iconPlus" id="bigplus"></div></button>
+                                        <div id="display_error" style="text-align:left"></div>
+                                    </td>
+                                </tr>
+                            @else
                             <tr id="tr-tableOption1" class="bottom">
-                                <td style="text-align:left" colspan="5">
-                                    <button class="red-tooltip" data-toggle="tooltip" data-placement="right" id="add-Row" name="add-Row" title="Add Row"><div class="iconPlus" id="bigplus"></div></button>
-                                    <div id="display_error" style="text-align:left"></div>
+                                <td style="text-align:center" colspan="5">
+                                    <span class="label label-success">Already Selected <i class="fa fa-check"></i> </span>
                                 </td>
                             </tr>
+                            @endif
                         </tfoot>
 
                     </table>
@@ -506,7 +514,7 @@
                     <div class="modal-body">
                        <div class='row'>
                          <div class='col-md-12'>
-                          <input oninput="validate(this)" type"text" class="form-control" name="digits_code"  id="digits_code" placeholder="Please input Digits Code">
+                          <input oninput="validate(this)" type"text" class="form-control" name="digits_code"  id="digits_code" placeholder="Please input Digits Code" onKeyPress="if(this.value.length==8) return false;">
                          </div>
                          <br>	
                        </div>
@@ -642,7 +650,7 @@
         var status =  this.value;
         if(status == 13){
             $("#myModal").modal('show');	
-        }else if(status == 40){
+        }else if(status == 41){
             $("#itemCreationModal").modal('show');
         }
         else{
@@ -1146,7 +1154,12 @@
                                 swal({
                                     type: data.status,
                                     title: data.message,
+                                    icon: 'error',
+                                    confirmButtonColor: "#367fa9"
                                 });
+                                setTimeout(function(){
+                                    location.reload();
+                                }, 4000); 
                             }
                         }
                     });   
