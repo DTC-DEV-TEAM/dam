@@ -32,7 +32,7 @@
                 font-weight: bold;
                 width: 63%;
                 margin-top:4px;
-                margin-left:10px;
+                /* margin-left:10px; */
             }
             input.suggested:read-only {
                 background-color: #fff;
@@ -895,7 +895,7 @@
                     '<td>' +
                     '<span style="display:none" id="copy-text'+tableRow+'">'+ref_no+'-OPTION '+ finalOptCount +'</span>' +
                     '<input class="form-control finput optionFile" type="file" placeholder="File..." name="optionFile[]" id="optionFile' + tableRow + '" data-id="' + tableRow  + '" style="width:100%">' + 
-                    '<div style="display:flex;align-content: flex-center;"><input type="text" name="fileName[]" class="form-control text-center suggested" id="fileName' + tableRow +' "  value="'+ref_no+'-OPTION '+ finalOptCount +'" readonly><button type="button" data-toggle="tooltip" data-placement="right" title="Copy to Clipboard" class="copyBtn" id="btn" onclick="CopyThis();"> <i style="color:#3c8dbc" class="fa fa-clipboard"></i> </button> <span class="label label-primary" style="margin-left:2px; padding-top:6px" id="text-copied'+tableRow+'"></span></div>' +
+                    '<div style="display:flex;align-content: flex-center;">Filename: <input type="text" name="fileName[]" class="form-control text-center suggested" id="fileName' + tableRow +' "  value="'+ref_no+'-OPTION '+ finalOptCount +'" readonly><button type="button" data-toggle="tooltip" data-placement="right" title="Copy to Clipboard" class="copyBtn" id="btn" onclick="CopyThis();"> <i style="color:#3c8dbc" class="fa fa-clipboard"></i> </button> <span class="label label-primary" style="margin-left:2px; padding-top:6px" id="text-copied'+tableRow+'"></span></div>' +
                     
                     '</td>' +
 
@@ -1039,7 +1039,7 @@
                     else if($.inArray(ext.split('.').pop(),['xlsx','pdf','docs'])===-1){
                         swal({  
                                 type: 'error',
-                                title: 'Invalid File! please refer to the ff(.xlsx,.pdf)',
+                                title: 'Invalid File Extension! please refer to the ff(.xlsx,.pdf,.docs)',
                                 icon: 'error',
                                 confirmButtonColor: "#367fa9",
                             });
