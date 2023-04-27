@@ -171,9 +171,10 @@
 	        */
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex') {
-			   $this->index_button[] = ["label"=>"Upload Fulfillment","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('fulfillment-upload')];
+			   $this->index_button[] = ["label"=>"Upload Fulfillment","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('fulfillment-upload'),'color'=>'success'];
 			   $this->index_button[] = ["label"=>"Consolidation","icon"=>"fa fa-download",'url'=>"javascript:showConsoExport()"];
-			   $this->index_button[] = ["label"=>"Upload PO","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('po-upload')];
+			   $this->index_button[] = ["label"=>"Upload PO","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('po-upload'),'color'=>'success'];
+			   $this->index_button[] = ["label"=>"Cancellation","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('cancellation-upload'),'color'=>'warning'];
 			}
 
 	        /* 
@@ -1636,6 +1637,12 @@
 		public function UploadPo() {
 			$data['page_title']= 'PO Upload';
 			return view('import.po-upload', $data)->render();
+		}
+
+		//CANCELLATION UPLOAD
+		public function UploadCancellation() {
+			$data['page_title']= 'Cancellation Upload';
+			return view('import.cancellation-upload', $data)->render();
 		}
        
 

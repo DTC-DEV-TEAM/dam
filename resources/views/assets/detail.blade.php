@@ -210,7 +210,9 @@
                                                 <th width="5%" class="text-center">DR Qty</th>
                                                 <th width="5%" class="text-center">PO Qty</th>     
                                                 <th width="10%" class="text-center">DR#</th>         
-                                                <th width="10%" class="text-center">PO#</th>                                   
+                                                <th width="10%" class="text-center">PO#</th>   
+                                                <th width="5%" class="text-center">Cancelled Qty</th> 
+                                                <th>Reason</th>                                
                                             @endif 
 
                                             @if($Header->recommendedby != null || $Header->recommendedby != "")
@@ -260,7 +262,8 @@
                                                                     <td style="text-align:center" class="po_qty">{{$rowresult->po_qty ? $rowresult->po_qty : 0}}</td>   
                                                                     <td style="text-align:center">{{$rowresult->mo_so_num}}</td>   
                                                                     <td style="text-align:center">{{$rowresult->po_no}}</td>  
-                                                                    
+                                                                    <td style="text-align:center" class="po_qty">{{$rowresult->cancelled_qty ? $rowresult->cancelled_qty : 0}}</td>   
+                                                                    <td style="text-align:center">{{$rowresult->reason_to_cancel}}</td>  
                                                                 @endif
 
                                                                 @if($Header->recommendedby != null || $Header->recommendedby != "")                                                                               
@@ -311,6 +314,8 @@
                                                                     <td style="text-align:center" class="po_qty">{{$rowresult->po_qty ? $rowresult->po_qty : 0}}</td>   
                                                                     <td style="text-align:center">{{$rowresult->mo_so_num}}</td>   
                                                                     <td style="text-align:center">{{$rowresult->po_no}}</td>     
+                                                                    <td style="text-align:center" class="po_qty">{{$rowresult->cancelled_qty ? $rowresult->cancelled_qty : 0}}</td>   
+                                                                    <td style="text-align:center">{{$rowresult->reason_to_cancel}}</td>  
                                                                 
                                                                 @endif
                                                                 @if($Header->recommendedby != null || $Header->recommendedby != "")                                                                               
@@ -728,7 +733,7 @@
                     "</td>"+
                     "<td style='text-align:center'>"+
                     "</td>"+
-                    "<td colspan='2' style='text-align:center'>"+
+                    "<td colspan='3' style='text-align:center'>"+
                     "</td>"+
                    
             "</tr>";

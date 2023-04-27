@@ -278,8 +278,8 @@
                                             <th width="5%" class="text-center">UnServed Qty</th> 
                                             <th width="7%" class="text-center">Item Cost</th> 
                                             <th width="7%" class="text-center">Total Cost</th>                                                                                                                                            
-                                            {{-- <th width="10%" class="text-center">DR#</th>     --}}
-                                            {{-- <th width="5%" class="text-center">Serve Qty</th>  --}}
+                                            <th width="5%" class="text-center">Cancelled Qty</th> 
+                                            <th>Reason</th>    
                                            
                                         </tr>
                                         
@@ -328,7 +328,8 @@
 
                                                         <td style="text-align:center" class="unit_cost">{{$rowresult->unit_cost}}</td>
                                                         <td style="text-align:center" class="total_cost">{{$rowresult->unit_cost * $rowresult->serve_qty}}</td>
-                                                      
+                                                        <td style="text-align:center" class="po_qty">{{$rowresult->cancelled_qty ? $rowresult->cancelled_qty : 0}}</td>   
+                                                        <td style="text-align:center">{{$rowresult->reason_to_cancel}}</td>
                                                         {{-- <td style="text-align:center" height="10">
                                                             <input type="text"  class="form-control finput"  name="mo_so_num[]" id="mo_so_num{{$tableRow}}" value="{{$rowresult->mo_so_num}}">
                                                             <input type="text"  class="form-control mo_so_num"  name="mo_so_num[]" id="mo_so_num{{$tableRow}}" value="{{$rowresult->mo_so_num}}" readonly> 
