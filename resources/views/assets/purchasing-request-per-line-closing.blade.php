@@ -266,7 +266,7 @@
                                         <tr class="tbl_header_color dynamicRows">
 
                                             <!--<th width="5%" class="text-center">{{ trans('message.table.action') }}</th>-->
-                                            <th width="10%" class="text-center">Digits Code</th>
+                                            <th width="7%" class="text-center">Digits Code</th>
                                             <th width="15%" class="text-center">{{ trans('message.table.item_description') }}</th>
                                             <th width="9%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
                                             <th width="10%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
@@ -279,7 +279,7 @@
                                             <th width="7%" class="text-center">Item Cost</th> 
                                             <th width="7%" class="text-center">Total Cost</th>                                                                                                                                            
                                             <th width="5%" class="text-center">Cancelled Qty</th> 
-                                            <th>Reason</th>    
+                                            <th width="10%" class="text-center">Reason</th>    
                                            
                                         </tr>
                                         
@@ -328,7 +328,7 @@
 
                                                         <td style="text-align:center" class="unit_cost">{{$rowresult->unit_cost}}</td>
                                                         <td style="text-align:center" class="total_cost">{{$rowresult->unit_cost * $rowresult->serve_qty}}</td>
-                                                        <td style="text-align:center" class="po_qty">{{$rowresult->cancelled_qty ? $rowresult->cancelled_qty : 0}}</td>   
+                                                        <td style="text-align:center" class="cancel_qty">{{$rowresult->cancelled_qty ? $rowresult->cancelled_qty : 0}}</td>   
                                                         <td style="text-align:center">{{$rowresult->reason_to_cancel}}</td>
                                                         {{-- <td style="text-align:center" height="10">
                                                             <input type="text"  class="form-control finput"  name="mo_so_num[]" id="mo_so_num{{$tableRow}}" value="{{$rowresult->mo_so_num}}">
@@ -586,8 +586,9 @@
         var ro_qty       = 0;
         var served_qty   = 0;
         var unserved_qty = 0;
-        var unit_cost       = 0;
-        var total_cost       = 0;
+        var unit_cost    = 0;
+        var total_cost   = 0;
+        var cancel_qty   = 0;
         for (var i = 0; i < tds.length; i++) {
             if(tds[i].className == "qty") {
                 sumqty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
@@ -603,6 +604,8 @@
                 unit_cost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
             }else if(tds[i].className == "total_cost"){
                 total_cost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+            }else if(tds[i].className == "cancel_qty"){
+                cancel_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
             }
         }
         document.getElementById("asset-items1").innerHTML +=
@@ -644,6 +647,11 @@
                 "<td style='text-align:center'>"+
                     "<strong>" +
                         total_cost +
+                    "</strong>"+
+                "</td>"+   
+                "<td style='text-align:center'>"+
+                    "<strong>" +
+                        cancel_qty +
                     "</strong>"+
                 "</td>"+             
         "</tr>";

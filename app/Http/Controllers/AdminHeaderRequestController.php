@@ -1655,28 +1655,34 @@
 						->join('class', 'assets.class_id','=', 'class.id')
 						->leftjoin('assets_supplies_inventory', 'assets.digits_code','=', 'assets_supplies_inventory.digits_code')
 	
-						->leftJoin('body_request', function($join) 
-						{
-							$join->on('assets.digits_code', '=', 'body_request.digits_code')
-							->where('body_request.created_by',CRUDBooster::myId());
-						})
 						//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
 						->select(	'assets.*',
 									'assets.id as assetID',
 									'assets_supplies_inventory.quantity as wh_qty',
-									DB::raw('SUM(body_request.unserved_qty) as unserved_qty'),
+			
 									//'digits_imfs.digits_code as dcode',
 									'category.category_description as category_description',
 									'class.class_description as class_description'
 								)->take(10)->get();
-					
-					if($items){
+					$arraySearchUnservedQty = DB::table('body_request')->select('digits_code as digits_code',DB::raw('SUM(unserved_qty) as unserved_qty'))->where('body_request.created_by',CRUDBooster::myId())->groupBy('digits_code')->get()->toArray();
+					$finalItems = [];
+					foreach($items as $itemsKey => $itemsVal){
+						$i = array_search($itemsVal->digits_code, array_column($arraySearchUnservedQty,'digits_code'));
+						if($i !== false){
+							$itemsVal->unserved_qty = $arraySearchUnservedQty[$i];
+							$finalItems[] = $itemsVal;
+						}else{
+							$itemsVal->unserved_qty = "";
+							$finalItems[] = $itemsVal;
+						}
+					}
+					if($finalItems){
 						$data['status'] = 1;
 						$data['problem']  = 1;
 						$data['status_no'] = 1;
 						$data['message']   ='Item Found';
 						$i = 0;
-						foreach ($items as $key => $value) {
+						foreach ($finalItems as $key => $value) {
 		
 							$return_data[$i]['id']                   = $value->assetID;
 							$return_data[$i]['asset_code']           = $value->asset_code;
@@ -1692,7 +1698,7 @@
 							$return_data[$i]['quantity']             = $value->quantity;
 							$return_data[$i]['total_quantity']       = $value->total_quantity;
 							$return_data[$i]['wh_qty']               = $value->wh_qty  ? $value->wh_qty : 0;
-							$return_data[$i]['unserved_qty']         = $value->unserved_qty  ? $value->unserved_qty : 0;
+							$return_data[$i]['unserved_qty']         = $value->unserved_qty->unserved_qty  ? $value->unserved_qty->unserved_qty : 0;
 							$i++;
 		
 						}
