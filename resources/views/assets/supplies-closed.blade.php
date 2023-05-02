@@ -213,11 +213,8 @@
                                                 <th width="10%" class="text-center">PO#</th>                                   
                                             @endif 
 
-                                            @if($Header->recommendedby != null || $Header->recommendedby != "")
-                                                <th width="13%" class="text-center">{{ trans('message.table.recommendation_text') }}</th> 
-                                                <th width="14%" class="text-center">{{ trans('message.table.reco_digits_code_text') }}</th> 
-                                                <th width="24%" class="text-center">{{ trans('message.table.reco_item_description_text') }}</th>
-                                            @endif 
+                                            <th width="5%" class="text-center">Cancelled Qty</th> 
+                                            <th width="10%" class="text-center">Reason</th>    
 
                                         </tr>
                                         <tr id="tr-table">
@@ -257,19 +254,8 @@
                                                                     <td style="text-align:center" class="po_qty">{{$rowresult->po_qty ? $rowresult->po_qty : 0}}</td>   
                                                                     <td style="text-align:center">{{$rowresult->mo_so_num}}</td>   
                                                                     <td style="text-align:center">{{$rowresult->po_no}}</td>  
-                                                                    
-                                                                @endif
-
-                                                                @if($Header->recommendedby != null || $Header->recommendedby != "")                                                                               
-                                                                    <td style="text-align:center" height="10">
-                                                                        {{$rowresult->recommendation}}
-                                                                    </td>                                                                                  
-                                                                    <td style="text-align:center" height="10">
-                                                                        {{$rowresult->reco_digits_code}}
-                                                                    </td>
-                                                                    <td style="text-align:center" height="10">
-                                                                        {{$rowresult->reco_item_description}}
-                                                                    </td>
+                                                                    <td style="text-align:center" class="cancel_qty">{{$rowresult->cancelled_qty ? $rowresult->cancelled_qty : 0}}</td>   
+                                                                    <td style="text-align:center">{{$rowresult->reason_to_cancel}}</td>
                                                                 @endif
                                                           
                                                             </tr>
@@ -303,20 +289,10 @@
                                                                     <td style="text-align:center" class="po_qty">{{$rowresult->po_qty ? $rowresult->po_qty : 0}}</td>   
                                                                     <td style="text-align:center">{{$rowresult->mo_so_num}}</td>   
                                                                     <td style="text-align:center">{{$rowresult->po_no}}</td>     
-                                                                
+                                                                    <td style="text-align:center" class="cancel_qty">{{$rowresult->cancelled_qty ? $rowresult->cancelled_qty : 0}}</td>   
+                                                                    <td style="text-align:center">{{$rowresult->reason_to_cancel}}</td>
                                                                 @endif
-                                                                @if($Header->recommendedby != null || $Header->recommendedby != "")                                                                               
-                                                                    <td style="text-align:center" height="10">
-                                                                        {{$rowresult->recommendation}}
-                                                                    </td>                                                                                  
-                                                                    <td style="text-align:center" height="10">
-                                                                        {{$rowresult->reco_digits_code}}
-                                                                    </td>
-                                                                    <td style="text-align:center" height="10">
-                                                                        {{$rowresult->reco_item_description}}
-                                                                    </td>
-                                                                @endif
-                                                                                                                                         
+                                                                                                                                          
                                                             </tr>
                                                         @endif
                                                     
@@ -515,6 +491,7 @@
             var unserved_qty = 0;
             var dr_qty       = 0;
             var po_qty       = 0;
+            var cancel_qty   = 0;
             for (var i = 0; i < tds.length; i++) {
                 if(tds[i].className == "qty") {
                     sumqty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
@@ -530,6 +507,8 @@
                     dr_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
                 }else if(tds[i].className == "po_qty"){
                     po_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+                }else if(tds[i].className == "cancel_qty"){
+                    cancel_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
                 }
             }
             document.getElementById("asset-items1").innerHTML +=
@@ -575,6 +554,13 @@
                     "</td>"+
                     "<td style='text-align:center'>"+
                     "</td>"+
+                    "<td style='text-align:center'>"+
+                    "</td>"+
+                    "<td style='text-align:center'>"+
+                    "<strong>" +
+                        cancel_qty +
+                    "</strong>"+
+                    "</td>"+  
                     "<td style='text-align:center'>"+
                     "</td>"+
             "</tr>";

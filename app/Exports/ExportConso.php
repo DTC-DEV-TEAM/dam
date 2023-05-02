@@ -2,19 +2,73 @@
 
 namespace App\Exports;
 
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\FromQuery;
-use Maatwebsite\Excel\Concerns\WithHeadings;
 use App\BodyRequest;
+use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\Exportable;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
+use CRUDBooster;
 
-class ExportConso implements FromCollection, WithHeadings
+class ExportConso implements FromQuery, WithHeadings, WithMapping
 {
-    //use Exportable;
-    /**
-    * @return \Illuminate\Support\Collection
-    */
-    public function collection(){
-        return BodyRequest::leftjoin('header_request', 'body_request.header_request_id', '=', 'header_request.id')
+    use Exportable;
+
+    public function __construct($data){
+        $this->from      = $data['from'];
+        $this->to        = $data['to'];
+    }
+
+    public function headings():array{
+        return [
+            'Status',
+            'Reference Number', 
+            'Requested By',
+            'Department',
+            'Digits Code',
+            'Item Description',
+            'Category', 
+            'Sub Category',
+            'Po No',
+            'Wh Qty',
+            'Quantity',
+            'Replenish Qty',
+            'Re Order Qty',
+            'Served Qty',
+            'Unserved Qty',
+            'Cancelled Qty',
+            'Reason to Cancel',
+            'Dr Number',
+            'Requested Date'
+        ];
+    } 
+
+    public function map($conso): array {
+        return [
+            $conso->status_description,
+            $conso->reference_number,
+            $conso->bill_to,
+            $conso->department_name,
+            $conso->digits_code,
+            $conso->item_description,
+            $conso->category_id,
+            $conso->sub_category_id,
+            $conso->po_no,
+            $conso->wh_qty,
+            $conso->quantity,
+            $conso->replenish_qty,
+            $conso->reorder_qty,
+            $conso->serve_qty,
+            $conso->unserved_qty,
+            $conso->cancelled_qty,
+            $conso->reason_to_cancel,
+            $conso->mo_so_num,
+            $conso->requested_at
+        ];
+    }
+
+    public function query()
+    {
+        $data = BodyRequest::query()->leftjoin('header_request', 'body_request.header_request_id', '=', 'header_request.id')
         ->leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
         ->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
         ->leftjoin('departments', 'header_request.department', '=', 'departments.id')
@@ -28,6 +82,8 @@ class ExportConso implements FromCollection, WithHeadings
         ->select(
           'statuses.status_description',
           'header_request.reference_number',
+          'requested.bill_to',
+          'departments.department_name',
           'body_request.digits_code',
           'body_request.item_description',
           'body_request.category_id',
@@ -39,29 +95,19 @@ class ExportConso implements FromCollection, WithHeadings
           'body_request.reorder_qty',
           'body_request.serve_qty',
           'body_request.unserved_qty',
+          'body_request.cancelled_qty',
+          'body_request.reason_to_cancel',
+          'body_request.mo_so_num',
           'header_request.created_at as requested_at'
         )
-        ->whereNull('body_request.deleted_at')
-        ->get();
-    }
-
-    public function headings(): array
-    {
-        return [
-                "Status",
-                "Reference Number", 
-                "Digits Code",
-                "Item Description",
-                "Category", 
-                "Sub Category",
-                "Po No",
-                "Wh Qty",
-                "Quantity",
-                "Replenish Qty",
-                "Re Order Qty",
-                "Served Qty",
-                "Unserved Qty",
-                "Requested Date"
-               ];
+        ->where('header_request.request_type_id',7)
+        ->whereNull('body_request.deleted_at');
+        //dd($this->from, $this->to);
+        if($this->from && $this->to){
+            $data->whereBetween('header_request.approved_at',[$this->from,$this->to]);
+        }
+        return $data;
     }
 }
+
+?>

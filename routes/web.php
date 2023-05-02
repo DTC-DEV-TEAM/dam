@@ -215,10 +215,16 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('/admin/for_purchasing/fulfillment-upload','AdminForPurchasingController@UploadFulfillment');
     Route::post('/admin/admin_import/upload-fulfillment','AdminImportController@fulfillmentUpload')->name('upload-fulfillment');
     Route::get('/admin/admin_import/download-filfill-qty-template','AdminImportController@downloadFulfillQtyTemplate');
+    Route::post('/admin/for_purchasing/export-conso','AdminForPurchasingController@ExportConso')->name('export-conso');
     //PO UPLOAD
     Route::get('/admin/for_purchasing/po-upload','AdminForPurchasingController@UploadPo');
     Route::post('/admin/admin_import/upload-po','AdminImportController@poUpload')->name('upload-po');
     Route::get('/admin/admin_import/download-po-template','AdminImportController@downloadPOTemplate');
+    
+    //CANCELLATION UPLOAD
+    Route::get('/admin/for_purchasing/cancellation-upload','AdminForPurchasingController@UploadCancellation');
+    Route::post('/admin/admin_import/upload-cancellation','AdminImportController@cancellationUpload')->name('upload-cancellation');
+    Route::get('/admin/admin_import/download-cancellation-template','AdminImportController@downloadCancellationTemplate');
     //Supplies Inventory
     Route::get('/admin/assets_supplies_inventory/supplies-inventory-upload','AdminAssetsSuppliesInventoryController@UploadSuppliesInventory');
     Route::post('/admin/assets_supplies_inventory/upload-supplies-inventory','AdminAssetsSuppliesInventoryController@SuppliesInventoryUpload')->name('upload-supplies-inventory');

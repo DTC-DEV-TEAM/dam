@@ -184,14 +184,16 @@
                                                     <th width="5%" class="text-center">UnServe Qty</th> 
                                                     <th width="7%" class="text-center">Item Cost</th> 
                                                     <th width="7%" class="text-center">Total Cost</th>                                                                                                                                            
-                                                    <th width="10%" class="text-center">MO/SO</th>                                                  
+                                                    <th width="10%" class="text-center">MO/SO</th>    
+                                                    <th width="5%" class="text-center">Cancelled Qty</th> 
+                                                    <th>Reason</th>                                                 
                                                 @endif 
                                                 @if($Header->recommendedby != null || $Header->recommendedby != "")
                                                     <th width="13%" class="text-center">{{ trans('message.table.recommendation_text') }}</th> 
                                                     <th width="14%" class="text-center">{{ trans('message.table.reco_digits_code_text') }}</th> 
                                                     <th width="24%" class="text-center">{{ trans('message.table.reco_item_description_text') }}</th>
                                                 @endif 
-                                               
+                                               <th>Action</th>
                                                    
                                              
                                             </tr>
@@ -230,7 +232,8 @@
                                                                     <td style="text-align:center" height="10">{{$rowresult->unit_cost}}</td>
                                                                     <td style="text-align:center" height="10" class="cost">{{$rowresult->unit_cost * $rowresult->serve_qty}}</td>
                                                                     <td style="text-align:center" height="10">{{$rowresult->mo_so_num}}</td>   
-                                                                    
+                                                                    <td style="text-align:center" class="po_qty">{{$rowresult->cancelled_qty ? $rowresult->cancelled_qty : 0}}</td>   
+                                                                    <td style="text-align:center">{{$rowresult->reason_to_cancel}}</td>
                                                                 @endif
                                                                 
                                                                 @if($Header->recommendedby != null || $Header->recommendedby != "")                                                                               
@@ -280,7 +283,8 @@
                                                                     <td style="text-align:center" height="10">{{$rowresult->unit_cost}}</td>
                                                                     <td style="text-align:center" height="10" class="cost">{{$rowresult->unit_cost * $rowresult->serve_qty}}</td>
                                                                     <td style="text-align:center" height="10">{{$rowresult->mo_so_num}}</td>   
-                                                                    
+                                                                    <td style="text-align:center" class="po_qty">{{$rowresult->cancelled_qty ? $rowresult->cancelled_qty : 0}}</td>   
+                                                                    <td style="text-align:center">{{$rowresult->reason_to_cancel}}</td>
                                                                 @endif
                                                                 @if($Header->recommendedby != null || $Header->recommendedby != "")                                                                               
                                                                     <td style="text-align:center" height="10">

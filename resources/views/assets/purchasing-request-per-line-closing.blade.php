@@ -46,52 +46,12 @@
 @endif
 <div class='panel panel-default'>
     <div class='panel-heading'>
-        Request Form
+        Fulfillment Form
     </div>
 
     {{-- <form method='post' id="myform" action='{{CRUDBooster::mainpath('add-save/'.$Header->requestid)}}'> --}}
         <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
         <input type="hidden" value="0" name="action" id="action">
-
-        <!-- Modal -->
-        <div class="modal fade" id="search-items" role="dialog">
-            <div class="modal-dialog">
-                <!-- Modal content-->
-                <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Item Search</h4>
-                </div>
-                
-                    <div class="modal-body">
-                            <div class='callout callout-info'>
-                                    <h5>SEARCH FOR <label id="item_search"></label></h5>
-                            </div>
-                
-            
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label class="control-label">{{ trans('message.form-label.add_item1') }}</label>
-                                        <input class="form-control auto" style="width:100%;" placeholder="Search Item" id="search">
-                                        <ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" id="ui-id-2" style="display: none; top: 60px; left: 15px; width: 420px;">
-                                            <li>Loading...</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div> 
-                            
-                    </div>
-                    <div class="modal-footer">
-                        
-                        <!-- <input type="submit" class="btn btn-success" id="upload-excel1" value="Upload Excel"> -->
-                        <button type="button" class="btn btn-default" id="upload-close1" data-dismiss="modal">Close</button>
-                    </div>
-        
-                
-                </div>
-            </div>
-        </div>
 
         <div class='panel-body'>
 
@@ -266,7 +226,7 @@
                                         <tr class="tbl_header_color dynamicRows">
 
                                             <!--<th width="5%" class="text-center">{{ trans('message.table.action') }}</th>-->
-                                            <th width="10%" class="text-center">Digits Code</th>
+                                            <th width="7%" class="text-center">Digits Code</th>
                                             <th width="15%" class="text-center">{{ trans('message.table.item_description') }}</th>
                                             <th width="9%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
                                             <th width="10%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
@@ -278,8 +238,8 @@
                                             <th width="5%" class="text-center">UnServed Qty</th> 
                                             <th width="7%" class="text-center">Item Cost</th> 
                                             <th width="7%" class="text-center">Total Cost</th>                                                                                                                                            
-                                            {{-- <th width="10%" class="text-center">DR#</th>     --}}
-                                            {{-- <th width="5%" class="text-center">Serve Qty</th>  --}}
+                                            <th width="5%" class="text-center">Cancelled Qty</th> 
+                                            <th width="10%" class="text-center">Reason</th>    
                                            
                                         </tr>
                                         
@@ -328,7 +288,8 @@
 
                                                         <td style="text-align:center" class="unit_cost">{{$rowresult->unit_cost}}</td>
                                                         <td style="text-align:center" class="total_cost">{{$rowresult->unit_cost * $rowresult->serve_qty}}</td>
-                                                      
+                                                        <td style="text-align:center" class="cancel_qty">{{$rowresult->cancelled_qty ? $rowresult->cancelled_qty : 0}}</td>   
+                                                        <td style="text-align:center">{{$rowresult->reason_to_cancel}}</td>
                                                         {{-- <td style="text-align:center" height="10">
                                                             <input type="text"  class="form-control finput"  name="mo_so_num[]" id="mo_so_num{{$tableRow}}" value="{{$rowresult->mo_so_num}}">
                                                             <input type="text"  class="form-control mo_so_num"  name="mo_so_num[]" id="mo_so_num{{$tableRow}}" value="{{$rowresult->mo_so_num}}" readonly> 
@@ -385,16 +346,6 @@
                                 <tr>
                                     <th class="control-label col-md-2">{{ trans('message.form-label.po_number') }}:</th>
                                     <td class="col-md-4">{{$Header->po_number}}</td>     
-                                </tr>
-
-                                <tr>
-                                    <th class="control-label col-md-2">{{ trans('message.form-label.po_date') }}:</th>
-                                    <td class="col-md-4">{{$Header->po_date}}</td>
-                                </tr>
-
-                                <tr>
-                                    <th class="control-label col-md-2">{{ trans('message.form-label.quote_date') }}:</th>
-                                    <td class="col-md-4">{{$Header->quote_date}}</td>
                                 </tr>
                                 @if( $Header->processedby != null )
                                     <tr>
@@ -585,8 +536,9 @@
         var ro_qty       = 0;
         var served_qty   = 0;
         var unserved_qty = 0;
-        var unit_cost       = 0;
-        var total_cost       = 0;
+        var unit_cost    = 0;
+        var total_cost   = 0;
+        var cancel_qty   = 0;
         for (var i = 0; i < tds.length; i++) {
             if(tds[i].className == "qty") {
                 sumqty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
@@ -602,6 +554,8 @@
                 unit_cost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
             }else if(tds[i].className == "total_cost"){
                 total_cost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+            }else if(tds[i].className == "cancel_qty"){
+                cancel_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
             }
         }
         document.getElementById("asset-items1").innerHTML +=
@@ -637,12 +591,17 @@
                 "</td>"+
                 "<td style='text-align:center'>"+
                     "<strong>" +
-                        unit_cost +
+                        unit_cost.toFixed(2); +
                     "</strong>"+
                 "</td>"+
                 "<td style='text-align:center'>"+
                     "<strong>" +
-                        total_cost +
+                        total_cost.toFixed(2); +
+                    "</strong>"+
+                "</td>"+   
+                "<td style='text-align:center'>"+
+                    "<strong>" +
+                        cancel_qty +
                     "</strong>"+
                 "</td>"+             
         "</tr>";

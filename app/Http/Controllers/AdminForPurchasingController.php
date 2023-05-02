@@ -30,8 +30,6 @@
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
 		}
 
-		private static $apiContext; 
-
 	    public function cbInit() {
 
 			# START CONFIGURATION DO NOT REMOVE THIS LINE
@@ -173,9 +171,10 @@
 	        */
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex') {
-			   $this->index_button[] = ["label"=>"Upload Fulfillment","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('fulfillment-upload')];
-			   $this->index_button[] = ["label"=>"Consolidation","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('conso-export')];
-			   $this->index_button[] = ["label"=>"Upload PO","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('po-upload')];
+			   $this->index_button[] = ["label"=>"Upload Fulfillment","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('fulfillment-upload'),'color'=>'success'];
+			   $this->index_button[] = ["label"=>"Consolidation","icon"=>"fa fa-download",'url'=>"javascript:showConsoExport()"];
+			   $this->index_button[] = ["label"=>"Upload PO","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('po-upload'),'color'=>'success'];
+			   $this->index_button[] = ["label"=>"Cancellation","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('cancellation-upload'),'color'=>'warning'];
 			}
 
 	        /* 
@@ -278,7 +277,35 @@
 					}
 					
 				});
+				$('.date').datetimepicker({
+						viewMode: \"days\",
+						format: \"YYYY-MM-DD\",
+						dayViewHeaderFormat: \"MMMM YYYY\",
+				});
+
+				$('#exportBtn').click(function(event) {
+					event.preventDefault();
+					var from = $('#from').val();
+					var to = $('#to').val();
+					if(from > to){
+						swal({
+							type: 'error',
+							title: 'Invalid Date of Range',
+							icon: 'error',
+							confirmButtonColor: \"#367fa9\",
+						}); 
+						event.preventDefault(); // cancel default behavior
+						return false;
+					}else{
+						$('#filterForm').submit(); 
+					}
+				   
+				});
 		    });
+			function showConsoExport() {
+				$('#modal-conso-export').modal('show');
+			}
+			
 			";
 
             /*
@@ -293,28 +320,42 @@
 	        $this->pre_index_html = "
 
 			   <!-- Modal HTML -->
-			   <div id=\"myModal\" class=\"modal fade\" tabindex=\"-1\">
+			   <div id=\"modal-conso-export\" class=\"modal fade\" tabindex=\"-1\">
 				   <div class=\"modal-dialog\">
 					   <div class=\"modal-content\">
 						   <div class=\"modal-header\">
 						   <button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button>
-							   <h4 class=\"modal-title\"><strong>Input MO/SO</strong></h4>
+							   <h4 class=\"modal-title\"><strong>Filter Export</strong></h4>
 							  
 						   </div>
 						   <div class=\"modal-body\">
+						    <form  id=\"filterForm\" method='post' target='_blank' name=\"filterForm\" action='".route('export-conso')."'>
 						      <div class='row'>
 							  <input type=\"hidden\" name=\"request_id\" id=\"request_id\">
 								<input type=\"hidden\" value='".csrf_token()."' name=\"_token\" id=\"token\">
-								<div class='col-md-12'>
-								 <input type\"text\" class=\"form-control\" name=\"mo_so_num\"  id=\"mo_so_num\" placeholder=\"Please input MO/SO\">
+
+								<div class='col-md-6'>
+								  <div class=\"form-group\">
+									<label class=\"control-label require\"> Approved Date From</label>
+								     <input type\"text\" class=\"form-control date\" name=\"from\"  id=\"from\" placeholder=\"Please Select Date From\">
+								  </div>
 								</div>
+
+								<div class='col-md-6'>
+								   <div class=\"form-group\">
+                                    <label class=\"control-label require\"> Approved Date To</label>
+								    <input type\"text\" class=\"form-control date\" name=\"to\"  id=\"to\" placeholder=\"Please Select Date To\">
+								   </div>
+								</div>
+
 								<br>	
 							  </div>
+						    </form>
 						   </div>
 						   <div class=\"modal-footer\">
 							   <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Cancel</button>
-							   <button type='button' id=\"submit\" class=\"btn btn-primary btn-sm\">
-                                <i class=\"fa fa-save\"></i> Save
+							   <button type='button' id=\"exportBtn\" class=\"btn btn-primary btn-sm\">
+                                <i class=\"fa fa-save\"></i> Export
                                 </button>
 						   </div>
 					   </div>
@@ -379,7 +420,7 @@
 	        */
 	        $this->load_css = array();
 	        $this->load_css[] = asset("css/font-family.css");
-	        
+	        $this->load_css[] = asset("datetimepicker/bootstrap-datetimepicker.min.css");
 	    }
 
 
@@ -976,7 +1017,7 @@
 
 			$data = array();
 
-			$data['page_title'] = 'Closing Request';
+			$data['page_title'] = 'Fulfillment';
 
 			$data['Header'] = HeaderRequest::
 				  leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
@@ -1587,14 +1628,21 @@
 		}
 
 		//Export Conso
-		public function getConsoExport(){
-			return Excel::download(new ExportConso, 'Consolidation-'.date('Y-m-d') .'.xlsx');
+		public function ExportConso(Request $request){
+			$data = Request::all();
+			return Excel::download(new ExportConso($data), 'Consolidation-'.date('Y-m-d H:i:s') .'.xlsx');
 		}
 
 		//UPLOAD PO
 		public function UploadPo() {
 			$data['page_title']= 'PO Upload';
 			return view('import.po-upload', $data)->render();
+		}
+
+		//CANCELLATION UPLOAD
+		public function UploadCancellation() {
+			$data['page_title']= 'Cancellation Upload';
+			return view('import.cancellation-upload', $data)->render();
 		}
        
 

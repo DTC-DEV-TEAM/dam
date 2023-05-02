@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Imports\FulfillmentUpload;
 use App\Imports\FulfillmentRoUpload;
 use App\Imports\PoUpload;
+use App\Imports\CancellationUpload;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Reader\Exception;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -117,6 +118,39 @@ class AdminImportController extends \crocodicstudio\crudbooster\controllers\CBCo
         $writer = new Xlsx($spreadsheet);
         $writer->save('php://output');
     }
+
+    //CANCELLATION UPLOAD
+    public function cancellationUpload(Request $request) {
+        $path_excel = $request->file('import_file')->store('temp');
+        $path = storage_path('app').'/'.$path_excel;
+        Excel::import(new CancellationUpload, $path);	
+        CRUDBooster::redirect(CRUDBooster::adminpath('for_purchasing'), trans("Upload Successfully!"), 'success');
+    }
+
+    //CANCELLATION PO TEMPLATE
+    function downloadCancellationTemplate() {
+        $arrHeader = [
+            "arf_number"         => "ARF NUMBER",
+            "digits_code"        => "DIGITS CODE",
+            "remarks"            => "Remarks",
+        ];
+        $arrData = [
+            "erf_number"         => "ARF-0000001",
+            "digits_code"        => "40000054",
+            "po_qty"             => "Reset"
+        ];
+        $spreadsheet = new Spreadsheet();
+        $spreadsheet->getActiveSheet()->fromArray(array_values($arrHeader), null, 'A1');
+        $spreadsheet->getActiveSheet()->fromArray($arrData, null, 'A2');
+        $filename = "Cancellation-".date('Y-m-d');
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"');
+        header('Cache-Control: max-age=0');
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+    }
+
+
 }
 
 ?>

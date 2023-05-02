@@ -530,6 +530,13 @@
 			$digits_code     = $data['digits_code'];
 			$request_type_id = $data['request_type_id'];
 
+			$checkRowDbDigitsCode       = DB::table('assets')->select("digits_code AS codes")->get()->toArray();
+            $checkRowDbColumnDigitsCode = array_column($checkRowDbDigitsCode, 'codes');
+          
+            if(!in_array($digits_code, $checkRowDbColumnDigitsCode)){
+				exit(json_encode($message = ['status'=>'error', 'message' => 'Digits Code not exist in Item Master!']));
+			}
+
 			ItemBodySourcing::where('header_request_id', $id)
 			->update([
 				'digits_code'=> 		$digits_code
@@ -537,7 +544,7 @@
 
 			ItemHeaderSourcing::where('id',$id)
 			->update([
-				'status_id'		    => 40,
+				'status_id'		    => 41,
 				'processed_by'      => CRUDBooster::myId(),
 				'processed_at'      => date('Y-m-d H:i:s'),
 			]);	

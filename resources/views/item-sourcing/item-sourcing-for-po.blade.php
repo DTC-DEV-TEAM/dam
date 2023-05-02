@@ -30,6 +30,9 @@
                 border:none;
                 height: 10px;
                 font-weight: bold;
+                width: 63%;
+                margin-top:4px;
+                /* margin-left:10px; */
             }
             input.suggested:read-only {
                 background-color: #fff;
@@ -121,6 +124,12 @@
             .selectedAlternative {
                 border:none;
                 background-color:#f0ad4e
+            }
+
+            .copyBtn{
+                background-color:#fff;
+                border: 1px solid #3c8dbc;
+                border-radius: 5px !important; 
             }
         </style>
     @endpush
@@ -361,10 +370,10 @@
                     <table class="table" id="item-sourcing-options">
                         <tbody id="bodyTable">    
                             <tr>
-                                <th class="text-center">Option</th> 
-                                <th class="text-center">Vendor Name</th>
-                                <th class="text-center">Price</th> 
-                                <th class="text-center">Quotation</th> 
+                                <th width="10%" class="text-center">Option</th> 
+                                <th width="15%" class="text-center">Vendor Name</th>
+                                <th width="10%" class="text-center">Price</th> 
+                                <th width="20%" class="text-center">Quotation</th> 
                                 <th width="5%" class="text-center"><i class="fa fa-trash"></i></th>
                             </tr>       
                                 <?php   $tableRow = 1; ?>
@@ -450,12 +459,20 @@
                         
                         </tbody>
                         <tfoot>
+                            @if($Header->if_selected == null)
+                                <tr id="tr-tableOption1" class="bottom">
+                                    <td style="text-align:left" colspan="5">
+                                        <button class="red-tooltip" data-toggle="tooltip" data-placement="right" id="add-Row" name="add-Row" title="Add Row"><div class="iconPlus" id="bigplus"></div></button>
+                                        <div id="display_error" style="text-align:left"></div>
+                                    </td>
+                                </tr>
+                            @else
                             <tr id="tr-tableOption1" class="bottom">
-                                <td style="text-align:left" colspan="5">
-                                    <button class="red-tooltip" data-toggle="tooltip" data-placement="right" id="add-Row" name="add-Row" title="Add Row"><div class="iconPlus" id="bigplus"></div></button>
-                                    <div id="display_error" style="text-align:left"></div>
+                                <td style="text-align:center" colspan="5">
+                                    <span class="label label-success">Already Selected <i class="fa fa-check"></i> </span>
                                 </td>
                             </tr>
+                            @endif
                         </tfoot>
 
                     </table>
@@ -506,7 +523,7 @@
                     <div class="modal-body">
                        <div class='row'>
                          <div class='col-md-12'>
-                          <input oninput="validate(this)" type"text" class="form-control" name="digits_code"  id="digits_code" placeholder="Please input Digits Code">
+                          <input oninput="validate(this)" type"text" class="form-control" name="digits_code"  id="digits_code" placeholder="Please input Digits Code" onKeyPress="if(this.value.length==8) return false;">
                          </div>
                          <br>	
                        </div>
@@ -642,7 +659,7 @@
         var status =  this.value;
         if(status == 13){
             $("#myModal").modal('show');	
-        }else if(status == 40){
+        }else if(status == 41){
             $("#itemCreationModal").modal('show');
         }
         else{
@@ -876,8 +893,10 @@
                     '</td>' +
 
                     '<td>' +
+                    '<span style="display:none" id="copy-text'+tableRow+'">'+ref_no+'-OPTION '+ finalOptCount +'</span>' +
                     '<input class="form-control finput optionFile" type="file" placeholder="File..." name="optionFile[]" id="optionFile' + tableRow + '" data-id="' + tableRow  + '" style="width:100%">' + 
-                    '<input type="text" name="fileName[]" class="form-control suggested text-center" id="fileName' + tableRow +' "  value="'+ref_no+'-OPTION '+ finalOptCount +'" readonly>' +
+                    '<div style="display:flex;align-content: flex-center;">Filename: <input type="text" name="fileName[]" class="form-control text-center suggested" id="fileName' + tableRow +' "  value="'+ref_no+'-OPTION '+ finalOptCount +'" readonly><button type="button" data-toggle="tooltip" data-placement="right" title="Copy to Clipboard" class="copyBtn" id="btn" onclick="CopyThis();"> <i style="color:#3c8dbc" class="fa fa-clipboard"></i> </button> <span class="label label-primary" style="margin-left:2px; padding-top:6px" id="text-copied'+tableRow+'"></span></div>' +
+                    
                     '</td>' +
 
                     '<td>' +
@@ -888,8 +907,20 @@
                 $('#item-sourcing-options tbody').append(newrow);
         }
      }
-    
+
     });
+
+    function CopyThis(){
+        console.time('time1');
+        var temp = $("<input>");
+        $("body").append(temp);
+        temp.val($('#copy-text'+tableRow).text()).select();
+        document.execCommand("copy");
+        $('#text-copied'+tableRow).text('text copied');
+        setTimeout(function(){ $('#text-copied'+tableRow).text('');}, 2000);
+        temp.remove();
+            console.timeEnd('time1');
+    }
 
       //cost fields validation
       $(document).on("keyup",".price", function (e) {
@@ -1008,7 +1039,7 @@
                     else if($.inArray(ext.split('.').pop(),['xlsx','pdf','docs'])===-1){
                         swal({  
                                 type: 'error',
-                                title: 'Invalid File! please refer to the ff(.xlsx,.pdf)',
+                                title: 'Invalid File Extension! please refer to the ff(.xlsx,.pdf,.docs)',
                                 icon: 'error',
                                 confirmButtonColor: "#367fa9",
                             });
@@ -1146,7 +1177,12 @@
                                 swal({
                                     type: data.status,
                                     title: data.message,
+                                    icon: 'error',
+                                    confirmButtonColor: "#367fa9"
                                 });
+                                setTimeout(function(){
+                                    location.reload();
+                                }, 4000); 
                             }
                         }
                     });   
