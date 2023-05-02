@@ -35,6 +35,8 @@ class ExportConso implements FromQuery, WithHeadings, WithMapping
             'Re Order Qty',
             'Served Qty',
             'Unserved Qty',
+            'Cancelled Qty',
+            'Reason to Cancel',
             'Dr Number',
             'Requested Date'
         ];
@@ -57,6 +59,8 @@ class ExportConso implements FromQuery, WithHeadings, WithMapping
             $conso->reorder_qty,
             $conso->serve_qty,
             $conso->unserved_qty,
+            $conso->cancelled_qty,
+            $conso->reason_to_cancel,
             $conso->mo_so_num,
             $conso->requested_at
         ];
@@ -91,9 +95,12 @@ class ExportConso implements FromQuery, WithHeadings, WithMapping
           'body_request.reorder_qty',
           'body_request.serve_qty',
           'body_request.unserved_qty',
+          'body_request.cancelled_qty',
+          'body_request.reason_to_cancel',
           'body_request.mo_so_num',
           'header_request.created_at as requested_at'
         )
+        ->where('header_request.request_type_id',7)
         ->whereNull('body_request.deleted_at');
         //dd($this->from, $this->to);
         if($this->from && $this->to){

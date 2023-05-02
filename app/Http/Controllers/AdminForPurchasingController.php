@@ -1017,7 +1017,7 @@
 
 			$data = array();
 
-			$data['page_title'] = 'Closing Request';
+			$data['page_title'] = 'Fulfillment';
 
 			$data['Header'] = HeaderRequest::
 				  leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')

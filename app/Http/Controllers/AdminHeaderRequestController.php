@@ -178,7 +178,9 @@
 				//$this->index_button[] = ["label"=>"Transfer Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-transfer'),"color"=>"success"];
 
 				//$this->index_button[] = ["label"=>"Disposal Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-disposal'),"color"=>"success"];
-			
+				// if(CRUDBooster::isSuperadmin()){
+				// 	$this->index_button[] = ["title"=>"Update Status","label"=>"Update Status","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('item-master-upload')];
+				// }
 			}
 
 

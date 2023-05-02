@@ -193,7 +193,7 @@
                                                     <th width="14%" class="text-center">{{ trans('message.table.reco_digits_code_text') }}</th> 
                                                     <th width="24%" class="text-center">{{ trans('message.table.reco_item_description_text') }}</th>
                                                 @endif 
-                                               
+                                               <th>Action</th>
                                                    
                                              
                                             </tr>

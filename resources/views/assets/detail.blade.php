@@ -248,21 +248,21 @@
                                                                 <td style="text-align:center" height="10">
                                                                         {{$rowresult->sub_category_id}}
                                                                 </td>
-                                                                <td style="text-align:center" height="10" class="qty">
+                                                                <td style="text-align:center" height="10">
                                                                     {{$rowresult->quantity}}
                                                                     {{-- <input type='hidden' name="quantity" class="form-control text-center quantity_item" id="quantity" readonly value="{{$rowresult->quantity}}">
                                                                     <input type='hidden' name="quantity_body" id="quantity{{$tableRow}}" readonly value="{{$rowresult->quantity}}"> --}}
                                                                 </td>
                                                                 @if(in_array($Header->request_type_id, [6,7]))
-                                                                    <td style="text-align:center" class="rep_qty">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
-                                                                    <td style="text-align:center" class="ro_qty">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                           
-                                                                    <td style="text-align:center" class="served_qty">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>
-                                                                    <td style="text-align:center" class="unserved_qty">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td>
-                                                                    <td style="text-align:center" class="dr_qty">{{$rowresult->dr_qty ? $rowresult->dr_qty : 0}}</td> 
-                                                                    <td style="text-align:center" class="po_qty">{{$rowresult->po_qty ? $rowresult->po_qty : 0}}</td>   
+                                                                    <td style="text-align:center">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
+                                                                    <td style="text-align:center">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                           
+                                                                    <td style="text-align:center">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>
+                                                                    <td style="text-align:center">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td>
+                                                                    <td style="text-align:center">{{$rowresult->dr_qty ? $rowresult->dr_qty : 0}}</td> 
+                                                                    <td style="text-align:center">{{$rowresult->po_qty ? $rowresult->po_qty : 0}}</td>   
                                                                     <td style="text-align:center">{{$rowresult->mo_so_num}}</td>   
                                                                     <td style="text-align:center">{{$rowresult->po_no}}</td>  
-                                                                    <td style="text-align:center" class="po_qty">{{$rowresult->cancelled_qty ? $rowresult->cancelled_qty : 0}}</td>   
+                                                                    <td style="text-align:center">{{$rowresult->cancelled_qty ? $rowresult->cancelled_qty : 0}}</td>   
                                                                     <td style="text-align:center">{{$rowresult->reason_to_cancel}}</td>  
                                                                 @endif
 
