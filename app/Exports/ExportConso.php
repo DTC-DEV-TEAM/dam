@@ -8,7 +8,7 @@ use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use CRUDBooster;
-
+use DB;
 class ExportConso implements FromQuery, WithHeadings, WithMapping
 {
     use Exportable;
@@ -24,6 +24,7 @@ class ExportConso implements FromQuery, WithHeadings, WithMapping
             'Reference Number', 
             'Requested By',
             'Department',
+            'Store Branch',
             'Digits Code',
             'Item Description',
             'Category', 
@@ -48,6 +49,7 @@ class ExportConso implements FromQuery, WithHeadings, WithMapping
             $conso->reference_number,
             $conso->bill_to,
             $conso->department_name,
+            $conso->store_branch,
             $conso->digits_code,
             $conso->item_description,
             $conso->category_id,
@@ -84,6 +86,7 @@ class ExportConso implements FromQuery, WithHeadings, WithMapping
           'header_request.reference_number',
           'requested.bill_to',
           'departments.department_name',
+          DB::raw('IF(header_request.store_branch IS NULL, departments.department_name, locations.store_name) as store_branch'),
           'body_request.digits_code',
           'body_request.item_description',
           'body_request.category_id',
