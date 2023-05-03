@@ -30,7 +30,7 @@
             }
 
             input.sinput:read-only {
-                background-color: #fff;
+                background-color: #f5f5f5;
             }
 
             input.addinput:read-only {
@@ -110,6 +110,20 @@
 
             </div>
 
+            @if(CRUDBooster::myPrivilegeId() == 8)
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label require">{{ trans('message.form-label.store_branch') }}</label>
+                            
+                            <input type="text" class="form-control finput"  id="store_branch" name="store_branch"  required readonly value="{{$stores->store_name}}"> 
+                            <input type="hidden" class="form-control"  id="store_branch_id" name="store_branch_id"  required readonly value="{{$stores->id}}"> 
+
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <hr/>
 
             <div class="row"> 
@@ -169,7 +183,7 @@
                                                                 <input type="button" id="add-Row" name="add-Row" class="btn btn-primary add" value='Add Item' />
                                                             </td>
                                                             <td align="left" colspan="1">
-                                                                <input type='number' name="quantity_total" class="form-control text-center" id="quantity_total" readonly>
+                                                                <input type='text' name="quantity_total" class="form-control sinput text-center" id="quantity_total" readonly>
                                                             </td>
                                                         </tr>
                                                     </tfoot>
@@ -299,8 +313,8 @@
                         '</ul>' +
                         '<div id="display-error'+ tableRow +'"></div>'+
                         '<td>' + 
-                            '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control digits_code finput" data-id="'+ tableRow +'" id="digits_code'+ tableRow +'"  name="digits_code[]"   maxlength="100" readonly>' +
-                            '<input type="hidden" onkeyup="this.value = this.value.toUpperCase();" class="form-control fixed_description finput" data-id="'+ tableRow +'" id="fixed_description'+ tableRow +'"  name="fixed_description[]"   maxlength="100" readonly>' +
+                            '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control digits_code sinput text-center" data-id="'+ tableRow +'" id="digits_code'+ tableRow +'"  name="digits_code[]"   maxlength="100" readonly>' +
+                            '<input type="hidden" onkeyup="this.value = this.value.toUpperCase();" class="form-control fixed_description sinput text-center" data-id="'+ tableRow +'" id="fixed_description'+ tableRow +'"  name="fixed_description[]"   maxlength="100" readonly>' +
                         '</td>' +
 
                         '<td>'+
@@ -321,7 +335,7 @@
                             '</select>'+
                         '</td>' +
     
-                        '<td><input class="form-control text-center quantity_item" type="number" required name="quantity[]" id="quantity' + tableRow + '" data-id="' + tableRow  + '"  value="1" min="0" max="9999999999" step="any" onKeyPress="if(this.value.length==4) return false;" oninput="validity.valid;"></td>' +
+                        '<td><input class="form-control text-center quantity_item" type="text" required name="quantity[]" id="quantity' + tableRow + '" data-id="' + tableRow  + '"  value="1" min="0" max="9999999999" step="any" onKeyPress="if(this.value.length==11) return false;" oninput="validity.valid;"></td>' +
                         '<td>' +
                             '<button id="deleteRow" name="removeRow" class="btn btn-danger removeRow"><i class="glyphicon glyphicon-trash"></i></button>' +
                         '</td>' +
@@ -338,6 +352,31 @@
                     $('#sub_category_id'+tableRow).select2({
                     placeholder_text_single : "- Select Sub Category -"});
                     //$('#sub_category_id'+tableRow).attr('disabled', true);
+
+                    $(document).on("keyup","#quantity"+tableRow, function (e) {
+                        if (e.which >= 37 && e.which <= 40) return;
+                            if (this.value.charAt(0) == ".") {
+                                this.value = this.value.replace(
+                                /\.(.*?)(\.+)/,
+                                function (match, g1, g2) {
+                                    return "." + g1;
+                                }
+                                );
+                            }
+                            if (e.key == "." && this.value.split(".").length > 2) {
+                                this.value =
+                                this.value.replace(/([\d,]+)([\.]+.+)/, "$1") +
+                                "." +
+                                this.value.replace(/([\d,]+)([\.]+.+)/, "$2").replace(/\./g, "");
+                                return;
+                            }
+                        $(this).val(function (index, value) {
+                            value = value.replace(/[^-0-9.]+/g, "");
+                            let parts = value.toString().split(".");
+                            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                            return parts.join(".");
+                        });
+                    });
 
                     $('#app_id'+tableRow).change(function(){
 
