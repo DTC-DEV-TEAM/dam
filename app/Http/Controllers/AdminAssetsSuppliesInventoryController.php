@@ -15,6 +15,7 @@
 	use PhpOffice\PhpSpreadsheet\Reader\Exception;
 	use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 	use PhpOffice\PhpSpreadsheet\IOFactory;
+	use App\Exports\ExportSuppliesInventory;
 
 	class AdminAssetsSuppliesInventoryController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -29,7 +30,7 @@
 			$this->button_bulk_action = false;
 			$this->button_action_style = "button_icon";
 			$this->button_add = false;
-			$this->button_edit = true;
+			$this->button_edit = false;
 			$this->button_delete = false;
 			$this->button_detail = true;
 			$this->button_show = true;
@@ -132,9 +133,9 @@
 	        */
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex') {
-				$this->index_button[] = ["label"=>"Add Data","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-supplies-inventory'),"color"=>"success"];
-				$this->index_button[] = ["label"=>"Upload Inventory","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('supplies-inventory-upload')];
-				// $this->index_button[] = ["label"=>"Consolidation","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('conso-export')];
+				// $this->index_button[] = ["label"=>"Add Data","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-supplies-inventory'),"color"=>"success"];
+				$this->index_button[] = ["label"=>"Upload Inventory","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('supplies-inventory-upload'),'color'=>'primary'];
+				$this->index_button[] = ["label"=>"Export","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('supplies-inventory-export'),'color'=>'success'];
 			 }
 
 
@@ -388,5 +389,9 @@
 			$writer = new Xlsx($spreadsheet);
 			$writer->save('php://output');
 		}	
+
+		public function getSuppliesInventoryExport(){
+			return Excel::download(new ExportSuppliesInventory, 'SuppliesInventory.xlsx');
+		}
 
 	}

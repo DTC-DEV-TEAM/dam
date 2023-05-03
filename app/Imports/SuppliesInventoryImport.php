@@ -26,6 +26,7 @@ class SuppliesInventoryImport implements ToCollection, WithHeadingRow
         foreach ($rows->toArray() as $key => $row){
             $item 	                    = DB::table('assets')->where(['digits_code' => $row['digits_code']])->first();
             $checkRowDbDigitsCode       = DB::table('assets')->select("digits_code AS codes")->get()->toArray();
+     
             $checkRowDbColumnDigitsCode = array_column($checkRowDbDigitsCode, 'codes');
           
             if(!in_array($row['digits_code'], $checkRowDbColumnDigitsCode)){
