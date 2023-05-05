@@ -23,6 +23,7 @@
         public function __construct() {
 			// Register ENUM type
 			//$this->request = $request;
+			$this->middleware('check.suppliescheckrestriction',['only' => ['getAddRequisitionSupplies','postAddSave']]);
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
 		}
 
@@ -170,9 +171,18 @@
 				$this->index_button[] = ["label"=>"FA Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-requisition-fa'),"color"=>"success"];
 
 				$this->index_button[] = ["label"=>"Marketing Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-requisition-marketing'),"color"=>"success"];
-				
-				$this->index_button[] = ["label"=>"Supplies Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-requisition-supplies'),"color"=>"success"];
+				$usersPrivilege = DB::table('cms_privileges')->select('id')->whereNull('cannot_create')->get();
+				$usersPrivileges_array = array();
+				foreach($usersPrivilege as $priv){
+					array_push($usersPrivileges_array, $priv->id);
+				}
 
+				if(in_array(CRUDBooster::myPrivilegeId(),$usersPrivileges_array)){
+					$this->index_button[] = ["label"=>"Supplies Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-requisition-supplies'),"color"=>"success"];
+				}else{
+					$this->index_button[] = ["label"=>"Supplies Request Currently Not Available!","icon"=>"fa fa-ban","url"=>CRUDBooster::mainpath('service-unavailable'),"color"=>"danger"];
+				}
+			
 				//$this->index_button[] = ["label"=>"Return Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-return'),"color"=>"success"];
 
 				//$this->index_button[] = ["label"=>"Transfer Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-transfer'),"color"=>"success"];
@@ -253,8 +263,10 @@
 					}
 
 				});	
-				
-	
+                
+				$(document).ready(function() {
+					$('#supplies-request-currently-not-available').attr('disabled', 'disabled');
+			    });	
 			";
 			
 
@@ -942,6 +954,7 @@
 				->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
 				->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
 				->leftjoin('cms_users as processed', 'header_request.purchased2_by','=', 'processed.id')
+				->leftjoin('cms_users as mo_by', 'header_request.mo_by','=', 'mo_by.id')
 				->leftjoin('cms_users as picked', 'header_request.picked_by','=', 'picked.id')
 				->leftjoin('cms_users as received', 'header_request.received_by','=', 'received.id')
 				->leftjoin('cms_users as closed', 'header_request.closed_by','=', 'closed.id')
@@ -960,6 +973,7 @@
 						'locations.store_name as store_branch',
 						'approved.name as approvedby',
 						'recommended.name as recommendedby',
+						'mo_by.name as mo_by',
 						'picked.name as pickedby',
 						'received.name as receivedby',
 						'processed.name as processedby',
@@ -1012,8 +1026,6 @@
 
 			$search 				= $fields['search'];
 
-
-			
 			$data['status_no'] = 0;
 			$data['message']   ='No Item Found!';
 			$data['items'] = array();
@@ -1026,10 +1038,7 @@
 				->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',1)->where('assets.status','!=','INACTIVE')
 				->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',5)->where('assets.status','!=','INACTIVE')
 				->where('assets.status','!=','INACTIVE')
-				// ->orWhere('assets.item_description','LIKE','%'.$search.'%')
-			
 				->join('category', 'assets.category_id','=', 'category.id')
-				//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
 				->select(	'assets.*',
 				            'category.id as cat_id',
 							'assets.id as assetID',
@@ -1046,19 +1055,19 @@
 				$i = 0;
 				foreach ($items as $key => $value) {
 
-					$return_data[$i]['id'] = 				$value->assetID;
-					$return_data[$i]['cat_id'] = 				$value->cat_id;
-					$return_data[$i]['asset_code'] = 		$value->asset_code;
-					$return_data[$i]['digits_code'] = 		$value->digits_code;
-					$return_data[$i]['asset_tag'] = 		$value->asset_tag;
-					$return_data[$i]['serial_no'] = 		$value->serial_no;
-					$return_data[$i]['item_description'] = 	$value->item_description;
-					$return_data[$i]['category_description'] = 		$value->category_description;
-					$return_data[$i]['item_cost'] = 				$value->item_cost;
-					$return_data[$i]['item_type'] = 				$value->item_type;
-					$return_data[$i]['image'] = 				$value->image;
-					$return_data[$i]['quantity'] = 				$value->quantity;
-					$return_data[$i]['total_quantity'] = 				$value->total_quantity;
+					$return_data[$i]['id']                   = 	$value->assetID;
+					$return_data[$i]['cat_id']               = 	$value->cat_id;
+					$return_data[$i]['asset_code']           = 	$value->asset_code;
+					$return_data[$i]['digits_code']          = 	$value->digits_code;
+					$return_data[$i]['asset_tag']            = 	$value->asset_tag;
+					$return_data[$i]['serial_no']            = 	$value->serial_no;
+					$return_data[$i]['item_description']     = 	$value->item_description;
+					$return_data[$i]['category_description'] = 	$value->category_description;
+					$return_data[$i]['item_cost']            = 	$value->item_cost;
+					$return_data[$i]['item_type']            = 	$value->item_type;
+					$return_data[$i]['image']                = 	$value->image;
+					$return_data[$i]['quantity']             = 	$value->quantity;
+					$return_data[$i]['total_quantity']       = 	$value->total_quantity;
 
 					$i++;
 
@@ -1801,6 +1810,10 @@
 		public function UploadStatus() {
 			$data['page_title']= 'Update Status';
 			return view('import.update-status-upload', $data)->render();
+		}
+
+		public function getServiceUnavailable() {
+			return view('assets.add-service-unavailable');
 		}
 
 	}

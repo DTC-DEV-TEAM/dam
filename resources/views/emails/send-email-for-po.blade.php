@@ -61,6 +61,14 @@
         </div>
     </div>
 
+    <div class="row" style="display:flex;">
+        <div class="col1">
+        <p><span style="font-weight: 700;">Request Type:&nbsp;</span>
+            <span style="text-align: center;">{{ $infos['request_type'] }}</span>
+            </p>
+        </div>
+    </div>
+
     <table border="1" width="100%" style="text-align: center;">
         <tbody>
         <tr>

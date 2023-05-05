@@ -292,6 +292,7 @@
 	        */
 	        $this->load_css = array();
 	        $this->load_css[] = asset("datetimepicker/bootstrap-datetimepicker.min.css");
+			$this->load_css[] = asset("css/font-family.css");
 	        
 	    }
 
@@ -546,7 +547,11 @@
 
 			$data['warehouse_location'] = WarehouseLocationModel::where('id','!=',4)->get();;
 			$data['reserved_assets'] = AssetsInventoryReserved::whereNotNull('for_po')->get();
-		
+			$data['header_images'] = AssetsHeaderImages::select(
+				'assets_header_images.*'
+			  )
+			  ->where('assets_header_images.header_id', $id)
+			  ->get();
 			return $this->view("assets.add-inventory", $data);
 
 		}
@@ -714,16 +719,47 @@
 					CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
 				}
 			}
+			dd(Request::all());
 			$lock = Cache::lock('processing', 5);
  
-			try {
-				$lock->block(5);
+			// try {
+			// $lock->block(5);
+
 			$fields = Request::all();
 		    
 			$files = $fields['si_dr'];
-			$id = $fields['id'];
+			//$id = $fields['id'];
 			$remarks = $fields['remarks'];
-	     
+
+			//parse data in form
+			parse_str($fields['form_data'], $fields);
+			$po_no        = $fields['po_no'];
+			$location     = $fields['location'];
+			$invoice_date = $fields['invoice_date'];
+			$invoice_no   = $fields['invoice_no'];
+			$rr_date      = $fields['rr_date'];
+			$body_id      = $fields['body_id'];
+			$serial_no    = $fields['serial_no'];
+			$tag_id       = $fields['arf_tag'];
+			$upc_code     = $fields['upc_code'];
+			$brand        = $fields['brand'];
+			$specs        = $fields['specs'];
+
+			$getLastId = AssetsInventoryHeader::Create(
+				[
+					'po_no'                  => $po_no, 
+					'invoice_date'           => $invoice_date,
+					'invoice_no'             => $invoice_no,
+					'rr_date'                => $rr_date,
+					'location'               => $location,
+					'header_status'          => 6,
+					'created_by'             => CRUDBooster::myId(),
+					'created_at'             => date('Y-m-d H:i:s')
+				]
+			);     
+			
+			$id = $getLastId->id;
+	        dd($id);
 			$images = [];
 			if (isset($files)) {
 				$counter = 0;
@@ -742,267 +778,211 @@
 					$header_images->save();
 				}
 			}
-	        //parse data in form
-			parse_str($fields['form_data'], $fields);
-			$invoice_date = $fields['invoice_date'];
-			$invoice_no   = $fields['invoice_no'];
-			$rr_date      = $fields['rr_date'];
-			$body_id      = $fields['body_id'];
-			$serial_no    = $fields['serial_no'];
-			$tag_id       = $fields['arf_tag'];
-			$upc_code     = $fields['upc_code'];
-			$brand        = $fields['brand'];
-			$specs        = $fields['specs'];
-
-			//update header status
-			AssetsInventoryHeaderForApproval::where('id', $id)
-											->update([
-											    	'invoice_date' => $invoice_date, 
-													'invoice_no' => $invoice_no, 
-													'rr_date' => $rr_date, 
-													'header_approval_status' => 22, 
-													'remarks' => $remarks, 
-													'updated_by' => CRUDBooster::myId(), 
-													'date_updated' => date('Y-m-d H:i:s')
-													]);
-		
-            //header details
-			$header = AssetsInventoryHeaderForApproval::leftjoin('assets_header_images', 'assets_inventory_header_for_approval.id', '=', 'assets_header_images.header_id')
-				->leftjoin('cms_users', 'assets_inventory_header_for_approval.created_by', '=', 'cms_users.id')
-				->select(
-					'assets_inventory_header_for_approval.*',
-					'assets_inventory_header_for_approval.id as header_id',
-					'cms_users.*',
-					'assets_inventory_header_for_approval.created_by as header_created_by',
-					'assets_inventory_header_for_approval.created_at as date_created'
-					)
-			    ->where('assets_inventory_header_for_approval.id', $id)
-			    ->first();
-			AssetsInventoryHeader::Create(
-				[
-					'id' => $id, 
-					'po_no' => $header->po_no, 
-					'invoice_date' => $header->invoice_date,
-					'invoice_no' => $header->invoice_no,
-					'rr_date' => $header->rr_date,
-					'location' => $header->location,
-					'header_approval_status' => 6,
-					'remarks' => $header->remarks,
-					'created_by' => $header->header_created_by,
-					'created_at' => Carbon::parse($header->date_created)->toDateTimeString(),
-				]
-			);        
-			for ($i = 0; $i < count($body_id); $i++) {
-				AssetsInventoryBodyForApproval::where(['id' => $body_id[$i]])
-				   ->update([
-					       'statuses_id' => 22, 
-						   'quantity'    => 1,
-					       'serial_no'   => $serial_no[$i],
-						   'upc_code'    => $upc_code[$i],
-						   'brand'       => $brand[$i],
-						   'specs'       => $specs[$i]
-				           ]);
-			}
-
+	         
 			//update reserved table
-			if($tag_id){
-				for ($t = 0; $t < count($tag_id); $t++) {
-					AssetsInventoryReserved::where(['id' => $tag_id[$t]])
-					   ->update([
-							   'reserved' => 1,
-							   'for_po'   => NULL
-							   ]);
-				}
-			}
+			// if($tag_id){
+			// 	for ($t = 0; $t < count($tag_id); $t++) {
+			// 		AssetsInventoryReserved::where(['id' => $tag_id[$t]])
+			// 		   ->update([
+			// 				   'reserved' => 1,
+			// 				   'for_po'   => NULL
+			// 				   ]);
+			// 	}
+			// }
+
 
 	        //Body details
-			$body = AssetsInventoryBodyForApproval::leftjoin('assets_inventory_header_for_approval', 'assets_inventory_body_for_approval.header_id', '=', 'assets_inventory_header_for_approval.id')
-			->select(
-				  'assets_inventory_body_for_approval.*',
-				  'assets_inventory_body_for_approval.id as body_approval_id',
-				  'assets_inventory_body_for_approval.created_at as created_at'
-				)
-				->where('assets_inventory_body_for_approval.header_id', $id)
-				->get();
-
-			/* process to generate chronological sequential numbers asset code */
-			//segregate fixed assets to get category id
-			$FixAssetsArr = [];
-			$FaCatId = DB::table('category')->find(1);
-			foreach ($body as $fkey => $fvalue) {
-				if (strtolower($fvalue['item_category']) == strtolower($FaCatId->category_description)) {
-					$FixAssetsArr[] = $fvalue;
-					unset($body[$fkey]);
-				}
-				foreach($FixAssetsArr as $valFa){
-					$getFaAssets = $valFa['item_category'];
-				}
-			}
-
-            //segregate it assets to get category id
-			$ItAssetsArr = [];
-			$itCatId = DB::table('category')->find(5);
-			foreach ($body as $key => $value) {
-				if (strtolower($value['item_category']) == strtolower($itCatId->category_description)) {
-					$ItAssetsArr[] = $value;
-					unset($body[$key]);
-				}
-				//
-				foreach($ItAssetsArr as $valIt){
-					$getItAssets = $valIt['item_category'];
-				}
-			}
-
-			//segregate supplies to get category id
-			$suppliesArr = [];
-			$SuppCatId = DB::table('category')->find(2);
-			foreach ($body as $skey => $svalue) {
-				if (strtolower($svalue['item_category']) == strtolower($SuppCatId->category_description)) {
-					$suppliesArr[] = $svalue;
-					unset($body[$skey]);
-				}
-				foreach($suppliesArr as $valSupp){
-					$getSuppliesAssets = $valSupp['item_category'];
-				}
-			}
-
-			//segregate packaging bag to get category id
-			$packagingBagArr = [];
-			$PpbCatId = DB::table('category')->find(3);
-			foreach ($body as $ppbkey => $ppbvalue) {
-				if (strtolower($ppbvalue['item_category']) == strtolower($PpbCatId->category_description)) {
-					$packagingBagArr[] = $ppbvalue;
-					unset($body[$ppbkey]);
-				}
-				foreach($packagingBagArr as $valPpb){
-					$getPackagingBagAssets = $valPpb['item_category'];
-				}
-			}
-
-			//segregate marketing to get category id
-			$marketingArr = [];
-			$marketingCatId = DB::table('category')->find(4);
-			foreach ($body as $mkey => $mvalue) {
-				if (strtolower($mvalue['item_category']) == strtolower($marketingCatId->category_description)) {
-					$marketingArr[] = $mvalue;
-					unset($body[$mkey]);
-				}
-				foreach($marketingArr as $valm){
-					$getMarketingAssets = $valm['item_category'];
-				}
-			}
-
-			//segregate fixtures and furnitures to get category id
-			$fafArr = [];
-			$fafCatId = DB::table('category')->find(6);
-			foreach ($body as $fafkey => $fafvalue) {
-				if (strtolower($fafvalue['item_category']) == strtolower($fafCatId->category_description)) {
-					$fafArr[] = $fafvalue;
-					unset($body[$fafkey]);
-				}
-				foreach($fafArr as $valfaf){
-					$getFafAssets = $valfaf['item_category'];
-				}
-			}
-		
-			
-			//put asset code per based on  item category IT ASSETS
-			$finalItAssetsArr = [];
-			$DatabaseCounterIt = DB::table('assets_inventory_body')->where('item_category',$getItAssets)->count();
-			foreach((array)$ItAssetsArr as $finalItkey => $finalItvalue) {
-					$finalItvalue['asset_code'] = "A1".str_pad ($DatabaseCounterIt + 1, 6, '0', STR_PAD_LEFT);
-					$DatabaseCounterIt++; // or any rule you want.	
-					$finalItAssetsArr[] = $finalItvalue;	
-			}
+			// if($tag_id){
+			// 	$body = AssetsInventoryBodyForApproval::leftjoin('assets_inventory_header_for_approval', 'assets_inventory_body_for_approval.header_id', '=', 'assets_inventory_header_for_approval.id')
+			// 	->select(
+			// 		  'assets_inventory_body_for_approval.*',
+			// 		  'assets_inventory_body_for_approval.id as body_approval_id',
+			// 		  'assets_inventory_body_for_approval.created_at as created_at'
+			// 		)
+			// 		->where('assets_inventory_body_for_approval.header_id', $id)
+			// 		->get();
 	
-			//put asset code per based on  item category FIXED ASSETS
-			$finalFixAssetsArr = [];
-			$DatabaseCounterFixAsset = DB::table('assets_inventory_body')->where('item_category',$getFaAssets)->count();
-			foreach((array)$FixAssetsArr as $finalfakey => $finalfavalue) {
-					$finalfavalue['asset_code'] = "A2".str_pad ($DatabaseCounterFixAsset + 1, 6, '0', STR_PAD_LEFT);
-					$DatabaseCounterFixAsset++; // or any rule you want.	
-					$finalFixAssetsArr[] = $finalfavalue;
-			}
-
-			//put asset code per based on  item category SUPPLIES
-			$finalSuppliessArr = [];
-			$DatabaseCounterSupplies = DB::table('assets_inventory_body')->where('item_category',$getSuppliesAssets)->count();
-			foreach((array)$suppliesArr as $finalsuppkey => $finalsuppvalue) {
-					$finalsuppvalue['asset_code'] = "A3".str_pad ($DatabaseCounterSupplies + 1, 6, '0', STR_PAD_LEFT);
-					$DatabaseCounterSupplies++; // or any rule you want.	
-					$finalSuppliessArr[] = $finalsuppvalue;
-			}
-
-			//put asset code per based on  item category PACKAGING BAG
-			$finalPpbArr = [];
-			$DatabaseCounterPpb = DB::table('assets_inventory_body')->where('item_category',$getPackagingBagAssets)->count();
-			foreach((array)$packagingBagArr as $finalppbkey => $finalppbvalue) {
-					$finalppbvalue['asset_code'] = "A4".str_pad ($DatabaseCounterPpb + 1, 6, '0', STR_PAD_LEFT);
-					$DatabaseCounterPpb++; // or any rule you want.	
-					$finalPpbArr[] = $finalppbvalue;
-			}
-
-			//put asset code per based on  item category MARKETING
-			$finalMarketingArr = [];
-			$DatabaseCounterMarketing = DB::table('assets_inventory_body')->where('item_category',$getMarketingAssets)->count();
-			foreach((array)$marketingArr as $finalmkey => $finalmvalue) {
-					$finalmvalue['asset_code'] = "A5".str_pad ($DatabaseCounterMarketing + 1, 6, '0', STR_PAD_LEFT);
-					$DatabaseCounterMarketing++; // or any rule you want.	
-					$finalMarketingArr[] = $finalmvalue;
-			}
-
-			//put asset code per based on  item category FIXTURES AND FURNITURES
-			$finalFafArr = [];
-			$DatabaseCounterFaf = DB::table('assets_inventory_body')->where('item_category',$getFafAssets)->count();
-			foreach((array)$fafArr as $finalfafkey => $finalfafvalue) {
-					$finalfafvalue['asset_code'] = "A6".str_pad ($DatabaseCounterFaf + 1, 6, '0', STR_PAD_LEFT);
-					$DatabaseCounterFaf++; // or any rule you want.	
-					$finalFafArr[] = $finalfafvalue;
-			}
-
-            //Merge all data from segragating per item category
-			$finalDataofSplittingArray = array_merge($finalItAssetsArr, $finalFixAssetsArr, $finalSuppliessArr, $finalPpbArr, $finalMarketingArr, $finalFafArr);
-
-			//save final data
-			$saveData = [];
-			$saveContainerData = [];
-			foreach($finalDataofSplittingArray as $frKey => $frData){		
-				$saveContainerData['header_id']             = $frData['header_id'];
-				//$saveContainerData['header_approval_id']  = $id;
-				$saveContainerData['item_id']               = $frData['item_id'];
-				$saveContainerData['statuses_id']           = 6;
-				$saveContainerData['location']              = $frData['location'];
-				$saveContainerData['digits_code']           = $frData['digits_code'];
-				$saveContainerData['item_description']      = $frData['item_description'];
-				$saveContainerData['value']                 = $frData['value'];
-				$saveContainerData['quantity']              = 1;	
-				$saveContainerData['serial_no']             = $frData['serial_no'];
-				$saveContainerData['warranty_coverage']     = $frData['warranty_coverage'];
-				$saveContainerData['asset_code']            = $frData['asset_code'];
-				$saveContainerData['barcode']               = $frData['digits_code'].''.$frData['asset_code'];
-				$saveContainerData['item_condition']        = $frData['item_condition'];
-				$saveContainerData['item_category']         = $frData['item_category'];
-				$saveContainerData['transaction_per_asset'] = $frData['transaction_per_asset'];
-				$saveContainerData['upc_code']              = $frData['upc_code'];
-				$saveContainerData['brand']                 = $frData['brand'];
-				$saveContainerData['specs']                 = $frData['specs'];
-				$saveContainerData['created_by']            = $frData['created_by'];
-				$saveContainerData['created_at']            = Carbon::parse($frData['created_at'])->toDateTimeString();
+			// 	/* process to generate chronological sequential numbers asset code */
+			// 	//segregate fixed assets to get category id
+			// 	$FixAssetsArr = [];
+			// 	$FaCatId = DB::table('category')->find(1);
+			// 	foreach ($body as $fkey => $fvalue) {
+			// 		if (strtolower($fvalue['item_category']) == strtolower($FaCatId->category_description)) {
+			// 			$FixAssetsArr[] = $fvalue;
+			// 			unset($body[$fkey]);
+			// 		}
+			// 		foreach($FixAssetsArr as $valFa){
+			// 			$getFaAssets = $valFa['item_category'];
+			// 		}
+			// 	}
+	
+			// 	//segregate it assets to get category id
+			// 	$ItAssetsArr = [];
+			// 	$itCatId = DB::table('category')->find(5);
+			// 	foreach ($body as $key => $value) {
+			// 		if (strtolower($value['item_category']) == strtolower($itCatId->category_description)) {
+			// 			$ItAssetsArr[] = $value;
+			// 			unset($body[$key]);
+			// 		}
+			// 		//
+			// 		foreach($ItAssetsArr as $valIt){
+			// 			$getItAssets = $valIt['item_category'];
+			// 		}
+			// 	}
+	
+			// 	//segregate supplies to get category id
+			// 	$suppliesArr = [];
+			// 	$SuppCatId = DB::table('category')->find(2);
+			// 	foreach ($body as $skey => $svalue) {
+			// 		if (strtolower($svalue['item_category']) == strtolower($SuppCatId->category_description)) {
+			// 			$suppliesArr[] = $svalue;
+			// 			unset($body[$skey]);
+			// 		}
+			// 		foreach($suppliesArr as $valSupp){
+			// 			$getSuppliesAssets = $valSupp['item_category'];
+			// 		}
+			// 	}
+	
+			// 	//segregate packaging bag to get category id
+			// 	$packagingBagArr = [];
+			// 	$PpbCatId = DB::table('category')->find(3);
+			// 	foreach ($body as $ppbkey => $ppbvalue) {
+			// 		if (strtolower($ppbvalue['item_category']) == strtolower($PpbCatId->category_description)) {
+			// 			$packagingBagArr[] = $ppbvalue;
+			// 			unset($body[$ppbkey]);
+			// 		}
+			// 		foreach($packagingBagArr as $valPpb){
+			// 			$getPackagingBagAssets = $valPpb['item_category'];
+			// 		}
+			// 	}
+	
+			// 	//segregate marketing to get category id
+			// 	$marketingArr = [];
+			// 	$marketingCatId = DB::table('category')->find(4);
+			// 	foreach ($body as $mkey => $mvalue) {
+			// 		if (strtolower($mvalue['item_category']) == strtolower($marketingCatId->category_description)) {
+			// 			$marketingArr[] = $mvalue;
+			// 			unset($body[$mkey]);
+			// 		}
+			// 		foreach($marketingArr as $valm){
+			// 			$getMarketingAssets = $valm['item_category'];
+			// 		}
+			// 	}
+	
+			// 	//segregate fixtures and furnitures to get category id
+			// 	$fafArr = [];
+			// 	$fafCatId = DB::table('category')->find(6);
+			// 	foreach ($body as $fafkey => $fafvalue) {
+			// 		if (strtolower($fafvalue['item_category']) == strtolower($fafCatId->category_description)) {
+			// 			$fafArr[] = $fafvalue;
+			// 			unset($body[$fafkey]);
+			// 		}
+			// 		foreach($fafArr as $valfaf){
+			// 			$getFafAssets = $valfaf['item_category'];
+			// 		}
+			// 	}
 			
-				$saveData[] = $saveContainerData;
-			}
-			AssetsInventoryBody::insert($saveData);
+				
+			// 	//put asset code per based on  item category IT ASSETS
+			// 	$finalItAssetsArr = [];
+			// 	$DatabaseCounterIt = DB::table('assets_inventory_body')->where('item_category',$getItAssets)->count();
+			// 	foreach((array)$ItAssetsArr as $finalItkey => $finalItvalue) {
+			// 			$finalItvalue['asset_code'] = "A1".str_pad ($DatabaseCounterIt + 1, 6, '0', STR_PAD_LEFT);
+			// 			$DatabaseCounterIt++; // or any rule you want.	
+			// 			$finalItAssetsArr[] = $finalItvalue;	
+			// 	}
+		
+			// 	//put asset code per based on  item category FIXED ASSETS
+			// 	$finalFixAssetsArr = [];
+			// 	$DatabaseCounterFixAsset = DB::table('assets_inventory_body')->where('item_category',$getFaAssets)->count();
+			// 	foreach((array)$FixAssetsArr as $finalfakey => $finalfavalue) {
+			// 			$finalfavalue['asset_code'] = "A2".str_pad ($DatabaseCounterFixAsset + 1, 6, '0', STR_PAD_LEFT);
+			// 			$DatabaseCounterFixAsset++; // or any rule you want.	
+			// 			$finalFixAssetsArr[] = $finalfavalue;
+			// 	}
+	
+			// 	//put asset code per based on  item category SUPPLIES
+			// 	$finalSuppliessArr = [];
+			// 	$DatabaseCounterSupplies = DB::table('assets_inventory_body')->where('item_category',$getSuppliesAssets)->count();
+			// 	foreach((array)$suppliesArr as $finalsuppkey => $finalsuppvalue) {
+			// 			$finalsuppvalue['asset_code'] = "A3".str_pad ($DatabaseCounterSupplies + 1, 6, '0', STR_PAD_LEFT);
+			// 			$DatabaseCounterSupplies++; // or any rule you want.	
+			// 			$finalSuppliessArr[] = $finalsuppvalue;
+			// 	}
+	
+			// 	//put asset code per based on  item category PACKAGING BAG
+			// 	$finalPpbArr = [];
+			// 	$DatabaseCounterPpb = DB::table('assets_inventory_body')->where('item_category',$getPackagingBagAssets)->count();
+			// 	foreach((array)$packagingBagArr as $finalppbkey => $finalppbvalue) {
+			// 			$finalppbvalue['asset_code'] = "A4".str_pad ($DatabaseCounterPpb + 1, 6, '0', STR_PAD_LEFT);
+			// 			$DatabaseCounterPpb++; // or any rule you want.	
+			// 			$finalPpbArr[] = $finalppbvalue;
+			// 	}
+	
+			// 	//put asset code per based on  item category MARKETING
+			// 	$finalMarketingArr = [];
+			// 	$DatabaseCounterMarketing = DB::table('assets_inventory_body')->where('item_category',$getMarketingAssets)->count();
+			// 	foreach((array)$marketingArr as $finalmkey => $finalmvalue) {
+			// 			$finalmvalue['asset_code'] = "A5".str_pad ($DatabaseCounterMarketing + 1, 6, '0', STR_PAD_LEFT);
+			// 			$DatabaseCounterMarketing++; // or any rule you want.	
+			// 			$finalMarketingArr[] = $finalmvalue;
+			// 	}
+	
+			// 	//put asset code per based on  item category FIXTURES AND FURNITURES
+			// 	$finalFafArr = [];
+			// 	$DatabaseCounterFaf = DB::table('assets_inventory_body')->where('item_category',$getFafAssets)->count();
+			// 	foreach((array)$fafArr as $finalfafkey => $finalfafvalue) {
+			// 			$finalfafvalue['asset_code'] = "A6".str_pad ($DatabaseCounterFaf + 1, 6, '0', STR_PAD_LEFT);
+			// 			$DatabaseCounterFaf++; // or any rule you want.	
+			// 			$finalFafArr[] = $finalfafvalue;
+			// 	}
+	
+			// 	//Merge all data from segragating per item category
+			// 	$finalDataofSplittingArray = array_merge($finalItAssetsArr, $finalFixAssetsArr, $finalSuppliessArr, $finalPpbArr, $finalMarketingArr, $finalFafArr);
+	
+			// 	//save final data
+			// 	$saveData = [];
+			// 	$saveContainerData = [];
+			// 	foreach($finalDataofSplittingArray as $frKey => $frData){		
+			// 		$saveContainerData['header_id']             = $frData['header_id'];
+			// 		//$saveContainerData['header_approval_id']  = $id;
+			// 		$saveContainerData['item_id']               = $frData['item_id'];
+			// 		$saveContainerData['statuses_id']           = 6;
+			// 		$saveContainerData['location']              = $frData['location'];
+			// 		$saveContainerData['digits_code']           = $frData['digits_code'];
+			// 		$saveContainerData['item_description']      = $frData['item_description'];
+			// 		$saveContainerData['value']                 = $frData['value'];
+			// 		$saveContainerData['quantity']              = 1;	
+			// 		$saveContainerData['serial_no']             = $frData['serial_no'];
+			// 		$saveContainerData['warranty_coverage']     = $frData['warranty_coverage'];
+			// 		$saveContainerData['asset_code']            = $frData['asset_code'];
+			// 		$saveContainerData['barcode']               = $frData['digits_code'].''.$frData['asset_code'];
+			// 		$saveContainerData['item_condition']        = $frData['item_condition'];
+			// 		$saveContainerData['item_category']         = $frData['item_category'];
+			// 		$saveContainerData['transaction_per_asset'] = $frData['transaction_per_asset'];
+			// 		$saveContainerData['upc_code']              = $frData['upc_code'];
+			// 		$saveContainerData['brand']                 = $frData['brand'];
+			// 		$saveContainerData['specs']                 = $frData['specs'];
+			// 		$saveContainerData['created_by']            = $frData['created_by'];
+			// 		$saveContainerData['created_at']            = Carbon::parse($frData['created_at'])->toDateTimeString();
+				
+			// 		$saveData[] = $saveContainerData;
+			// 	}
+			// 	AssetsInventoryBody::insert($saveData);
+			// }
+			
 
 			$message = ['status'=>'success', 'message' => 'Received!','redirect_url'=>CRUDBooster::mainpath()];
 			echo json_encode($message);
-			sleep(3);
-			// Lock acquired after waiting a maximum of 5 seconds...
-			} catch (LockTimeoutException $e) {
-				// Unable to acquire lock...
-				return;
-			} finally {
-				optional($lock)->release();
-			}
+			
+			// sleep(3);
+			// // Lock acquired after waiting a maximum of 5 seconds...
+			// } catch (LockTimeoutException $e) {
+			// 	// Unable to acquire lock...
+			// 	return;
+			// } finally {
+			// 	optional($lock)->release();
+			// }
 			
 		}
 

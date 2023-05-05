@@ -41,7 +41,7 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/export-assets-body', 'AdminAssetsInventoryHeaderController@ExportAssetsBody')->name('assets.export.assets.body'); 
     Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/export-assets-header', 'AdminAssetsInventoryHeaderController@ExportAssetsHeader')->name('assets.export.assets.header'); 
     Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/check-row','AdminAssetsInventoryHeaderController@checkRow')->name('assets.check.row');
-    Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/get-approvedProcess','AdminAssetsInventoryHeaderForApprovalController@getapprovedProcess')->name('assets.get.approvedProcess');
+    Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/get-approvedProcess','AdminAssetsInventoryHeaderController@getapprovedProcess')->name('assets.get.approvedProcess');
     Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/get-rejectedProcess','AdminAssetsInventoryHeaderForApprovalController@getrejectedProcess')->name('assets.get.rejectedProcess');
     
     Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/get-history','AdminHeaderRequestController@getHistory')->name('assets.get.history');
@@ -233,6 +233,7 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('/admin/assets_supplies_inventory/upload-supplies-inventory-template','AdminAssetsSuppliesInventoryController@downloadSuppliesInventoryTemplate');
     Route::post(config('crudbooster.ADMIN_PATH').'/assets_supplies_inventory/description','AdminRequestsController@getDescription')->name('get.supplies.description');
     Route::post(config('crudbooster.ADMIN_PATH').'/assets_supplies_inventory/add-supplies-inventory','AdminRequestsController@addSuppliesInventory')->name('add.supplies.inventory');
+    Route::post(config('crudbooster.ADMIN_PATH').'/assets_supplies_inventory/restrict-request-asset','AdminRequestsController@restrictSuppliesRequest')->name('restrict-request-asset');
 
     Route::get('/admin/clear-view', function() {
         Artisan::call('view:clear');

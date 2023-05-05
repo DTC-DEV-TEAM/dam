@@ -404,7 +404,6 @@
                                                     <td align="center" colspan="1">
                                                         <label>{{$Header->total}}</label>
                                                     </td>
-                                                    <td colspan="1"></td>
                                                 </tr>
         
                                             </tbody>
@@ -418,66 +417,50 @@
             @endif
             <hr>
             @if( $Header->processedby != null )
-                <div class="row">
-                    <div class="col-md-6">
-                        <table style="width:100%">
-                            <tbody>
+            <div class="row">
+                <div class="col-md-6">
+                    <table style="width:100%">
+                        <tbody id="footer">
+                            <tr>
+                                <th class="control-label col-md-2">{{ trans('message.form-label.mo_by') }}:</th>
+                                <td class="col-md-4">{{$Header->mo_by}} / {{$Header->mo_at}}</td>     
+                            </tr>
+                            @if($Header->ac_comments != null)
                                 <tr>
-                                    <th class="control-label col-md-2">{{ trans('message.form-label.po_number') }}:</th>
-                                    <td class="col-md-4">{{$Header->po_number}}</td>     
+                                    <th class="control-label col-md-2">{{ trans('message.table.ac_comments') }}:</th>
+                                    <td class="col-md-4">{{$Header->ac_comments}}</td>
                                 </tr>
-
+                            @endif
+                            @if( $Header->pickedby != null )
                                 <tr>
-                                    <th class="control-label col-md-2">{{ trans('message.form-label.po_date') }}:</th>
-                                    <td class="col-md-4">{{$Header->po_date}}</td>
+                                    <th class="control-label col-md-2">{{ trans('message.form-label.picked_by') }}:</th>
+                                    <td class="col-md-4">{{$Header->pickedby}} / {{$Header->picked_at}}</td>
                                 </tr>
-
-                                <tr>
-                                    <th class="control-label col-md-2">{{ trans('message.form-label.quote_date') }}:</th>
-                                    <td class="col-md-4">{{$Header->quote_date}}</td>
-                                </tr>
-                                @if( $Header->processedby != null )
-                                    <tr>
-                                        <th class="control-label col-md-2">{{ trans('message.form-label.processed_by') }}:</th>
-                                        <td class="col-md-4">{{$Header->processedby}} / {{$Header->purchased2_at}}</td>
-                                    </tr>
-                                @endif
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="col-md-6">
-                        <table style="width:100%">
-                            <tbody>
-                                @if($Header->ac_comments != null)
-                                    <tr>
-                                        <th class="control-label col-md-2">{{ trans('message.table.ac_comments') }}:</th>
-                                        <td class="col-md-4">{{$Header->ac_comments}}</td>
-                                    </tr>
-                                @endif
-                                @if( $Header->pickedby != null )
-                                    <tr>
-                                        <th class="control-label col-md-2">{{ trans('message.form-label.picked_by') }}:</th>
-                                        <td class="col-md-4">{{$Header->pickedby}} / {{$Header->picked_at}}</td>
-                                    </tr>
-                                @endif
-                                @if( $Header->receivedby != null )
-                                    <tr>
-                                        <th class="control-label col-md-2">{{ trans('message.form-label.received_by') }}:</th>
-                                        <td class="col-md-4">{{$Header->receivedby}} / {{$Header->received_at}}</td>
-                                    </tr>
-                                @endif
-                                @if( $Header->closedby != null )
-                                    <tr>
-                                        <th class="control-label col-md-2">{{ trans('message.form-label.closed_by') }}:</th>
-                                        <td class="col-md-4">{{$Header->closedby}} / {{$Header->closed_at}}</td>
-                                    </tr>
-                                @endif
-                            </tbody>
-                        </table>
-                    </div>
+                            @endif
+                        </tbody>
+                    </table>
                 </div>
-            @endif
+
+                <div class="col-md-6">
+                    <table style="width:100%">
+                        <tbody id="footer">
+                            @if( $Header->receivedby != null )
+                                <tr>
+                                    <th class="control-label col-md-2">{{ trans('message.form-label.received_by') }}:</th>
+                                    <td class="col-md-4">{{$Header->receivedby}} / {{$Header->received_at}}</td>
+                                </tr>
+                            @endif
+                            @if( $Header->closedby != null )
+                                <tr>
+                                    <th class="control-label col-md-2">{{ trans('message.form-label.closed_by') }}:</th>
+                                    <td class="col-md-4">{{$Header->closedby}} / {{$Header->closed_at}}</td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        @endif
           
         </div>
 

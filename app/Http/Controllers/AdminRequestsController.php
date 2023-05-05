@@ -390,5 +390,19 @@
 			echo json_encode($message);
 		}
 
+		public function restrictSuppliesRequest(Request $request){
+			$data = Request::all();
+			$btnvalue = $data['value'];
+			
+			if($btnvalue == 1){
+				DB::table('cms_privileges')->update(['cannot_create' => 1]);
+			}else{
+				DB::table('cms_privileges')->update(['cannot_create' => NULL]);
+			}
+
+			$message = ['status'=>'success', 'message' => 'Set Successfully!'];
+			echo json_encode($message);
+		}
+
 
 	}

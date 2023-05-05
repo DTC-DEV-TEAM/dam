@@ -713,13 +713,15 @@
 				
 				HeaderRequest::where('id',$Header_id)
 				->update([
-					'mo_by'=> 	CRUDBooster::myId(),
-					'mo_at'=> 	date('Y-m-d H:i:s'),
-					'status_id'=> 	$for_printing,
-					'quantity_total'=> 	$quantity_total,
-					'total'=> 	$total,
-					'location_id'=> $headLocation,
-					'to_mo'=> 	0
+					'mo_by'          => CRUDBooster::myId(),
+					'mo_at'          => date('Y-m-d H:i:s'),
+					'purchased2_by'	 => CRUDBooster::myId(),
+				    'purchased2_at'  => date('Y-m-d H:i:s'),
+					'status_id'      => $for_printing,
+					'quantity_total' => $quantity_total,
+					'total'          => $total,
+					'location_id'    => $headLocation,
+					'to_mo'          => 0
 				]);
 
 
@@ -736,11 +738,13 @@
 
 				HeaderRequest::where('id',$Header_id)
 				->update([
-					'mo_by'=> 	CRUDBooster::myId(),
-					'mo_at'=> 	date('Y-m-d H:i:s'),
-					'quantity_total'=> 	$sum_qty,
-					'total'=> 	$sum,
-					'to_mo'=> 	0
+					'mo_by'          => CRUDBooster::myId(),
+					'mo_at'          => date('Y-m-d H:i:s'),
+					'purchased2_by'	 => CRUDBooster::myId(),
+				    'purchased2_at'  => date('Y-m-d H:i:s'),
+					'quantity_total' => $sum_qty,
+					'total'          => $sum,
+					'to_mo'          => 0
 				]);
 
 
@@ -772,7 +776,8 @@
 				
 				HeaderRequest::where('id',$Header_id)
 				->update([
-					'mo_plug'=> 0
+					'to_mo'   => 1,
+					'mo_plug' => 0
 				]);
 			}
 
@@ -861,7 +866,6 @@
 
 			$postdata['mo_by'] 				= CRUDBooster::myId();
 			$postdata['mo_at'] 				= date('Y-m-d H:i:s');
-
 			
 			if($arf_header->print_by == null){
 

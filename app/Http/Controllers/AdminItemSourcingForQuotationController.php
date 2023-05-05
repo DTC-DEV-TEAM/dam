@@ -532,11 +532,23 @@
 
 			$checkRowDbDigitsCode       = DB::table('assets')->select("digits_code AS codes")->get()->toArray();
             $checkRowDbColumnDigitsCode = array_column($checkRowDbDigitsCode, 'codes');
-          
-            if(!in_array($digits_code, $checkRowDbColumnDigitsCode)){
-				exit(json_encode($message = ['status'=>'error', 'message' => 'Digits Code not exist in Item Master!']));
+            
+			if(in_array($request_type_id, [1,5,7])){
+				if(!in_array($digits_code, $checkRowDbColumnDigitsCode)){
+					exit(json_encode($message = ['status'=>'error', 'message' => 'Digits Code not exist in Item Master!']));
+				}
 			}
 
+			$header_info   = ItemHeaderSourcing::headerInfo($id);
+			$body_info     = ItemBodySourcing::bodyInfo($id);
+			
+			$option_into   = DB::table('item_sourcing_options')->where('header_id',$id)->whereNotNull('selected_at')->first();
+			$file_info     = DB::table('item_sourcing_option_file')->where('opt_body_id',$option_into->id)->first();
+
+			if(!$file_info){
+               exit(json_encode($message = ['status'=>'error', 'message' => 'Option not yet selected!']));
+			}
+           
 			ItemBodySourcing::where('header_request_id', $id)
 			->update([
 				'digits_code'=> 		$digits_code
@@ -549,12 +561,6 @@
 				'processed_at'      => date('Y-m-d H:i:s'),
 			]);	
 
-			$header_info   = ItemHeaderSourcing::headerInfo($id);
-			$body_info     = ItemBodySourcing::bodyInfo($id);
-			
-			$option_into   = DB::table('item_sourcing_options')->where('header_id',$id)->whereNotNull('selected_at')->first();
-			$file_info     = DB::table('item_sourcing_option_file')->where('opt_body_id',$option_into->id)->first();
-		
 			//SEND EMAIL
 			$infos['reference_number'] = $header_info->reference_number;
 			$infos['created_at']       = $header_info->created_at;
@@ -564,6 +570,7 @@
 			$infos['position']         = $header_info->position;
 			$infos['date_needed']      = $header_info->date_needed;
 			$infos['status']           = $header_info->status_description;
+			$infos['request_type']     = $header_info->request_name;
 			$infos['digits_code']      = $body_info->digits_code;
 			$infos['item_description'] = $body_info->item_description;
 			$infos['category']         = $body_info->category_description;
@@ -577,9 +584,11 @@
 			$infos['quantity']         = $body_info->quantity;
 			$infos['budget']           = $body_info->budget;
 			$infos['attachment']       = $file_info->file_name;
+
 			$sdm                       = "marvinmosico@digits.ph";
 			$purchasing                = "marvinmosico@digits.ph";
-			$it                        = "marvinmosico@digits.ph";
+			$services                  = "marvinmosico@digits.ph";
+		
      
 			if($request_type_id == 7){
 				$infos['subject'] = "SUPPLIES-NEW ORDER-REF#";
@@ -595,6 +604,24 @@
 				->send(new EmailForPo($infos));
 			}else if($request_type_id == 5){
 				$infos['subject'] = "ADMIN ASSETS-NEW ORDER-REF#";
+				$infos['assign_to'] = $purchasing;
+				Mail::to($purchasing)
+				//->cc([$fhil])
+				->send(new EmailForPo($infos));
+			}else if($request_type_id == 6){
+				$infos['subject'] = "MARKETING-NEW ORDER-REF#";
+				$infos['assign_to'] = $purchasing;
+				Mail::to($purchasing)
+				//->cc([$fhil])
+				->send(new EmailForPo($infos));
+			}else if($request_type_id == 9){
+				$infos['subject'] = "BREX-NEW ORDER-REF#";
+				$infos['assign_to'] = $purchasing;
+				Mail::to($purchasing)
+				//->cc([$fhil])
+				->send(new EmailForPo($infos));
+			}else if($request_type_id == 10){
+				$infos['subject'] = "SUBSCRIPTION-NEW ORDER-REF#";
 				$infos['assign_to'] = $purchasing;
 				Mail::to($purchasing)
 				//->cc([$fhil])

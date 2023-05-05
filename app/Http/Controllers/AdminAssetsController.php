@@ -748,9 +748,9 @@
 
 					if(in_array($value['category_id'],[2,3,12,13])){
                         $category_id = 2;
-					}else if(in_array($value['category_id'],[5,10,11])){
+					}else if(in_array($value['category_id'],[10,11])){
 						$category_id = 5;
-					}else if(in_array($value['category_id'],[1,6,7,8])){
+					}else if(in_array($value['category_id'],[1,5,6,7,8])){
 						$category_id = 1;
 					}else{
 						$category_id = $value['category_id'];
@@ -839,9 +839,9 @@
 
 					 if(in_array($value['category_id'],[2,3,12,13])){
 						 $category_id = 2;
-					 }else if(in_array($value['category_id'],[5,10,11])){
+					 }else if(in_array($value['category_id'],[10,11])){
 						 $category_id = 5;
-					 }else if(in_array($value['category_id'],[1,6,7,8])){
+					 }else if(in_array($value['category_id'],[1,5,6,7,8])){
 						 $category_id = 1;
 					 }else{
 						 $category_id = $value['category_id'];

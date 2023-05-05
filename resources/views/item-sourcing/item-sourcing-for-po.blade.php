@@ -511,6 +511,7 @@
                 </div>
             </div>
         </div>
+
        {{-- FOR DIGITS CODE CREATION --}}
         <div id="itemCreationModal" class="modal fade" tabindex="-1">
             <div class="modal-dialog">
@@ -523,8 +524,12 @@
                     <div class="modal-body">
                        <div class='row'>
                          <div class='col-md-12'>
-                          <input oninput="validate(this)" type"text" class="form-control" name="digits_code"  id="digits_code" placeholder="Please input Digits Code" onKeyPress="if(this.value.length==8) return false;">
-                         </div>
+                            @if(in_array($Header->request_type_id, [1,5,7]))
+                             <input oninput="validate(this)" type"text" class="form-control" name="digits_code"  id="digits_code" placeholder="Please input Digits Code" onKeyPress="if(this.value.length==8) return false;">
+                            @else
+                             <input oninput="validate(this)" type"text" class="form-control" placeholder="Please input Digits Code" onKeyPress="if(this.value.length==8) return false;">
+                            @endif
+                        </div>
                          <br>	
                        </div>
                     </div>
