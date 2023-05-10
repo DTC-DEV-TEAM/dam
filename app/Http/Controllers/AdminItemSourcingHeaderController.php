@@ -685,6 +685,7 @@
 
 			$data['categories'] = DB::table('new_category')->where('id',3)->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
 			$data['budget_range'] = DB::table('sub_masterfile_budget_range')->where('status', 'ACTIVE')->get();
+			$data['yesno'] = DB::table('item_sourcing_yes_no')->get();
 			$privilegesMatrix = DB::table('cms_privileges')->get();
 			$privileges_array = array();
 			foreach($privilegesMatrix as $matrix){

@@ -1237,15 +1237,15 @@
 			}
 	         
 			//update reserved table
-			// if($tag_id){
-			// 	for ($t = 0; $t < count($tag_id); $t++) {
-			// 		AssetsInventoryReserved::where(['id' => $tag_id[$t]])
-			// 		   ->update([
-			// 				   'reserved' => 1,
-			// 				   'for_po'   => NULL
-			// 				   ]);
-			// 	}
-			// }
+			if($tag_id){
+				for ($t = 0; $t < count($tag_id); $t++) {
+					AssetsInventoryReserved::where(['id' => $tag_id[$t]])
+					   ->update([
+							   'reserved' => 1,
+							   'for_po'   => NULL
+							   ]);
+				}
+			}
 
 	        //Body details
 			$allData    = [];

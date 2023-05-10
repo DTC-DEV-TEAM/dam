@@ -261,7 +261,7 @@
                                                 <th width="5%" class="text-center">UPC Code</th>     
                                                 <th width="6%" class="text-center" >Brand</th>
                                                 <th width="7%" class="text-center" >Specs <span style="font-style: italic; font-size:12px; color:red"><br>(Ex: ADM Ryzen 5 3rd Gen/8 GB DDR4 RAM 512 GB SSD)</span></th>    
-                                                <th width="5%" class="text-center">Assign ARF</th>
+                                                <th width="5%" class="text-center">For Re Order Items(Optional)</th>
                                                 <th width="3%" class="text-center">Action</th>
                                             </tr>
                                     
@@ -1066,7 +1066,7 @@
                                                 '<td><input class="form-control brand finput" oninput="validate(this)" type="text" placeholder="Brand" name="brand[]" style="width:100%" data-index="1"></td>' +
                                                 '<td><input class="form-control specs finput" oninput="validate(this)" type="text" placeholder="ADM Ryzen 5 3rd Gen/8 GB DDR4 RAM 512 GB SSD" name="specs[]" style="width:100%" data-index="1"></td>' +  
                                                 '<td>'+
-                                                    '<select selected data-placeholder="Assign ARF" class="form-control arf_tag" name="arf_tag[]" data-id="' +  e.id + '" id="arf_tag' + e.id + '" required style="width:100%">' +
+                                                    '<select selected data-placeholder="RO items(Optional)" class="form-control arf_tag" name="arf_tag[]" data-id="' +  e.id + '" id="arf_tag' + e.id + '" required style="width:100%">' +
                                                     '  <option value=""></option>' +
                                                     '        @foreach($reserved_assets as $reserve)'+
                                                     '          <option value="{{$reserve->id}}" data-code="{{$reserve->digits_code}}">{{$reserve->reference_number}} | {{$reserve->digits_code}}</option>'+

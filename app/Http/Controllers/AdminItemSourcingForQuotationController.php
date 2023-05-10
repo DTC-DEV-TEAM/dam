@@ -585,11 +585,9 @@
 			$infos['budget']           = $body_info->budget;
 			$infos['attachment']       = $file_info->file_name;
 
-			$sdm                       = "marvinmosico@digits.ph";
-			$purchasing                = "marvinmosico@digits.ph";
-			$services                  = "marvinmosico@digits.ph";
+			$sdm                       = "sdm@digits.ph";
+			$purchasing                = "purchasing@digits.ph";
 		
-     
 			if($request_type_id == 7){
 				$infos['subject'] = "SUPPLIES-NEW ORDER-REF#";
 				$infos['assign_to'] = $sdm;

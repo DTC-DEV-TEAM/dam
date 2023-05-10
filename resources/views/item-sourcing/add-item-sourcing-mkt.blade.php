@@ -82,9 +82,9 @@
         <input type="hidden" value="6" name="request_type_id" id="request_type_id">
 
         <div class='panel-body'>
-            @include('item-sourcing.item-sourcing-view-header',['Header'=>$Header])
+            @include('item-sourcing.item-sourcing-view-header-mkt',['Header'=>$Header])
             <hr/>
-            @include('item-sourcing.item-sourcing-view-body-mkt-srvs-subs',['categories'=>$categories])
+            @include('item-sourcing.item-sourcing-view-body-mkt',['categories'=>$categories, 'yesno'=>$yesno])
         </div>
 
         <div class='panel-footer'>
@@ -130,15 +130,10 @@
         });
         $(".date").val('');
 
-        $('#category_id').select2({});
-        $('#sub_category_id').select2({});
-        $('#class').select2({});
-        $('#sub_class').select2({});
+        $('.select2').select2({});
+
         $('#budget').select2({});
 
-        $('#sub_category_id').attr('disabled', true);
-        $('#class').attr('disabled', true);
-        $('#sub_class').attr('disabled', true);
 
         $(document).ready(function() {
             //value validation

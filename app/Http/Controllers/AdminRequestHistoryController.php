@@ -338,8 +338,10 @@
 
 			}else if(CRUDBooster::myPrivilegeId() == 5 || CRUDBooster::myPrivilegeId() == 17){ 
 				$user_data = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-				$query->where('header_request.recommended_by', '!=', null)
-				->where('header_request.to_reco', 1)
+				$query->
+				//where('header_request.recommended_by', '!=', null)
+				//->where('header_request.to_reco', 1)
+				where('header_request.mo_by', CRUDBooster::myId())
 				->whereNull('header_request.deleted_at')
 				->orderBy('header_request.id', 'ASC');
 

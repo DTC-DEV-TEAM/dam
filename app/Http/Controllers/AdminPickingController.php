@@ -605,6 +605,18 @@
 					// 	'to_mo'=> 	1
 					// ]);	
 
+					BodyRequest::where('id', $body_id[$x])
+					->update(
+								[
+								'serve_qty'         => 1, 
+								'unserved_rep_qty'  => DB::raw("unserved_rep_qty - 1"), 
+								'unserved_ro_qty'   => DB::raw("unserved_ro_qty - 1"), 
+								'unserved_qty'      => DB::raw("unserved_qty - 1"),
+								'cancelled_qty'     => 1,
+								'reason_to_cancel'  => 'DEFECTIVE'          
+								]
+							);
+
 					DB::table('assets_inventory_reserved')->where('body_id', $mo_info->body_request_id)->delete();
 
 					DB::table('assets_inventory_body')->where('id', $mo_info->inventory_id)
@@ -699,12 +711,18 @@
 			*/
 
 			//save defect and good comments
+			$inventoryDetailsDefect = AssetsInventoryBody::whereIn('id',$asset_code_tag)->get();
+			$assetCode = [];
+
+			foreach($inventoryDetailsDefect as $asset_code){
+              array_push($assetCode, $asset_code->asset_code);
+			}
 			$container = [];
 			$containerSave = [];
 			foreach((array)$comments as $key => $val){
 				$container['arf_number'] = $arf_number;
 				$container['digits_code'] = explode("|",$val)[1];
-				$container['asset_code'] = explode("|",$val)[0];
+				$container['asset_code'] = explode("|",$assetCode[$key]);
 				$container['comments'] = explode("|",$val)[2];
 				$container['users'] = CRUDBooster::myId();
 				$container['created_at'] = date('Y-m-d H:i:s');
@@ -712,7 +730,7 @@
 			}
 			$otherCommentContainer = [];
 			$otherCommentFinalData = [];
-			foreach((array)$asset_code as $aKey => $aVal){
+			foreach((array)$assetCode as $aKey => $aVal){
 				$otherCommentContainer['asset_code'] = $aVal;
 				$otherCommentContainer['digits_code'] = $digits_code[$aKey];
 				$otherCommentContainer['other_comment'] = $other_comment[$aKey];
