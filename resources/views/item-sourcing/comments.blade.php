@@ -6,14 +6,14 @@
                         @if(CRUDBooster::myId() == $comment->user_id)
         
                             <span class="session-comment">
-                                <p><span class="comment">{{ $comment->comments }} </span> </p>
-                                <p style="text-align:right; font-size:12px; font-style: italic; padding-right:5px;"> {{ $comment->created_at }} </p>      
+                                <p style="word-wrap: break-word; padding:5px;"><span class="comment">{{ $comment->comments }} </span> </p>
+                                <p style="text-align:right; font-size:11px; font-style: italic; padding-right:5px;"> {{ $comment->created_at }} </p>      
                             </span>  
                         @else
                             <strong style="margin-left:10px">{{ $comment->name }}</strong>
                             <span class="text-comment">
-                                <p><span class="comment">{{ $comment->comments }} </span> </p>
-                                <p style="text-align:right; font-size:12px; font-style: italic; padding-right:5px;"> {{ $comment->created_at }} </p>      
+                                <p style="word-wrap: break-word; padding:5px;"><span class="comment">{{ $comment->comments }} </span> </p>
+                                <p style="text-align:right; font-size:11px; font-style: italic; padding-right:5px;"> {{ $comment->created_at }} </p>      
                             </span>   
                             
                         @endif           

@@ -755,27 +755,42 @@
 					}else{
 						$category_id = $value['category_id'];
 					}
+
+					if(in_array($value['category_id'],[2,3,12])){
+                        $aimfs_category = 2;
+					}else if(in_array($value['category_id'],[13])){
+						$aimfs_category = 4;
+					}else if(in_array($value['category_id'],[10,11])){
+						$aimfs_category = 1;
+					}else if(in_array($value['category_id'],[1,5,6,7,8])){
+						$aimfs_category = 3;
+					}else{
+						$aimfs_category = $value['category_id'];
+					}
+
 					$count++;
 						DB::beginTransaction();
 						try {
 							Assets::updateOrcreate([
-								'digits_code'      => $value['digits_code'] 
+								'digits_code'         => $value['digits_code'] 
 							],
 							[
-								'digits_code'      => $value['digits_code'],
-								'item_description' => $value['item_description'],
-								'brand_id'         => $value['brand_id'],
-								'category_id'      => $category_id,
-								'class_id'         => $value['class_id'],
-								'vendor_id'        => $value['vendor_id'],
-								'item_cost'        => $value['current_srp'],
-								'asset_tag'        => "",
-								'quantity'         => 0,
-								'add_quantity'     => 0,
-								'total_quantity'   => 0,
-								'status'           => $status,
-								'created_by'       => CRUDBooster::myId(),
-								'created_at'       => date('Y-m-d H:i:s')
+								'digits_code'         => $value['digits_code'],
+								'item_description'    => $value['item_description'],
+								'brand_id'            => $value['brand_id'],
+								'category_id'         => $category_id,
+								'class_id'            => $value['class_id'],
+								'aimfs_category'      => $aimfs_category,
+								'aimfs_sub_category'  => $value['class_id'],
+								'vendor_id'           => $value['vendor_id'],
+								'item_cost'           => $value['current_srp'],
+								'asset_tag'           => "",
+								'quantity'            => 0,
+								'add_quantity'        => 0,
+								'total_quantity'      => 0,
+								'status'              => $status,
+								'created_by'          => CRUDBooster::myId(),
+								'created_at'          => date('Y-m-d H:i:s')
 							]);
 							DB::commit();
 						} catch (\Exception $e) {
@@ -847,27 +862,41 @@
 						 $category_id = $value['category_id'];
 					 }
 
+					 if(in_array($value['category_id'],[2,3,12])){
+                        $aimfs_category = 2;
+						}else if(in_array($value['category_id'],[13])){
+							$aimfs_category = 4;
+						}else if(in_array($value['category_id'],[10,11])){
+							$aimfs_category = 1;
+						}else if(in_array($value['category_id'],[1,5,6,7,8])){
+							$aimfs_category = 3;
+						}else{
+							$aimfs_category = $value['category_id'];
+						}
+
 					$count++;
 						DB::beginTransaction();
 						try {
 							Assets::updateOrcreate([
-								'digits_code'      => $value['digits_code'] 
+								'digits_code'         => $value['digits_code'] 
 							],
 							[
-								'digits_code'      => $value['digits_code'],
-								'item_description' => $value['item_description'],
-								'brand_id'         => $value['brand_id'],
-								'category_id'      => $category_id,
-								'class_id'         => $value['class_id'],
-								'vendor_id'        => $value['vendor_id'],
-								'item_cost'        => $value['current_srp'],
-								'asset_tag'        => "",
-								'quantity'         => 0,
-								'add_quantity'     => 0,
-								'total_quantity'   => 0,
-								'status'           => $status,
-								'updated_by'       => CRUDBooster::myId(),
-								'updated_at'       => date('Y-m-d H:i:s')
+								'digits_code'         => $value['digits_code'],
+								'item_description'    => $value['item_description'],
+								'brand_id'            => $value['brand_id'],
+								'category_id'         => $category_id,
+								'class_id'            => $value['class_id'],
+								'aimfs_category'      => $aimfs_category,
+								'aimfs_sub_category'  => $value['class_id'],
+								'vendor_id'           => $value['vendor_id'],
+								'item_cost'           => $value['current_srp'],
+								'asset_tag'           => "",
+								'quantity'            => 0,
+								'add_quantity'        => 0,
+								'total_quantity'      => 0,
+								'status'              => $status,
+								'updated_by'          => CRUDBooster::myId(),
+								'updated_at'          => date('Y-m-d H:i:s')
 							]);
 							DB::commit();
 						} catch (\Exception $e) {

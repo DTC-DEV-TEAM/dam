@@ -21,7 +21,7 @@
                                         <th width="5%" class="text-center"> lamination</th>
                                         <th width="5%" class="text-center"> Adds On</th>
                                         <th width="7%" class="text-center"> Installation</th>
-                                        <th width="7%" class="text-center"> Lamination</th>
+                                        <th width="7%" class="text-center"> Dismantling</th>
                                         <th width="10%" class="text-center"> Budget Range</th> 
                                         <th width="5%" class="text-center"> {{ trans('message.table.quantity_text') }}</th>                                                    
                                     </tr>
@@ -54,7 +54,7 @@
                                                 <input type="text" placeholder="Lamination..." onkeyup="this.value = this.value.toUpperCase();" oninput="validate(this)" class="form-control finput lamination" id="lamination"  name="lamination"  required maxlength="100">
                                             </td> 
                                             <td >
-                                                <input type="text" placeholder="Adds On..." onkeyup="this.value = this.value.toUpperCase();" oninput="validate(this)" class="form-control finput adds_on" id="adds_on"  name="adds_on"  required maxlength="100">
+                                                <input type="text" placeholder="Adds On..." onkeyup="this.value = this.value.toUpperCase();" oninput="validate(this)" class="form-control finput add_ons" id="add_ons"  name="add_ons"  required maxlength="100">
                                             </td> 
 
                                             <td> 
@@ -67,7 +67,7 @@
                                              </td> 
 
                                              <td> 
-                                                <select selected data-placeholder="Choose" class="form-control select2" name="dismantling" id="dismantling" required style="width:100%"> 
+                                                <select selected data-placeholder="Choose" class="form-control select2" name="dismantling_body" id="dismantling_body" required style="width:100%"> 
                                                      <option value=""></option> 
                                                      @foreach($yesno as $data)
                                                          <option value="{{$data->description}}">{{$data->description}}</option>
