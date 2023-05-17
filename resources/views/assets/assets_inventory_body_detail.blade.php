@@ -143,7 +143,9 @@
                                                 <th>Value</th>                                           
                                                 <th>Quantity</th>     
                                                 <th>Warranty Expiry Month</th>                                           
-                                                <th>Item Photo</th>      
+                                                <th>Upc Code</th> 
+                                                <th>Brand</th>
+                                                <th>Specs</th>         
                                                 <th>Updated By</th>   
                                                 <th>Date Updated</th>                                                              
                                             </tr>
@@ -164,14 +166,9 @@
                                                 <td>{{$Body->value}}</td>        
                                                 <td>{{$Body->quantity}}</td>       
                                                 <td>{{$Body->warranty_coverage}}</td>                                            
-                                                <td>
-                                                    @if ($Body->itemImage)
-                                                      <img width="60px"; height="50px"; src="{{URL::to($Body->itemImage)}}" alt="" data-action="zoom">
-                                                    @else
-                                                      <img width="60px"; height="50px"; src="{{URL::to('vendor/crudbooster/no_image_available/No_Image_Available.jpg')}}" alt="" data-action="zoom">
-                                                    @endif 
-                                                    
-                                                </td>   
+                                                <td>{{$Body->upc_code}}</td>  
+                                                <td>{{$Body->brand}}</td>  
+                                                <td>{{$Body->specs}}</td>    
                                                 <td>{{$Body->updated_by}}</td>    
                                                 <td>{{$Body->date_updated}}</td>                                                                       
                                                </tr>

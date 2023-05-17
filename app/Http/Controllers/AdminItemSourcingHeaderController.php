@@ -441,6 +441,15 @@
 			$header_ref              = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);			
 			$reference_number	     = "NIS-".$header_ref;
 			$employees               = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
+			$departmentsUsers        = DB::table('cms_users')->where('department_id', $employees->department_id)->where('id_cms_privileges','!=',1)->where('id','!=',CRUDBooster::myId())->get();
+			$eachDepartmentsIds      = [];
+			foreach($departmentsUsers as $value){
+				array_push($eachDepartmentsIds, CRUDBooster::myId());
+				array_push($eachDepartmentsIds, $value->id);
+			}
+			
+			$saveDepartment = implode(",",$eachDepartmentsIds);
+	
 			$pending                 = DB::table('statuses')->where('id', 1)->value('id');
 			$approved                = DB::table('statuses')->where('id', 4)->value('id');
 
@@ -466,8 +475,13 @@
 			$postdata['quantity_total'] 			= $quantity_total;
 			$postdata['cost_total'] 				= $cost_total;
 			$postdata['total'] 						= $total;
-			$postdata['created_by'] 				= CRUDBooster::myId();
-			$postdata['created_at'] 				= date('Y-m-d H:i:s');
+			
+			if($request_type_id == 6){
+				$postdata['created_by']  		    = $saveDepartment;
+			}else{
+				$postdata['created_by'] 		    = CRUDBooster::myId();
+			}
+			$postdata['created_at'] 		    = date('Y-m-d H:i:s');
 			$postdata['request_type_id']		 	= $request_type_id;
 			$postdata['sampling']		 	        = $sampling;
 			$postdata['mark_up']		 	        = $mark_up;
@@ -870,7 +884,8 @@
 		    $data['item_options'] = ItemSourcingOptions::options($id);
 			$data['versions']     = DB::table('item_sourcing_edit_versions')->where('header_id', $id)->latest('created_at')->first();
 			$data['allOptions']   = DB::table('item_sourcing_options')->where('item_sourcing_options.header_id', $id)->count();
-     
+			$data['header_files'] = ItemSourcingHeaderFile::select('item_sourcing_header_file.*')->where('item_sourcing_header_file.header_id', $id)->get();
+			$data['yesno']        = DB::table('sub_masterfile_yes_no')->get();
 			return $this->view("item-sourcing.item-sourcing-detail-reject", $data);
 		}
 

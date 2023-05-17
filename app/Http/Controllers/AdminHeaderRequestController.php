@@ -12,6 +12,8 @@
 	use App\AssetsInventoryHeader;
 	use App\AssetsHeaderImages;
 	use App\AssetsInventoryBody;
+	use App\Models\AssetsSuppliesInventory;
+	use App\Models\AssetsInventoryReserved;
 	//use Illuminate\Http\Request;
 	//use Illuminate\Support\Facades\Input;
 	use Illuminate\Support\Facades\Log;
@@ -23,7 +25,7 @@
         public function __construct() {
 			// Register ENUM type
 			//$this->request = $request;
-			$this->middleware('check.suppliescheckrestriction',['only' => ['getAddRequisitionSupplies','postAddSave']]);
+			$this->middleware('check.suppliescheckrestriction',['only' => ['getAddRequisitionSupplies']]);
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
 		}
 
@@ -506,14 +508,15 @@
 			$pending            = DB::table('statuses')->where('id', 1)->value('id');
 			$approved           = DB::table('statuses')->where('id', 4)->value('id');
 
+			$for_move_order         =  DB::table('statuses')->where('id', 14)->value('id');
 			if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15])){ 
 				//$postdata['status_id']		 			= $pending;
-				$postdata['status_id']		 			= StatusMatrix::where('current_step', 2)
-																		->where('request_type', $request_type_id)
-																		//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
-																		->value('status_id');
+				$postdata['status_id']          = $for_move_order;
+		
+				$postdata['approved_by'] 		    = CRUDBooster::myId();
+				$postdata['approved_at'] 		    = date('Y-m-d H:i:s');	
 			}else{
-				$postdata['status_id']		 			= StatusMatrix::where('current_step', 1)
+				$postdata['status_id']		        = StatusMatrix::where('current_step', 1)
 																		->where('request_type', $request_type_id)
 																		//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
 																		->value('status_id');
@@ -621,7 +624,7 @@
 
 				}
 
-				if(in_array(CRUDBooster::myPrivilegeId(), [4,11,12,14,15])){ 
+				if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15])){ 
 
 					if($category_id[$x] == "IT ASSETS"){
 
@@ -641,7 +644,7 @@
 				$dataLines[$x]['sub_category_id'] 	= $sub_category_id[$x];
 				$dataLines[$x]['app_id'] 			= implode(", ",$apps_array);
 				$dataLines[$x]['app_id_others'] 	= $app_id_others[$x];
-				$dataLines[$x]['quantity'] 			= $quantity[$x];
+				$dataLines[$x]['quantity'] 			= intval(str_replace(',', '', $quantity[$x]));
 				//$dataLines[$x]['unserved_qty']      = $quantity[$x];
 				$dataLines[$x]['unit_cost'] 		= $supplies_cost[$x];
 
@@ -688,18 +691,177 @@
 			try {
 				BodyRequest::insert($dataLines);
 				DB::commit();
-				//CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_pullout_data_success",['mps_reference'=>$pullout_header->reference]), 'success');
+
+				//manager replenishment
+				$arf_body = BodyRequest::where(['header_request_id' => $arf_header->id])->whereNull('deleted_at')->get();
+				
+				if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15])){ 
+					if(in_array($request_type_id, [7])){
+						//Get the inventory value per digits code
+						$arraySearch = DB::table('assets_supplies_inventory')->select('*')->get()->toArray();
+										
+						$finalBodyValue = [];
+						foreach($arf_body as $bodyfKey => $bodyVal){
+							$i = array_search($bodyVal['digits_code'], array_column($arraySearch,'digits_code'));
+							if($i !== false){
+								$bodyVal['inv_value'] = $arraySearch[$i];
+								$finalBodyValue[] = $bodyVal;
+							}else{
+								$bodyVal['inv_value'] = "";
+								$finalBodyValue[] = $bodyVal;
+							}
+						}
+
+						//Set data in each qty
+						$containerData = [];
+						$finalContData = [];
+						foreach($finalBodyValue as $fBodyKey => $fBodyVal){
+							if($fBodyVal['inv_value']->quantity > $fBodyVal['quantity']){
+								//less quantity in inventory
+								BodyRequest::where('id', $fBodyVal['id'])
+								->update([
+									'replenish_qty'      =>  $fBodyVal['quantity'],
+									'reorder_qty'        =>  NULL,
+									'serve_qty'          =>  NULL,
+									'unserved_qty'       =>  $fBodyVal['quantity'],
+									'unserved_rep_qty'   =>  $fBodyVal['quantity'],
+									'unserved_ro_qty'    =>  NULL
+								]);	
+								DB::table('assets_supplies_inventory')
+								->where('digits_code', $fBodyVal['digits_code'])
+								->decrement('quantity', $fBodyVal['quantity']);
+							}else{
+								$reorder = $fBodyVal['quantity'] - $fBodyVal['inv_value']->quantity;
+								$containerData['serve_qty']     = $fBodyVal['inv_value']->quantity;  
+								BodyRequest::where('id', $fBodyVal['id'])
+								->update([
+									'replenish_qty'      =>  $fBodyVal['inv_value']->quantity,
+									'reorder_qty'        =>  $reorder,
+									'serve_qty'          =>  NULL,
+									'unserved_qty'       =>  $fBodyVal['quantity'],
+									'unserved_rep_qty'   =>  $fBodyVal['inv_value']->quantity,
+									'unserved_ro_qty'    =>  $reorder
+								]);	
+								AssetsSuppliesInventory::where('digits_code', $fBodyVal['digits_code'])
+								->update([
+									'quantity'   =>  0,
+								]);	
+							}
+						}
+					}else{
+					//GET ASSETS INVENTORY AVAILABLE COUNT
+					$inventoryList = DB::table('assets_inventory_body')->select('digits_code as digits_code',DB::raw('SUM(quantity) as avail_qty'))->where('statuses_id',6)->groupBy('digits_code')->get();
+					//GET RESERVED QTY 
+					$reservedList = DB::table('assets_inventory_reserved')->select('digits_code as digits_code',DB::raw('SUM(approved_qty) as reserved_qty'))->whereNotNull('reserved')->groupBy('digits_code')->get()->toArray();
+					
+					$resultInventory = [];
+					foreach($inventoryList as $invKey => $invVal){
+						$i = array_search($invVal->digits_code, array_column($reservedList,'digits_code'));
+						if($i !== false){
+							$invVal->reserved_value = $reservedList[$i];
+							$resultInventory[] = $invVal;
+						}else{
+							$invVal->reserved_value = "";
+							$resultInventory[] = $invVal;
+						}
+					}
+					//get the final available qty
+					$finalInventory = [];
+					foreach($resultInventory as $fKey => $fVal){
+						$fVal->available_qty = max($fVal->avail_qty - $fVal->reserved_value->reserved_qty,0);
+						$finalInventory[] = $fVal;
+					}
+
+					$finalItFaBodyValue = [];
+					foreach($arf_body as $bodyItFafKey => $bodyItFaVal){
+						$i = array_search($bodyItFaVal['digits_code'], array_column($finalInventory,'digits_code'));
+						if($i !== false){
+							$bodyItFaVal->inv_qty = $finalInventory[$i];
+							$finalItFaBodyValue[] = $bodyItFaVal;
+						}else{
+							$bodyItFaVal->inv_qty = "";
+							$finalItFaBodyValue[] = $bodyItFaVal;
+						}
+					}
+                   
+					foreach($finalItFaBodyValue as $fBodyItFaKey => $fBodyItFaVal){
+						$countAvailQty = DB::table('assets_inventory_body')->select('digits_code as digits_code',DB::raw('SUM(quantity) as avail_qty'))->where('statuses_id',6)->where('digits_code',$fBodyItFaVal->digits_code)->groupBy('digits_code')->count();
+                        $reservedListCount = DB::table('assets_inventory_reserved')->select('digits_code as digits_code',DB::raw('SUM(approved_qty) as reserved_qty'))->whereNotNull('reserved')->where('digits_code',$fBodyItFaVal->digits_code)->groupBy('digits_code')->count();
+						$available_quantity = max($countAvailQty - $reservedListCount,0);
+			
+						if($available_quantity >= $fBodyItFaVal->quantity){
+							//add to reserved taable
+							AssetsInventoryReserved::Create(
+								[
+									'reference_number'    => $arf_header->reference_number, 
+									'body_id'             => $fBodyItFaVal->id,
+									'digits_code'         => $fBodyItFaVal->digits_code, 
+									'approved_qty'        => $fBodyItFaVal->quantity,
+									'reserved'            => $fBodyItFaVal->quantity,
+									'for_po'              => NULL,
+									'created_by'          => CRUDBooster::myId(),
+									'created_at'          => date('Y-m-d H:i:s'),
+									'updated_by'          => CRUDBooster::myId(),
+									'updated_at'          => date('Y-m-d H:i:s')
+								]
+							); 
+							
+							//update details in body table
+							BodyRequest::where('id', $fBodyItFaVal->id)
+							->update([
+								'replenish_qty'      =>  $fBodyItFaVal->quantity,
+								'reorder_qty'        =>  NULL,
+								'serve_qty'          =>  NULL,
+								'unserved_qty'       =>  $fBodyItFaVal->quantity,
+								'unserved_rep_qty'   =>  $fBodyItFaVal->quantity,
+								'unserved_ro_qty'    =>  NULL
+							]);	
+
+							HeaderRequest::where('id',$arf_header->id)
+							->update([
+								'to_mo' => 1
+							]);
+							 
+						}else{
+							$reorder = $fBodyItFaVal->quantity - $available_quantity;
+							AssetsInventoryReserved::Create(
+								[
+									'reference_number'    => $arf_header->reference_number, 
+									'body_id'             => $fBodyItFaVal->id,
+									'digits_code'         => $fBodyItFaVal->digits_code, 
+									'approved_qty'        => $fBodyItFaVal->quantity,
+									'reserved'            => NULL,
+									'for_po'              => 1,
+									'created_by'          => CRUDBooster::myId(),
+									'created_at'          => date('Y-m-d H:i:s'),
+									'updated_by'          => CRUDBooster::myId(),
+									'updated_at'          => date('Y-m-d H:i:s')
+								]
+							);  
+
+							BodyRequest::where('id', $fBodyItFaVal->id)
+							->update([
+								'replenish_qty'      =>  $available_quantity,
+								'reorder_qty'        =>  $reorder,
+								'serve_qty'          =>  NULL,
+								'unserved_qty'       =>  $fBodyItFaVal->quantity,
+								'unserved_rep_qty'   =>  $available_quantity,
+								'unserved_ro_qty'    =>  $reorder
+							]);	
+
+							
+					    }
+					}
+
+
+				}
+			}
+
 			} catch (\Exception $e) {
 				DB::rollback();
-
-
 				CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_database_error",['database_error'=>$e]), 'danger');
 			}
-			
-
-			CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_add_success",['reference_number'=>$arf_header->reference_number]), 'success');
-
-			
+			CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_add_success",['reference_number'=>$arf_header->reference_number]), 'success');	
 	    }
 
 	    /* 

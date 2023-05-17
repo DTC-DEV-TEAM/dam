@@ -674,10 +674,12 @@
             //header details
 			$data['Header'] = AssetsInventoryHeaderForApproval::leftjoin('assets_header_images', 'assets_inventory_header_for_approval.id', '=', 'assets_header_images.header_id')
 				->leftjoin('cms_users', 'assets_inventory_header_for_approval.created_by', '=', 'cms_users.id')
+				->leftjoin('cms_users as approver', 'assets_inventory_header_for_approval.updated_by', '=', 'approver.id')
 				->select(
 					'assets_inventory_header_for_approval.*',
 					'assets_inventory_header_for_approval.id as header_id',
 					'cms_users.*',
+					'approver.name as approver',
 					'assets_inventory_header_for_approval.created_at as date_created'
 					)
 			    ->where('assets_inventory_header_for_approval.id', $id)

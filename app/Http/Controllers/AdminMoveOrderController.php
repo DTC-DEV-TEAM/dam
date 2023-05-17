@@ -153,11 +153,12 @@
 	        $this->addaction = array();
 			if(CRUDBooster::isUpdate()) {
 
-				$for_printing =  	DB::table('statuses')->where('id', 17)->value('id');
+				$for_printing     = DB::table('statuses')->where('id', 17)->value('id');
 
-				$for_receiving =  	DB::table('statuses')->where('id', 16)->value('id');
+				$for_receiving    = DB::table('statuses')->where('id', 16)->value('id');
 
 				$for_printing_adf = DB::table('statuses')->where('id', 18)->value('id');
+				$cancelled        = DB::table('statuses')->where('id', 8)->value('id');
 
 				//dd("[status_id]");
 
@@ -165,7 +166,7 @@
 
 				//dd($id);
 				// or [to_print] == 1
-				$this->addaction[] = ['title'=>'Print','url'=>CRUDBooster::mainpath('getRequestPrintADF/[id]'),'icon'=>'fa fa-print', "showIf"=>"[status_id] == $for_printing_adf"];
+				$this->addaction[] = ['title'=>'Print','url'=>CRUDBooster::mainpath('getRequestPrintADF/[id]'),'icon'=>'fa fa-print', "showIf"=>"[status_id] == $for_printing_adf || [status_id] == $cancelled"];
 
 				$this->addaction[] = ['title'=>'Print','url'=>CRUDBooster::mainpath('getRequestPrintPickList/[id]'),'icon'=>'fa fa-print', "showIf"=>"[mo_plug] == 0"];
 
@@ -1827,7 +1828,7 @@
 				)
 				->where('mo_body_request.mo_reference_number', $HeaderID->mo_reference_number)
 				->where('mo_body_request.to_pick', 1)
-				->where('mo_body_request.status_id', $for_printing_adf)
+				->whereIn('mo_body_request.status_id', [$for_printing_adf,8])
 				->leftjoin('statuses', 'mo_body_request.status_id', '=', 'statuses.id')
 				->orderby('mo_body_request.id', 'desc')
 				->get();

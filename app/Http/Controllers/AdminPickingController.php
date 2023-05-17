@@ -711,7 +711,7 @@
 			*/
 
 			//save defect and good comments
-			$inventoryDetailsDefect = AssetsInventoryBody::whereIn('id',$asset_code_tag)->get();
+			$inventoryDetailsDefect = AssetsInventoryBody::whereIn('id',[$asset_code_tag])->get();
 			$assetCode = [];
 
 			foreach($inventoryDetailsDefect as $asset_code){
@@ -722,7 +722,7 @@
 			foreach((array)$comments as $key => $val){
 				$container['arf_number'] = $arf_number;
 				$container['digits_code'] = explode("|",$val)[1];
-				$container['asset_code'] = explode("|",$assetCode[$key]);
+				$container['asset_code'] = $assetCode;
 				$container['comments'] = explode("|",$val)[2];
 				$container['users'] = CRUDBooster::myId();
 				$container['created_at'] = date('Y-m-d H:i:s');
