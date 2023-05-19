@@ -670,4 +670,57 @@
 			CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Request has been cancelled successfully!"), 'info');
 		}
 
+		public function itemErfITSearch(Request $request) {
+			$request = Request::all();
+			$cont = (new static)->apiContext;
+			$search 		= $request['search'];
+			$data = array();
+
+			$data['status_no'] = 0;
+			$data['message']   ='No Item Found!';
+			$data['items'] = array();
+
+			//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
+
+			$items = DB::table('assets')
+			->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',5)->where('assets.status','!=','INACTIVE')->whereIn('digits_code',[40001124, 40001123, 40001122, 40001121, 40001120, 40001119, 40001118])
+			->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',5)->where('assets.status','!=','INACTIVE')->whereIn('digits_code',[40001124, 40001123, 40001122, 40001121, 40001120, 40001119, 40001118])
+			->join('category', 'assets.category_id','=', 'category.id')
+			->select(
+				'assets.*',
+				'assets.id as assetID',
+				'category.category_description as category_description'
+			)->take(10)->get();
+			
+			if($items){
+				$data['status'] = 1;
+				$data['problem']  = 1;
+				$data['status_no'] = 1;
+				$data['message']   ='Item Found';
+				$i = 0;
+				foreach ($items as $key => $value) {
+
+					$return_data[$i]['id'] = 				$value->assetID;
+					$return_data[$i]['asset_code'] = 		$value->asset_code;
+					$return_data[$i]['digits_code'] = 		$value->digits_code;
+					$return_data[$i]['asset_tag'] = 		$value->asset_tag;
+					$return_data[$i]['serial_no'] = 		$value->serial_no;
+					$return_data[$i]['item_description'] = 	$value->item_description;
+					$return_data[$i]['category_description'] = 		$value->category_description;
+					$return_data[$i]['item_cost'] = 				$value->item_cost;
+					$return_data[$i]['item_type'] = 				$value->item_type;
+					$return_data[$i]['image'] = 				$value->image;
+					$return_data[$i]['quantity'] = 				$value->quantity;
+					$return_data[$i]['total_quantity'] = 				$value->total_quantity;
+
+					$i++;
+
+				}
+				$data['items'] = $return_data;
+			}
+
+			echo json_encode($data);
+			exit;  
+		}
+
 	}

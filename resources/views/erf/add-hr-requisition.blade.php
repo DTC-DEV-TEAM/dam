@@ -307,7 +307,8 @@
                      <table class="table table-bordered" id="asset-items">
                             <tbody id="bodyTable">
                                 <tr class="tbl_header_color dynamicRows">
-                                    <th width="30%" class="text-center">{{ trans('message.table.item_description') }}</th>
+                                    <th width="30%" class="text-center">{{ trans('message.table.item_description') }}</th> 
+                                    <th width="15%" class="text-center">Digits Code</th>
                                     <th width="25%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
                                     <th width="20%" class="text-center">Sub Category</th> 
                                     <th width="7%" class="text-center">Qty</th> 
@@ -369,7 +370,6 @@
 @endsection
 @push('bottom')
 <script type="text/javascript">
-
     function preventBack() {
         window.history.forward();
     }
@@ -387,16 +387,14 @@
     $(".application").removeAttr('required');
 
     $(".date").datetimepicker({
-                 minDate:new Date(), // Current year from transactions
-                viewMode: "days",
-                format: "YYYY-MM-DD",
-                dayViewHeaderFormat: "MMMM YYYY",
-            });
+        minDate:new Date(), // Current year from transactions
+        viewMode: "days",
+        format: "YYYY-MM-DD",
+        dayViewHeaderFormat: "MMMM YYYY",
+    });
 
     $('#OTHERS').change(function() {
-
         var ischecked= $(this).is(':checked');
-
         if(ischecked == false){
             $("#application_others_div").hide();
             $("#application_others").removeAttr('required');
@@ -404,7 +402,6 @@
             $("#application_others_div").show();
             $("#application_others").attr('required', 'required');
         }	
-
     });
 
     var app_count = 0;
@@ -418,6 +415,7 @@
         }
 
     });
+
      //checkbox validations
      $(".manpower").change(function() {
         var rep = $(this);
@@ -474,14 +472,11 @@
 
 
     $(document).ready(function() {
-
         const fruits = [];
-
         $("#add-Row").click(function() {
 
             var description = "";
             var count_fail = 0;
-
             $('.itemDesc').each(function() {
                 description = $(this).val();
                 if (description == null) {
@@ -507,8 +502,17 @@
                 '<tr>' +
 
                     '<td >' +
-                    '  <input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control finput itemDesc" data-id="' + tableRow + '" id="itemDesc' + tableRow + '"  name="item_description[]"  required maxlength="100">' +
-                    '</td>' +  
+                        '<input type="text" placeholder="Search Item ..." class="form-control finput itemDesc" id="itemDesc'+ tableRow +'" data-id="'+ tableRow +'"   name="item_description[]"  required maxlength="100">' +
+                          '<ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" data-id="'+ tableRow +'" id="ui-id-2'+ tableRow +'" style="display: none; top: 60px; left: 15px; width: 100%;">' +
+                           '<li>Loading...</li>' +
+                          '</ul>' +
+                         '<div id="display-error'+ tableRow +'"></div>'+
+                    '</td>' + 
+
+                    '<td>' + 
+                        '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control digits_code finput" data-id="'+ tableRow +'" id="digits_code'+ tableRow +'"  name="digits_code[]"   maxlength="100" readonly>' +
+                        '<input type="hidden" onkeyup="this.value = this.value.toUpperCase();" class="form-control fixed_description finput" data-id="'+ tableRow +'" id="fixed_description'+ tableRow +'"  name="fixed_description[]"   maxlength="100" readonly>' +
+                    '</td>' +
 
                     '<td>'+
                         '<select selected data-placeholder="- Select Category -" class="form-control drop'+ tableRow + '" name="category_id[]" data-id="' + tableRow + '" id="category_id' + tableRow + '" required style="width:100%">' +
@@ -546,56 +550,129 @@
                 $('.js-example-basic-multiple').select2();
                 $('.sub_category_id').select2({
                 placeholder_text_single : "- Select Sub Category -"});
+
                 $('#app_id'+tableRow).change(function(){
+                    if($('#app_id'+$(this).attr("data-id")).val() != null){
+                        var arrx = $(this).val();
+                        execute = 0;
+                    }else{
+                        var arrx = "";
+                        execute++;
+                    }
+                    var s = arrx;
 
-                        if($('#app_id'+$(this).attr("data-id")).val() != null){
-                            var arrx = $(this).val();
-                            execute = 0;
-                        }else{
-                            var arrx = "";
-                            execute++;
-                        }
-                        var s = arrx;
-
-                        if(s.includes("OTHERS")){
-                
-                            $('#AppOthers'+$(this).attr("data-id")).show();
-                            $('#AppOthers'+$(this).attr("data-id")).attr('required', 'required');
-
-                        }else{
-
-                            $('#AppOthers'+$(this).attr("data-id")).hide();
-                            $('#AppOthers'+$(this).attr("data-id")).removeAttr('required');
-
-                        }
+                    if(s.includes("OTHERS")){
+                        $('#AppOthers'+$(this).attr("data-id")).show();
+                        $('#AppOthers'+$(this).attr("data-id")).attr('required', 'required');
+                    }else{                   
+                        $('#AppOthers'+$(this).attr("data-id")).hide();
+                        $('#AppOthers'+$(this).attr("data-id")).removeAttr('required');
+                    }
 
                 });
 
                 $(document).on('keyup', '#itemDesc'+tableRow, function(ev) {
-
                     var category =  $('#category_id'+$(this).attr("data-id")).val();
                     var description = this.value;
-
                     if(description.includes("LAPTOP") && category == "IT ASSETS"){
-                    
-                        // alert(description);
-
                         $('#app_id'+$(this).attr("data-id")).attr('disabled', false);
-
                     }else{
-                    
                         $('#app_id'+$(this).attr("data-id")).attr('disabled', true);
                     }
-
-
                 });
 
+                //SEARCH DIGITS CODE
+                var stack = [];
+                var token = $("#token").val();
+                var searchcount = <?php echo json_encode($tableRow); ?>;
+                let countrow = 1;
+                $(function(){
+                    countrow++;
+                    $('#itemDesc'+tableRow).autocomplete({
+                        source: function (request, response) {
+                        $.ajax({
+                            url: "{{ route('item.erf.it.search') }}",
+                            dataType: "json",
+                            type: "POST",
+                            data: {
+                                "_token": token,
+                                "search": request.term
+                            },
+                            success: function (data) {
+                                if(data.items === null){
+                                    swal({  
+                                        type: 'error',
+                                        title: 'No Found Item',
+                                        icon: 'error',
+                                        confirmButtonColor: "#367fa9",
+                                    });
+                                }else{ 
+                                //var rowCount = $('#asset-items tr').length;
+                                //myStr = data.sample;   
+                                if (data.status_no == 1) {
+
+                                    $("#val_item").html();
+                                    var data = data.items;
+                                    $('#ui-id-2'+tableRow).css('display', 'none');
+
+                                    response($.map(data, function (item) {
+                                        return {
+                                            id:                         item.id,
+                                            asset_code:                 item.asset_code,
+                                            digits_code:                item.digits_code,
+                                            asset_tag:                  item.asset_tag,
+                                            serial_no:                  item.serial_no,
+                                            value:                      item.item_description,
+                                            category_description:       item.category_description,
+                                            item_cost:                  item.item_cost,
+                                        
+                                        }
+
+                                    }));
+
+                                } else {
+
+                                    $('.ui-menu-item').remove();
+                                    $('.addedLi').remove();
+                                    $("#ui-id-2"+tableRow).append($("<li class='addedLi'>").text(data.message));
+                                    var searchVal = $('#itemDesc'+tableRow).val();
+                                    if (searchVal.length > 0) {
+                                        $("#ui-id-2"+tableRow).css('display', 'block');
+                                    } else {
+                                        $("#ui-id-2"+tableRow).css('display', 'none');
+                                    }
+                                }
+                            }
+                        }
+                        })
+                        },
+                        select: function (event, ui) {
+                            var e = ui.item;
+
+                            if (e.id) {
+                            
+                                $("#digits_code"+$(this).attr("data-id")).val(e.digits_code);
+                                $("#supplies_cost"+$(this).attr("data-id")).val(e.item_cost);
+                                $('#itemDesc'+$(this).attr("data-id")).val(e.value);
+                                $('#itemDesc'+$(this).attr("data-id")).attr('readonly','readonly');
+                                $('#fixed_description'+$(this).attr("data-id")).val(e.value);
+                                $('#val_item').html('');
+                                return false;
+
+                            }
+                        },
+
+                        minLength: 1,
+                        autoFocus: true
+                    });
+
+                });
 
                 $('#AppOthers'+tableRow).hide();
                 $('#AppOthers'+tableRow).removeAttr('required');
 
+                //SUB CATEGORY CHANGE
                 $('.sub_category_id').change(function(){
-
                     var sub_category_id =  this.value;
                     var fruits = [];
                     $(".sub_category_id :selected").each(function() {
@@ -617,31 +694,29 @@
                     }
 
                 });
-
+                //CATEGORY CHANGE
                 $('#category_id'+tableRow).change(function(){
-                var category =  this.value;
-                var id_data = $(this).attr("data-id");
-                
-                $.ajax
-                ({ 
-                    type: 'POST',
-                    url: "{{ route('asset.sub.categories') }}",
-                    data: {
-                        "id": category
-                    },
-                    success: function(result) {
-                        var i;
-                        var showData = [];
-                        showData[0] = "<option value=''>-- Select Sub Category --</option>";
-                        for (i = 0; i < result.length; ++i) {
-                            var j = i + 1;
-                            showData[j] = "<option value='"+result[i].class_description+"'>"+result[i].class_description+"</option>";
+                   var category =  this.value;
+                   var id_data = $(this).attr("data-id");
+                    $.ajax
+                    ({ 
+                        type: 'POST',
+                        url: "{{ route('asset.sub.categories') }}",
+                        data: {
+                            "id": category
+                        },
+                        success: function(result) {
+                            var i;
+                            var showData = [];
+                            showData[0] = "<option value=''>-- Select Sub Category --</option>";
+                            for (i = 0; i < result.length; ++i) {
+                                var j = i + 1;
+                                showData[j] = "<option value='"+result[i].class_description+"'>"+result[i].class_description+"</option>";
+                            }
+                            $('#sub_category_id'+id_data).attr('disabled', false);
+                            jQuery('#sub_category_id'+id_data).html(showData);        
                         }
-                        $('#sub_category_id'+id_data).attr('disabled', false);
-                        jQuery('#sub_category_id'+id_data).html(showData);        
-                    }
-                });
-
+                    });
                 });
 
                 $("#quantity_total").val(calculateTotalQuantity());
@@ -652,9 +727,7 @@
         
         //deleteRow
         $(document).on('click', '.removeRow', function() {
-        
             var id_data = $(this).attr("data-id");
-
             if($("#sub_category_id"+id_data).val().toLowerCase().replace(/\s/g, '') == "laptop" || $("#sub_category_id"+id_data).val().toLowerCase().replace(/\s/g, '') == "desktop"){
 
                     $("#application_div").hide();
@@ -749,11 +822,11 @@
         });
     });
 
+    //SUBMIT REQUEST
     $("#btnSubmit").click(function(event) {
-    
-    event.preventDefault();
-    var countRow = $('#asset-items tfoot tr').length;
-    var reg = /^0/gi;
+        event.preventDefault();
+        var countRow = $('#asset-items tfoot tr').length;
+        var reg = /^0/gi;
         // var value = $('.vvalue').val();
         if($("#requested_date").val() === ""){
             swal({
@@ -1047,8 +1120,9 @@
    
         }
     
-});
+    });
 
+    //BACK FORM
     $("#btn-cancel").click(function(event) {
        event.preventDefault();
        swal({
@@ -1065,6 +1139,7 @@
         });
     });
 
+    //NUMBERS VALIDATION
     $(document).on("keyup","#salary_range", function (e) {
         if (e.which >= 37 && e.which <= 40) return;
             if (this.value.charAt(0) == ".") {
