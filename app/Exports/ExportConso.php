@@ -103,7 +103,7 @@ class ExportConso implements FromQuery, WithHeadings, WithMapping
           'body_request.mo_so_num',
           'header_request.created_at as requested_at'
         )
-        ->where('header_request.request_type_id',7)
+        //->where('header_request.request_type_id',7)
         ->whereNull('body_request.deleted_at');
         //dd($this->from, $this->to);
         if($this->from && $this->to){
