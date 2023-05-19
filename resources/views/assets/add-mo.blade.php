@@ -58,11 +58,10 @@
             }
             .finput {
                 border:none;
-                /* border-bottom: 1px solid rgba(18, 17, 17, 0.5); */
+                border-bottom: 1px solid rgba(18, 17, 17, 0.5);
             }
             input.finput:read-only {
-                background-color: #d4edda; 
-                color:#155724
+                background-color: #fff;
             }
 
         </style>
@@ -150,7 +149,7 @@
                         <select class="js-example-basic-single" data-placeholder="** Please a Asset Request"  style="width: 100%;" name="header_request_id" id="header_request_id">
                             <option value=""></option>
                             @foreach($AssetRequest as $value)
-                                <option value="{{$value->id}}">{{$value->reference_number}}</option>
+                                <option value="{{$value->id}}">{{$value->reference_number}} | {{$value->po_number}}</option>
                             @endforeach
                         </select>
                     </div>
@@ -170,7 +169,7 @@
 
             </div>
 
-            {{-- <div class="row" id="Tag">
+            <div class="row" id="Tag">
                 
                 <div class="col-md-12">
                     <hr/>
@@ -212,7 +211,7 @@
                         </div>                 
                     </div>
                 </div>
-            </div> --}}
+            </div>
 
         </div>
 
@@ -234,9 +233,9 @@
 @endsection
 @push('bottom')
 <script type="text/javascript">
-    $(function(){
-        $('body').addClass("sidebar-collapse");
-    });
+    // $(function(){
+    //     $('body').addClass("sidebar-collapse");
+    // });
     $("#Tag").hide();
 
     var stack = [];

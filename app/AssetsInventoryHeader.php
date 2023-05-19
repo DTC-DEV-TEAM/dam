@@ -8,7 +8,6 @@ class AssetsInventoryHeader extends Model
 {
     protected $table = 'assets_inventory_header';
     protected $fillable = [
-        'header_status',
         'po_no',
         'invoice_date',
         'invoice_no',

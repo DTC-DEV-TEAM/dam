@@ -153,12 +153,11 @@
 	        $this->addaction = array();
 			if(CRUDBooster::isUpdate()) {
 
-				$for_printing     = DB::table('statuses')->where('id', 17)->value('id');
+				$for_printing =  	DB::table('statuses')->where('id', 17)->value('id');
 
-				$for_receiving    = DB::table('statuses')->where('id', 16)->value('id');
+				$for_receiving =  	DB::table('statuses')->where('id', 16)->value('id');
 
 				$for_printing_adf = DB::table('statuses')->where('id', 18)->value('id');
-				$cancelled        = DB::table('statuses')->where('id', 8)->value('id');
 
 				//dd("[status_id]");
 
@@ -166,7 +165,7 @@
 
 				//dd($id);
 				// or [to_print] == 1
-				$this->addaction[] = ['title'=>'Print','url'=>CRUDBooster::mainpath('getRequestPrintADF/[id]'),'icon'=>'fa fa-print', "showIf"=>"[status_id] == $for_printing_adf || [status_id] == $cancelled"];
+				$this->addaction[] = ['title'=>'Print','url'=>CRUDBooster::mainpath('getRequestPrintADF/[id]'),'icon'=>'fa fa-print', "showIf"=>"[status_id] == $for_printing_adf"];
 
 				$this->addaction[] = ['title'=>'Print','url'=>CRUDBooster::mainpath('getRequestPrintPickList/[id]'),'icon'=>'fa fa-print', "showIf"=>"[mo_plug] == 0"];
 
@@ -546,7 +545,7 @@
 		
 
 			$fields = Request::all();
-			//dd($fields);
+			
 			$cont = (new static)->apiContext;
 
 			$dataLines1 = array();
@@ -555,32 +554,30 @@
 
 			$Header_id 							= $fields['header_request_id'];
 			$digits_code 						= $fields['add_digits_code'];
-			//$asset_code 						= $fields['add_asset_code'];
+			$asset_code 						= $fields['add_asset_code'];
 			$item_description 					= $fields['add_item_description'];
 			$serial_no 							= $fields['add_serial_no'];
 			$quantity 							= $fields['add_quantity'];
 			$unit_cost 							= $fields['add_unit_cost'];
 			$total_unit_cost 					= $fields['add_total_unit_cost'];
 			$body_request_id 					= $fields['body_request_id'];
-			$category_id 					    = $fields['category_id'];
-			$sub_category_id 					= $fields['sub_category_id'];
+			
 			$quantity_total 					= $fields['quantity_total'];
 			$total 								= $fields['total'];
 
-			if(!$digits_code || !$item_description){
-				return CRUDBooster::redirect(CRUDBooster::mainpath(),"No Reserved Item","danger");
-			}
+			$freebies_val 						= $fields['freebies_val'];
+			
 			//$postdata['quantity_total']		 	= $quantity_total;
 			//$postdata['total']		 			= $total;
 
 			$arf_header 		= HeaderRequest::where(['id' => $Header_id])->first();
-			// if(in_array($arf_header->request_type_id, [1, 5])){
-			//     $inventory_id 						= $fields['inventory_id'];
-			// 	$item_id 							= $fields['item_id'];
-			// }else{
-			// 	$inventory_id 						= NULL;
-			// 	$item_id 							= $fields['inventory_id'];
-			// }
+			if(in_array($arf_header->request_type_id, [1, 5])){
+			    $inventory_id 						= $fields['inventory_id'];
+				$item_id 							= $fields['item_id'];
+			}else{
+				$inventory_id 						= NULL;
+				$item_id 							= $fields['inventory_id'];
+			}
 			$body_request 		= BodyRequest::where(['header_request_id' => $Header_id])->count();
 
 			$count_header 		= MoveOrder::count();
@@ -604,41 +601,71 @@
 			for($x=0; $x < count((array)$item_description); $x++) {
 
 
-				$inventory_info = 	DB::table('assets_inventory_body')->where('digits_code', $digits_code[$x])->where('statuses_id',6)->first();
+				$inventory_info = 	DB::table('assets_inventory_body')->where('id', $inventory_id[$x])->first();
 
 				$ref_inventory   =  		str_pad($inventory_info->location, 2, '0', STR_PAD_LEFT);	
 
-					if(count((array)$digits_code) != $body_request){
+					if($freebies_val == 1){
 
-						if($body_request_id[$x] == "" || $body_request_id[$x] == null){
+						if(count((array)$digits_code) != $body_request){
 
-							$count_header++;
-							$header_ref   =  		str_pad($count_header, 7, '0', STR_PAD_LEFT);			
+							if($body_request_id[$x] == "" || $body_request_id[$x] == null){
+
+								$count_header++;
+								$header_ref   =  		str_pad($count_header, 7, '0', STR_PAD_LEFT);			
+								$reference_number	= 	"MO-".$header_ref.$ref_inventory;
+
+							}else{
+								$header_ref   =  		str_pad($count_header1, 7, '0', STR_PAD_LEFT);			
+								$reference_number	= 	"MO-".$header_ref.$ref_inventory;
+
+							}
+						
+							//$reference_number	= 	"MO-".$header_ref;
+						}else{
+
+							$header_ref   =  		str_pad($count_header1, 7, '0', STR_PAD_LEFT);			
 							$reference_number	= 	"MO-".$header_ref.$ref_inventory;
 
+							//$reference_number	= 	"MO-".$header_ref;
+						}
+
+					}else{
+
+						if(count((array)$digits_code) != $body_request){
+
+							if($body_request_id[$x] == "" || $body_request_id[$x] == null){
+
+								$count_header++;
+								$header_ref   =  		str_pad($count_header, 7, '0', STR_PAD_LEFT);			
+								$reference_number	= 	"MO-".$header_ref.$ref_inventory;
+
+							}else{
+								$header_ref   =  		str_pad($count_header1, 7, '0', STR_PAD_LEFT);			
+								$reference_number	= 	"MO-".$header_ref.$ref_inventory;
+
+							}
+							// $count_header++;
+							// $header_ref   =  		str_pad($count_header, 7, '0', STR_PAD_LEFT);			
+							// $reference_number	= 	"MO-".$header_ref.$ref_inventory;
+
+							//$reference_number	= 	"MO-".$header_ref;
 						}else{
 							$header_ref   =  		str_pad($count_header1, 7, '0', STR_PAD_LEFT);			
 							$reference_number	= 	"MO-".$header_ref.$ref_inventory;
 
+							//$reference_number	= 	"MO-".$header_ref;
 						}
-						// $count_header++;
-						// $header_ref   =  		str_pad($count_header, 7, '0', STR_PAD_LEFT);			
-						// $reference_number	= 	"MO-".$header_ref.$ref_inventory;
 
-						//$reference_number	= 	"MO-".$header_ref;
-					}else{
-						$header_ref   =  		str_pad($count_header1, 7, '0', STR_PAD_LEFT);			
-						$reference_number	= 	"MO-".$header_ref.$ref_inventory;
-
-						//$reference_number	= 	"MO-".$header_ref;
 					}
 
-				
-					// $items = 				DB::table('assets')->where('assets.id', $item_id[$x])->first();
 
-					// $category_id = 			DB::table('category')->where('id',	$items->category_id)->value('category_description');
 
-					// $sub_category_id = 		DB::table('class')->where('id',	$items->class_id)->value('class_description');
+					$items = 				DB::table('assets')->where('assets.id', $item_id[$x])->first();
+
+					$category_id = 			DB::table('category')->where('id',	$items->category_id)->value('category_description');
+
+					$sub_category_id = 		DB::table('class')->where('id',	$items->class_id)->value('class_description');
 
 
 	
@@ -646,15 +673,21 @@
 				$dataLines1[$x]['mo_reference_number'] 	= $reference_number;
 				$dataLines1[$x]['header_request_id'] 	= $arf_header->id;
 				$dataLines1[$x]['body_request_id'] 		= $body_request_id[$x];
-				//$dataLines1[$x]['item_id'] 				= $item_id[$x];
-				//$dataLines1[$x]['inventory_id'] 		= $inventory_id[$x];
+				$dataLines1[$x]['item_id'] 				= $item_id[$x];
+				$dataLines1[$x]['inventory_id'] 		= $inventory_id[$x];
 				$dataLines1[$x]['digits_code'] 			= $digits_code[$x];
-				//$dataLines1[$x]['asset_code'] 			= $asset_code[$x];
+				$dataLines1[$x]['asset_code'] 			= $asset_code[$x];
 				$dataLines1[$x]['item_description'] 	= $item_description[$x];
-				$dataLines1[$x]['category_id'] 			= $category_id[$x];
-				$dataLines1[$x]['sub_category_id'] 		= $sub_category_id[$x];
 
-				
+				if($body_request_id[$x] == "" || $body_request_id[$x] == null){
+					$dataLines1[$x]['category_id'] 			= "FREEBIES";
+					$dataLines1[$x]['sub_category_id'] 		= "FREEBIES ITEM";
+				}else{
+
+					$dataLines1[$x]['category_id'] 			= $category_id;
+					$dataLines1[$x]['sub_category_id'] 		= $sub_category_id;
+
+				}
 
 				$array_location = [1,2];
 				if(in_array($arf_header->request_type_id, [1, 5])){
@@ -663,11 +696,11 @@
 					$location 						= implode(",",$array_location);
 				}
 
-				//$dataLines1[$x]['serial_no'] 			= $serial_no[$x];
+				$dataLines1[$x]['serial_no'] 			= $serial_no[$x];
 				$dataLines1[$x]['quantity'] 			= $quantity[$x];
 				$dataLines1[$x]['unit_cost'] 			= $unit_cost[$x];
 				$dataLines1[$x]['total_unit_cost'] 		= $total_unit_cost[$x];
-				//$dataLines1[$x]['to_reco'] 				= $arf_header->to_reco;
+				$dataLines1[$x]['to_reco'] 				= $arf_header->to_reco;
 				$dataLines1[$x]['location_id'] 			= $location;
 				$dataLines1[$x]['created_by'] 			= CRUDBooster::myId();
 				$dataLines1[$x]['created_at'] 			= date('Y-m-d H:i:s');
@@ -683,10 +716,10 @@
 					'to_mo'=> 	0
 				]);	
 
-				// DB::table('assets_inventory_body')->where('id', $inventory_id[$x])
-				// ->update([
-				// 	'statuses_id'=> 			2
-				// ]);
+				DB::table('assets_inventory_body')->where('id', $inventory_id[$x])
+				->update([
+					'statuses_id'=> 			2
+				]);
 
 			}
 
@@ -714,15 +747,13 @@
 				
 				HeaderRequest::where('id',$Header_id)
 				->update([
-					'mo_by'          => CRUDBooster::myId(),
-					'mo_at'          => date('Y-m-d H:i:s'),
-					'purchased2_by'	 => CRUDBooster::myId(),
-				    'purchased2_at'  => date('Y-m-d H:i:s'),
-					'status_id'      => $for_printing,
-					'quantity_total' => $quantity_total,
-					'total'          => $total,
-					'location_id'    => $headLocation,
-					'to_mo'          => 0
+					'mo_by'=> 	CRUDBooster::myId(),
+					'mo_at'=> 	date('Y-m-d H:i:s'),
+					'status_id'=> 	$for_printing,
+					'quantity_total'=> 	$quantity_total,
+					'total'=> 	$total,
+					'location_id'=> $headLocation,
+					'to_mo'=> 	0
 				]);
 
 
@@ -739,13 +770,11 @@
 
 				HeaderRequest::where('id',$Header_id)
 				->update([
-					'mo_by'          => CRUDBooster::myId(),
-					'mo_at'          => date('Y-m-d H:i:s'),
-					'purchased2_by'	 => CRUDBooster::myId(),
-				    'purchased2_at'  => date('Y-m-d H:i:s'),
-					'quantity_total' => $sum_qty,
-					'total'          => $sum,
-					'to_mo'          => 0
+					'mo_by'=> 	CRUDBooster::myId(),
+					'mo_at'=> 	date('Y-m-d H:i:s'),
+					'quantity_total'=> 	$sum_qty,
+					'total'=> 	$sum,
+					'to_mo'=> 	0
 				]);
 
 
@@ -777,8 +806,7 @@
 				
 				HeaderRequest::where('id',$Header_id)
 				->update([
-					'to_mo'   => 1,
-					'mo_plug' => 0
+					'mo_plug'=> 0
 				]);
 			}
 
@@ -867,6 +895,7 @@
 
 			$postdata['mo_by'] 				= CRUDBooster::myId();
 			$postdata['mo_at'] 				= date('Y-m-d H:i:s');
+
 			
 			if($arf_header->print_by == null){
 
@@ -1038,28 +1067,24 @@
 			// 									   ->get();
 			//Option 2
 			if(in_array(CRUDBooster::myPrivilegeId(),[5,17])){
-				$data['AssetRequest'] = HeaderRequest::
-				  where('mo_plug', 0)
-				->where('to_mo', 1)
+				$data['AssetRequest'] = HeaderRequest::whereNotNull('purchased2_by')->where('mo_plug', 0)
 				->where('request_type_id' , 1)
 				->where('status_id','!=',13)
 				->whereNotNull('created_by')
+				->orwhere('to_mo', 1)
 				->get();
 			}else if(in_array(CRUDBooster::myPrivilegeId(),[9])){
-				$data['AssetRequest'] = HeaderRequest::
-				  where('mo_plug', 0)
-				->where('to_mo', 1)
+				$data['AssetRequest'] = HeaderRequest::whereNotNull('purchased2_by')->where('mo_plug', 0)
 				->where('request_type_id' , 5)
 				->where('status_id','!=',13)
 				->whereNotNull('created_by')
-			
+				->orwhere('to_mo', 1)
 				->get();
 			}else{
-				$data['AssetRequest'] = HeaderRequest::
-				  where('mo_plug', 0)
-				->where('to_mo', 1)
+				$data['AssetRequest'] = HeaderRequest::whereNotNull('purchased2_by')->where('mo_plug', 0)
 				->where('status_id','!=',13)
 				->whereNotNull('created_by')
+				->orwhere('to_mo', 1)
 				->get();
 			}
 			
@@ -1462,10 +1487,9 @@
 										)
 								->where('header_request.id', $search)->first();
 			
-			$data['Body'] = BodyRequest::leftjoin('assets_inventory_reserved', 'body_request.id', '=', 'assets_inventory_reserved.body_id')
-								->select(
-								  'body_request.*',
-								  'assets_inventory_reserved.reserved as reserved'
+			$data['Body'] = BodyRequest::
+								select(
+								  'body_request.*'
 								)
 								->where('body_request.header_request_id', $search)
 								->where('body_request.mo_plug', 0)
@@ -1551,6 +1575,28 @@
 				</div>
 				';
 
+		$data['ARFHeader'] .= '
+				<hr/>
+				<div class="row">                           
+					<label class="control-label col-md-2">PO#:</label>
+					<div class="col-md-4">
+							<p>'. $data['Header']->po_number .'</p>
+					</div>
+
+					<label class="control-label col-md-2">PO Date:</label>
+					<div class="col-md-4">
+							<p>'. $data['Header']->po_date .'</p>
+					</div>
+				</div>
+
+				<div class="row">                           
+					<label class="control-label col-md-2">Quote Date:</label>
+					<div class="col-md-4">
+							<p>'. $data['Header']->quote_date .'</p>
+					</div>
+				</div>
+				';
+
 			$tableRow = 1;
 
 			$total = 0;
@@ -1563,111 +1609,52 @@
 
 				$data['ARFBody'] .='
 
-					<tr style="background-color: #d4edda; color:#155724">
-						<input type="hidden"  class="form-control text-center finput"  name="item_description[]" id="item_description'.$tableRow.'"  required  value="'.$rowresult->item_description.'">
-						<input type="hidden"  class="form-control"  name="remove_btn[]" id="remove_btn'.$tableRow.'"  required  value="'.$tableRow.'">
-						<input type="hidden"  class="form-control"  name="remove_btn[]" id="category"  required  value="'.$data['Header']->request_type_id.'">
-					
-				';
-			    if($rowresult->reserved != null || $rowresult->reserved != ""){ 
-					$data['ARFBody'] .='
-					   <td style="text-align:center" height="10">
-					        <input type="hidden"  class="form-control"  name="body_request_id[]" id="body_request_id'.$tableRow.'"  required  value="'.$rowresult->id.'">                                                                               
-							<input class="form-control text-center itemDcode finput" type="text" name="add_digits_code[]" value="'.$rowresult->digits_code.'" required max="99999999" readonly>                                                                              
+					<tr>
+						<td>
+							<input type="hidden"  class="form-control"  name="add_item_id[]" id="add_item_id'.$tableRow.'"  required  value='.$rowresult->id.'">                                                                               
+							<input type="hidden"  class="form-control"  name="item_description[]" id="item_description'.$tableRow.'"  required  value="'.$rowresult->item_description.'">
+							<input type="hidden"  class="form-control"  name="remove_btn[]" id="remove_btn'.$tableRow.'"  required  value="'.$tableRow.'">
+							<input type="hidden"  class="form-control"  name="remove_btn[]" id="category"  required  value="'.$data['Header']->request_type_id.'">
+							<button type="button"  data-id="'.$tableRow.'"  class="btn btn-primary btnsearch" id="searchrow'.$tableRow.'" name="searchrow" disabled data-toggle="tooltip" data-placement="bottom" title="Search Item"><i class="glyphicon glyphicon-search"></i></button>
 						</td>
 						<td style="text-align:center" height="10">
-						    <input type="text"  class="form-control text-center finput"  name="add_item_description[]" id="add_item_description'.$tableRow.'"  required  value="'.$rowresult->item_description.'" readonly>
+							'.$rowresult->digits_code.'
+						</td>
+						<td style="text-align:center" height="10">
+							'.$rowresult->item_description.'
 						</td>
 
-						<td style="text-align:center" height="10">
-							<input type="text"  class="form-control text-center finput"  name="category_id[]" id="category_id'.$tableRow.'"  required  value="'.$rowresult->category_id.'" readonly>
-                        </td>
-
-						<td style="text-align:center" height="10">
-						   <input type="text"  class="form-control text-center finput"  name="sub_category_id[]" id="sub_category_id'.$tableRow.'"  required  value="'.$rowresult->sub_category_id.'" readonly>
-                        </td>
-
-						<td style="text-align:center" height="10">
-						  <input type="text"  class="form-control text-center finput"  name="add_quantity[]" id="add_quantity'.$tableRow.'"  required  value="'.$rowresult->quantity.'" readonly>
-                        </td>	
-
-						<td style="text-align:center" class="rep_qty">
-						 '. ($rowresult->replenish_qty ? $rowresult->replenish_qty : 0) .'
-						</td>  
-						<td style="text-align:center" class="re_qty">
-						 '. ($rowresult->reorder_qty ? $rowresult->reorder_qty : 0) .'
-						</td>     
-						<td style="text-align:center" class="served_qty">
-						 '. ($rowresult->serve_qty ? $rowresult->serve_qty : 0) .'
-						 </td>                                                           
-						<td style="text-align:center" class="unserved_qty">
-						'. ($rowresult->unserved_qty ? $rowresult->unserved_qty : 0).'
-						</td>
-						<td style="text-align:center" class="unit_cost">
-						'. ($rowresult->unit_cost ? $rowresult->unit_cost : 0) .'
-						</td>
-						<td style="text-align:center" class="total_cost">
-						'. ($rowresult->unit_cost * $rowresult->serve_qty) .'
-						</td>
-						<td style="text-align:center"><i data-toggle="tooltip" data-placement="right" title="reserved" class="fa fa-check-circle text-success"></i></td>
-					';
-				}else{
-					$data['ARFBody'] .='
-					<tr >
-					   <td style="text-align:center" height="10">
-							'.$rowresult->digits_code.'                                                                            
-						</td>
-						<td style="text-align:center" height="10">
-						    '.$rowresult->item_description.'
-						</td>
 						<td style="text-align:center" height="10">
 							'.$rowresult->category_id.'
                         </td>
+
 						<td style="text-align:center" height="10">
-						   '.$rowresult->sub_category_id.'
+							'.$rowresult->sub_category_id.'
                         </td>
+
 						<td style="text-align:center" height="10">
-						  '.$rowresult->quantity.'
+							'.$rowresult->quantity.'
                         </td>	
-						<td style="text-align:center" class="rep_qty">
-						 '. ($rowresult->replenish_qty ? $rowresult->replenish_qty : 0) .'
-						</td>  
-						<td style="text-align:center" class="re_qty">
-						 '. ($rowresult->reorder_qty ? $rowresult->reorder_qty : 0) .'
-						</td>     
-						<td style="text-align:center" class="served_qty">
-						 '. ($rowresult->serve_qty ? $rowresult->serve_qty : 0) .'
-						 </td>                                                           
-						<td style="text-align:center" class="unserved_qty">
-						'. ($rowresult->unserved_qty ? $rowresult->unserved_qty : 0).'
-						</td>
-						<td style="text-align:center" class="unit_cost">
-						'. ($rowresult->unit_cost ? $rowresult->unit_cost : 0) .'
-						</td>
-						<td style="text-align:center" class="total_cost">
-						'. ($rowresult->unit_cost * $rowresult->serve_qty) .'
-						</td>
-						<td style="text-align:center"><i data-toggle="tooltip" data-placement="right" title="Unserved" class="fa fa-times-circle text-danger"></i></td>
-					</tr>';
+				';
+
+				if($data['Header']->recommendedby != null || $data['Header']->recommendedby != ""){ 
+					$data['ARFBody'] .='
+
+							<td style="text-align:center" height="10">
+								'.$rowresult->recommendation.'
+							</td>
+
+							<td style="text-align:center" height="10">
+								'.$rowresult->reco_digits_code.'
+                             </td>
+
+                             <td style="text-align:center" height="10">
+							 	'.$rowresult->reco_item_description.'
+                             </td>
+
+						</tr>
+					';
 				}
-				// if($data['Header']->recommendedby != null || $data['Header']->recommendedby != ""){ 
-				// 	$data['ARFBody'] .='
-
-				// 			<td style="text-align:center" height="10">
-				// 				'.$rowresult->recommendation.'
-				// 			</td>
-
-				// 			<td style="text-align:center" height="10">
-				// 				'.$rowresult->reco_digits_code.'
-                //              </td>
-
-                //              <td style="text-align:center" height="10">
-				// 			 	'.$rowresult->reco_item_description.'
-                //              </td>
-
-				// 		</tr>
-				// 	';
-				// }
 
 			}
 
@@ -1684,27 +1671,21 @@
 								<table id="asset-items1">
 									<tbody id="bodyTable">
 										<tr class="tbl_header_color dynamicRows">
-											<th width="9%" class="text-center">Digits Code</th>
+											<th width="5%" class="text-center">Action</th>
+											<th width="7%" class="text-center">Digits Code</th>
 											<th width="20%" class="text-center">Item Description</th>
 											<th width="9%" class="text-center">Category</th>                                                         
 											<th width="9%" class="text-center">Sub Category</th> 
-											<th width="3%" class="text-center">Request Qty</th>
-											<th width="3%" class="text-center">For Replenish Qty</th> 
-                                            <th width="3%" class="text-center">For Re Order Qty</th> 
-                                            <th width="3%" class="text-center">Fulfilled Qty</th> 
-                                            <th width="3%" class="text-center">UnServed Qty</th> 
-                                            <th width="5%" class="text-center">Item Cost</th> 
-                                            <th width="5%" class="text-center">Total Cost</th>
-											<th width="3%" class="text-center">Reserved</th>
-											'; 
+											<th width="5%" class="text-center">Qty</th>';
 
-											// if($data['Header']->recommendedby != null || $data['Header']->recommendedby != ""){ 
-											// 	$data['ARFBodyTable'] .= '
-											// 		<th width="7%" class="text-center">Laptop Type</th> 
-											// 		<th width="10%" class="text-center">Digits Code Reco</th> 
-											// 		<th width="20%" class="text-center">Item Description Reco</th>
-											// 	';
-											// }
+
+											if($data['Header']->recommendedby != null || $data['Header']->recommendedby != ""){ 
+												$data['ARFBodyTable'] .= '
+													<th width="7%" class="text-center">Laptop Type</th> 
+													<th width="10%" class="text-center">Digits Code Reco</th> 
+													<th width="20%" class="text-center">Item Description Reco</th>
+												';
+											}
 											
 
 		$data['ARFBodyTable'] .= '	
@@ -1828,7 +1809,7 @@
 				)
 				->where('mo_body_request.mo_reference_number', $HeaderID->mo_reference_number)
 				->where('mo_body_request.to_pick', 1)
-				->whereIn('mo_body_request.status_id', [$for_printing_adf,8])
+				->where('mo_body_request.status_id', $for_printing_adf)
 				->leftjoin('statuses', 'mo_body_request.status_id', '=', 'statuses.id')
 				->orderby('mo_body_request.id', 'desc')
 				->get();
@@ -1942,11 +1923,11 @@
 				$infos['assign_to'] = $employee_name->bill_to;
 				$infos['reference_number'] = $arf_header->reference_number;
 				//if(app()->environment('production')) {
-					//$infos['systemlink'] = "<a href='https://dam.digitstrading.ph/public/admin/receiving_asset/getADFStatus/$arf_header->id'>I have read and agree to the terms of use, and have received this item.</a>";
+					$infos['systemlink'] = "<a href='https://dam.digitstrading.ph/public/admin/receiving_asset/getADFStatus/$arf_header->id'>I have read and agree to the terms of use, and have received this item.</a>";
 				//}else if(app()->environment('staging')){
 					//$infos['systemlink'] = "<a href='https://dam-test.digitstrading.ph/public/admin/receiving_asset/getADFStatus/$arf_header->id'>I have read and agree to the terms of use, and have received this item.</a>";
 				//}else{
-					$infos['systemlink'] = "<a href='https://localhost/dam/public/admin/receiving_asset/getADFStatus/$arf_header->id'>I have read and agree to the terms of use, and have received this item.</a>";
+					//$infos['systemlink'] = "<a href='https://localhost/dam/public/admin/receiving_asset/getADFStatus/$arf_header->id'>I have read and agree to the terms of use, and have received this item.</a>";
 				//}
 			
 				$infos['mo_reference_number'] = '<p>'. implode("<br>", $mo_reference_number) .'</p>';
@@ -1956,8 +1937,8 @@
 				$infos['item_category'] = '<p>'. implode("<br>", $item_category) .'</p>';
 				$infos['serial_no'] = '<p>'. implode("<br>", $serial_no) .'</p>';
 				
-				//CRUDBooster::sendEmail(['to'=>$employee_name->email,'data'=>$infos,'template'=>'assets_confirmation','attachments'=>$files]);
-				CRUDBooster::sendEmail(['to'=>'marvinmosico@digits.ph','data'=>$infos,'template'=>'assets_confirmation','attachments'=>$files]);
+				CRUDBooster::sendEmail(['to'=>$employee_name->email,'data'=>$infos,'template'=>'assets_confirmation','attachments'=>$files]);
+				//CRUDBooster::sendEmail(['to'=>'marvinmosico@digits.ph','data'=>$infos,'template'=>'assets_confirmation','attachments'=>$files]);
 
 				if($arf_header->print_by_form == null){
 

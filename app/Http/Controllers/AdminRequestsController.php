@@ -389,7 +389,7 @@
 			$message = ['status'=>'success', 'message' => 'Save Successfully!'];
 			echo json_encode($message);
 		}
-
+		
 		public function restrictSuppliesRequest(Request $request){
 			$data = Request::all();
 			$btnvalue = $data['value'];

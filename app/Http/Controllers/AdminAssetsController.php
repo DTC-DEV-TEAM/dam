@@ -302,7 +302,7 @@
 				}
                 
 				//updated item master data
-				setInterval(getItemMasterUpdatedData, 10000);
+				setInterval(getItemMasterUpdatedData, 60*60*1000);
 				function getItemMasterUpdatedData(){
 					$.ajax({
 						type: 'POST',
@@ -757,7 +757,7 @@
 					}
 
 					if(in_array($value['category_id'],[2,3,12])){
-                        $aimfs_category = 2;
+                     $aimfs_category = 2;
 					}else if(in_array($value['category_id'],[13])){
 						$aimfs_category = 4;
 					}else if(in_array($value['category_id'],[5,10,11])){

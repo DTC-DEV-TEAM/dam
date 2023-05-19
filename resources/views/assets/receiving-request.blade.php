@@ -275,7 +275,7 @@
                     <div class="col-md-6">
                         <table style="width:100%">
                             <tbody>
-                                {{-- <tr>
+                                <tr>
                                     <th class="control-label col-md-2">{{ trans('message.form-label.po_number') }}:</th>
                                     <td class="col-md-4">{{$Header->po_number}}</td>     
                                 </tr>
@@ -288,17 +288,11 @@
                                 <tr>
                                     <th class="control-label col-md-2">{{ trans('message.form-label.quote_date') }}:</th>
                                     <td class="col-md-4">{{$Header->quote_date}}</td>
-                                </tr> --}}
+                                </tr>
                                 @if( $Header->processedby != null )
                                     <tr>
                                         <th class="control-label col-md-2">{{ trans('message.form-label.processed_by') }}:</th>
                                         <td class="col-md-4">{{$Header->processedby}} / {{$Header->purchased2_at}}</td>
-                                    </tr>
-                                @endif
-                                @if($Header->ac_comments != null)
-                                    <tr>
-                                        <th class="control-label col-md-2">{{ trans('message.table.ac_comments') }}:</th>
-                                        <td class="col-md-4">{{$Header->ac_comments}}</td>
                                     </tr>
                                 @endif
                             </tbody>
@@ -308,7 +302,12 @@
                     <div class="col-md-6">
                         <table style="width:100%">
                             <tbody>
-                               
+                                @if($Header->ac_comments != null)
+                                    <tr>
+                                        <th class="control-label col-md-2">{{ trans('message.table.ac_comments') }}:</th>
+                                        <td class="col-md-4">{{$Header->ac_comments}}</td>
+                                    </tr>
+                                @endif
                                     <tr>
                                         <th class="control-label col-md-2">{{ trans('message.form-label.mo_by') }}:</th>
                                         <td class="col-md-4">{{$Header->moby}} / {{$Header->mo_at}}</td>

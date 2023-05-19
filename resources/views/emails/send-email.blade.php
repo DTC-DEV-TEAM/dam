@@ -41,30 +41,6 @@
             <td class="col-md-4">{{$infos['actual_color']}}</td>
         </tr>
         <tr>
-            <th class="control-label col-md-2">Material:</th>
-            <td class="col-md-4">{{$infos['material']}}</td>
-        </tr>
-        <tr>
-            <th class="control-label col-md-2">Thickness:</th>
-            <td class="col-md-4">{{$infos['thickness']}}</td>
-        </tr>
-        <tr>
-            <th class="control-label col-md-2">Lamination:</th>
-            <td class="col-md-4">{{$infos['lamination']}}</td>
-        </tr>
-        <tr>
-            <th class="control-label col-md-2">Add Ons:</th>
-            <td class="col-md-4">{{$infos['add_ons']}}</td>
-        </tr>
-        <tr>
-            <th class="control-label col-md-2">Installation:</th>
-            <td class="col-md-4">{{$infos['installation']}}</td>
-        </tr>
-        <tr>
-            <th class="control-label col-md-2">Dismantling:</th>
-            <td class="col-md-4">{{$infos['dismantling']}}</td>
-        </tr>
-        <tr>
             <th class="control-label col-md-2">Quantity:</th>
             <td class="col-md-4">{{$infos['quantity']}}</td>
         </tr>

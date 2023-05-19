@@ -121,32 +121,8 @@
                 <div class="col-md-4">
                         <p>{{$Header->position}}</p>
                 </div>
-            </div>
 
-            @if(in_array($Header->request_type_id,[6]))
-                <div class="row">
-                    <label class="control-label col-md-2">Sampling:</label>
-                    <div class="col-md-4">
-                            <p >{{$Header->sampling}}</p>
-                    </div>
-                            
-                    <label class="control-label col-md-2">Mark Up:</label>
-                    <div class="col-md-4">
-                            <p>{{$Header->mark_up}}</p>
-                    </div>
-                </div>
-                <div class="row">
-                    <label class="control-label col-md-2">Dismantling:</label>
-                    <div class="col-md-4">
-                            <p >{{$Header->dismantling}}</p>
-                    </div>
-                            
-                    <label class="control-label col-md-2">Artworklink:</label>
-                    <div class="col-md-4">
-                            <p>{{$Header->artworklink}}</p>
-                    </div>
-                </div>
-            @endif
+            </div>
 
             <div class="row">                          
                 <label class="control-label col-md-2">Date Needed:</label>
@@ -160,23 +136,6 @@
                     </div>
                 @endif
             </div>
-
-            @if(in_array($Header->request_type_id,[6]))
-                <div class="row">
-                    <label class="control-label col-md-2">Uploaded Photos/Files:</label>
-                    <div class="col-md-4">
-                        <div class="flex-div">
-                            @foreach($header_files as $header_file)                                    
-                                @if(in_array($header_file->ext,['jpg','jpeg','png','gif']))
-                                <a  href='{{CRUDBooster::adminpath("item-sourcing-header/download/".$header_file->id)."?return_url=".urlencode(Request::fullUrl())}}' class="alink"><img style="margin-left:10px;" width="120px"; height="90px"; src="{{URL::to('vendor/crudbooster/item_source_header_file').'/'.$header_file->file_name}}" alt="" data-action="zoom"> </a>   
-                                @else
-                                <a  href='{{CRUDBooster::adminpath("item-sourcing-header/download/".$header_file->id)."?return_url=".urlencode(Request::fullUrl())}}' class="alink">{{$header_file->file_name}} <i style="color:#007bff" class="fa fa-download"></i></a>     
-                                @endif                                         
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-            @endif
 
             <div class="row">
                 @if($Header->po_number != null)
@@ -217,14 +176,6 @@
                                                 <th width="7%" class="text-center">Model</th>  
                                                 <th width="7%" class="text-center">Size</th> 
                                                 <th width="7%" class="text-center">Actual Color</th>     
-                                                @if(in_array($Header->request_type_id,[6]))
-                                                    <th width="7%" class="text-center">Material</th> 
-                                                    <th width="7%" class="text-center">Thickness</th> 
-                                                    <th width="7%" class="text-center">lamination</th>
-                                                    <th width="7%" class="text-center">Add Ons</th>
-                                                    <th width="7%" class="text-center">Installation</th>
-                                                    <th width="7%" class="text-center">Dismantling</th>    
-                                                @endif 
                                                 <th width="2%" class="text-center">Quantity</th>                                                                                                                
                                                 <th width="10%" class="text-center">Budget</th>                                                                                                                
                                             </tr>
@@ -263,26 +214,6 @@
                                                             <td style="text-align:center" height="10">
                                                                 {{$rowresult->actual_color}}                               
                                                             </td>
-                                                            @if(in_array($Header->request_type_id,[6]))
-                                                                <td style="text-align:center" height="10">
-                                                                    {{$rowresult->material}}                               
-                                                                </td>
-                                                                <td style="text-align:center" height="10">
-                                                                    {{$rowresult->thickness}}                               
-                                                                </td>
-                                                                <td style="text-align:center" height="10">
-                                                                    {{$rowresult->lamination}}                               
-                                                                </td>
-                                                                <td style="text-align:center" height="10">
-                                                                    {{$rowresult->add_ons}}                               
-                                                                </td>
-                                                                <td style="text-align:center" height="10">
-                                                                    {{$rowresult->installation}}                               
-                                                                </td>
-                                                                <td style="text-align:center" height="10">
-                                                                    {{$rowresult->dismantling}}                               
-                                                                </td>
-                                                            @endif
                                                             <td style="text-align:center" height="10">
                                                                 {{$rowresult->quantity}}                               
                                                             </td>

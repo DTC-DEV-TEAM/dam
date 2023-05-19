@@ -338,10 +338,8 @@
 
 			}else if(CRUDBooster::myPrivilegeId() == 5 || CRUDBooster::myPrivilegeId() == 17){ 
 				$user_data = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-				$query->
-				//where('header_request.recommended_by', '!=', null)
-				//->where('header_request.to_reco', 1)
-				where('header_request.mo_by', CRUDBooster::myId())
+				$query->where('header_request.recommended_by', '!=', null)
+				->where('header_request.to_reco', 1)
 				->whereNull('header_request.deleted_at')
 				->orderBy('header_request.id', 'ASC');
 
@@ -525,7 +523,6 @@
 				->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
 				->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
 				->leftjoin('cms_users as processed', 'header_request.purchased2_by','=', 'processed.id')
-				->leftjoin('cms_users as mo_by', 'header_request.mo_by','=', 'mo_by.id')
 				->leftjoin('cms_users as picked', 'header_request.picked_by','=', 'picked.id')
 				->leftjoin('cms_users as received', 'header_request.received_by','=', 'received.id')
 				->leftjoin('cms_users as closed', 'header_request.closed_by','=', 'closed.id')
@@ -542,7 +539,6 @@
 						'locations.store_name as store_name',
 						'approved.name as approvedby',
 						'recommended.name as recommendedby',
-						'mo_by.name as mo_by',
 						'picked.name as pickedby',
 						'received.name as receivedby',
 						'processed.name as processedby',

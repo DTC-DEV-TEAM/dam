@@ -145,7 +145,7 @@
                                                 <th>Warranty Expiry Month</th>                                           
                                                 <th>Upc Code</th> 
                                                 <th>Brand</th>
-                                                <th>Specs</th>         
+                                                <th>Specs</th>    
                                                 <th>Updated By</th>   
                                                 <th>Date Updated</th>                                                              
                                             </tr>
@@ -168,7 +168,7 @@
                                                 <td>{{$Body->warranty_coverage}}</td>                                            
                                                 <td>{{$Body->upc_code}}</td>  
                                                 <td>{{$Body->brand}}</td>  
-                                                <td>{{$Body->specs}}</td>    
+                                                <td>{{$Body->specs}}</td>   
                                                 <td>{{$Body->updated_by}}</td>    
                                                 <td>{{$Body->date_updated}}</td>                                                                       
                                                </tr>

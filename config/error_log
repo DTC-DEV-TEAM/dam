@@ -1,14 +1,8 @@
-[14-Mar-2023 17:25:54 Asia/Manila] PHP Fatal error:  Uncaught Error: Call to undefined method Illuminate\Support\Collection::getArrayableItems() in /home/dtc/public_html/dam/vendor/laravel/framework/src/Illuminate/Collections/Collection.php:31
-Stack trace:
-#0 /home/dtc/public_html/dam/vendor/laravel/framework/src/Illuminate/Collections/helpers.php(15): Illuminate\Support\Collection->__construct(Array)
-#1 /home/dtc/public_html/dam/vendor/laravel/framework/src/Illuminate/Support/Traits/ReflectsClosures.php(49): collect(Array)
-#2 /home/dtc/public_html/dam/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/ReportableHandler.php(62): Illuminate\Foundation\Exceptions\ReportableHandler->firstClosureParameterTypes(Object(Closure))
-#3 /home/dtc/public_html/dam/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(234): Illuminate\Foundation\Exceptions\ReportableHandler->handles(Object(Error))
-#4 /home/dtc/public_html/dam/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(165): Illuminate\Foundation\Exceptions in /home/dtc/public_html/dam/vendor/laravel/framework/src/Illuminate/Collections/Collection.php on line 31
-[14-Mar-2023 17:25:54 Asia/Manila] PHP Fatal error:  Uncaught Error: Call to undefined method Illuminate\Support\Collection::getArrayableItems() in /home/dtc/public_html/dam/vendor/laravel/framework/src/Illuminate/Collections/Collection.php:31
-Stack trace:
-#0 /home/dtc/public_html/dam/vendor/laravel/framework/src/Illuminate/Collections/helpers.php(15): Illuminate\Support\Collection->__construct(Array)
-#1 /home/dtc/public_html/dam/vendor/laravel/framework/src/Illuminate/Support/Traits/ReflectsClosures.php(49): collect(Array)
-#2 /home/dtc/public_html/dam/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/ReportableHandler.php(62): Illuminate\Foundation\Exceptions\ReportableHandler->firstClosureParameterTypes(Object(Closure))
-#3 /home/dtc/public_html/dam/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(234): Illuminate\Foundation\Exceptions\ReportableHandler->handles(Object(Symfony\Component\ErrorHandler\Error\FatalError))
-#4 /home/dtc/public_html/dam/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions. in /home/dtc/public_html/dam/vendor/laravel/framework/src/Illuminate/Collections/Collection.php on line 31
+[21-Oct-2021 22:54:35 UTC] PHP Fatal error:  Call to undefined function env() in /home/glennong/public_html/reimbursement/config/services.php on line 18
+[21-Oct-2021 22:55:31 UTC] PHP Fatal error:  Call to undefined function env() in /home/glennong/public_html/reimbursement/config/mail.php on line 19
+[21-Oct-2021 23:03:31 UTC] PHP Fatal error:  Call to undefined function env() in /home/glennong/public_html/reimbursement/config/filesystems.php on line 16
+[21-Oct-2021 23:05:11 UTC] PHP Fatal error:  Call to undefined function env() in /home/glennong/public_html/reimbursement/config/app.php on line 15
+[27-Oct-2021 15:16:36 UTC] PHP Fatal error:  Call to undefined function env() in /home/glennong/public_html/reimbursement/config/services.php on line 18
+[27-Oct-2021 15:19:01 UTC] PHP Fatal error:  Call to undefined function env() in /home/glennong/public_html/reimbursement/config/mail.php on line 19
+[27-Oct-2021 15:43:16 UTC] PHP Fatal error:  Call to undefined function env() in /home/glennong/public_html/reimbursement/config/filesystems.php on line 16
+[27-Oct-2021 15:48:06 UTC] PHP Fatal error:  Call to undefined function env() in /home/glennong/public_html/reimbursement/config/app.php on line 15

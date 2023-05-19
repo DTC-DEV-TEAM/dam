@@ -30,7 +30,7 @@
             }
 
             input.sinput:read-only {
-                background-color: #f5f5f5;
+                background-color: #fff;
             }
 
             input.addinput:read-only {
@@ -107,20 +107,6 @@
 
             </div>
 
-            @if(CRUDBooster::myPrivilegeId() == 8)
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="control-label require">{{ trans('message.form-label.store_branch') }}</label>
-                            
-                            <input type="text" class="form-control finput"  id="store_branch" name="store_branch"  required readonly value="{{$stores->store_name}}"> 
-                            <input type="hidden" class="form-control"  id="store_branch_id" name="store_branch_id"  required readonly value="{{$stores->id}}"> 
-
-                        </div>
-                    </div>
-                </div>
-            @endif
-
             <hr/>
 
             <div class="row"> 
@@ -160,8 +146,6 @@
                                                             <th width="20%" class="text-center">Digits Code</th>
                                                             <th width="20%" class="text-center">{{ trans('message.table.category_id_text') }}</th>      
                                                             <th width="20%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
-                                                            <th width="15%" class="text-center"> Wh Quantity</th>
-                                                            <th width="15%" class="text-center"> Unserved Quantity</th> 
                                                             <th width="7%" class="text-center">*{{ trans('message.table.quantity_text') }}</th> 
                                                             <th width="5%" class="text-center">{{ trans('message.table.action') }}</th>
                                                         </tr>
@@ -178,11 +162,11 @@
 
                                                         <tr id="tr-table1" class="bottom">
             
-                                                            <td colspan="6">
+                                                            <td colspan="4">
                                                                 <input type="button" id="add-Row" name="add-Row" class="btn btn-primary add" value='Add Item' />
                                                             </td>
                                                             <td align="left" colspan="1">
-                                                                <input type='text' name="quantity_total" class="form-control sinput text-center" id="quantity_total" readonly>
+                                                                <input type='number' name="quantity_total" class="form-control text-center" id="quantity_total" readonly>
                                                             </td>
                                                         </tr>
                                                     </tfoot>
@@ -312,8 +296,8 @@
                         '</ul>' +
                         '<div id="display-error'+ tableRow +'"></div>'+
                         '<td>' + 
-                            '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control digits_code text-center sinput" data-id="'+ tableRow +'" id="digits_code'+ tableRow +'"  name="digits_code[]"   maxlength="100" readonly>' +
-                            '<input type="hidden" onkeyup="this.value = this.value.toUpperCase();" class="form-control fixed_description text-center sinput" data-id="'+ tableRow +'" id="fixed_description'+ tableRow +'"  name="fixed_description[]"   maxlength="100" readonly>' +
+                            '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control digits_code finput" data-id="'+ tableRow +'" id="digits_code'+ tableRow +'"  name="digits_code[]"   maxlength="100" readonly>' +
+                            '<input type="hidden" onkeyup="this.value = this.value.toUpperCase();" class="form-control fixed_description finput" data-id="'+ tableRow +'" id="fixed_description'+ tableRow +'"  name="fixed_description[]"   maxlength="100" readonly>' +
                         '</td>' +
 
                         '<td>'+
@@ -333,12 +317,9 @@
                             '         @endforeach'+
                             '</select>'+
                         '</td>' +  
-
-                        '<td><input class="form-control text-center sinput wh_quantity" type="text" required name="wh_quantity[]" id="wh_quantity' + tableRow + '" data-id="' + tableRow  + '" readonly></td>' +
+ 
                         
-                        '<td><input class="form-control text-center sinput unserved_quantity" type="text" required name="unserved_quantity[]" id="unserved_quantity' + tableRow + '" data-id="' + tableRow  + '" readonly></td>' +
-                        
-                        '<td><input class="form-control text-center sinput quantity_item" type="text" required name="quantity[]" id="quantity' + tableRow + '" data-id="' + tableRow  + '"  value="1" min="0" max="9999999999" step="any" onKeyPress="if(this.value.length==4) return false;" oninput="validity.valid;" readonly></td>' +
+                        '<td><input class="form-control text-center quantity_item" type="number" required name="quantity[]" id="quantity' + tableRow + '" data-id="' + tableRow  + '"  value="1" min="0" max="9999999999" step="any" onKeyPress="if(this.value.length==4) return false;" oninput="validity.valid;" readonly></td>' +
                                        
                         '<td>' +
                             '<button id="deleteRow" name="removeRow" class="btn btn-danger removeRow"><i class="glyphicon glyphicon-trash"></i></button>' +
@@ -426,8 +407,6 @@
                                             value:                      item.item_description,
                                             category_description:       item.category_description,
                                             item_cost:                  item.item_cost,
-                                            wh_qty:                     item.wh_qty,
-                                            unserved_qty:               item.unserved_qty,
                                         
                                         }
 
@@ -459,8 +438,6 @@
                                 $('#itemDesc'+$(this).attr("data-id")).val(e.value);
                                 $('#itemDesc'+$(this).attr("data-id")).attr('readonly','readonly');
                                 $('#fixed_description'+$(this).attr("data-id")).val(e.value);
-                                $('#wh_quantity'+$(this).attr("data-id")).val(e.wh_qty);
-                                $('#unserved_quantity'+$(this).attr("data-id")).val(e.unserved_qty);
                                 $('#val_item').html('');
                                 return false;
 

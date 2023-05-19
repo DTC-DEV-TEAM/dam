@@ -4,7 +4,7 @@
             <div class="body-comment">                     
                 @foreach($comments as $key => $comment)
                         @if(CRUDBooster::myId() == $comment->user_id)
-                            {{-- <strong> <span style="text-align:right">Me</span> </strong> --}}
+        
                             <span class="session-comment">
                                 <p style="word-wrap: break-word; padding:5px;"><span class="comment">{{ $comment->comments }} </span> </p>
                                 <p style="text-align:right; font-size:11px; font-style: italic; padding-right:5px;"> {{ $comment->created_at }} </p>      

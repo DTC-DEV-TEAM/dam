@@ -77,32 +77,8 @@
                 <div class="col-md-4">
                         <p>{{$Header->position}}</p>
                 </div>
-            </div>
 
-            @if(in_array($Header->request_type_id,[6]))
-                <div class="row">
-                    <label class="control-label col-md-2">Sampling:</label>
-                    <div class="col-md-4">
-                            <p >{{$Header->sampling}}</p>
-                    </div>
-                            
-                    <label class="control-label col-md-2">Mark Up:</label>
-                    <div class="col-md-4">
-                            <p>{{$Header->mark_up}}</p>
-                    </div>
-                </div>
-                <div class="row">
-                    <label class="control-label col-md-2">Dismantling:</label>
-                    <div class="col-md-4">
-                            <p >{{$Header->dismantling}}</p>
-                    </div>
-                            
-                    <label class="control-label col-md-2">Artworklink:</label>
-                    <div class="col-md-4">
-                            <p>{{$Header->artworklink}}</p>
-                    </div>
-                </div>
-            @endif
+            </div>
 
             <div class="row">                          
                 <label class="control-label col-md-2">Date Needed:</label>
@@ -116,23 +92,6 @@
                     </div>
                 @endif
             </div>
-
-            @if(in_array($Header->request_type_id,[6]))
-                <div class="row">
-                    <label class="control-label col-md-2">Uploaded Photos/Files:</label>
-                    <div class="col-md-4">
-                        <div class="flex-div">
-                            @foreach($header_files as $header_file)                                    
-                                @if(in_array($header_file->ext,['jpg','jpeg','png','gif']))
-                                <a  href='{{CRUDBooster::adminpath("item-sourcing-header/download/".$header_file->id)."?return_url=".urlencode(Request::fullUrl())}}' class="alink"><img style="margin-left:10px;" width="120px"; height="90px"; src="{{URL::to('vendor/crudbooster/item_source_header_file').'/'.$header_file->file_name}}" alt="" data-action="zoom"> </a>   
-                                @else
-                                <a  href='{{CRUDBooster::adminpath("item-sourcing-header/download/".$header_file->id)."?return_url=".urlencode(Request::fullUrl())}}' class="alink">{{$header_file->file_name}} <i style="color:#007bff" class="fa fa-download"></i></a>     
-                                @endif                                         
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-            @endif
 
             <div class="row">
                 @if($Header->po_number != null)
@@ -172,15 +131,7 @@
                                                 <th width="7%" class="text-center">Brand</th> 
                                                 <th width="7%" class="text-center">Model</th>  
                                                 <th width="7%" class="text-center">Size</th> 
-                                                <th width="7%" class="text-center">Actual Color</th>  
-                                                @if(in_array($Header->request_type_id,[6]))
-                                                    <th width="7%" class="text-center">Material</th> 
-                                                    <th width="7%" class="text-center">Thickness</th> 
-                                                    <th width="7%" class="text-center">lamination</th>
-                                                    <th width="7%" class="text-center">Add Ons</th>
-                                                    <th width="7%" class="text-center">Installation</th>
-                                                    <th width="7%" class="text-center">Dismantling</th>    
-                                                @endif    
+                                                <th width="7%" class="text-center">Actual Color</th>     
                                                 <th width="2%" class="text-center">Quantity</th>                                                                                                                
                                                 <th width="10%" class="text-center">Budget</th>  
                                             </tr>
@@ -220,26 +171,6 @@
                                                             <td style="text-align:center" height="10">                                                             
                                                                 {{$rowresult->actual_color}}  
                                                             </td>
-                                                            @if(in_array($Header->request_type_id,[6]))
-                                                                <td style="text-align:center" height="10">
-                                                                    {{$rowresult->material}}                               
-                                                                </td>
-                                                                <td style="text-align:center" height="10">
-                                                                    {{$rowresult->thickness}}                               
-                                                                </td>
-                                                                <td style="text-align:center" height="10">
-                                                                    {{$rowresult->lamination}}                               
-                                                                </td>
-                                                                <td style="text-align:center" height="10">
-                                                                    {{$rowresult->add_ons}}                               
-                                                                </td>
-                                                                <td style="text-align:center" height="10">
-                                                                    {{$rowresult->installation}}                               
-                                                                </td>
-                                                                <td style="text-align:center" height="10">
-                                                                    {{$rowresult->dismantling}}                               
-                                                                </td>
-                                                            @endif
                                                             <td style="text-align:center" height="10" class="qty">
                                                                 {{$rowresult->quantity}} 
                                                             </td>     
@@ -266,26 +197,6 @@
                                                             <td style="text-align:center" height="10">                                                             
                                                                 {{$rowresult->actual_color}}  
                                                             </td>
-                                                            @if(in_array($Header->request_type_id,[6]))
-                                                                <td style="text-align:center" height="10">
-                                                                    {{$rowresult->material}}                               
-                                                                </td>
-                                                                <td style="text-align:center" height="10">
-                                                                    {{$rowresult->thickness}}                               
-                                                                </td>
-                                                                <td style="text-align:center" height="10">
-                                                                    {{$rowresult->lamination}}                               
-                                                                </td>
-                                                                <td style="text-align:center" height="10">
-                                                                    {{$rowresult->add_ons}}                               
-                                                                </td>
-                                                                <td style="text-align:center" height="10">
-                                                                    {{$rowresult->installation}}                               
-                                                                </td>
-                                                                <td style="text-align:center" height="10">
-                                                                    {{$rowresult->dismantling}}                               
-                                                                </td>
-                                                            @endif
                                                             <td style="text-align:center" height="10" class="qty">
                                                                 {{$rowresult->quantity}} 
                                                             </td>     
@@ -408,262 +319,102 @@
     $('#getVersions').click(function(evennt) {
         event.preventDefault();
         var header_id = $('#headerID').val();
-        var reques_type_id = $('#request_type_id').val();
-        if(reques_type_id == 6){
-            $.ajax({
-                url: "{{ route('get-versions') }}",
-                type: "GET",
-                dataType: 'json',
+        $.ajax({
+            url: "{{ route('get-versions') }}",
+            type: "GET",
+            dataType: 'json',
 
-                data: {
-                    "_token": token,
-                    "header_id" : header_id
-                },
-                success: function (data) {
-                    $.each(data, function(i, item) {
-                        $('#appendVersions').append(
+            data: {
+                "_token": token,
+                "header_id" : header_id
+            },
+            success: function (data) {
+                $.each(data, function(i, item) {
+                    $('#appendVersions').append(
+                '<tr>' +
                     '<tr>' +
-                        '<tr>' +
-                
-                            '<td colspan="4" style="background-color:#3c8dbc; color:white; font-weight:bold">' + item.version + '</td>' +
-                        '</tr>' +
-
-                        '<tr>' +
-                            '<th style="padding-top:25px" rowspan="2">Description</th>' +
-                            '<th colspan="2">' + 'From' + '</th>' +
-                            '<th colspan="2">' + 'To' + '</th>' +
-                        '</tr>' +
-
-                        '<tr>'  +
-                            '<td colspan="2">' + item.old_description + '</td>' +
-                            '<td colspan="2">' + item.new_description + '</td>' +
-                        '</tr>' +
-
-                        '<tr>' +
-                            '<th style="padding-top:25px" rowspan="2">Brand</th>' +
-                            '<th colspan="2">' + 'From' + '</th>' +
-                            '<th colspan="2">' + 'To' + '</th>' +
-                        '</tr>' +
-                        '<tr>'  +
-                            '<td colspan="2">' + item.old_brand_value + '</td>' +
-                            '<td colspan="2">' + item.new_brand_value + '</td>' +
-                        '</tr>' +
-
-                        
-                        '<tr>' +
-                            '<th style="padding-top:25px" rowspan="2">Model</th>' +
-                            '<th colspan="2">' + 'From' + '</th>' +
-                            '<th colspan="2">' + 'To' + '</th>' +
-                        '</tr>' +
-                        '<tr>'  +
-                            '<td colspan="2">' + item.old_model_value + '</td>' +
-                            '<td colspan="2">' + item.new_model_value + '</td>' +
-                        '</tr>' +
-
-                        '<tr>' +
-                            '<th style="padding-top:25px" rowspan="2">Size</th>' +
-                            '<th colspan="2">' + 'From' + '</th>' +
-                            '<th colspan="2">' + 'To' + '</th>' +
-                        '</tr>' +
-                        '<tr>'  +
-                            '<td colspan="2">' + item.old_size_value + '</td>' +
-                            '<td colspan="2">' + item.new_size_value + '</td>' +
-                        '</tr>' +
-
-                        
-                        '<tr>' +
-                            '<th style="padding-top:25px" rowspan="2">Actual Color</th>' +
-                            '<th colspan="2">' + 'From' + '</th>' +
-                            '<th colspan="2">' + 'To' + '</th>' +
-                        '</tr>' +
-                        '<tr>'  +
-                            '<td colspan="2">' + item.old_ac_value + '</td>' +
-                            '<td colspan="2">' + item.new_ac_value + '</td>' +
-                        '</tr>' +
-
-                        '<tr>' +
-                            '<th style="padding-top:25px" rowspan="2">Material</th>' +
-                            '<th colspan="2">' + 'From' + '</th>' +
-                            '<th colspan="2">' + 'To' + '</th>' +
-                        '</tr>' +
-                        '<tr>'  +
-                            '<td colspan="2">' + item.old_material + '</td>' +
-                            '<td colspan="2">' + item.new_material + '</td>' +
-                        '</tr>' +
-
-                        '<tr>' +
-                            '<th style="padding-top:25px" rowspan="2">Thickness</th>' +
-                            '<th colspan="2">' + 'From' + '</th>' +
-                            '<th colspan="2">' + 'To' + '</th>' +
-                        '</tr>' +
-                        '<tr>'  +
-                            '<td colspan="2">' + item.old_thickness + '</td>' +
-                            '<td colspan="2">' + item.new_thickness + '</td>' +
-                        '</tr>' +
-
-                        '<tr>' +
-                            '<th style="padding-top:25px" rowspan="2">Lamination</th>' +
-                            '<th colspan="2">' + 'From' + '</th>' +
-                            '<th colspan="2">' + 'To' + '</th>' +
-                        '</tr>' +
-                        '<tr>'  +
-                            '<td colspan="2">' + item.old_lamination + '</td>' +
-                            '<td colspan="2">' + item.new_lamination + '</td>' +
-                        '</tr>' +
-
-                        '<tr>' +
-                            '<th style="padding-top:25px" rowspan="2">Add Ons</th>' +
-                            '<th colspan="2">' + 'From' + '</th>' +
-                            '<th colspan="2">' + 'To' + '</th>' +
-                        '</tr>' +
-                        '<tr>'  +
-                            '<td colspan="2">' + item.old_add_ons + '</td>' +
-                            '<td colspan="2">' + item.new_add_ons + '</td>' +
-                        '</tr>' +
-
-                        '<tr>' +
-                            '<th style="padding-top:25px" rowspan="2">Installation</th>' +
-                            '<th colspan="2">' + 'From' + '</th>' +
-                            '<th colspan="2">' + 'To' + '</th>' +
-                        '</tr>' +
-                        '<tr>'  +
-                            '<td colspan="2">' + item.old_installation + '</td>' +
-                            '<td colspan="2">' + item.new_installation + '</td>' +
-                        '</tr>' +
-
-                        '<tr>' +
-                            '<th style="padding-top:25px" rowspan="2">Dismantling</th>' +
-                            '<th colspan="2">' + 'From' + '</th>' +
-                            '<th colspan="2">' + 'To' + '</th>' +
-                        '</tr>' +
-                        '<tr>'  +
-                            '<td colspan="2">' + item.old_dismantling + '</td>' +
-                            '<td colspan="2">' + item.new_dismantling + '</td>' +
-                        '</tr>' +
-
-                        '<tr>' +
-                            '<th style="padding-top:25px" rowspan="2">Quantity</th>' +
-                            '<th colspan="2">' + 'From' + '</th>' +
-                            '<th colspan="2">' + 'To' + '</th>' +
-                        '</tr>' +
-                        '<tr>'  +
-                            '<td colspan="2">' + item.old_qty_value + '</td>' +
-                            '<td colspan="2">' + item.new_qty_value + '</td>' +
-                        '</tr>' +
-
-                        '<tr>' +
-                            '<th>Updated Date</th>' +
-                            '<td colspan="3">' + item.updated_at + '</td>' +
-                        '</tr>' +
-
-                        '<tr>' +
-                            '<th>Updated By</th>' +
-                            '<td colspan="3">' + item.name + '</td>' +
-                        '</tr>' +
-                    '</tr>'
-                        );
-                    });
-                }
             
-            });
-        }else{
-            $.ajax({
-                url: "{{ route('get-versions') }}",
-                type: "GET",
-                dataType: 'json',
+                        '<td colspan="4" style="background-color:#3c8dbc; color:white; font-weight:bold">' + item.version + '</td>' +
+                    '</tr>' +
 
-                data: {
-                    "_token": token,
-                    "header_id" : header_id
-                },
-                success: function (data) {
-                    $.each(data, function(i, item) {
-                        $('#appendVersions').append(
                     '<tr>' +
-                        '<tr>' +
-                
-                            '<td colspan="4" style="background-color:#3c8dbc; color:white; font-weight:bold">' + item.version + '</td>' +
-                        '</tr>' +
+                        '<th style="padding-top:25px" rowspan="2">Description</th>' +
+                        '<th colspan="2">' + 'From' + '</th>' +
+                        '<th colspan="2">' + 'To' + '</th>' +
+                    '</tr>' +
 
-                        '<tr>' +
-                            '<th style="padding-top:25px" rowspan="2">Description</th>' +
-                            '<th colspan="2">' + 'From' + '</th>' +
-                            '<th colspan="2">' + 'To' + '</th>' +
-                        '</tr>' +
+                    '<tr>'  +
+                        '<td colspan="2">' + item.old_description + '</td>' +
+                        '<td colspan="2">' + item.new_description + '</td>' +
+                    '</tr>' +
 
-                        '<tr>'  +
-                            '<td colspan="2">' + item.old_description + '</td>' +
-                            '<td colspan="2">' + item.new_description + '</td>' +
-                        '</tr>' +
+                    '<tr>' +
+                        '<th style="padding-top:25px" rowspan="2">Brand</th>' +
+                        '<th colspan="2">' + 'From' + '</th>' +
+                        '<th colspan="2">' + 'To' + '</th>' +
+                    '</tr>' +
+                    '<tr>'  +
+                        '<td colspan="2">' + item.old_brand_value + '</td>' +
+                        '<td colspan="2">' + item.new_brand_value + '</td>' +
+                    '</tr>' +
 
-                        '<tr>' +
-                            '<th style="padding-top:25px" rowspan="2">Brand</th>' +
-                            '<th colspan="2">' + 'From' + '</th>' +
-                            '<th colspan="2">' + 'To' + '</th>' +
-                        '</tr>' +
-                        '<tr>'  +
-                            '<td colspan="2">' + item.old_brand_value + '</td>' +
-                            '<td colspan="2">' + item.new_brand_value + '</td>' +
-                        '</tr>' +
+                    
+                    '<tr>' +
+                        '<th style="padding-top:25px" rowspan="2">Model</th>' +
+                        '<th colspan="2">' + 'From' + '</th>' +
+                        '<th colspan="2">' + 'To' + '</th>' +
+                    '</tr>' +
+                    '<tr>'  +
+                        '<td colspan="2">' + item.old_model_value + '</td>' +
+                        '<td colspan="2">' + item.new_model_value + '</td>' +
+                    '</tr>' +
 
-                        
-                        '<tr>' +
-                            '<th style="padding-top:25px" rowspan="2">Model</th>' +
-                            '<th colspan="2">' + 'From' + '</th>' +
-                            '<th colspan="2">' + 'To' + '</th>' +
-                        '</tr>' +
-                        '<tr>'  +
-                            '<td colspan="2">' + item.old_model_value + '</td>' +
-                            '<td colspan="2">' + item.new_model_value + '</td>' +
-                        '</tr>' +
+                    '<tr>' +
+                        '<th style="padding-top:25px" rowspan="2">Size</th>' +
+                        '<th colspan="2">' + 'From' + '</th>' +
+                        '<th colspan="2">' + 'To' + '</th>' +
+                    '</tr>' +
+                    '<tr>'  +
+                        '<td colspan="2">' + item.old_size_value + '</td>' +
+                        '<td colspan="2">' + item.new_size_value + '</td>' +
+                    '</tr>' +
 
-                        '<tr>' +
-                            '<th style="padding-top:25px" rowspan="2">Size</th>' +
-                            '<th colspan="2">' + 'From' + '</th>' +
-                            '<th colspan="2">' + 'To' + '</th>' +
-                        '</tr>' +
-                        '<tr>'  +
-                            '<td colspan="2">' + item.old_size_value + '</td>' +
-                            '<td colspan="2">' + item.new_size_value + '</td>' +
-                        '</tr>' +
+                    
+                    '<tr>' +
+                        '<th style="padding-top:25px" rowspan="2">Actual Color</th>' +
+                        '<th colspan="2">' + 'From' + '</th>' +
+                        '<th colspan="2">' + 'To' + '</th>' +
+                    '</tr>' +
+                    '<tr>'  +
+                        '<td colspan="2">' + item.old_ac_value + '</td>' +
+                        '<td colspan="2">' + item.new_ac_value + '</td>' +
+                    '</tr>' +
 
-                        
-                        '<tr>' +
-                            '<th style="padding-top:25px" rowspan="2">Actual Color</th>' +
-                            '<th colspan="2">' + 'From' + '</th>' +
-                            '<th colspan="2">' + 'To' + '</th>' +
-                        '</tr>' +
-                        '<tr>'  +
-                            '<td colspan="2">' + item.old_ac_value + '</td>' +
-                            '<td colspan="2">' + item.new_ac_value + '</td>' +
-                        '</tr>' +
+                    '<tr>' +
+                        '<th style="padding-top:25px" rowspan="2">Quantity</th>' +
+                        '<th colspan="2">' + 'From' + '</th>' +
+                        '<th colspan="2">' + 'To' + '</th>' +
+                    '</tr>' +
+                    '<tr>'  +
+                        '<td colspan="2">' + item.old_qty_value + '</td>' +
+                        '<td colspan="2">' + item.new_qty_value + '</td>' +
+                    '</tr>' +
 
-                        '<tr>' +
-                            '<th style="padding-top:25px" rowspan="2">Quantity</th>' +
-                            '<th colspan="2">' + 'From' + '</th>' +
-                            '<th colspan="2">' + 'To' + '</th>' +
-                        '</tr>' +
-                        '<tr>'  +
-                            '<td colspan="2">' + item.old_qty_value + '</td>' +
-                            '<td colspan="2">' + item.new_qty_value + '</td>' +
-                        '</tr>' +
+                    '<tr>' +
+                        '<th>Updated Date</th>' +
+                        '<td colspan="3">' + item.updated_at + '</td>' +
+                    '</tr>' +
 
-                        '<tr>' +
-                            '<th>Updated Date</th>' +
-                            '<td colspan="3">' + item.updated_at + '</td>' +
-                        '</tr>' +
-
-                        '<tr>' +
-                            '<th>Updated By</th>' +
-                            '<td colspan="3">' + item.name + '</td>' +
-                        '</tr>' +
-                    '</tr>'
-                        );
-                    });
-                }
-            
-            });
-        }
+                    '<tr>' +
+                        '<th>Updated By</th>' +
+                        '<td colspan="3">' + item.name + '</td>' +
+                    '</tr>' +
+                '</tr>'
+                    );
+                });
+            }
+         
+        });
        
     });
     $('#versionModal').on('hidden.bs.modal', function () {
@@ -746,7 +497,7 @@
             }
         }
         document.getElementById("item-sourcing").innerHTML +=
-        "<tr style='text-align:center'><td colspan=11><strong>TOTAL</strong></td><td><strong>" +
+        "<tr style='text-align:center'><td colspan=5><strong>TOTAL</strong></td><td><strong>" +
         
                             sumqty +
         "</strong></td></tr>";

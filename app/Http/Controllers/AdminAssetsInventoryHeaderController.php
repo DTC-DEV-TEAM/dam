@@ -11,9 +11,7 @@
 	use PhpOffice\PhpSpreadsheet\IOFactory;
 	use Illuminate\Support\Facades\Log;
 	use Illuminate\Support\Facades\Redirect;
-	use App\AssetsInventoryHeaderForApproval;
 	use App\AssetsInventoryHeader;
-	use App\AssetsInventoryBodyForApproval;
 	use App\AssetsHeaderImages;
 	use App\AssetsInventoryBody;
 	use App\AssetsInventoryStatus;
@@ -22,13 +20,9 @@
 	use App\MoveOrder;
 	use App\HeaderRequest;
 	use App\BodyRequest;
-	use App\Models\AssetsInventoryReserved;
 	use App\WarehouseLocationModel;
-	use App\Exports\ExportHeaderInventory;
-	use Illuminate\Support\Facades\File;
 	use Illuminate\Contracts\Cache\LockTimeoutException;
 	use Carbon\Carbon;
-	
 	class AdminAssetsInventoryHeaderController extends \crocodicstudio\crudbooster\controllers\CBController {
 
         public function __construct() {
@@ -60,12 +54,12 @@
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Status","name"=>"header_status","join"=>"statuses,status_description"];
-			$this->col[] = ["label"=>"PO No","name"=>"po_no"];
-			$this->col[] = ["label"=>"Location","name"=>"location","join"=>"warehouse_location_model,location"];
+			$this->col[] = ["label"=>"Po No","name"=>"po_no"];
 			$this->col[] = ["label"=>"Invoice Date","name"=>"invoice_date"];
 			$this->col[] = ["label"=>"Invoice No","name"=>"invoice_no"];
 			$this->col[] = ["label"=>"RR Date","name"=>"rr_date"];
+			// $this->col[] = ["label"=>"Wattage","name"=>"wattage"];
+			// $this->col[] = ["label"=>"Phase","name"=>"phase"];
 			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Date Created","name"=>"created_at"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
@@ -159,10 +153,18 @@
 	        */
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
-				$this->index_button[] = ["label"=>"Export","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('export'),"color"=>"primary"];
-				if(CRUDBooster::myPrivilegeId() == 5 || CRUDBooster::isSuperadmin() || CRUDBooster::myPrivilegeId() == 6){ 
-				    $this->index_button[] = ["label"=>"Add Inventory","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-inventory'),"color"=>"success"];
-				}
+				$this->index_button[] = ["label"=>"Export","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('export-assets-history'),"color"=>"primary"];
+				//$this->index_button[] = ["label"=>"Export","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('export-assets-header'),"color"=>"primary"];
+				
+				//$this->index_button[] = ["label"=>"Add Inventory","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-inventory'),"color"=>"success"];
+
+
+				//$this->index_button[] = ["label"=>"Return Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-return'),"color"=>"success"];
+
+				//$this->index_button[] = ["label"=>"Transfer Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-transfer'),"color"=>"success"];
+
+				//$this->index_button[] = ["label"=>"Disposal Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-disposal'),"color"=>"success"];
+			
 			}
 
 	        /* 
@@ -356,17 +358,17 @@
 	    |
 	    */    
 	    public function hook_row_index($column_index,&$column_value) {	        
-	    	$for_approval  =    DB::table('statuses')->where('id', 20)->value('status_description');
-			$approved  =  		DB::table('statuses')->where('id', 22)->value('status_description');
-			$reject  =  		DB::table('statuses')->where('id', 21)->value('status_description');
-			
-			if($column_index == 1){
-				if($column_value == $for_approval){
-					$column_value = '<span class="label label-warning">'.$for_approval.'</span>';
-				}else if($column_value == $approved){
-					$column_value = '<span class="label label-success">'.$approved.'</span>';
-				}else if($column_value == $reject){
-					$column_value = '<span class="label label-danger">'.$reject.'</span>';
+	    	//Your code here
+			//Your code here
+			$available  =  		DB::table('statuses')->where('id', 6)->value('status_description');
+
+			$reserved  =  		DB::table('statuses')->where('id', 2)->value('status_description');
+
+			if($column_index == 2){
+				if($column_value == $available){
+					$column_value = '<span class="label label-warning">'.$available.'</span>';
+				}else if($column_value == $reserved){
+					$column_value = '<span class="label label-info">'.$reserved.'</span>';
 				}
 			}
 	    }
@@ -672,35 +674,30 @@
 
 			$data['page_title'] = 'Add Inventory';
 
-			$data['warehouse_location'] = WarehouseLocationModel::where('id','!=',4)->get();;
-			$data['reserved_assets'] = AssetsInventoryReserved::whereNotNull('for_po')->get();
-			$data['header_images'] = AssetsHeaderImages::select(
-				'assets_header_images.*'
-			  )
-			  ->where('assets_header_images.header_id', $id)
-			  ->get();
+			$data['warehouse_location'] = WarehouseLocationModel::all();
+
 			return $this->view("assets.add-inventory", $data);
 
 		}
 		//customize index
-		// public function getIndex() {
-		// 	//First, Add an auth
-		// 	 if(!CRUDBooster::isView()) CRUDBooster::redirect(CRUDBooster::adminPath(),trans('crudbooster.denied_access'));
+		public function getIndex() {
+			//First, Add an auth
+			 if(!CRUDBooster::isView()) CRUDBooster::redirect(CRUDBooster::adminPath(),trans('crudbooster.denied_access'));
 			 
-		// 	 //Create your own query 
-		// 	 $data = [];
-		// 	 $data['page_title'] = 'Assets Movement History';
-		// 	 $data['result'] = DB::table('assets_inventory_body')
-		// 	 ->join('assets_inventory_header', 'assets_inventory_body.header_id', '=', 'assets_inventory_header.id')
-		// 	 ->join('statuses', 'assets_inventory_body.statuses_id', '=', 'statuses.id')
-		// 	 ->orderby('assets_inventory_body.id','ASC')
-		// 	 ->get();
-		// 	 $data['history'] = GeneratedAssetsHistories::all();
+			 //Create your own query 
+			 $data = [];
+			 $data['page_title'] = 'Assets Movement History';
+			 $data['result'] = DB::table('assets_inventory_body')
+			 ->join('assets_inventory_header', 'assets_inventory_body.header_id', '=', 'assets_inventory_header.id')
+			 ->join('statuses', 'assets_inventory_body.statuses_id', '=', 'statuses.id')
+			 ->orderby('assets_inventory_body.id','ASC')
+			 ->get();
+			 $data['history'] = GeneratedAssetsHistories::all();
 
-		// 	 //dd($data['history']);
-		// 	 //Create a view. Please use `view` method instead of view method from laravel.
-		// 	 return $this->view('assets.assets_movement_history',$data);
-		//   }
+			 //dd($data['history']);
+			 //Create a view. Please use `view` method instead of view method from laravel.
+			 return $this->view('assets.assets_movement_history',$data);
+		  }
 
         //Get Invetory List
 		public function getDetail($id){
@@ -1169,226 +1166,305 @@
 			exit;  
 		}
 
-		public function getapprovedProcess(Request $request){
-			$this->cbLoader();
-			if(!CRUDBooster::isUpdate() && $this->global_privilege==FALSE) {  
-				if(!CRUDBooster::myPrivilegeId() == 6) {    
-					CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
-				}
+		//export ap for recording
+		public function getExportApRecording($id, $date) {
+			$data = AssetsInventoryBody::leftjoin('statuses', 'assets_inventory_body.statuses_id','=','statuses.id')
+					->leftjoin('cms_users', 'assets_inventory_body.created_by', '=', 'cms_users.id')
+					->leftjoin('assets', 'assets_inventory_body.item_id', '=', 'assets.id')
+					->leftjoin('assets_inventory_header', 'assets_inventory_body.header_id', '=', 'assets_inventory_header.id')
+					->select(
+						'assets_inventory_body.*',
+						'assets_inventory_body.id as aib_id',
+						'statuses.*',
+						'cms_users.*',
+						'assets_inventory_header.*',
+						'assets.item_type as itemType',
+						'assets_inventory_body.location as body_location',
+						'assets_inventory_header.location as location',
+						'assets_inventory_header.created_at as date_created'
+					)
+					->where('assets_inventory_body.header_id', $id)
+					->whereDate('assets_inventory_body.created_at', $date)
+			        ->get();
+			//dd($data);
+			$data_array [] = array("Po No",
+									"Invoice Date",
+									"Invoice No",
+									"RR Date",
+									"Asset Code",
+									"Digits Code",
+									"Serial No",
+									"Status",
+									"Location",
+									"Item Condition",
+									"Item Description",
+									"Value",
+									"Item Type",
+									"Quantity",
+									"Warranty Coverage Year",
+									"Created By",
+									"Date Created");
+			foreach($data as $data_item)
+			{
+				$data_array[] = array(
+					'PO No' => $data_item->po_no,
+					'Invoice Date' => $data_item->invoice_date,
+					'Invoice No' => $data_item->invoice_no,
+					'RR Date' => $data_item->rr_date,
+					'Asset Code' => $data_item->asset_code,
+					'Digit Code' => $data_item->digits_code,
+					'Serial No' =>$data_item->serial_no,
+					'Status' =>$data_item->status_description,
+					'Location' =>$data_item->body_location,
+					'Item Condition' =>$data_item->item_condition,
+					'Item Description' => $data_item->item_description,
+					'Value' => $data_item->value,
+					'Item Type' =>$data_item->itemType,
+					'Quantity' =>$data_item->quantity,
+					'Warranty Coverage Year' => $data_item->warranty_coverage,
+					'Created By' =>$data_item->name,
+					'Date Created' =>$data_item->date_created,
+				);
 			}
-
-			$lock = Cache::lock('processing', 5);
- 
-			// try {
-			// $lock->block(5);
-
-			$fields = Request::all();
-		    
-			$files = $fields['si_dr'];
-			//$id = $fields['id'];
-			$remarks = $fields['remarks'];
-
-			//parse data in form
-			parse_str($fields['form_data'], $fields);
-			$po_no        = $fields['po_no'];
-			$location     = $fields['location'];
-			$invoice_date = $fields['invoice_date'];
-			$invoice_no   = $fields['invoice_no'];
-			$rr_date      = $fields['rr_date'];
-			$body_id      = $fields['body_id'];
-			$serial_no    = $fields['serial_no'];
-			$tag_id       = $fields['arf_tag'];
-			$upc_code     = $fields['upc_code'];
-			$brand        = $fields['brand'];
-			$specs        = $fields['specs'];
-
-			$getLastId = AssetsInventoryHeader::Create(
-				[
-					'po_no'                  => $po_no, 
-					'invoice_date'           => $invoice_date,
-					'invoice_no'             => $invoice_no,
-					'rr_date'                => $rr_date,
-					'location'               => $location,
-					'header_status'          => 22,
-					'created_by'             => CRUDBooster::myId(),
-					'created_at'             => date('Y-m-d H:i:s')
-				]
-			);     
-			
-			$id = $getLastId->id;
-	
-			$images = [];
-			if (isset($files)) {
-				$counter = 0;
-				foreach($files as $file){
-					$counter++;
-					$name = time().rand(1,50) . '.' . $file->getClientOriginalExtension();
-					$filename = $name;
-					$file->move('vendor/crudbooster/inventory_header',$filename);
-					$images[]= $filename;
-
-					$header_images = new AssetsHeaderImages;
-					$header_images->header_id 		        = $id;
-					$header_images->file_name 		        = $filename;
-					$header_images->ext 		            = $file->getClientOriginalExtension();
-					$header_images->created_by 		        = CRUDBooster::myId();
-					$header_images->save();
-				}
-			}
-	         
-			//update reserved table
-			if($tag_id){
-				for ($t = 0; $t < count($tag_id); $t++) {
-					AssetsInventoryReserved::where(['id' => $tag_id[$t]])
-					   ->update([
-							   'reserved' => 1,
-							   'for_po'   => NULL
-							   ]);
-					$arfNumber = AssetsInventoryReserved::where(['id' => $tag_id[$t]])->groupBy('reference_number')->get();
-					foreach($arfNumber as $val){
-						HeaderRequest::where('reference_number',$val->reference_number)
-						->update([
-							'to_mo' => 1
-						]);
-					}
-				}
-				
-			}
-
-	        //Body details
-			$allData    = [];
-			$container  = [];
-			$item_id           = $fields['item_id'];
-			$digits_code       = $fields['digits_code'];
-			$item_desc         = $fields['item_description'];
-			$value             = $fields['value'];
-			$serial_no         = $fields['serial_no'];
-			$quantity          = $fields['add_quantity'];
-			$item_category     = $fields['item_category'];
-			$category_id       = $fields['category_id'];
-			$rr_date           = $fields['rr_date'];
-			$location          = $fields['location'];
-			$warranty_coverage = $fields['warranty_coverage'];
-			$upc_code          = $fields['upc_code'];
-			$brand             = $fields['brand'];
-			$specs             = $fields['specs'];
-
-			//make base default value		
-			foreach($digits_code as $key => $val){
-				$container['item_id']               = $item_id[$key];
-				$container['header_id']             = $id;
-				$container['serial_no']             = $serial_no[$key];
-				$container['location']              = $location;
-				$container['digits_code']           = $val;
-				$container['item_description']      = $item_desc[$key];
-				$container['value']                 = $value[$key];
-				$container['quantity']              = $quantity[$key];
-				$container['warranty_coverage']     = $warranty_coverage[$key];
-				$container['item_category']         = $item_category[$key];
-				$container['category_id']           = $category_id[$key];
-				$container['created_by']            = CRUDBooster::myId();
-				$container['upc_code']              = $upc_code[$key];
-				$container['brand']                 = $brand[$key];
-				$container['specs']                 = $specs[$key];
-				$container['transaction_per_asset'] = "Inventory";
-				$container['item_condition']        = "Good";
-				$allData[] = $container;
-			
-			}
-      
-			/* process to generate chronological sequential numbers asset code */
-			//segregate fixed assets to get category id
-			$FixAssetsArr = [];
-			$FaCatId = DB::table('category')->find(1);
-			foreach ($allData as $fkey => $fvalue) {
-				if (strtolower($fvalue['item_category']) == strtolower($FaCatId->category_description)) {
-					$FixAssetsArr[] = $fvalue;
-					unset($body[$fkey]);
-				}
-				foreach($FixAssetsArr as $valFa){
-					$getFaAssets = $valFa['item_category'];
-				}
-			}
-
-			//segregate it assets to get category id
-			$ItAssetsArr = [];
-			$itCatId = DB::table('category')->find(5);
-			foreach ($allData as $key => $value) {
-				if (strtolower($value['item_category']) == strtolower($itCatId->category_description)) {
-					$ItAssetsArr[] = $value;
-					unset($body[$key]);
-				}
-				foreach($ItAssetsArr as $valIt){
-					$getItAssets = $valIt['item_category'];
-				}
-			}
-
-				
-			//put asset code per based on  item category IT ASSETS
-			$finalItAssetsArr = [];
-			$DatabaseCounterIt = DB::table('assets_inventory_body')->where('item_category',$getItAssets)->count();
-			foreach((array)$ItAssetsArr as $finalItkey => $finalItvalue) {
-					$finalItvalue['asset_code'] = "A1".str_pad ($DatabaseCounterIt + 1, 6, '0', STR_PAD_LEFT);
-					$DatabaseCounterIt++; // or any rule you want.	
-					$finalItAssetsArr[] = $finalItvalue;	
-			}
-	
-			//put asset code per based on  item category FIXED ASSETS
-			$finalFixAssetsArr = [];
-			$DatabaseCounterFixAsset = DB::table('assets_inventory_body')->where('item_category',$getFaAssets)->count();
-			foreach((array)$FixAssetsArr as $finalfakey => $finalfavalue) {
-					$finalfavalue['asset_code'] = "A2".str_pad ($DatabaseCounterFixAsset + 1, 6, '0', STR_PAD_LEFT);
-					$DatabaseCounterFixAsset++; // or any rule you want.	
-					$finalFixAssetsArr[] = $finalfavalue;
-			}
-
-			//Merge all data from segragating per item category
-			$finalDataofSplittingArray = array_merge($finalItAssetsArr, $finalFixAssetsArr);
-
-			//save final data
-			$saveData = [];
-			$saveContainerData = [];
-			foreach($finalDataofSplittingArray as $frKey => $frData){		
-				$saveContainerData['header_id']             = $frData['header_id'];
-				$saveContainerData['item_id']               = $frData['item_id'];
-				$saveContainerData['statuses_id']           = 6;
-				$saveContainerData['location']              = $frData['location'];
-				$saveContainerData['digits_code']           = $frData['digits_code'];
-				$saveContainerData['item_description']      = $frData['item_description'];
-				$saveContainerData['value']                 = $frData['value'];
-				$saveContainerData['quantity']              = 1;	
-				$saveContainerData['serial_no']             = $frData['serial_no'];
-				$saveContainerData['warranty_coverage']     = $frData['warranty_coverage'];
-				$saveContainerData['asset_code']            = $frData['asset_code'];
-				$saveContainerData['barcode']               = $frData['digits_code'].''.$frData['asset_code'];
-				$saveContainerData['item_condition']        = $frData['item_condition'];
-				$saveContainerData['item_category']         = $frData['item_category'];
-				$saveContainerData['transaction_per_asset'] = $frData['transaction_per_asset'];
-				$saveContainerData['upc_code']              = $frData['upc_code'];
-				$saveContainerData['brand']                 = $frData['brand'];
-				$saveContainerData['specs']                 = $frData['specs'];
-				$saveContainerData['created_by']            = $frData['created_by'];
-				$saveContainerData['created_at']            = Carbon::parse($frData['created_at'])->toDateTimeString();
-			
-				$saveData[] = $saveContainerData;
-			}
-			AssetsInventoryBody::insert($saveData);
-			
-			$message = ['status'=>'success', 'message' => 'Received!','redirect_url'=>CRUDBooster::mainpath()];
-			echo json_encode($message);
-			
-			// sleep(3);
-			// // Lock acquired after waiting a maximum of 5 seconds...
-			// } catch (LockTimeoutException $e) {
-			// 	// Unable to acquire lock...
-			// 	return;
-			// } finally {
-			// 	optional($lock)->release();
-			// }
-			
+			$this->ExportExcelForApRecording($data_array);
 		}
 
-       
+		public function ExportExcelForApRecording($assets_data){
+			ini_set('max_execution_time', 0);
+			ini_set('memory_limit', '4000M');
+			try {
+				$spreadSheet = new Spreadsheet();
+				$spreadSheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(20);
+				$spreadSheet->getActiveSheet()->fromArray($assets_data);
+				$Excel_writer = new Xlsx($spreadSheet);
+				header('Content-Type: application/vnd.ms-excel');
+				header('Content-Disposition: attachment;filename="AssetsInventoryApRecording.xlsx"');
+				header('Cache-Control: max-age=0');
+				ob_end_clean();
+				$Excel_writer->save('php://output');
+				exit();
+			} catch (Exception $e) {
+				return;
+			}
+		}
+
+        public function getExportAssetsHistory() {
+            //GET INVENTORY DATA FOR EXPORT
+			$inventory = GeneratedAssetsHistories::leftjoin('assets_inventory_body', 'generated_assets_histories.header_id','=','assets_inventory_body.header_id')
+	            ->leftjoin('cms_users', 'assets_inventory_body.created_by', '=', 'cms_users.id')
+				->select(
+				  'generated_assets_histories.*',
+				  'assets_inventory_body.*',
+				  'cms_users.*',
+				  'assets_inventory_body.location as body_location',
+				  'assets_inventory_body.deployed_to as body_deployed_to',
+				  'assets_inventory_body.deployed_by as body_deployed_by',
+				  'assets_inventory_body.deployed_at as body_deployed_at',
+				  'assets_inventory_body.created_at as date_created'
+				)
+				->where('generated_assets_histories.transaction_type','Inventory')
+				->get();
+
+			//dd($inventory);
+			$data_array [] = array(
+									"Transaction Type",
+									"Reference No",
+									"Po No",
+									"Invoice Date",
+									"Invoice No",
+									"RR Date",
+									"Asset Code",
+									"Digits Code",
+									"Serial No",
+									"Location",
+									"Status",
+									"Deployed To",
+									"Item Description",
+									"Value",
+									"Item Type",
+									"Quantity",
+									"Warranty Coverage Year",
+									"History Update By",
+									"History Date Updated",
+									"History Location",
+									"History Remarks",
+									"Created By",
+									"Date Created",
+									"Deployed Employee Name",
+									"Deployed Department",
+									"Deployed Request Date",
+									"Deployed Company Name",
+									"Deployed Position",
+									"Deployed Purpose",
+									"Deployed Mo Reference No",
+									"Deployed Status",
+									"Deployed Digits Code",
+									"Deployed Asset Code",
+									"Deployed Item Description",
+									"Deployed Serial No",
+									"Deployed Quantity",
+									"Deployed Item Cost",
+									"Deployed Total Cost",
+									"Deployed To",
+									"Deployed At",
+									"Deployed By",
+		                           );
+			foreach($inventory as $inventory){
+				$data_array[] = array(
+					'Transaction Type' => $inventory->transaction_type,
+					'Reference No' => $inventory->reference_no,
+					'PO No' => $inventory->po_no,
+					'Invoice Date' => $inventory->invoice_date,
+					'Invoice No' => $inventory->invoice_no,
+					'RR Date' => $inventory->rr_date,
+					'Asset Code' => $inventory->asset_code,
+					'Digits Code' => $inventory->digits_code,
+					'Serial No' =>$inventory->serial_no,
+					'Location' =>$inventory->body_location,
+					'Status' =>$inventory->status_description,
+					'Deployed To' =>$inventory->body_deployed_to,
+					'Item Description' => $inventory->item_description,
+					'Value' => $inventory->value,
+					'Item Type' =>$inventory->item_type,
+					'Quantity' =>$inventory->quantity,
+					'Warranty Coverage"' => $inventory->warranty_coverage,
+					'Warranty Coverage"' => $inventory->warranty_coverage,
+					'History Update By' => $inventory->history_updated_by,
+					'History Location' => $inventory->history_location,
+					'History Remarks' => $inventory->history_remarks,
+					'Created By' =>$inventory->name,
+					'Date Created' =>$inventory->date_created,
+					'Deployed Employee Name' => "",
+					'Deployed Department' => "",
+					'Deployed Request Date' => "",
+					'Deployed Company Name' => "",
+					'Deployed Position' => "",
+					'Deployed Purpose' => "",
+					'Deployed Mo Reference No' => "",
+					'Deployed Status' => "",
+					'Deployed Digits Code' => "",
+					'Deployed Asset Code' => "",
+					'Deployed Item Description' => "",
+					'Deployed Serial No' => "",
+					'Deployed Quantity' => "",
+					'Deployed Item Cost' => "",
+					'Deployed Total Cost' => "",
+					'Deployed To' => $inventory->body_deployed_to,
+					'Deployed At' => $inventory->body_deployed_at,
+					'Deployed By' => $inventory->body_deployed_by,
+				);
+			}
+
+			//GET DEPLOYED DATA FOR EXPORT
+			$deployed = GeneratedAssetsHistories::
+			leftjoin('header_request', 'generated_assets_histories.header_id','=','header_request.id')
+			->leftjoin('mo_body_request', 'generated_assets_histories.header_id','=','mo_body_request.header_request_id')
+			->leftjoin('assets_inventory_body', 'mo_body_request.inventory_id','=','assets_inventory_body.id')
+			->leftjoin('cms_users', 'mo_body_request.created_by', '=', 'cms_users.id')
+			->leftjoin('statuses', 'mo_body_request.status_id', '=', 'statuses.id')
+			->leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
+			->leftjoin('condition_type', 'header_request.conditions', '=', 'condition_type.id')
+			->leftjoin('employees', 'header_request.employee_name', '=', 'employees.id')
+			->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
+			->leftjoin('departments', 'header_request.department', '=', 'departments.id')
+			->leftjoin('positions', 'header_request.position', '=', 'positions.id')
+				->select(
+				  'generated_assets_histories.*',
+				  'mo_body_request.*',
+				  'mo_body_request.digits_code as mo_digits_code',
+				  'mo_body_request.asset_code as mo_asset_code',
+				  'mo_body_request.item_description as mo_item_description',
+				  'mo_body_request.serial_no as mo_serial_no',
+				  'mo_body_request.quantity as mo_quantity',
+				  'assets_inventory_body.*',
+				  'cms_users.*',
+				  'assets_inventory_body.location as body_location',
+				  'assets_inventory_body.deployed_to as body_deployed_to',
+				  'assets_inventory_body.deployed_by as body_deployed_by',
+				  'assets_inventory_body.deployed_at as body_deployed_at',
+				  'assets_inventory_body.created_at as date_created',
+				  'header_request.*',
+			  	  'header_request.id as requestid',
+				  'header_request.created_at as created',
+				  'request_type.*',
+				  'condition_type.*',
+				  'employees.bill_to as employee_name',
+				  'companies.company_name as company_name',
+				  'departments.department_name as department',
+				  'statuses.status_description as status_description'
+				)
+				->where('generated_assets_histories.transaction_type','Deployed')
+				->get();
+				
+			//FOREACH DEPLOYED
+			foreach($deployed as $deployed){
+				$data_array[] = array(
+					'Transaction Type' => $deployed->transaction_type,
+					'Reference No' => $deployed->reference_no,
+					'PO No' => "",
+					'Invoice Date' => "",
+					'Invoice No' => "",
+					'RR Date' => "",
+					'Asset Code' => "",
+					'Digits Code' => "",
+					'Serial No' => "",
+					'Location' => "",
+					'Status' => "",
+					'Deployed To' => "",
+					'Item Description' => "",
+					'Value' => "",
+					'Item Type' => "",
+					'Quantity' => "",
+					'Warranty Coverage"' => "",
+					'Warranty Coverage"' => "",
+					'History Update By' => "",
+					'History Location' => "",
+					'History Remarks' => "",
+					'Created By' => "",
+					'Date Created' => $deployed->date_created,
+					'Deployed Employee Name' => $deployed->employee_name,
+					'Deployed Department' => $deployed->department,
+					'Deployed Request Date' => $deployed->created,
+					'Deployed Company Name' => $deployed->company_name,
+					'Deployed Position' => $deployed->position,
+					'Deployed Purpose' => $deployed->request_description,
+					'Deployed Mo Reference No' => $deployed->mo_reference_number,
+					'Deployed Status' => $deployed->status_description,
+					'Deployed Digits Code' => $deployed->mo_digits_code,
+					'Deployed Asset Code' => $deployed->mo_asset_code,
+					'Deployed Item Description' => $deployed->mo_item_description,
+					'Deployed Serial No' => $deployed->serial_no,
+					'Deployed Quantity' => $deployed->mo_quantity,
+					'Deployed Item Cost' => $deployed->unit_cost,
+					'Deployed Total Cost' => $deployed->total_unit_cost,
+					'Deployed To' => $deployed->body_deployed_to,
+					'Deployed At' => $deployed->body_deployed_at,
+					'Deployed By' => $deployed->body_deployed_by,
+				);
+			}
+
+			//dd($data_array);
+			$this->ExportAssetsHistory($data_array);
+		}
+
+		public function ExportAssetsHistory($assets_data){
+			ini_set('max_execution_time', 0);
+			ini_set('memory_limit', '4000M');
+			try {
+				$spreadSheet = new Spreadsheet();
+				$spreadSheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(20);
+				$spreadSheet->getActiveSheet()->fromArray($assets_data);
+				$Excel_writer = new Xlsx($spreadSheet);
+				header('Content-Type: application/vnd.ms-excel');
+				header('Content-Disposition: attachment;filename="AssetsMovementHistory.xlsx"');
+				header('Cache-Control: max-age=0');
+				ob_end_clean();
+				$Excel_writer->save('php://output');
+				exit();
+			} catch (Exception $e) {
+				return;
+			}
+		}
 
 
 	}

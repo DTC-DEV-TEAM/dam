@@ -82,9 +82,9 @@
         <input type="hidden" value="6" name="request_type_id" id="request_type_id">
 
         <div class='panel-body'>
-            @include('item-sourcing.item-sourcing-view-header-mkt',['Header'=>$Header])
+            @include('item-sourcing.item-sourcing-view-header',['Header'=>$Header])
             <hr/>
-            @include('item-sourcing.item-sourcing-view-body-mkt',['categories'=>$categories, 'yesno'=>$yesno])
+            @include('item-sourcing.item-sourcing-view-body-mkt-srvs-subs',['categories'=>$categories])
         </div>
 
         <div class='panel-footer'>
@@ -130,10 +130,15 @@
         });
         $(".date").val('');
 
-        $('.select2').select2({});
-
+        $('#category_id').select2({});
+        $('#sub_category_id').select2({});
+        $('#class').select2({});
+        $('#sub_class').select2({});
         $('#budget').select2({});
 
+        $('#sub_category_id').attr('disabled', true);
+        $('#class').attr('disabled', true);
+        $('#sub_class').attr('disabled', true);
 
         $(document).ready(function() {
             //value validation
@@ -257,50 +262,10 @@
             var countRow = $('#asset-items tfoot tr').length;
             var reg = /^0/gi;
             ;
-                if ($('#sampling').val() === "") {
-                    swal({
-                        type: 'error',
-                        title: 'Sampling required!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    }); 
-                    event.preventDefault(); // cancel default behavior
-                }else if ($('#mark_up').val() === "") {
-                    swal({
-                        type: 'error',
-                        title: 'Mark Up required!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    }); 
-                    event.preventDefault(); // cancel default behavior
-                }else if ($('#dismantling').val() === "") {
-                    swal({
-                        type: 'error',
-                        title: 'Dismantling required!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    }); 
-                    event.preventDefault(); // cancel default behavior
-                }else if ($('#date_needed').val() === "") {
+                if ($('#date_needed').val() === "") {
                     swal({
                         type: 'error',
                         title: 'Date needed required!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    }); 
-                    event.preventDefault(); // cancel default behavior
-                }else if ($('#artworklink').val() === "") {
-                    swal({
-                        type: 'error',
-                        title: 'Artworklink required!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    }); 
-                    event.preventDefault(); // cancel default behavior
-                }else if ($('#upload_file').val() === "") {
-                    swal({
-                        type: 'error',
-                        title: 'Upload File/Photos required!',
                         icon: 'error',
                         confirmButtonColor: "#367fa9",
                     }); 
@@ -386,60 +351,6 @@
                     });
                     event.preventDefault();
                     return false;
-                }else if($('#material').val() === ""){
-                    swal({  
-                        type: 'error',
-                        title: 'Material required!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    });
-                    event.preventDefault();
-                    return false;
-                }else if($('#thickness').val() === ""){
-                    swal({  
-                        type: 'error',
-                        title: 'Thickness required!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    });
-                    event.preventDefault();
-                    return false;
-                }else if($('#lamination').val() === ""){
-                    swal({  
-                        type: 'error',
-                        title: 'Lamination required!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    });
-                    event.preventDefault();
-                    return false;
-                }else if($('#add_ons').val() === ""){
-                    swal({  
-                        type: 'error',
-                        title: 'Add Ons required!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    });
-                    event.preventDefault();
-                    return false;
-                }else if($('#installation').val() === ""){
-                    swal({  
-                        type: 'error',
-                        title: 'Installation required!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    });
-                    event.preventDefault();
-                    return false;
-                }else if($('#dismantling_body').val() === ""){
-                    swal({  
-                        type: 'error',
-                        title: 'Dismantling required!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    });
-                    event.preventDefault();
-                    return false;
                 }else if($('#budget').val() === ""){
                     swal({  
                         type: 'error',
@@ -477,32 +388,6 @@
                     event.preventDefault(); // cancel default behavior
                     return false;     
                 } else{
-
-                     //header image validation
-                     for (var i = 0; i < $("#upload_file").get(0).files.length; ++i) {
-                        var file1=$("#upload_file").get(0).files[i].name;
-                        if(file1){                        
-                            var file_size=$("#upload_file").get(0).files[i].size;
-                            //if(file_size<2097152){
-                                var ext = file1.split('.').pop().toLowerCase();                            
-                                if($.inArray(ext,['jpg','jpeg','gif','png','xlsx','docs','pdf'])===-1){
-                                    swal({
-                                        type: 'error',
-                                        title: 'Invalid Image/File Extension!',
-                                        icon: 'error',
-                                        customClass: 'swal-wide',
-                                        confirmButtonColor: "#367fa9"
-                                    });
-                                    event.preventDefault();
-                                    return false;
-                                }
-
-                            // }else{
-                            //     alert("Screenshot size is too large.");
-                            //     return false;
-                            // }                        
-                        }
-                    }
 
                     swal({
                         title: "Are you sure?",

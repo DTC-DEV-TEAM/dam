@@ -105,7 +105,7 @@
             <p>{{ $Header->date_created }}</p>
             </div>
         </div>
-        <div class="row">                           
+          <div class="row">                           
             <label class="control-label col-md-2">Received/Cancelled By:</label>
             <div class="col-md-4">
              <p>{{ $Header->approver }}</p>
@@ -168,7 +168,7 @@
                                                 <th width="2%">Warranty Expiry Month</th>                                           
                                                 <th width="5%">Upc Code</th> 
                                                 <th width="5%">Brand</th>
-                                                <th width="5%">Specs</th>      
+                                                <th width="5%">Specs</th>    
                                                 <th width="6%">Updated By</th>                                            
                                                 <th width="6%">Date Updated</th>  
                                               
@@ -196,7 +196,7 @@
                                                 <td>{{$res->warranty_coverage}}</td>                                                      
                                                 <td>{{$res->upc_code}}</td>  
                                                 <td>{{$res->brand}}</td>  
-                                                <td>{{$res->specs}}</td>                                                                      
+                                                <td>{{$res->specs}}</td>                                                                          
                                                 <td>{{$res->updated_by}}</td>    
                                                 <td>{{$res->date_updated}}</td>    
                                                </tr>
