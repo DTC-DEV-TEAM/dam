@@ -103,7 +103,7 @@
                     <div class="input-group-addon">
                         <span class="input-group-text" id="basic-addon1">Sub Department</span>
                     </div>
-                    <input type="text" class="form-control sinput" value="{{ $users->sub_department }}" aria-describedby="basic-addon1" readonly>
+                    <input type="text" class="form-control sinput" value="{{ $users->sub_department_name }}" aria-describedby="basic-addon1" readonly>
                     </div>
                 </dv>
             </div>

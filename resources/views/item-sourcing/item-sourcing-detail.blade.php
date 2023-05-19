@@ -141,7 +141,7 @@
                             
                     <label class="control-label col-md-2">Artworklink:</label>
                     <div class="col-md-4">
-                            <p>{{$Header->artworklink}}</p>
+                            <a href="{{$Header->artworklink}}" target="_blank"> <span style="word-wrap: break-word;">{{$Header->artworklink}}</span></a>
                     </div>
                 </div>
             @endif

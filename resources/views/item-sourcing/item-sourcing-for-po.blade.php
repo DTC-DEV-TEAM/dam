@@ -1271,7 +1271,7 @@
                             event.preventDefault();
                             return false;
                     }
-                    else if($.inArray(ext.split('.').pop(),['xlsx','pdf','docs'])===-1){
+                    else if($.inArray(ext.split('.').pop().toLowerCase(),['xlsx','pdf','docs'])===-1){
                         swal({  
                                 type: 'error',
                                 title: 'Invalid File Extension! please refer to the ff(.xlsx,.pdf,.docs)',

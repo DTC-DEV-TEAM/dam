@@ -483,7 +483,7 @@
                         var file1=$("#upload_file").get(0).files[i].name;
                         if(file1){                        
                             var file_size=$("#upload_file").get(0).files[i].size;
-                            if(file_size<2097152){
+                            //if(file_size<2097152){
                                 var ext = file1.split('.').pop().toLowerCase();                            
                                 if($.inArray(ext,['jpg','jpeg','gif','png','xlsx','docs','pdf'])===-1){
                                     swal({
@@ -497,10 +497,10 @@
                                     return false;
                                 }
 
-                            }else{
-                                alert("Screenshot size is too large.");
-                                return false;
-                            }                        
+                            // }else{
+                            //     alert("Screenshot size is too large.");
+                            //     return false;
+                            // }                        
                         }
                     }
 

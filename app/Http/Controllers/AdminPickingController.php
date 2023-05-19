@@ -549,7 +549,7 @@
 			$other_comment  = $fields['other_comment'];
 			$asset_code_tag = $fields['asset_code_tag'];
 			$body_id        = $fields['body_id'];
-
+         
 			$HeaderID 					= MoveOrder::where('id', $id)->first();
 
 			//dd($HeaderID->header_request_id);
@@ -709,20 +709,27 @@
 
 			}
 			*/
-
+            
 			//save defect and good comments
-			$inventoryDetailsDefect = AssetsInventoryBody::whereIn('id',[$asset_code_tag])->get();
+			$invACode = array();
+			foreach($item_id as $code){
+				array_push($invACode, $code);
+			}
+			$searchCode = implode(",",$invACode);
+			$searchCodeFinal = array_map('intval',explode(",",$searchCode));
+			$inventoryDetailsDefect = MoveOrder::whereIn('id',$searchCodeFinal)->where('defective',1)->get();
 			$assetCode = [];
 
 			foreach($inventoryDetailsDefect as $asset_code){
               array_push($assetCode, $asset_code->asset_code);
 			}
+			
 			$container = [];
 			$containerSave = [];
 			foreach((array)$comments as $key => $val){
 				$container['arf_number'] = $arf_number;
 				$container['digits_code'] = explode("|",$val)[1];
-				$container['asset_code'] = $assetCode;
+				$container['asset_code'] = $assetCode[$key];
 				$container['comments'] = explode("|",$val)[2];
 				$container['users'] = CRUDBooster::myId();
 				$container['created_at'] = date('Y-m-d H:i:s');
@@ -736,6 +743,7 @@
 				$otherCommentContainer['other_comment'] = $other_comment[$aKey];
 				$otherCommentFinalData[] = $otherCommentContainer;
 			}
+			
 			//search other comment in another array
 			$finalData = [];
 			foreach((array)$containerSave as $csKey => $csVal){
@@ -748,6 +756,7 @@
 					$finalData[] = $csVal;
 				}
 			}
+			
 			$finalContainerSave = [];
 			$finalContainer = [];
 			foreach((array)$finalData as $key => $val){
@@ -755,12 +764,12 @@
 				$finalContainer['digits_code'] = $val['digits_code'];
 				$finalContainer['asset_code'] = $val['asset_code'];
 				$finalContainer['comments'] = $val['comments'];
-				$finalContainer['other_comment'] = $val['other_comment']['other_comment'];
+				$finalContainer['other_comment'] = $val['other_comment'] ? $val['other_comment']['other_comment'] : $val['other_comment'];
 				$finalContainer['users'] = $val['users'];
 				$finalContainer['created_at'] = $val['created_at'];
 				$finalContainerSave[] = $finalContainer;
 			}
- 
+	
 			CommentsGoodDefect::insert($finalContainerSave);
 
 	    }

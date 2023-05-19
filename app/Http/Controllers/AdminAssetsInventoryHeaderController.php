@@ -160,7 +160,7 @@
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
 				$this->index_button[] = ["label"=>"Export","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('export'),"color"=>"primary"];
-				if(CRUDBooster::myPrivilegeId() == 6 || CRUDBooster::isSuperadmin()){ 
+				if(CRUDBooster::myPrivilegeId() == 5 || CRUDBooster::isSuperadmin() || CRUDBooster::myPrivilegeId() == 6){ 
 				    $this->index_button[] = ["label"=>"Add Inventory","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-inventory'),"color"=>"success"];
 				}
 			}
@@ -1244,7 +1244,15 @@
 							   'reserved' => 1,
 							   'for_po'   => NULL
 							   ]);
+					$arfNumber = AssetsInventoryReserved::where(['id' => $tag_id[$t]])->groupBy('reference_number')->get();
+					foreach($arfNumber as $val){
+						HeaderRequest::where('reference_number',$val->reference_number)
+						->update([
+							'to_mo' => 1
+						]);
+					}
 				}
+				
 			}
 
 	        //Body details

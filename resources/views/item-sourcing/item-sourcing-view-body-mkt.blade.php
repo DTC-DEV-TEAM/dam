@@ -18,7 +18,7 @@
                                         <th width="10%" class="text-center"> Actual Color</th>
                                         <th width="10%" class="text-center"> Material</th>
                                         <th width="5%" class="text-center"> Thickness</th>
-                                        <th width="5%" class="text-center"> lamination</th>
+                                        <th width="5%" class="text-center"> Lamination</th>
                                         <th width="5%" class="text-center"> Adds On</th>
                                         <th width="7%" class="text-center"> Installation</th>
                                         <th width="7%" class="text-center"> Dismantling</th>

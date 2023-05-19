@@ -748,9 +748,9 @@
 
 					if(in_array($value['category_id'],[2,3,12,13])){
                         $category_id = 2;
-					}else if(in_array($value['category_id'],[10,11])){
+					}else if(in_array($value['category_id'],[5,10,11])){
 						$category_id = 5;
-					}else if(in_array($value['category_id'],[1,5,6,7,8])){
+					}else if(in_array($value['category_id'],[1,6,7,8])){
 						$category_id = 1;
 					}else{
 						$category_id = $value['category_id'];
@@ -760,9 +760,9 @@
                         $aimfs_category = 2;
 					}else if(in_array($value['category_id'],[13])){
 						$aimfs_category = 4;
-					}else if(in_array($value['category_id'],[10,11])){
+					}else if(in_array($value['category_id'],[5,10,11])){
 						$aimfs_category = 1;
-					}else if(in_array($value['category_id'],[1,5,6,7,8])){
+					}else if(in_array($value['category_id'],[1,6,7,8])){
 						$aimfs_category = 3;
 					}else{
 						$aimfs_category = $value['category_id'];
@@ -854,9 +854,9 @@
 
 					 if(in_array($value['category_id'],[2,3,12,13])){
 						 $category_id = 2;
-					 }else if(in_array($value['category_id'],[10,11])){
+					 }else if(in_array($value['category_id'],[5,10,11])){
 						 $category_id = 5;
-					 }else if(in_array($value['category_id'],[1,5,6,7,8])){
+					 }else if(in_array($value['category_id'],[1,6,7,8])){
 						 $category_id = 1;
 					 }else{
 						 $category_id = $value['category_id'];
@@ -866,9 +866,9 @@
                         $aimfs_category = 2;
 						}else if(in_array($value['category_id'],[13])){
 							$aimfs_category = 4;
-						}else if(in_array($value['category_id'],[10,11])){
+						}else if(in_array($value['category_id'],[5,10,11])){
 							$aimfs_category = 1;
-						}else if(in_array($value['category_id'],[1,5,6,7,8])){
+						}else if(in_array($value['category_id'],[1,6,7,8])){
 							$aimfs_category = 3;
 						}else{
 							$aimfs_category = $value['category_id'];
