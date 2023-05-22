@@ -4,27 +4,13 @@
 	use Request;
 	use DB;
 	use CRUDBooster;
-	use App\HeaderRequest;
-	use App\BodyRequest;
-	use App\ApprovalMatrix;
-	use App\StatusMatrix;
-	use App\GeneratedAssetsHistories;
-	use App\AssetsInventoryHeader;
-	use App\AssetsHeaderImages;
-	use App\AssetsInventoryBody;
 
-	class AdminSuppliesReceivingController extends \crocodicstudio\crudbooster\controllers\CBController {
-		private $forClosing;
-		public function __construct() {
-			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
-			$this->forClosing      =  19;    
-		
-		
-		}
+	class AdminSubMasterfileErfAssetController extends \crocodicstudio\crudbooster\controllers\CBController {
+
 	    public function cbInit() {
 
 			# START CONFIGURATION DO NOT REMOVE THIS LINE
-			$this->title_field = "employee_name";
+			$this->title_field = "id";
 			$this->limit = "20";
 			$this->orderby = "id,desc";
 			$this->global_privilege = false;
@@ -34,39 +20,47 @@
 			$this->button_add = true;
 			$this->button_edit = true;
 			$this->button_delete = false;
-			$this->button_detail = false;
+			$this->button_detail = true;
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
 			$this->button_export = false;
-			$this->table = "header_request";
+			$this->table = "sub_masterfile_erf_asset";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Status","name"=>"status_id","join"=>"statuses,status_description"];
-			$this->col[] = ["label"=>"Reference Number","name"=>"reference_number"];
-			$this->col[] = ["label"=>"Request Type","name"=>"request_type_id","join"=>"requests,request_name"];
-			$this->col[] = ["label"=>"Company Name","name"=>"company_name"];
-			$this->col[] = ["label"=>"Employee Name","name"=>"employee_name","join"=>"cms_users,bill_to"];
-			$this->col[] = ["label"=>"Department","name"=>"department","join"=>"departments,department_name"];
-			$this->col[] = ["label"=>"Requested By","name"=>"created_by","join"=>"cms_users,name"];
-			$this->col[] = ["label"=>"Requested Date","name"=>"created_at"];
-			//$this->col[] = ["label"=>"Updated By","name"=>"updated_by","join"=>"cms_users,name"];
-			//$this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
-
-			$this->col[] = ["label"=>"Approved By","name"=>"approved_by","join"=>"cms_users,name"];
-			$this->col[] = ["label"=>"Approved Date","name"=>"approved_at"];
-			$this->col[] = ["label"=>"Rejected Date","name"=>"rejected_at"];
+			$this->col[] = ["label"=>"Digits Code","name"=>"digits_code"];
+			$this->col[] = ["label"=>"Item Description","name"=>"item_description"];
+			$this->col[] = ["label"=>"Category","name"=>"category"];
+			$this->col[] = ["label"=>"Sub Category","name"=>"sub_category"];
+			$this->col[] = ["label"=>"Class","name"=>"class"];
+			$this->col[] = ["label"=>"Sub Class","name"=>"sub_class"];
+			$this->col[] = ["label"=>"Created By","name"=>"created_by"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-
+			$this->form[] = ['label'=>'Digits Code','name'=>'digits_code','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Item Description','name'=>'item_description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Category','name'=>'category','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Sub Category','name'=>'sub_category','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Class','name'=>'class','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Sub Class','name'=>'sub_class','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Created By','name'=>'created_by','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Updated By','name'=>'updated_by','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
 			//$this->form = [];
+			//$this->form[] = ["label"=>"Digits Code","name"=>"digits_code","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Item Description","name"=>"item_description","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Category","name"=>"category","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Sub Category","name"=>"sub_category","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Class","name"=>"class","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Sub Class","name"=>"sub_class","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Updated By","name"=>"updated_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
 			# OLD END FORM
 
 			/* 
@@ -253,28 +247,7 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-	        if(CRUDBooster::isSuperadmin()){
-				$query->whereNull('header_request.deleted_at')
-				      ->where('header_request.status_id', $this->forClosing)
-					  ->where('header_request.request_type_id',7)
-					  ->orderBy('header_request.status_id', 'ASC')
-					  ->orderBy('header_request.id', 'DESC');
-
-			}else{
-
-				$user = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-
-				$query->where(function($sub_query){
-					$user = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-					$sub_query->where('header_request.created_by', CRUDBooster::myId())
-					          ->where('header_request.status_id', $this->forClosing)
-	                          ->whereNull('header_request.deleted_at')
-							  ->where('header_request.request_type_id',7); 
-				});
-
-				$query->orderBy('header_request.status_id', 'asc')->orderBy('header_request.id', 'DESC');
-				//$query->orderByRaw('FIELD( header_request.status_id, "For Approval")');
-			}
+	        //Your code here
 	            
 	    }
 
@@ -284,11 +257,8 @@
 	    | ---------------------------------------------------------------------- 
 	    |
 	    */    
-	    public function hook_row_index($column_index,&$column_value) {	
-			$for_closing      = DB::table('statuses')->where('id', $this->forClosing)->value('status_description');        
-	    	if($column_value == $for_closing){
-				$column_value = '<span class="label label-info">'.$for_closing.'</span>';
-			}
+	    public function hook_row_index($column_index,&$column_value) {	        
+	    	//Your code here
 	    }
 
 	    /*
@@ -324,15 +294,7 @@
 	    | 
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
-	
-			HeaderRequest::where('id',$id)
-				->update([
-						'closing_plug'=> 1,
-						'status_id'=> 13,
-						'closed_by'=> CRUDBooster::myId(),
-						'closed_at'=> date('Y-m-d H:i:s'),
-	
-				]);	
+	        //Your code here
 
 	    }
 
@@ -372,80 +334,9 @@
 
 	    }
 
-		public function getEdit($id){
-			
-			$this->cbLoader();
-            if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
-                CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
-            }
 
-			$data = array();
 
-			$data['page_title'] = 'View Request';
-
-			$data['Header'] = HeaderRequest::
-				  leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
-				->leftjoin('condition_type', 'header_request.conditions', '=', 'condition_type.id')
-				->leftjoin('cms_users as employees', 'header_request.employee_name', '=', 'employees.id')
-				->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
-				->leftjoin('departments', 'header_request.department', '=', 'departments.id')
-				->leftjoin('locations', 'employees.location_id', '=', 'locations.id')
-				->leftjoin('cms_users as requested', 'header_request.created_by','=', 'requested.id')
-				->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
-				->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
-				->leftjoin('cms_users as processed', 'header_request.purchased2_by','=', 'processed.id')
-				->leftjoin('cms_users as picked', 'header_request.picked_by','=', 'picked.id')
-				->leftjoin('cms_users as received', 'header_request.received_by','=', 'received.id')
-				->leftjoin('cms_users as closed', 'header_request.closed_by','=', 'closed.id')
-				->select(
-						'header_request.*',
-						'header_request.id as requestid',
-						'header_request.created_at as created',
-						'request_type.*',
-						'condition_type.*',
-						'requested.name as requestedby',
-						'employees.bill_to as employee_name',
-						'header_request.employee_name as header_emp_name',
-						'header_request.created_by as header_created_by',
-						//'employees.company_name_id as company_name',
-						'departments.department_name as department',
-						'locations.store_name as store_branch',
-						'approved.name as approvedby',
-						'recommended.name as recommendedby',
-						'picked.name as pickedby',
-						'received.name as receivedby',
-						'processed.name as processedby',
-						'closed.name as closedby',
-						'header_request.created_at as created_at'
-						)
-				->where('header_request.id', $id)->first();
-		
-			$data['Body'] = BodyRequest::
-				select(
-				  'body_request.*'
-				)
-				->where('body_request.header_request_id', $id)
-				->get();
-
-			$data['Body1'] = BodyRequest::
-				select(
-				  'body_request.*'
-				)
-				->where('body_request.header_request_id', $id)
-				->wherenotnull('body_request.digits_code')
-				->orderby('body_request.id', 'desc')
-				->get();
-
-			$data['BodyReco'] = DB::table('recommendation_request')
-				->select(
-				  'recommendation_request.*'
-				)
-				->where('recommendation_request.header_request_id', $id)
-				->get();				
-
-			$data['recommendations'] = DB::table('recommendations')->where('status', 'ACTIVE')->get();		
-			return $this->view("assets.supplies-closed", $data);
-		}
+	    //By the way, you can still create your own method in here... :) 
 
 
 	}

@@ -38,7 +38,7 @@
             }
 
             input.sinput:read-only {
-                background-color: #fff;
+                background-color: #f5f5f5;
             }
 
             input.addinput:read-only {
@@ -502,7 +502,7 @@
                 '<tr>' +
 
                     '<td >' +
-                        '<input type="text" placeholder="Search Item ..." class="form-control finput itemDesc" id="itemDesc'+ tableRow +'" data-id="'+ tableRow +'"   name="item_description[]"  required maxlength="100">' +
+                        '<input type="text" placeholder="Search Item ..." class="form-control text-center finput itemDesc" id="itemDesc'+ tableRow +'" data-id="'+ tableRow +'"   name="item_description[]"  required maxlength="100">' +
                           '<ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" data-id="'+ tableRow +'" id="ui-id-2'+ tableRow +'" style="display: none; top: 60px; left: 15px; width: 100%;">' +
                            '<li>Loading...</li>' +
                           '</ul>' +
@@ -510,32 +510,33 @@
                     '</td>' + 
 
                     '<td>' + 
-                        '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control digits_code finput" data-id="'+ tableRow +'" id="digits_code'+ tableRow +'"  name="digits_code[]"   maxlength="100" readonly>' +
-                        '<input type="hidden" onkeyup="this.value = this.value.toUpperCase();" class="form-control fixed_description finput" data-id="'+ tableRow +'" id="fixed_description'+ tableRow +'"  name="fixed_description[]"   maxlength="100" readonly>' +
-                    '</td>' +
-
-                    '<td>'+
-                        '<select selected data-placeholder="- Select Category -" class="form-control drop'+ tableRow + '" name="category_id[]" data-id="' + tableRow + '" id="category_id' + tableRow + '" required style="width:100%">' +
-                        '  <option value=""></option>' +
-                        '        @foreach($categories as $data)'+
-                        '        <option value="{{$data->category_description}}">{{$data->category_description}}</option>'+
-                        '         @endforeach'+
-                        '</select>'+
+                        '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control text-center digits_code sinput" data-id="'+ tableRow +'" id="digits_code'+ tableRow +'"  name="digits_code[]"   maxlength="100" readonly>' +
+                        '<input type="hidden" onkeyup="this.value = this.value.toUpperCase();" class="form-control fixed_description sinput" data-id="'+ tableRow +'" id="fixed_description'+ tableRow +'"  name="fixed_description[]"   maxlength="100" readonly>' +
                     '</td>' +
 
                     // '<td>'+
-                    //     '<select selected data-placeholder="- Select Sub Category -" class="form-control sub_category_id" name="sub_category_id[]" data-id="' + tableRow + '" id="sub_category_id' + tableRow + '" required style="width:100%">' +
-                         
+                    //     '<select selected data-placeholder="- Select Category -" class="form-control drop'+ tableRow + '" name="category_id[]" data-id="' + tableRow + '" id="category_id' + tableRow + '" required style="width:100%">' +
+                    //     '  <option value=""></option>' +
+                    //     '        @foreach($categories as $data)'+
+                    //     '        <option value="{{$data->category_description}}">{{$data->category_description}}</option>'+
+                    //     '         @endforeach'+
                     //     '</select>'+
-                    // '</td>' +   
-                    '<td>'+
-                        '<select selected data-placeholder="- Select Sub Category -" class="form-control sub_category_id" name="sub_category_id[]" data-id="' + tableRow + '" id="sub_category_id' + tableRow + '" required style="width:100%">' +
-                        '  <option value=""></option>' +
-                        '        @foreach($sub_categories as $data)'+
-                        '        <option value="{{$data->class_description}}">{{$data->class_description}}</option>'+
-                        '         @endforeach'+
-                        '</select>'+
+                    // '</td>' +
+
+                    '<td>' + 
+                        '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control text-center category_id sinput" data-id="'+ tableRow +'" id="category_id'+ tableRow +'"  name="category_id[]"   maxlength="100" readonly>' +
                     '</td>' +
+                    '<td>' + 
+                        '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control text-center sub_category_id sinput" data-id="'+ tableRow +'" id="sub_category_id'+ tableRow +'"  name="sub_category_id[]"   maxlength="100" readonly>' +
+                    '</td>' +  
+                    // '<td>'+
+                    //     '<select selected data-placeholder="- Select Sub Category -" class="form-control sub_category_id" name="sub_category_id[]" data-id="' + tableRow + '" id="sub_category_id' + tableRow + '" required style="width:100%">' +
+                    //     '  <option value=""></option>' +
+                    //     '        @foreach($sub_categories as $data)'+
+                    //     '        <option value="{{$data->class_description}}">{{$data->class_description}}</option>'+
+                    //     '         @endforeach'+
+                    //     '</select>'+
+                    // '</td>' +
 
                     '<td><input class="form-control text-center quantity_item" type="number" required name="quantity[]" id="quantity' + tableRow + '" data-id="' + tableRow  + '"  value="1" min="0" max="9999999999" step="any" onKeyPress="if(this.value.length==4) return false;" oninput="validity.valid;" readonly></td>' +
   
@@ -545,11 +546,11 @@
 
                 '</tr>';
                 $(newrow).insertBefore($('table tr#tr-table1:last'));
-                $('#sub_category_id'+tableRow).attr('disabled', true);
-                $('#category_id'+tableRow).select2({});
-                $('.js-example-basic-multiple').select2();
-                $('.sub_category_id').select2({
-                placeholder_text_single : "- Select Sub Category -"});
+                // $('#sub_category_id'+tableRow).attr('disabled', true);
+                // $('#category_id'+tableRow).select2({});
+                // $('.js-example-basic-multiple').select2();
+                // $('.sub_category_id').select2({
+                // placeholder_text_single : "- Select Sub Category -"});
 
                 $('#app_id'+tableRow).change(function(){
                     if($('#app_id'+$(this).attr("data-id")).val() != null){
@@ -624,6 +625,7 @@
                                             serial_no:                  item.serial_no,
                                             value:                      item.item_description,
                                             category_description:       item.category_description,
+                                            class_description:          item.class_description,
                                             item_cost:                  item.item_cost,
                                         
                                         }
@@ -656,6 +658,8 @@
                                 $('#itemDesc'+$(this).attr("data-id")).val(e.value);
                                 $('#itemDesc'+$(this).attr("data-id")).attr('readonly','readonly');
                                 $('#fixed_description'+$(this).attr("data-id")).val(e.value);
+                                $('#category_id'+$(this).attr("data-id")).val(e.category_description);
+                                $('#sub_category_id'+$(this).attr("data-id")).val(e.class_description);
                                 $('#val_item').html('');
                                 return false;
 

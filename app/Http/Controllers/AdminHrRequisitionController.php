@@ -359,7 +359,11 @@
 			$category_id 		       = $fields['category_id'];
 			//dd($fields);
 			$postdata['reference_number']		 	= $reference_number;
-			$postdata['status_id']                  = 1;
+			if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15])){ 
+			    $postdata['status_id']              = 29;
+			}else{
+				$postdata['status_id']              = 1;
+			}
 			$postdata['company'] 				    = $company;
 			$postdata['date_requested'] 	        = date('Y-m-d');
 			$postdata['department'] 				= $department;
@@ -414,7 +418,7 @@
 	        $fields = Request::all();
 			$dataLines = array();
 			$erf_header = DB::table('erf_header_request')->where(['created_by' => CRUDBooster::myId()])->orderBy('id','desc')->first();
-		
+			$digits_code 	    = $fields['digits_code'];
 			$item_description 	= $fields['item_description'];
 			$category_id 		= $fields['category_id'];
 			$sub_category_id 	= $fields['sub_category_id'];
@@ -445,6 +449,7 @@
 
 			for($x=0; $x < count((array)$item_description); $x++) {		
 				$dataLines[$x]['header_request_id'] = $erf_header->id;
+				$dataLines[$x]['digits_code'] 	    = $digits_code[$x];
 				$dataLines[$x]['item_description'] 	= $item_description[$x];
 				$dataLines[$x]['category_id'] 		= $category_id[$x];
 				$dataLines[$x]['sub_category_id'] 	= $sub_category_id[$x];
@@ -686,10 +691,14 @@
 			->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',5)->where('assets.status','!=','INACTIVE')->whereIn('digits_code',[40001124, 40001123, 40001122, 40001121, 40001120, 40001119, 40001118])
 			->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',5)->where('assets.status','!=','INACTIVE')->whereIn('digits_code',[40001124, 40001123, 40001122, 40001121, 40001120, 40001119, 40001118])
 			->join('category', 'assets.category_id','=', 'category.id')
+			->leftjoin('new_category', 'assets.aimfs_category','=', 'new_category.id')
+			->leftjoin('new_sub_category', 'assets.aimfs_sub_category','=', 'new_sub_category.id')
 			->select(
 				'assets.*',
 				'assets.id as assetID',
-				'category.category_description as category_description'
+				'category.category_description as category_description',
+				'new_category.category_description as aimfs_category_description',
+				'new_sub_category.sub_category_description as aimfs_sub_category_description'
 			)->take(10)->get();
 			
 			if($items){
@@ -700,18 +709,19 @@
 				$i = 0;
 				foreach ($items as $key => $value) {
 
-					$return_data[$i]['id'] = 				$value->assetID;
-					$return_data[$i]['asset_code'] = 		$value->asset_code;
-					$return_data[$i]['digits_code'] = 		$value->digits_code;
-					$return_data[$i]['asset_tag'] = 		$value->asset_tag;
-					$return_data[$i]['serial_no'] = 		$value->serial_no;
-					$return_data[$i]['item_description'] = 	$value->item_description;
-					$return_data[$i]['category_description'] = 		$value->category_description;
-					$return_data[$i]['item_cost'] = 				$value->item_cost;
-					$return_data[$i]['item_type'] = 				$value->item_type;
-					$return_data[$i]['image'] = 				$value->image;
-					$return_data[$i]['quantity'] = 				$value->quantity;
-					$return_data[$i]['total_quantity'] = 				$value->total_quantity;
+					$return_data[$i]['id']                   = $value->assetID;
+					$return_data[$i]['asset_code']           = $value->asset_code;
+					$return_data[$i]['digits_code']          = $value->digits_code;
+					$return_data[$i]['asset_tag']            = $value->asset_tag;
+					$return_data[$i]['serial_no']            = $value->serial_no;
+					$return_data[$i]['item_description']     = $value->item_description;
+					$return_data[$i]['category_description'] = $value->aimfs_category_description;
+					$return_data[$i]['class_description']    = $value->aimfs_sub_category_description;
+					$return_data[$i]['item_cost']            = $value->item_cost;
+					$return_data[$i]['item_type']            = $value->item_type;
+					$return_data[$i]['image']                = $value->image;
+					$return_data[$i]['quantity']             = $value->quantity;
+					$return_data[$i]['total_quantity']       = $value->total_quantity;
 
 					$i++;
 
