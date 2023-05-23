@@ -10,6 +10,7 @@
 	use App\Models\ItemBodySourcing;
 	use App\Models\ItemSourcingComments;
 	use App\Mail\Email;
+	use App\Models\ItemSourcingHeaderFile;
 	use Mail;
 
 	class AdminItemSourcingForApprovalController extends \crocodicstudio\crudbooster\controllers\CBController {
@@ -394,7 +395,9 @@
 			$data['Body']       = ItemBodySourcing::body($id);
 			$data['comments']   = ItemSourcingComments::comments($id);
 			$data['versions']     = DB::table('item_sourcing_edit_versions')->where('header_id', $id)->latest('created_at')->first();
-	
+			
+			$data['header_files'] = ItemSourcingHeaderFile::select('item_sourcing_header_file.*')->where('item_sourcing_header_file.header_id', $id)->get();
+			$data['yesno']        = DB::table('sub_masterfile_yes_no')->get();
 			return $this->view("item-sourcing.item-sourcing-for-approval", $data);
 		}
 

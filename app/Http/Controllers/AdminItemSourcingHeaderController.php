@@ -11,10 +11,12 @@
 	use App\Models\ItemSourcingComments;
 	use App\Models\ItemSourcingOptions;
 	use App\Models\ItemSourcingEditVersions;
+	use App\Models\ItemSourcingHeaderFile;
 	use App\HeaderRequest;
 	use App\BodyRequest;
 	use App\Mail\Email;
 	use Mail;
+	use Illuminate\Support\Facades\Response;
 
 	class AdminItemSourcingHeaderController extends \crocodicstudio\crudbooster\controllers\CBController {
 		private $forApproval;
@@ -341,35 +343,23 @@
 	    */
 	    public function hook_query_index(&$query) {
 			if(CRUDBooster::isSuperadmin()){
-
-				$released  = 		DB::table('statuses')->where('id', 12)->value('id');
-
 				$query->whereNull('item_sourcing_header.deleted_at')
 					  ->orderBy('item_sourcing_header.status_id', 'ASC')
 					  ->orderBy('item_sourcing_header.id', 'DESC');
 
 			}else{
-
+				$res = $query->select('item_sourcing_header.*')->get();
 				$user = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-
+    
 				$query->where(function($sub_query){
-
-					$user = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-
-					$released  = 		DB::table('statuses')->where('id', 12)->value('id');
-
-					$sub_query->where('item_sourcing_header.created_by', CRUDBooster::myId())
-					         
-							  ->whereNull('item_sourcing_header.deleted_at')
-							  ->orderBy('item_sourcing_header.reference_number', 'ASC')
-					          ->orderBy('item_sourcing_header.id', 'DESC');
-					// $sub_query->orwhere('item_sourcing_header.employee_name', $user->id)
-	
-					// 		  ->whereNull('item_sourcing_header.deleted_at');
-
+					$sub_query->where('item_sourcing_header.created_by','LIKE','%'.CRUDBooster::myId().'%')
+							->whereNull('item_sourcing_header.deleted_at')
+							->orderBy('item_sourcing_header.reference_number', 'ASC')
+							->orderBy('item_sourcing_header.id', 'DESC');
+							
 				});
-
 				$query->orderBy('item_sourcing_header.status_id', 'ASC')->orderBy('item_sourcing_header.id', 'DESC');
+					
 				//$query->orderByRaw('FIELD( item_sourcing_header.status_id, "For Approval")');
 			}
 	            
@@ -424,7 +414,7 @@
 	    */
 	    public function hook_before_add(&$postdata) {        
 	        $fields = Request::all();
-
+    
 			$dataLines = array();
 
 			$employee_name 		     = $fields['employee_name'];
@@ -434,6 +424,11 @@
 			$department 		     = $fields['department'];
 			$store_branch 		     = $fields['store_branch'];
 			$store_branch_id         = $fields['store_branch_id'];
+
+			$sampling                = $fields['sampling'];
+			$mark_up                 = $fields['mark_up'];
+			$dismantling             = $fields['dismantling'];
+			$artworklink             = $fields['artworklink'];
 	
 			$quantity_total 	     = $fields['quantity_total'];
 			$cost_total 		     = $fields['cost_total'];
@@ -446,11 +441,19 @@
 			$header_ref              = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);			
 			$reference_number	     = "NIS-".$header_ref;
 			$employees               = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
+			$departmentsUsers        = DB::table('cms_users')->where('department_id', $employees->department_id)->where('id_cms_privileges','!=',1)->where('id','!=',CRUDBooster::myId())->get();
+			$eachDepartmentsIds      = [];
+			foreach($departmentsUsers as $value){
+				array_push($eachDepartmentsIds, CRUDBooster::myId());
+				array_push($eachDepartmentsIds, $value->id);
+			}
+			
+			$saveDepartment = implode(",",$eachDepartmentsIds);
+	
 			$pending                 = DB::table('statuses')->where('id', 1)->value('id');
 			$approved                = DB::table('statuses')->where('id', 4)->value('id');
 
 			if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15])){ 
-
 				$postdata['status_id']		 			= 37;
 			}else{
 				$postdata['status_id']		 			= 1;
@@ -472,11 +475,18 @@
 			$postdata['quantity_total'] 			= $quantity_total;
 			$postdata['cost_total'] 				= $cost_total;
 			$postdata['total'] 						= $total;
-			$postdata['created_by'] 				= CRUDBooster::myId();
-			$postdata['created_at'] 				= date('Y-m-d H:i:s');
-			$postdata['request_type_id']		 	= $request_type_id;
-
 			
+			if($request_type_id == 6){
+				$postdata['created_by']  		    = $saveDepartment;
+			}else{
+				$postdata['created_by'] 		    = CRUDBooster::myId();
+			}
+			$postdata['created_at'] 		    = date('Y-m-d H:i:s');
+			$postdata['request_type_id']		 	= $request_type_id;
+			$postdata['sampling']		 	        = $sampling;
+			$postdata['mark_up']		 	        = $mark_up;
+			$postdata['dismantling']		 	    = $dismantling;
+			$postdata['artworklink']		 	    = $artworklink;
 	    }
 
 	    /* 
@@ -491,19 +501,45 @@
 			$dataLines = array();
 			$nis_header = DB::table('item_sourcing_header')->where(['created_by' => CRUDBooster::myId()])->orderBy('id','desc')->first();
 
-			$item_description 	= $fields['item_description'];
-			$category_id 		= $fields['category_id'];
-			$sub_category_id 	= $fields['sub_category_id'];
-			$class_id 			= $fields['class_id'];
-			$sub_class_id 	    = $fields['sub_class_id'];
-			$brand 			    = $fields['brand'];
-			$model 		     	= $fields['model'];
-			$size 			    = $fields['size'];
-			$actual_color       = $fields['actual_color'];
-			$quantity 			= $fields['quantity'];
-			$budget 	        = $fields['budget'];
+			$item_description 	     = $fields['item_description'];
+			$category_id 		     = $fields['category_id'];
+			$sub_category_id 	     = $fields['sub_category_id'];
+			$class_id 			     = $fields['class_id'];
+			$sub_class_id 	         = $fields['sub_class_id'];
+			$brand 			         = $fields['brand'];
+			$model 		     	     = $fields['model'];
+			$size 			         = $fields['size'];
+			$actual_color            = $fields['actual_color'];
+			$material                = $fields['material'];
+			$thickness               = $fields['thickness'];
+			$lamination              = $fields['lamination'];
+			$add_ons                 = $fields['add_ons'];
+			$installation            = $fields['installation'];
+			$dismantling             = $fields['dismantling_body'];
+			$quantity 			     = $fields['quantity'];
+			$budget 	             = $fields['budget'];
 			$requestor_comments      = $fields['requestor_comments'];
 		 
+			//upload header file
+			$upload_file             = $fields['upload_file'];
+			$images = [];
+			if (!empty($upload_file)) {
+				$counter = 0;
+				foreach($upload_file as $file){
+					$counter++;
+					$name = time().rand(1,50).'-'.$nis_header->id . '.' . $file->getClientOriginalExtension();
+					$filename = $name;
+					$file->move('vendor/crudbooster/item_source_header_file',$filename);
+					$images[]= $filename;
+
+					$header_images                          = new ItemSourcingHeaderFile;
+					$header_images->header_id 		        = $nis_header->id;
+					$header_images->file_name 		        = $filename;
+					$header_images->ext 		            = $file->getClientOriginalExtension();
+					$header_images->created_by 		        = CRUDBooster::myId();
+					$header_images->save();
+				}
+			}
 	
 			ItemBodySourcing::Create([
 				'header_request_id' => $nis_header->id,
@@ -517,6 +553,12 @@
 				'model' 	        => $model,
 				'size' 	            => $size,
 				'actual_color' 	    => $actual_color,
+				'material' 	        => $material,
+				'thickness' 	    => $thickness,
+				'lamination' 	    => $lamination,
+				'add_ons' 	        => $add_ons,
+				'installation' 	    => $installation,
+				'dismantling' 	    => $dismantling,
 				'quantity' 			=> $quantity,
 				'budget' 		    => $budget,
 				'created_at' 		=> date('Y-m-d H:i:s'),
@@ -685,6 +727,7 @@
 
 			$data['categories'] = DB::table('new_category')->where('id',3)->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
 			$data['budget_range'] = DB::table('sub_masterfile_budget_range')->where('status', 'ACTIVE')->get();
+			$data['yesno'] = DB::table('sub_masterfile_yes_no')->get();
 			$privilegesMatrix = DB::table('cms_privileges')->get();
 			$privileges_array = array();
 			foreach($privilegesMatrix as $matrix){
@@ -820,7 +863,10 @@
 		    $data['item_options'] = ItemSourcingOptions::options($id);
 			$data['versions']     = DB::table('item_sourcing_edit_versions')->where('header_id', $id)->latest('created_at')->first();
 			$data['allOptions']   = DB::table('item_sourcing_options')->where('item_sourcing_options.header_id', $id)->count();
-     
+			
+			$data['header_files'] = ItemSourcingHeaderFile::select('item_sourcing_header_file.*')->where('item_sourcing_header_file.header_id', $id)->get();
+			$data['yesno']        = DB::table('sub_masterfile_yes_no')->get();
+
 			return $this->view("item-sourcing.item-sourcing-detail", $data);
 		}
 		public function getDetailReject($id){
@@ -838,7 +884,8 @@
 		    $data['item_options'] = ItemSourcingOptions::options($id);
 			$data['versions']     = DB::table('item_sourcing_edit_versions')->where('header_id', $id)->latest('created_at')->first();
 			$data['allOptions']   = DB::table('item_sourcing_options')->where('item_sourcing_options.header_id', $id)->count();
-     
+			$data['header_files'] = ItemSourcingHeaderFile::select('item_sourcing_header_file.*')->where('item_sourcing_header_file.header_id', $id)->get();
+			$data['yesno']        = DB::table('sub_masterfile_yes_no')->get();
 			return $this->view("item-sourcing.item-sourcing-detail-reject", $data);
 		}
 
@@ -1009,6 +1056,12 @@
 			$model            = $fields['model'];
 			$size             = $fields['size'];
 			$actual_color     = $fields['actual_color'];
+			$material         = $fields['material'];
+			$thickness        = $fields['thickness'];
+			$lamination       = $fields['lamination'];
+			$add_ons          = $fields['add_ons'];
+			$installation     = $fields['installation'];
+			$dismantling      = $fields['dismantling'];
 			$quantity         = $fields['quantity'];
 			$header_id        = $fields['headerID'];
  
@@ -1031,6 +1084,18 @@
 				'new_size_value'      => $size,
 				'old_ac_value'        => $item_source_body->actual_color,
 				'new_ac_value'        => $actual_color,
+				'old_material'        => $item_source_body->material,
+				'new_material'        => $material,
+				'old_thicknes'        => $item_source_body->thicknes,
+				'new_thicknes'        => $thicknes,
+				'old_lamination'      => $item_source_body->lamination,
+				'new_lamination'      => $lamination,
+				'old_add_ons'         => $item_source_body->add_ons,
+				'new_add_ons'         => $add_ons,
+				'old_installation'    => $item_source_body->installation,
+				'new_installation'    => $installation,
+				'old_dismantling'     => $item_source_body->dismantling,
+				'new_dismantling'     => $dismantling,
 				'old_qty_value'       => $item_source_body->quantity,
 				'new_qty_value'       => $quantity,
 				'version'             => "Version"."-". $finalCountHead,
@@ -1047,6 +1112,12 @@
 						'model'                      => $model,
 						'size'                       => $size,
 						'actual_color'               => $actual_color,
+						'material'                   => $material,
+						'thickness'                  => $thickness,
+						'lamination'                 => $lamination,
+						'add_ons'                    => $add_ons,
+						'installation'               => $installation,
+						'dismantling'                => $dismantling,
 						'quantity'                   => $quantity,
 						'updated_by'                 => CRUDBooster::myId(),
 						]);
@@ -1063,6 +1134,12 @@
 			$infos['model'] = $model;
 			$infos['size'] = $size;
 			$infos['actual_color'] = $actual_color;
+			$infos['material'] = $material;
+			$infos['thickness'] = $thickness;
+			$infos['lamination'] = $lamination;
+			$infos['add_ons'] = $add_ons;
+			$infos['installation'] = $installation;
+			$infos['dismantling'] = $dismantling;
 			$infos['quantity'] = $quantity;
 		
 			if($item_source_header->status_id != 1){
@@ -1089,6 +1166,20 @@
 							->orderBy('version','desc')
 							->get();
 			return($versions);
+		}
+
+		public function getDownload($id) {
+      
+			$getFile = DB::table('item_sourcing_header_file')->where('id',$id)->first();
+			$file= public_path(). "/vendor/crudbooster/item_source_header_file/".$getFile->file_name;
+            if(in_array($getFile->ext,['xlsx','docs','pdf'])){
+			    $headers = array(
+					'Content-Type: application/pdf',
+					);
+			    return Response::download($file, $getFile->file_name, $headers);
+			}else{
+				return Response::download($file, $getFile->file_name);
+			}
 		}
 
 

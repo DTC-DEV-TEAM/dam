@@ -10,6 +10,7 @@
 	use App\Models\ItemBodySourcing;
 	use App\Models\ItemSourcingComments;
 	use App\Models\ItemSourcingOptions;
+	use App\Models\ItemSourcingHeaderFile;
 
 	class AdminItemSourcingApprovalHistoryController extends \crocodicstudio\crudbooster\controllers\CBController {
 		private $forApproval;
@@ -398,6 +399,8 @@
 			$data['comments']     = ItemSourcingComments::comments($id);
 		    $data['item_options'] = ItemSourcingOptions::options($id);
 		    $data['versions'] = DB::table('item_sourcing_edit_versions')->where('header_id', $id)->latest('created_at')->first();
+			$data['header_files'] = ItemSourcingHeaderFile::select('item_sourcing_header_file.*')->where('item_sourcing_header_file.header_id', $id)->get();
+			$data['yesno']        = DB::table('sub_masterfile_yes_no')->get();
 			return $this->view("item-sourcing.item-sourcing-detail-history", $data);
 		}
 

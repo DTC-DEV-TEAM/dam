@@ -31,7 +31,11 @@ class ItemHeaderSourcing extends Model
        'processed_at',
        'application_others',
        'to_reco',
-       'if_from_erf'
+       'if_from_erf',
+       'sampling',
+       'mark_up',
+       'dismantling',
+       'artworklink'
     ];
 
     public static function boot(){
