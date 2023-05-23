@@ -164,7 +164,8 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/customers/get-checkEmail','AdminErfEditStatusController@checkEmail')->name('checkEmail');
     Route::get('/admin/erf_edit_status/getErfSetOnboardingDate/{id}','AdminErfEditStatusController@getErfSetOnboardingDate')->name('set-onboarding-erf');
     Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/setOnboarding','AdminErfEditStatusController@setOnboarding')->name('set-onboarding-date');
-
+    Route::post(config('crudbooster.ADMIN_PATH').'/hr_requisition/erf-item-search','AdminHrRequisitionController@itemErfITSearch')->name('item.erf.it.search');
+    
     //Applicant Moduel
     Route::get('/admin/applicant_module/getEditApplicant/{id}','AdminApplicantModuleController@getEditApplicant')->name('edit-applicant');
     Route::get('/admin/applicant_module/getDetailApplicant/{id}','AdminApplicantModuleController@getDetailApplicant')->name('applicant-detail');
@@ -233,7 +234,8 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('/admin/assets_supplies_inventory/upload-supplies-inventory-template','AdminAssetsSuppliesInventoryController@downloadSuppliesInventoryTemplate');
     Route::post(config('crudbooster.ADMIN_PATH').'/assets_supplies_inventory/description','AdminRequestsController@getDescription')->name('get.supplies.description');
     Route::post(config('crudbooster.ADMIN_PATH').'/assets_supplies_inventory/add-supplies-inventory','AdminRequestsController@addSuppliesInventory')->name('add.supplies.inventory');
-
+   Route::post(config('crudbooster.ADMIN_PATH').'/assets_supplies_inventory/restrict-request-asset','AdminRequestsController@restrictSuppliesRequest')->name('restrict-request-asset');
+   
     Route::get('/admin/clear-view', function() {
         Artisan::call('view:clear');
         return "View cache is cleared!";

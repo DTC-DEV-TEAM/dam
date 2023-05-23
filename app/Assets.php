@@ -23,6 +23,7 @@ class Assets extends Model
         'status',
         'quantity',
         'add_quantity',
-        'total+quantity',
+        'aimfs_category',
+        'aimfs_sub_category',
     ] ;
 }

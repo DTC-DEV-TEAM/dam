@@ -238,7 +238,9 @@
                             <th width="10%">Quantity</th> 
                             <th>Serial No</th>   
                             <th>Warranty Expiry Month</th>                                            
-                            
+                            <th class="text-center" width="8%">UPC Code</th>     
+                            <th class="text-center" width="7%">Brand</th>
+                            <th class="text-center" width="15%">Specs</th>   
                         </tr>
                     </thead>
                     <tbody>
@@ -257,7 +259,16 @@
                             <td>
                                 <input class="form-control serial_no finput"  type="text" placeholder="Serial No (Put N/A if not applicable)" name="serial_no[]" style="width:100%" data-index="1" value="{{ $res->serial_no ? $res->serial_no : "" }}">
                             </td>    
-                            <td>{{$res->warranty_coverage}}</td>                                                                                                                  
+                            <td>{{$res->warranty_coverage}}</td>   
+                            <td>
+                                <input class="form-control upc_code finput" oninput="validate(this)" type="text" placeholder="UPC Code" name="upc_code[]" style="width:100%" data-index="1">
+                            </td> 
+                            <td>
+                                <input class="form-control brand finput" oninput="validate(this)" type="text" placeholder="Brand" name="brand[]" style="width:100%" data-index="1">
+                            </td> 
+                            <td>
+                                <input class="form-control specs finput" oninput="validate(this)" type="text" placeholder="ADM Ryzen 5 3rd Gen/8 GB DDR4 RAM 512 GB SSD" name="specs[]" style="width:100%" data-index="1">
+                            </td> 
                             </tr>
                         @endforeach
                     </tbody>
@@ -491,6 +502,60 @@
                         }
                 
                     }
+                    
+                    //upc code each value validation
+                 var u = $("input[name^='upc_code']").length;
+                 var upcValue = $("input[name^='upc_code']");
+                 for(i=0;i<u;i++){
+                    if(upcValue.eq(i).val() == 0){
+                        swal({  
+                                type: 'error',
+                                title: 'UPC Code Required!',
+                                icon: 'error',
+                                customClass: 'swal-wide',
+                                confirmButtonColor: "#367fa9"
+                            });
+                            event.preventDefault();
+                            return false;
+                    }
+             
+                 }
+
+                 //upc code each value validation
+                 var b = $("input[name^='brand']").length;
+                 var brandValue = $("input[name^='brand']");
+                 for(i=0;i<b;i++){
+                    if(brandValue.eq(i).val() == 0){
+                        swal({  
+                                type: 'error',
+                                title: 'Brand Required!',
+                                icon: 'error',
+                                customClass: 'swal-wide',
+                                confirmButtonColor: "#367fa9"
+                            });
+                            event.preventDefault();
+                            return false;
+                    }
+             
+                 }
+
+                 //upc code each value validation
+                 var s = $("input[name^='specs']").length;
+                 var specsValue = $("input[name^='specs']");
+                 for(i=0;i<s;i++){
+                    if(specsValue.eq(i).val() == 0){
+                        swal({  
+                                type: 'error',
+                                title: 'Specs Required!',
+                                icon: 'error',
+                                customClass: 'swal-wide',
+                                confirmButtonColor: "#367fa9"
+                            });
+                            event.preventDefault();
+                            return false;
+                    }
+             
+                 }
 
                
        

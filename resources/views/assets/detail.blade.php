@@ -221,9 +221,15 @@
                                                 <th width="24%" class="text-center">{{ trans('message.table.reco_item_description_text') }}</th>
                                             @endif 
 
-                                            @if($Header->approved_by == null || $Header->approved_by == "")
-                                                <th width="5%" class="text-center">{{ trans('message.table.action') }}</th>
-                                            @endif 
+                                            @if(in_array($Header->request_type_id, [6,7]))
+                                                @if($Header->approved_by == null || $Header->approved_by == "")
+                                                    <th width="5%" class="text-center">{{ trans('message.table.action') }}</th>
+                                                @endif 
+                                            @else
+                                                @if($Header->po_number == null || $Header->po_number == "")  
+                                                   <th width="5%" class="text-center">{{ trans('message.table.action') }}</th>
+                                                @endif
+                                            @endif
                                         </tr>
                                         <tr id="tr-table">
                                             <?php   $tableRow = 1; ?>
@@ -330,10 +336,18 @@
                                                                     </td>
                                                                 @endif
                                                         
-                                                                @if($Header->status_id == 1)    
+                                                                @if(in_array($Header->request_type_id, [6,7]))
+                                                                    @if($Header->status_id == 1)    
                                                                         <td style="text-align:center" height="10">
                                                                             <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow btn-sm" data-toggle="tooltip" data-placement="bottom" title="Cancel"><i class="fa fa-trash"></i></button>
                                                                         </td>
+                                                                    @endif
+                                                                @else
+                                                                    @if($Header->po_number == null || $Header->po_number == "")    
+                                                                        <td style="text-align:center" height="10">
+                                                                            <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow btn-sm" data-toggle="tooltip" data-placement="bottom" title="Cancel"><i class="fa fa-trash"></i></button>
+                                                                        </td>
+                                                                    @endif
                                                                 @endif
                                                                                         
                                                             </tr>

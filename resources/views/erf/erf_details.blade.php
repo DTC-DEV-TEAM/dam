@@ -255,6 +255,7 @@
                                     <table id='table_dashboard' class="table table-hover table-striped table-bordered">
                                         <tbody>
                                             <tr class="tbl_header_color dynamicRows">
+                                                <th width="10%" class="text-center">Digits Code</th>
                                                 <th width="10%" class="text-center">Item Description</th>
                                                 <th width="10%" class="text-center">Category</th> 
                                                 <th width="10%" class="text-center">Sub Category</th>  
@@ -262,6 +263,9 @@
                                             </tr>
                                             @foreach($Body as $rowresult)
                                             <tr>
+                                                <td style="text-align:center" height="10">
+                                                    {{$rowresult->digits_code}}
+                                                </td>
                                                 <td style="text-align:center" height="10">
                                                     {{$rowresult->item_description}}
                                                 </td>
@@ -390,7 +394,7 @@
     }
     }
     document.getElementById("table_dashboard").innerHTML +=
-    "<tr><td colspan='3' style='text-align:right'><strong>TOTAL</strong></td><td style='text-align:center'><strong>" +
+    "<tr><td colspan='4' style='text-align:center'><strong>TOTAL</strong></td><td style='text-align:center'><strong>" +
     sumcost +
     "</strong></td></td></tr>";
 </script>

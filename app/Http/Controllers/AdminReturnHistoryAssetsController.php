@@ -93,7 +93,10 @@
 	        | 
 	        */
 	        $this->addaction = array();
-
+            if(CRUDBooster::myPrivilegeId() == 5) {
+				$forTurnOver       = DB::table('statuses')->where('id', 24)->value('id');
+				$this->addaction[] = ['title'=>'Print','url'=>CRUDBooster::adminpath('return_transfer_assets_header/getRequestPrintTF/[id]'),'icon'=>'fa fa-print', "showIf"=>"[status] == $forTurnOver || [status] == 25 || [status] == 13"];
+			}
 
 	        /* 
 	        | ---------------------------------------------------------------------- 

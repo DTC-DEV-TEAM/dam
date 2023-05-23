@@ -78,6 +78,7 @@ class ItemHeaderSourcing extends Model
         ->leftjoin('companies', 'item_sourcing_header.company_name', '=', 'companies.id')
         ->leftjoin('departments', 'item_sourcing_header.department', '=', 'departments.id')
         ->leftjoin('statuses', 'item_sourcing_header.status_id', '=', 'statuses.id')
+        ->leftjoin('requests', 'item_sourcing_header.request_type_id', '=', 'requests.id')
         ->where('item_sourcing_header.id',$id)->first();
     }
 }

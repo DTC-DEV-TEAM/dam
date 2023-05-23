@@ -30,7 +30,10 @@ class AssetsInventoryBody extends Model
         'request_type_id_inventory',
         'item_category',
         'item_id',
-        'updated_by'
+        'updated_by',
+        'upc_code',
+        'brand',
+        'specs'
     ];
 
     public function assetsinventoryheader()

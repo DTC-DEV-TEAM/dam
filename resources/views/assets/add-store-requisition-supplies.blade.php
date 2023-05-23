@@ -622,7 +622,7 @@
             var totalQuantity = 0;
             $('.quantity_item').each(function() {
 
-            totalQuantity += parseInt($(this).val());
+            totalQuantity += parseInt($(this).val().replace(/,/g, ''));
             });
             return totalQuantity;
         }

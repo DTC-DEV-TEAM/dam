@@ -4,20 +4,13 @@
 	use Request;
 	use DB;
 	use CRUDBooster;
-	use App\Models\AssetsSuppliesInventory;
 
-	class AdminRequestsController extends \crocodicstudio\crudbooster\controllers\CBController {
-
-        public function __construct() {
-			// Register ENUM type
-			//$this->request = $request;
-			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
-		}
+	class AdminSubMasterfileErfAssetController extends \crocodicstudio\crudbooster\controllers\CBController {
 
 	    public function cbInit() {
 
 			# START CONFIGURATION DO NOT REMOVE THIS LINE
-			$this->title_field = "request_name";
+			$this->title_field = "id";
 			$this->limit = "20";
 			$this->orderby = "id,desc";
 			$this->global_privilege = false;
@@ -26,44 +19,46 @@
 			$this->button_action_style = "button_icon";
 			$this->button_add = true;
 			$this->button_edit = true;
-			$this->button_delete = true;
+			$this->button_delete = false;
 			$this->button_detail = true;
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
 			$this->button_export = false;
-			$this->table = "requests";
+			$this->table = "sub_masterfile_erf_asset";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Request Name","name"=>"request_name"];
-			$this->col[] = ["label"=>"Status","name"=>"status"];
-			$this->col[] = ["label" => "Created By", "name" => "created_by", "join" => "cms_users,name"];
-			$this->col[] = ["label" => "Created At", "name" => "created_at"];
-			$this->col[] = ["label" => "Updated By", "name" => "updated_by", "join" => "cms_users,name"];
-			$this->col[] = ["label" => "Updated At", "name" => "updated_at"];
+			$this->col[] = ["label"=>"Digits Code","name"=>"digits_code"];
+			$this->col[] = ["label"=>"Item Description","name"=>"item_description"];
+			$this->col[] = ["label"=>"Category","name"=>"category"];
+			$this->col[] = ["label"=>"Sub Category","name"=>"sub_category"];
+			$this->col[] = ["label"=>"Class","name"=>"class"];
+			$this->col[] = ["label"=>"Sub Class","name"=>"sub_class"];
+			$this->col[] = ["label"=>"Created By","name"=>"created_by"];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Request Name','name'=>'request_name','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
-			if(CRUDBooster::getCurrentMethod() == 'getEdit' || CRUDBooster::getCurrentMethod() == 'postEditSave' || CRUDBooster::getCurrentMethod() == 'getDetail') {
-				$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE'];
-			}
-
-			if(CRUDBooster::getCurrentMethod() == 'getDetail'){
-				$this->form[] = ["label"=>"Created By","name"=>"created_by",'type'=>'select',"datatable"=>"cms_users,name"];
-				$this->form[] = ['label'=>'Created Date','name'=>'created_at', 'type'=>'datetime'];
-				$this->form[] = ["label"=>"Updated By","name"=>"updated_by",'type'=>'select',"datatable"=>"cms_users,name"];
-				$this->form[] = ['label'=>'Updated Date','name'=>'updated_at', 'type'=>'datetime'];
-			}
+			$this->form[] = ['label'=>'Digits Code','name'=>'digits_code','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Item Description','name'=>'item_description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Category','name'=>'category','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Sub Category','name'=>'sub_category','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Class','name'=>'class','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Sub Class','name'=>'sub_class','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Created By','name'=>'created_by','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Updated By','name'=>'updated_by','type'=>'number','validation'=>'required|integer|min:0','width'=>'col-sm-10'];
 			# END FORM DO NOT REMOVE THIS LINE
 
 			# OLD START FORM
 			//$this->form = [];
-			//$this->form[] = ["label"=>"Request Name","name"=>"request_name","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Status","name"=>"status","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Digits Code","name"=>"digits_code","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Item Description","name"=>"item_description","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
+			//$this->form[] = ["label"=>"Category","name"=>"category","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Sub Category","name"=>"sub_category","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Class","name"=>"class","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
+			//$this->form[] = ["label"=>"Sub Class","name"=>"sub_class","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
 			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
 			//$this->form[] = ["label"=>"Updated By","name"=>"updated_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
 			# OLD END FORM
@@ -166,13 +161,6 @@
 	        |
 	        */
 	        $this->script_js = NULL;
-			$this->script_js = "
-			$(document).ready(function() {
-				$('#request_name').keyup(function() {
-					this.value = this.value.toLocaleUpperCase();
-				});
-			});
-			";
 
 
             /*
@@ -282,7 +270,7 @@
 	    */
 	    public function hook_before_add(&$postdata) {        
 	        //Your code here
-			$postdata['created_by']=CRUDBooster::myId();
+
 	    }
 
 	    /* 
@@ -307,7 +295,6 @@
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
 	        //Your code here
-			$postdata['updated_by']=CRUDBooster::myId();
 
 	    }
 
@@ -347,62 +334,9 @@
 
 	    }
 
-		public function getDescription(Request $request){
-			$data = Request::all();	
-			$digits_code = $data['digits_code'];
 
-			$data = DB::table('assets')
-							->select('item_description')
-							->where('digits_code', $digits_code)
-							->get();
-	
-			return($data);
-		}
 
-		public function addSuppliesInventory(Request $request){
-			$data = Request::all();
-            $digits_code = $data['digits_code'];
-			$description = $data['description'];
-			$quantity    = $data['quantity'];
-	
-			$save = AssetsSuppliesInventory::updateOrcreate([
-                'digits_code'      => $digits_code 
-            ],
-            [
-                'digits_code'      => $digits_code,
-                'description'      => $description,
-                'quantity'         => DB::raw("IF(quantity IS NULL, '".(int)$quantity."', quantity + '".(int)$quantity."')"), 
-   
-
-            ]);
-
-            if ($save->wasRecentlyCreated) {
-                $save->created_by = CRUDBooster::myId();
-                $save->created_at = date('Y-m-d H:i:s');
-                $save->updated_at = NULL;
-            }else{
-                $save->updated_by = CRUDBooster::myId();
-                $save->updated_at = date('Y-m-d H:i:s');
-            }
-            $save->save();
-
-			$message = ['status'=>'success', 'message' => 'Save Successfully!'];
-			echo json_encode($message);
-		}
-		
-		public function restrictSuppliesRequest(Request $request){
-			$data = Request::all();
-			$btnvalue = $data['value'];
-			
-			if($btnvalue == 1){
-				DB::table('cms_privileges')->update(['cannot_create' => 1]);
-			}else{
-				DB::table('cms_privileges')->update(['cannot_create' => NULL]);
-			}
-
-			$message = ['status'=>'success', 'message' => 'Set Successfully!'];
-			echo json_encode($message);
-		}
+	    //By the way, you can still create your own method in here... :) 
 
 
 	}

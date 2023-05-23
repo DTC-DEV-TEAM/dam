@@ -105,6 +105,16 @@
             <p>{{ $Header->date_created }}</p>
             </div>
         </div>
+          <div class="row">                           
+            <label class="control-label col-md-2">Received/Cancelled By:</label>
+            <div class="col-md-4">
+             <p>{{ $Header->approver }}</p>
+            </div>
+            <label class="control-label col-md-2">Date of Received/Cancelled:</label>
+           <div class="col-md-4">
+             <p>{{ $Header->date_updated }}</p>
+           </div>
+        </div>
         <div class="row">                           
             <label class="control-label col-md-2">SI/DR</label>
             <div class="col-md-4">
@@ -156,7 +166,9 @@
                                                 <th width="10%">Value</th>                                         
                                                 <th>Quantity</th>    
                                                 <th width="2%">Warranty Expiry Month</th>                                           
-                                                <th width="5%">Item Photo</th>     
+                                                <th width="5%">Upc Code</th> 
+                                                <th width="5%">Brand</th>
+                                                <th width="5%">Specs</th>    
                                                 <th width="6%">Updated By</th>                                            
                                                 <th width="6%">Date Updated</th>  
                                               
@@ -182,13 +194,9 @@
                                                     <input class="form-control text-center finput_qty quantity"  type="number"  value="{{$res->quantity}}" readonly>
                                                 </td>     
                                                 <td>{{$res->warranty_coverage}}</td>                                                      
-                                                <td>
-                                                   @if ($res->itemImage)
-                                                      <img width="80px"; height="50px"; src="{{URL::to($res->itemImage)}}" alt="" data-action="zoom">
-                                                    @else
-                                                      <img width="60px"; height="50px"; src="{{URL::to('vendor/crudbooster/no_image_available/No_Image_Available.jpg')}}" alt="" data-action="zoom">
-                                                    @endif    
-                                                </td>                                                                      
+                                                <td>{{$res->upc_code}}</td>  
+                                                <td>{{$res->brand}}</td>  
+                                                <td>{{$res->specs}}</td>                                                                          
                                                 <td>{{$res->updated_by}}</td>    
                                                 <td>{{$res->date_updated}}</td>    
                                                </tr>

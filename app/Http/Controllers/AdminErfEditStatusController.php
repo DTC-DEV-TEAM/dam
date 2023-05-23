@@ -10,6 +10,8 @@
 	use App\ApprovalMatrix;
 	use App\StatusMatrix;
 	use App\Models\ErfHeaderDocuments;
+	use App\Models\AssetsSuppliesInventory;
+	use App\Models\AssetsInventoryReserved;
 	use Illuminate\Support\Facades\Response;
 	use App\HeaderRequest;
 	use App\BodyRequest;
@@ -75,42 +77,6 @@
 			$this->form = [];
 
 			# END FORM DO NOT REMOVE THIS LINE
-
-			# OLD START FORM
-			//$this->form = [];
-			//$this->form[] = ["label"=>"Reference Number","name"=>"reference_number","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Status Id","name"=>"status_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"status,id"];
-			//$this->form[] = ["label"=>"Company","name"=>"company","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Position","name"=>"position","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Salary Range","name"=>"salary_range","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Department","name"=>"department","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Work Location","name"=>"work_location","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Date Requested","name"=>"date_requested","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
-			//$this->form[] = ["label"=>"Date Needed","name"=>"date_needed","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
-			//$this->form[] = ["label"=>"Schedule","name"=>"schedule","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Allow Wfh","name"=>"allow_wfh","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Manpower","name"=>"manpower","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Manpower Type","name"=>"manpower_type","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Required Exams","name"=>"required_exams","type"=>"textarea","required"=>TRUE,"validation"=>"required|string|min:5|max:5000"];
-			//$this->form[] = ["label"=>"Qualifications","name"=>"qualifications","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Job Description","name"=>"job_description","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Shared Files","name"=>"shared_files","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Employee Interaction","name"=>"employee_interaction","type"=>"textarea","required"=>TRUE,"validation"=>"required|string|min:5|max:5000"];
-			//$this->form[] = ["label"=>"Asset Usage","name"=>"asset_usage","type"=>"textarea","required"=>TRUE,"validation"=>"required|string|min:5|max:5000"];
-			//$this->form[] = ["label"=>"Email Domain","name"=>"email_domain","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Quantity Total","name"=>"quantity_total","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Approved Immediate Head By","name"=>"approved_immediate_head_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Approved Immediate Head At","name"=>"approved_immediate_head_at","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
-			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Updated By","name"=>"updated_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Rejected At","name"=>"rejected_at","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
-			//$this->form[] = ["label"=>"Application","name"=>"application","type"=>"textarea","required"=>TRUE,"validation"=>"required|string|min:5|max:5000"];
-			//$this->form[] = ["label"=>"Application Others","name"=>"application_others","type"=>"textarea","required"=>TRUE,"validation"=>"required|string|min:5|max:5000"];
-			//$this->form[] = ["label"=>"Request Type Id","name"=>"request_type_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"request_type,id"];
-			//$this->form[] = ["label"=>"Approver Comments","name"=>"approver_comments","type"=>"textarea","required"=>TRUE,"validation"=>"required|string|min:5|max:5000"];
-			//$this->form[] = ["label"=>"Arf Id","name"=>"arf_id","type"=>"select2","required"=>TRUE,"validation"=>"required|string|min:5|max:5000","datatable"=>"arf,id"];
-			//$this->form[] = ["label"=>"To Tag Employee","name"=>"to_tag_employee","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			# OLD END FORM
 
 			/* 
 	        | ---------------------------------------------------------------------- 
@@ -441,7 +407,8 @@
 				
 					$arfHeaderSave[] = $arfHeaderContainer;
 				}
-				HeaderRequest::insert($arfHeaderSave);
+				$result = HeaderRequest::insert($arfHeaderSave);
+                $arfHeaderId = $result->id;
 				$itId = DB::table('header_request')->select('*')->where('id','>', $latestRequestId)->where('request_type_id',1)->first();
 				$faId = DB::table('header_request')->select('*')->where('id','>', $latestRequestId)->where('request_type_id',5)->first();
 				$SuppliesId = DB::table('header_request')->select('*')->where('id','>', $latestRequestId)->where('request_type_id',7)->first();
@@ -502,7 +469,7 @@
 				$insertContainer = [];
 				foreach($erf_body as $key => $val){
 					$insertContainer['header_request_id']   = $val['header_request_id'];
-					$insertContainer['digits_code'] 	    = NULL;
+					$insertContainer['digits_code'] 	    = $val['digits_code'];
 					$insertContainer['item_description'] 	= $val['item_description'];
 					$insertContainer['category_id'] 		= $val['category_id'];
 					$insertContainer['sub_category_id'] 	= $val['sub_category_id'];
@@ -513,7 +480,7 @@
 					if($request_type_id == 5){
 						$insertContainer['to_reco'] = 0;
 					}else{
-						if (str_contains($val['sub_category_id'], 'LAPTOP') || str_contains($val['sub_category_id'], 'DESKTOP')) {
+						if (str_contains($val['sub_category_id'], 'ITA-COMPUTER EQUIPMENT')) {
 							$insertContainer['to_reco'] = 1;
 						}else{
 							$insertContainer['to_reco'] = 0;
@@ -527,6 +494,112 @@
 				try {
 					BodyRequest::insert($insertData);
 					DB::commit();
+
+					// //manage replenishment
+					// $arf_body = BodyRequest::where(['header_request_id' => $itId->id])->whereNull('deleted_at')->get();
+					// //GET ASSETS INVENTORY AVAILABLE COUNT
+					// $inventoryList = DB::table('assets_inventory_body')->select('digits_code as digits_code',DB::raw('SUM(quantity) as avail_qty'))->where('statuses_id',6)->groupBy('digits_code')->get();
+					// //GET RESERVED QTY 
+					// $reservedList = DB::table('assets_inventory_reserved')->select('digits_code as digits_code',DB::raw('SUM(approved_qty) as reserved_qty'))->whereNotNull('reserved')->groupBy('digits_code')->get()->toArray();
+					
+					// $resultInventory = [];
+					// foreach($inventoryList as $invKey => $invVal){
+					// 	$i = array_search($invVal->digits_code, array_column($reservedList,'digits_code'));
+					// 	if($i !== false){
+					// 		$invVal->reserved_value = $reservedList[$i];
+					// 		$resultInventory[] = $invVal;
+					// 	}else{
+					// 		$invVal->reserved_value = "";
+					// 		$resultInventory[] = $invVal;
+					// 	}
+					// }
+					// //get the final available qty
+					// $finalInventory = [];
+					// foreach($resultInventory as $fKey => $fVal){
+					// 	$fVal->available_qty = max($fVal->avail_qty - $fVal->reserved_value->reserved_qty,0);
+					// 	$finalInventory[] = $fVal;
+					// }
+
+					// $finalItFaBodyValue = [];
+					// foreach($arf_body as $bodyItFafKey => $bodyItFaVal){
+					// 	$i = array_search($bodyItFaVal['digits_code'], array_column($finalInventory,'digits_code'));
+					// 	if($i !== false){
+					// 		$bodyItFaVal->inv_qty = $finalInventory[$i];
+					// 		$finalItFaBodyValue[] = $bodyItFaVal;
+					// 	}else{
+					// 		$bodyItFaVal->inv_qty = "";
+					// 		$finalItFaBodyValue[] = $bodyItFaVal;
+					// 	}
+					// }
+                   
+					// foreach($finalItFaBodyValue as $fBodyItFaKey => $fBodyItFaVal){
+					// 	$countAvailQty = DB::table('assets_inventory_body')->select('digits_code as digits_code',DB::raw('SUM(quantity) as avail_qty'))->where('statuses_id',6)->where('digits_code',$fBodyItFaVal->digits_code)->groupBy('digits_code')->count();
+                    //     $reservedListCount = DB::table('assets_inventory_reserved')->select('digits_code as digits_code',DB::raw('SUM(approved_qty) as reserved_qty'))->whereNotNull('reserved')->where('digits_code',$fBodyItFaVal->digits_code)->groupBy('digits_code')->count();
+					// 	$available_quantity = max($countAvailQty - $reservedListCount,0);
+			
+					// 	if($available_quantity >= $fBodyItFaVal->quantity){
+					// 		//add to reserved taable
+					// 		AssetsInventoryReserved::Create(
+					// 			[
+					// 				'reference_number'    => $arf_header->reference_number, 
+					// 				'body_id'             => $fBodyItFaVal->id,
+					// 				'digits_code'         => $fBodyItFaVal->digits_code, 
+					// 				'approved_qty'        => $fBodyItFaVal->quantity,
+					// 				'reserved'            => $fBodyItFaVal->quantity,
+					// 				'for_po'              => NULL,
+					// 				'created_by'          => CRUDBooster::myId(),
+					// 				'created_at'          => date('Y-m-d H:i:s'),
+					// 				'updated_by'          => CRUDBooster::myId(),
+					// 				'updated_at'          => date('Y-m-d H:i:s')
+					// 			]
+					// 		); 
+							
+					// 		//update details in body table
+					// 		BodyRequest::where('id', $fBodyItFaVal->id)
+					// 		->update([
+					// 			'replenish_qty'      =>  $fBodyItFaVal->quantity,
+					// 			'reorder_qty'        =>  NULL,
+					// 			'serve_qty'          =>  NULL,
+					// 			'unserved_qty'       =>  $fBodyItFaVal->quantity,
+					// 			'unserved_rep_qty'   =>  $fBodyItFaVal->quantity,
+					// 			'unserved_ro_qty'    =>  NULL
+					// 		]);	
+
+					// 		HeaderRequest::where('id',$itId->id)
+					// 		->update([
+					// 			'to_mo' => 1
+					// 		]);
+							 
+					// 	}else{
+					// 		$reorder = $fBodyItFaVal->quantity - $available_quantity;
+					// 		AssetsInventoryReserved::Create(
+					// 			[
+					// 				'reference_number'    => $arf_header->reference_number, 
+					// 				'body_id'             => $fBodyItFaVal->id,
+					// 				'digits_code'         => $fBodyItFaVal->digits_code, 
+					// 				'approved_qty'        => $fBodyItFaVal->quantity,
+					// 				'reserved'            => NULL,
+					// 				'for_po'              => 1,
+					// 				'created_by'          => CRUDBooster::myId(),
+					// 				'created_at'          => date('Y-m-d H:i:s'),
+					// 				'updated_by'          => CRUDBooster::myId(),
+					// 				'updated_at'          => date('Y-m-d H:i:s')
+					// 			]
+					// 		);  
+
+					// 		BodyRequest::where('id', $fBodyItFaVal->id)
+					// 		->update([
+					// 			'replenish_qty'      =>  $available_quantity,
+					// 			'reorder_qty'        =>  $reorder,
+					// 			'serve_qty'          =>  NULL,
+					// 			'unserved_qty'       =>  $fBodyItFaVal->quantity,
+					// 			'unserved_rep_qty'   =>  $available_quantity,
+					// 			'unserved_ro_qty'    =>  $reorder
+					// 		]);	
+
+							
+					//     }
+					// }
 				} catch (\Exception $e) {
 					DB::rollback();
 					CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_database_error",['database_error'=>$e]), 'danger');

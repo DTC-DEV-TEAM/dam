@@ -372,11 +372,12 @@
                     '<tr>' +
 
                         '<td >' +
-                        '  <input type="text" placeholder="Search Item ..." class="form-control finput itemDesc" id="itemDesc'+ tableRow +'" data-id="'+ tableRow +'"   name="item_description[]"  required maxlength="100">' +
+                        '<input type="text" placeholder="Search Item ..." class="form-control finput itemDesc" id="itemDesc'+ tableRow +'" data-id="'+ tableRow +'"   name="item_description[]"  required maxlength="100">' +
                           '<ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" data-id="'+ tableRow +'" id="ui-id-2'+ tableRow +'" style="display: none; top: 60px; left: 15px; width: 100%;">' +
-                          '<li>Loading...</li>' +
-                        '</ul>' +
-                        '<div id="display-error'+ tableRow +'"></div>'+
+                           '<li>Loading...</li>' +
+                          '</ul>' +
+                         '<div id="display-error'+ tableRow +'"></div>'+
+                        '</td>'+
                         '<td>' + 
                             '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control digits_code finput" data-id="'+ tableRow +'" id="digits_code'+ tableRow +'"  name="digits_code[]"   maxlength="100" readonly>' +
                             '<input type="hidden" onkeyup="this.value = this.value.toUpperCase();" class="form-control fixed_description finput" data-id="'+ tableRow +'" id="fixed_description'+ tableRow +'"  name="fixed_description[]"   maxlength="100" readonly>' +
@@ -466,87 +467,85 @@
                     var stack = [];
                     var token = $("#token").val();
                     var searchcount = <?php echo json_encode($tableRow); ?>;
-
                     let countrow = 1;
                     $(function(){
-                    countrow++;
-                    //$('#search'+countrow).attr('disabled', true);
-                    $('#itemDesc'+tableRow).autocomplete({
-                        source: function (request, response) {
-                        $.ajax({
-                            url: "{{ route('item.it.search') }}",
-                            dataType: "json",
-                            type: "POST",
-                            data: {
-                                "_token": token,
-                                "search": request.term
-                            },
-                            success: function (data) {
-                                if(data.items === null){
-                                    swal({  
-                                        type: 'error',
-                                        title: 'No Found Item',
-                                        icon: 'error',
-                                        confirmButtonColor: "#367fa9",
-                                    });
-                                }else{ 
-                                //var rowCount = $('#asset-items tr').length;
-                                //myStr = data.sample;   
-                                if (data.status_no == 1) {
+                        countrow++;
+                        $('#itemDesc'+tableRow).autocomplete({
+                            source: function (request, response) {
+                            $.ajax({
+                                url: "{{ route('item.it.search') }}",
+                                dataType: "json",
+                                type: "POST",
+                                data: {
+                                    "_token": token,
+                                    "search": request.term
+                                },
+                                success: function (data) {
+                                    if(data.items === null){
+                                        swal({  
+                                            type: 'error',
+                                            title: 'No Found Item',
+                                            icon: 'error',
+                                            confirmButtonColor: "#367fa9",
+                                        });
+                                    }else{ 
+                                    //var rowCount = $('#asset-items tr').length;
+                                    //myStr = data.sample;   
+                                    if (data.status_no == 1) {
 
-                                    $("#val_item").html();
-                                    var data = data.items;
-                                    $('#ui-id-2'+tableRow).css('display', 'none');
+                                        $("#val_item").html();
+                                        var data = data.items;
+                                        $('#ui-id-2'+tableRow).css('display', 'none');
 
-                                    response($.map(data, function (item) {
-                                        return {
-                                            id:                         item.id,
-                                            asset_code:                 item.asset_code,
-                                            digits_code:                item.digits_code,
-                                            asset_tag:                  item.asset_tag,
-                                            serial_no:                  item.serial_no,
-                                            value:                      item.item_description,
-                                            category_description:       item.category_description,
-                                            item_cost:                  item.item_cost,
-                                        
-                                        }
+                                        response($.map(data, function (item) {
+                                            return {
+                                                id:                         item.id,
+                                                asset_code:                 item.asset_code,
+                                                digits_code:                item.digits_code,
+                                                asset_tag:                  item.asset_tag,
+                                                serial_no:                  item.serial_no,
+                                                value:                      item.item_description,
+                                                category_description:       item.category_description,
+                                                item_cost:                  item.item_cost,
+                                            
+                                            }
 
-                                    }));
+                                        }));
 
-                                } else {
-
-                                    $('.ui-menu-item').remove();
-                                    $('.addedLi').remove();
-                                    $("#ui-id-2"+tableRow).append($("<li class='addedLi'>").text(data.message));
-                                    var searchVal = $('#itemDesc'+tableRow).val();
-                                    if (searchVal.length > 0) {
-                                        $("#ui-id-2"+tableRow).css('display', 'block');
                                     } else {
-                                        $("#ui-id-2"+tableRow).css('display', 'none');
+
+                                        $('.ui-menu-item').remove();
+                                        $('.addedLi').remove();
+                                        $("#ui-id-2"+tableRow).append($("<li class='addedLi'>").text(data.message));
+                                        var searchVal = $('#itemDesc'+tableRow).val();
+                                        if (searchVal.length > 0) {
+                                            $("#ui-id-2"+tableRow).css('display', 'block');
+                                        } else {
+                                            $("#ui-id-2"+tableRow).css('display', 'none');
+                                        }
                                     }
                                 }
                             }
-                           }
-                        })
-                        },
-                        select: function (event, ui) {
-                            var e = ui.item;
+                            })
+                            },
+                            select: function (event, ui) {
+                                var e = ui.item;
 
-                            if (e.id) {
-                            
-                                $("#digits_code"+$(this).attr("data-id")).val(e.digits_code);
-                                $("#supplies_cost"+$(this).attr("data-id")).val(e.item_cost);
-                                $('#itemDesc'+$(this).attr("data-id")).val(e.value);
-                                $('#itemDesc'+$(this).attr("data-id")).attr('readonly','readonly');
-                                $('#fixed_description'+$(this).attr("data-id")).val(e.value);
-                                $('#val_item').html('');
-                                return false;
+                                if (e.id) {
+                                
+                                    $("#digits_code"+$(this).attr("data-id")).val(e.digits_code);
+                                    $("#supplies_cost"+$(this).attr("data-id")).val(e.item_cost);
+                                    $('#itemDesc'+$(this).attr("data-id")).val(e.value);
+                                    $('#itemDesc'+$(this).attr("data-id")).attr('readonly','readonly');
+                                    $('#fixed_description'+$(this).attr("data-id")).val(e.value);
+                                    $('#val_item').html('');
+                                    return false;
 
-                            }
-                        },
+                                }
+                            },
 
-                        minLength: 1,
-                        autoFocus: true
+                            minLength: 1,
+                            autoFocus: true
                         });
 
                     });

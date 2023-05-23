@@ -523,7 +523,11 @@
                     <div class="modal-body">
                        <div class='row'>
                          <div class='col-md-12'>
-                          <input oninput="validate(this)" type"text" class="form-control" name="digits_code"  id="digits_code" placeholder="Please input Digits Code" onKeyPress="if(this.value.length==8) return false;">
+                            @if(in_array($Header->request_type_id, [1,5,7]))
+                             <input oninput="validate(this)" type"text" class="form-control" name="digits_code"  id="digits_code" placeholder="Please input Digits Code" onKeyPress="if(this.value.length==8) return false;">
+                            @else
+                             <input oninput="validate(this)" type"text" class="form-control" placeholder="Please input Digits Code" onKeyPress="if(this.value.length==8) return false;">
+                            @endif
                          </div>
                          <br>	
                        </div>
@@ -1036,7 +1040,7 @@
                             event.preventDefault();
                             return false;
                     }
-                    else if($.inArray(ext.split('.').pop(),['xlsx','pdf','docs'])===-1){
+                    else if($.inArray(ext.split('.').pop().toLowerCase(),['xlsx','pdf','docs'])===-1){
                         swal({  
                                 type: 'error',
                                 title: 'Invalid File Extension! please refer to the ff(.xlsx,.pdf,.docs)',

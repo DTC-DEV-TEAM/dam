@@ -12,6 +12,7 @@
 	use App\AssetsInventoryHeader;
 	use App\AssetsHeaderImages;
 	use App\AssetsInventoryBody;
+	use App\Models\AssetsSuppliesInventory;
 	//use Illuminate\Http\Request;
 	//use Illuminate\Support\Facades\Input;
 	use Illuminate\Support\Facades\Log;
@@ -23,6 +24,7 @@
         public function __construct() {
 			// Register ENUM type
 			//$this->request = $request;
+			$this->middleware('check.suppliescheckrestriction',['only' => ['getAddRequisitionSupplies']]);
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
 		}
 
@@ -171,8 +173,17 @@
 
 				$this->index_button[] = ["label"=>"Marketing Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-requisition-marketing'),"color"=>"success"];
 				
-				$this->index_button[] = ["label"=>"Supplies Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-requisition-supplies'),"color"=>"success"];
+		    	$usersPrivilege = DB::table('cms_privileges')->select('id')->whereNull('cannot_create')->get();
+				$usersPrivileges_array = array();
+				foreach($usersPrivilege as $priv){
+					array_push($usersPrivileges_array, $priv->id);
+				}
 
+				if(in_array(CRUDBooster::myPrivilegeId(),$usersPrivileges_array)){
+					$this->index_button[] = ["label"=>"Supplies Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-requisition-supplies'),"color"=>"success"];
+				}else{
+					$this->index_button[] = ["label"=>"Supplies Request Currently Not Available!","icon"=>"fa fa-ban","url"=>CRUDBooster::mainpath('service-unavailable'),"color"=>"danger"];
+				}
 				//$this->index_button[] = ["label"=>"Return Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-return'),"color"=>"success"];
 
 				//$this->index_button[] = ["label"=>"Transfer Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-transfer'),"color"=>"success"];
@@ -254,6 +265,9 @@
 
 				});	
 				
+				$(document).ready(function() {
+					$('#supplies-request-currently-not-available').attr('disabled', 'disabled');
+			    });	
 	
 			";
 			
@@ -494,12 +508,19 @@
 			$pending            = DB::table('statuses')->where('id', 1)->value('id');
 			$approved           = DB::table('statuses')->where('id', 4)->value('id');
 
+	        $for_move_order         =  DB::table('statuses')->where('id', 14)->value('id');
 			if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15])){ 
 				//$postdata['status_id']		 			= $pending;
-				$postdata['status_id']		 			= StatusMatrix::where('current_step', 2)
-																		->where('request_type', $request_type_id)
-																		//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
-																		->value('status_id');
+				if(in_array($request_type_id, [7])){
+					$postdata['status_id']              = $for_move_order;
+				}else{
+					$postdata['status_id']		 	    = StatusMatrix::where('current_step', 2)
+															->where('request_type', $request_type_id)
+															//->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
+															->value('status_id');
+				}
+				$postdata['approved_by'] 		        = CRUDBooster::myId();
+				$postdata['approved_at'] 		        = date('Y-m-d H:i:s');	
 			}else{
 				$postdata['status_id']		 			= StatusMatrix::where('current_step', 1)
 																		->where('request_type', $request_type_id)
@@ -609,7 +630,7 @@
 
 				}
 
-				if(in_array(CRUDBooster::myPrivilegeId(), [4,11,12,14,15])){ 
+				if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15])){ 
 
 					if($category_id[$x] == "IT ASSETS"){
 
@@ -629,7 +650,7 @@
 				$dataLines[$x]['sub_category_id'] 	= $sub_category_id[$x];
 				$dataLines[$x]['app_id'] 			= implode(", ",$apps_array);
 				$dataLines[$x]['app_id_others'] 	= $app_id_others[$x];
-				$dataLines[$x]['quantity'] 			= $quantity[$x];
+				$dataLines[$x]['quantity'] 			= intval(str_replace(',', '', $quantity[$x]));
 				//$dataLines[$x]['unserved_qty']      = $quantity[$x];
 				$dataLines[$x]['unit_cost'] 		= $supplies_cost[$x];
 
@@ -676,15 +697,69 @@
 			try {
 				BodyRequest::insert($dataLines);
 				DB::commit();
-				//CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_pullout_data_success",['mps_reference'=>$pullout_header->reference]), 'success');
+			
+			    //manager replenishment
+				$arf_body = BodyRequest::where(['header_request_id' => $arf_header->id])->whereNull('deleted_at')->get();
+				if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15])){ 
+					if(in_array($request_type_id, [7])){
+						//Get the inventory value per digits code
+						$arraySearch = DB::table('assets_supplies_inventory')->select('*')->get()->toArray();
+										
+						$finalBodyValue = [];
+						foreach($arf_body as $bodyfKey => $bodyVal){
+							$i = array_search($bodyVal['digits_code'], array_column($arraySearch,'digits_code'));
+							if($i !== false){
+								$bodyVal['inv_value'] = $arraySearch[$i];
+								$finalBodyValue[] = $bodyVal;
+							}else{
+								$bodyVal['inv_value'] = "";
+								$finalBodyValue[] = $bodyVal;
+							}
+						}
+
+						//Set data in each qty
+						$containerData = [];
+						$finalContData = [];
+						foreach($finalBodyValue as $fBodyKey => $fBodyVal){
+							if($fBodyVal['inv_value']->quantity > $fBodyVal['quantity']){
+								//less quantity in inventory
+								BodyRequest::where('id', $fBodyVal['id'])
+								->update([
+									'replenish_qty'      =>  $fBodyVal['quantity'],
+									'reorder_qty'        =>  NULL,
+									'serve_qty'          =>  NULL,
+									'unserved_qty'       =>  $fBodyVal['quantity'],
+									'unserved_rep_qty'   =>  $fBodyVal['quantity'],
+									'unserved_ro_qty'    =>  NULL
+								]);	
+								DB::table('assets_supplies_inventory')
+								->where('digits_code', $fBodyVal['digits_code'])
+								->decrement('quantity', $fBodyVal['quantity']);
+							}else{
+								$reorder = $fBodyVal['quantity'] - $fBodyVal['inv_value']->quantity;
+								$containerData['serve_qty']     = $fBodyVal['inv_value']->quantity;  
+								BodyRequest::where('id', $fBodyVal['id'])
+								->update([
+									'replenish_qty'      =>  $fBodyVal['inv_value']->quantity,
+									'reorder_qty'        =>  $reorder,
+									'serve_qty'          =>  NULL,
+									'unserved_qty'       =>  $fBodyVal['quantity'],
+									'unserved_rep_qty'   =>  $fBodyVal['inv_value']->quantity,
+									'unserved_ro_qty'    =>  $reorder
+								]);	
+								AssetsSuppliesInventory::where('digits_code', $fBodyVal['digits_code'])
+								->update([
+									'quantity'   =>  0,
+								]);	
+							}
+						}
+					}
+				}
 			} catch (\Exception $e) {
 				DB::rollback();
-
-
 				CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_database_error",['database_error'=>$e]), 'danger');
 			}
 			
-
 			CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_add_success",['reference_number'=>$arf_header->reference_number]), 'success');
 
 			
@@ -1633,7 +1708,7 @@
 					exit;  
 				}
 
-				public function itemSuppliesSearch(Request $request) {
+			public function itemSuppliesSearch(Request $request) {
 
 					$request = Request::all();
 		
@@ -1655,6 +1730,8 @@
 					
 						->join('category', 'assets.category_id','=', 'category.id')
 						->join('class', 'assets.class_id','=', 'class.id')
+						->leftjoin('new_category', 'assets.aimfs_category','=', 'new_category.id')
+						->leftjoin('new_sub_category', 'assets.aimfs_sub_category','=', 'new_sub_category.id')
 						->leftjoin('assets_supplies_inventory', 'assets.digits_code','=', 'assets_supplies_inventory.digits_code')
 	
 						//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
@@ -1664,7 +1741,9 @@
 			
 									//'digits_imfs.digits_code as dcode',
 									'category.category_description as category_description',
-									'class.class_description as class_description'
+									'class.class_description as class_description',
+									'new_category.category_description as aimfs_category_description',
+									'new_sub_category.sub_category_description as aimfs_sub_category_description',
 								)->take(10)->get();
 					$arraySearchUnservedQty = DB::table('body_request')->select('digits_code as digits_code',DB::raw('SUM(unserved_qty) as unserved_qty'))->where('body_request.created_by',CRUDBooster::myId())->groupBy('digits_code')->get()->toArray();
 					$finalItems = [];
@@ -1692,8 +1771,8 @@
 							$return_data[$i]['asset_tag']            = $value->asset_tag;
 							$return_data[$i]['serial_no']            = $value->serial_no;
 							$return_data[$i]['item_description']     = $value->item_description;
-							$return_data[$i]['category_description'] = $value->category_description;
-							$return_data[$i]['class_description']    = $value->class_description;
+							$return_data[$i]['category_description'] = $value->aimfs_category_description;
+							$return_data[$i]['class_description']    = $value->aimfs_sub_category_description;
 							$return_data[$i]['item_cost']            = $value->item_cost;
 							$return_data[$i]['item_type']            = $value->item_type;
 							$return_data[$i]['image']                = $value->image;
@@ -1715,6 +1794,10 @@
 		public function UploadStatus() {
 			$data['page_title']= 'Update Status';
 			return view('import.update-status-upload', $data)->render();
+		}
+		
+		public function getServiceUnavailable() {
+			return view('assets.add-service-unavailable');
 		}
 
 	}
