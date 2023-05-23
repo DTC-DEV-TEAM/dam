@@ -4,6 +4,7 @@
 	use Request;
 	use DB;
 	use CRUDBooster;
+	use App\Exports\ExportFulfillmentHistories;
 
 	class AdminFulfillmentHistoriesController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -123,7 +124,9 @@
 	        | 
 	        */
 	        $this->index_button = array();
-
+			if(CRUDBooster::getCurrentMethod() == 'getIndex') {
+				$this->index_button[] = ["label"=>"Export Data","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('fulfillment-history-export')];
+			}
 
 
 	        /* 
@@ -330,9 +333,9 @@
 
 	    }
 
-
-
-	    //By the way, you can still create your own method in here... :) 
+		public function getItemSourceExport(){
+			return Excel::download(new ExportFulfillmentHistories, 'fulfillment-histories-'.date('Y-m-d') .'.xlsx');
+		}
 
 
 	}

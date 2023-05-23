@@ -10,6 +10,7 @@
 	use App\Models\ItemSourcingComments;
 	use App\Models\ItemSourcingOptions;
 	use App\Models\ItemSourcingOptionsFile;
+	use App\Models\ItemSourcingHeaderFile;
 	use App\HeaderRequest;
 	use App\BodyRequest;
 	use App\Statuses;
@@ -285,7 +286,7 @@
 					$sub_query->whereIn('item_sourcing_header.status_id', [$this->forDiscussion, $this->forSourcing,$this->forStreamlining,$this->forItemCreation,$this->forArfCreation])->whereNull('item_sourcing_header.deleted_at'); 
 				});
 
-				$query->orderBy('item_sourcing_header.status_id', 'desc')->orderBy('item_sourcing_header.id', 'asc');
+				$query->orderBy('item_sourcing_header.status_id', 'asc')->orderBy('item_sourcing_header.id', 'desc');
 
 			}
 	            
@@ -502,7 +503,8 @@
 			$data['countOptions'] = DB::table('item_sourcing_options')->where('item_sourcing_options.header_id', $id)->whereNotNull('deleted_at')->count();
 			$data['versions'] = DB::table('item_sourcing_edit_versions')->where('header_id', $id)->latest('created_at')->first();
 			$data['allOptions'] = DB::table('item_sourcing_options')->where('item_sourcing_options.header_id', $id)->count();
-            
+            $data['header_files'] = ItemSourcingHeaderFile::select('item_sourcing_header_file.*')->where('item_sourcing_header_file.header_id', $id)->get();
+			$data['yesno']        = DB::table('sub_masterfile_yes_no')->get();
 			return $this->view("item-sourcing.item-sourcing-for-po", $data);
 		}
 
@@ -538,6 +540,16 @@
 					exit(json_encode($message = ['status'=>'error', 'message' => 'Digits Code not exist in Item Master!']));
 				}
 			}
+
+			$header_info   = ItemHeaderSourcing::headerInfo($id);
+			$body_info     = ItemBodySourcing::bodyInfo($id);
+			
+			$option_into   = DB::table('item_sourcing_options')->where('header_id',$id)->whereNotNull('selected_at')->first();
+			$file_info     = DB::table('item_sourcing_option_file')->where('opt_body_id',$option_into->id)->first();
+
+			if(!$file_info){
+               exit(json_encode($message = ['status'=>'error', 'message' => 'Option not yet selected!']));
+			}
            
 			ItemBodySourcing::where('header_request_id', $id)
 			->update([
@@ -551,16 +563,6 @@
 				'processed_at'      => date('Y-m-d H:i:s'),
 			]);	
 
-			$header_info   = ItemHeaderSourcing::headerInfo($id);
-			$body_info     = ItemBodySourcing::bodyInfo($id);
-			
-			$option_into   = DB::table('item_sourcing_options')->where('header_id',$id)->whereNotNull('selected_at')->first();
-			$file_info     = DB::table('item_sourcing_option_file')->where('opt_body_id',$option_into->id)->first();
-		    
-		    if(!$file_info){
-               exit(json_encode($message = ['status'=>'error', 'message' => 'Option not yet selected!']));
-			}
-			
 			//SEND EMAIL
 			$infos['reference_number'] = $header_info->reference_number;
 			$infos['created_at']       = $header_info->created_at;
@@ -585,9 +587,11 @@
 			$infos['budget']           = $body_info->budget;
 			$infos['attachment']       = $file_info->file_name;
 
-			$sdm                       = "sdm@digits.ph";
-			$purchasing                = "purchasing@digits.ph";
-     
+			// $sdm                       = "sdm@digits.ph";
+			// $purchasing                = "purchasing@digits.ph";
+			$sdm                       = "marvinmosico@digits.ph";
+			$purchasing                = "marvinmosico@digits.ph";
+		
 			if($request_type_id == 7){
 				$infos['subject'] = "SUPPLIES-NEW ORDER-REF#";
 				$infos['assign_to'] = $sdm;
