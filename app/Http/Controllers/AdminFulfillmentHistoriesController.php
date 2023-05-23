@@ -5,6 +5,10 @@
 	use DB;
 	use CRUDBooster;
 	use App\Exports\ExportFulfillmentHistories;
+	use Maatwebsite\Excel\Facades\Excel;
+	use PhpOffice\PhpSpreadsheet\Spreadsheet;
+	use PhpOffice\PhpSpreadsheet\Reader\Exception;
+	use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 	class AdminFulfillmentHistoriesController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -333,7 +337,7 @@
 
 	    }
 
-		public function getItemSourceExport(){
+		public function getFulfillmentHistoryExport(){
 			return Excel::download(new ExportFulfillmentHistories, 'fulfillment-histories-'.date('Y-m-d') .'.xlsx');
 		}
 

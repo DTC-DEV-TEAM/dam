@@ -14,7 +14,16 @@ class ExportFulfillmentHistories implements FromCollection, WithHeadings
     * @return \Illuminate\Support\Collection
     */
     public function collection(){
-        return FulfillmentHistories::select('*')->get();
+        return FulfillmentHistories::select(
+            'arf_number',
+            'digits_code',
+            'dr_no',
+            'po_no',
+            'dr_qty',
+            'dr_type',
+            'po_qty'
+            )
+            ->get();
     }
 
     public function headings(): array

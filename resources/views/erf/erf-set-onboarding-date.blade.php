@@ -402,46 +402,57 @@
         var id = $('#requesid').val();
         var date = $('#onboarding_date').val();
         event.preventDefault();
+        if($('#onboarding_date').val() === "" ){
+            swal({  
+                type: 'error',
+                title: 'Onboarding Required!',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            });
+            event.preventDefault();
+            return false;
+        }else{
             swal({
-            title: "Are you sure?",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#41B314",
-            cancelButtonColor: "#F9354C",
-            confirmButtonText: "Yes, set it!",
-            width: 450,
-            height: 200
-            }, function () {
-                $.ajax({
-                    url: "{{ route('set-onboarding-date') }}",
-                    type: "POST",
-                    data: {
-                        id: id,
-                        date: date,
-                    },
-                    dataType: 'json',
-                    success: function (data) {
-                        if (data.status == "success") {
-                            swal({
-                                type: data.status,
-                                title: data.message,
-                            });
-                            setTimeout(function(){
-                                window.location.replace(document.referrer);
-                            }, 2000); 
-                            } else if (data.status == "error") {
-                            swal({
-                                type: data.status,
-                                title: data.message,
-                            });
-                        }             
-                    },
-                    error: function (data) {
-                        console.log('Error:', data);
-                    }
-                });                 
-        });
-
+                title: "Are you sure?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#41B314",
+                cancelButtonColor: "#F9354C",
+                confirmButtonText: "Yes, set it!",
+                width: 450,
+                height: 200
+                }, function () {
+                    $.ajax({
+                        url: "{{ route('set-onboarding-date') }}",
+                        type: "POST",
+                        data: {
+                            id: id,
+                            date: date,
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.status == "success") {
+                                swal({
+                                    type: data.status,
+                                    title: data.message,
+                                });
+                                setTimeout(function(){
+                                    window.location.replace(document.referrer);
+                                }, 2000); 
+                                } else if (data.status == "error") {
+                                swal({
+                                    type: data.status,
+                                    title: data.message,
+                                });
+                            }             
+                        },
+                        error: function (data) {
+                            console.log('Error:', data);
+                        }
+                    });                 
+            });
+        }
+            
     });
 
     var tds = document

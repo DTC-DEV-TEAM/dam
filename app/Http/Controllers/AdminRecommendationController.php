@@ -407,8 +407,6 @@
 			$postdata['recommended_at'] 		= date('Y-m-d H:i:s');
 
 
-            
-
 			for($x=0; $x < count((array)$item_id); $x++) {
 
 				BodyRequest::where('id', $item_id[$x])
@@ -420,16 +418,17 @@
 				
 			}
 
-			if($from_erf !== NULL){
-				for($x=0; $x < count((array)$item_id); $x++) {
-					BodyRequest::where('id', $item_id[$x])
-					->update([
-						'digits_code' 		    => $reco_digits_code[$x],
-						'item_description' 		=> $reco_item_description[$x],
-					]);
-					
-				}
-			}
+			//if($from_erf !== NULL){
+				if($reco_digits_code[0] !== NULL){
+					for($x=0; $x < count((array)$item_id); $x++) {
+							BodyRequest::where('id', $item_id[$x])
+							->update([
+								'digits_code' 		    => $reco_digits_code[$x],
+								'item_description' 		=> $reco_item_description[$x],
+							]);
+					}
+			    }
+			//}
 
 
 			if (!empty($add_item_id)) {
