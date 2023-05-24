@@ -218,21 +218,12 @@
                 event.preventDefault(); 
                 var description = "";
                 var count_fail = 0;
-                $('.itemDesc').each(function() {
+                $('.itemDesc, .brand, .model, .size, .actual_color, .material, .thickness, .lamination, .add_ons, .installation, .dismantling_body').each(function() {
                     description = $(this).val();
-                    if (description == null) {
+                    if (description == null || description == "") {
                           swal({
                                 type: 'error',
-                                title: 'Please add an Item!',
-                                icon: 'error',
-                                confirmButtonColor: "#367fa9",
-                            }); 
-                            event.preventDefault(); // cancel default behavior
-                        count_fail++;
-                    } else if (description == "") {
-                          swal({
-                                type: 'error',
-                                title: 'Please add an Item!',
+                                title: 'Please fill out all fields!',
                                 icon: 'error',
                                 confirmButtonColor: "#367fa9",
                             }); 
@@ -242,6 +233,7 @@
                         count_fail = 0;
                     }
                 });
+               
 
                 tableRow++;
 
@@ -278,7 +270,7 @@
                         '</td>' + 
 
                         '<td>' + 
-                            '<select selected data-placeholder="Choose" class="form-control select2" name="installation[]" id="installation'+ tableRow +'" required style="width:100%">' +
+                            '<select selected data-placeholder="Choose" class="form-control select2 installation" name="installation[]" id="installation'+ tableRow +'" required style="width:100%">' +
                                 '<option value=""></option>' + 
                                 '@foreach($yesno as $data)' +
                                     '<option value="{{$data->description}}">{{$data->description}}</option>' +
@@ -287,7 +279,7 @@
                         '</td>' + 
 
                         '<td>' + 
-                           '<select selected data-placeholder="Choose" class="form-control select2" name="dismantling_body[]" id="dismantling_body'+ tableRow +'" required style="width:100%">' + 
+                           '<select selected data-placeholder="Choose" class="form-control select2 dismantling_body" name="dismantling_body[]" id="dismantling_body'+ tableRow +'" required style="width:100%">' + 
                                 '<option value=""></option>' +
                                 '@foreach($yesno as $data)' +
                                     '<option value="{{$data->description}}">{{$data->description}}</option>' +
