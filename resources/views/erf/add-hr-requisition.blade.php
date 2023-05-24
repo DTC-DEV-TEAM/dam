@@ -322,7 +322,7 @@
                             </tbody>
                             <tfoot>
                                 <tr id="tr-table1" class="bottom">
-                                    <td colspan="3">
+                                    <td colspan="4">
                                         <input type="button" id="add-Row" name="add-Row" class="btn btn-primary add" value='Add Item' />
                                     </td>
                                     <td align="left" colspan="1">

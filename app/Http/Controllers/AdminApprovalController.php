@@ -20,6 +20,7 @@
         public function __construct() {
 			// Register ENUM type
 			//$this->request = $request;
+			$this->middleware('check.approvalschedule',['only' => ['getRequestApproval']]);
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
 		}
 
@@ -548,12 +549,10 @@
 
 		public function getRequestApproval($id){
 			
-
 			$this->cbLoader();
 			if(!CRUDBooster::isUpdate() && $this->global_privilege==FALSE) {    
 				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
 			}  
-
 
 			$data = array();
 

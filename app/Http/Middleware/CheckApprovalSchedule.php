@@ -6,6 +6,7 @@ use Closure;
 use Carbon\Carbon;
 use App\OrderSchedule;
 use CRUDBooster;
+use DB;
 
 class CheckApprovalSchedule
 {
@@ -18,17 +19,12 @@ class CheckApprovalSchedule
      */
     public function handle($request, Closure $next)
     {
-        $current_date = Carbon::now();
-        $current_schedule = OrderSchedule::where('status','ACTIVE')->orderBy('id','desc')->first();
+        $usersPrivilege = DB::table('cms_privileges')->select('id')->whereNull('cannot_create')->get();
         
-        if($current_date->between(Carbon::parse($current_schedule->start_date), Carbon::parse($current_schedule->end_date))){
+        if($usersPrivilege->isNotEmpty()){
             return $next($request);
-        }
-        
-        $data['page_title']='Order Approval';
-        //update order schedule
-        $order_update = OrderSchedule::where('status','ACTIVE')->update(['status'=>'INACTIVE']);
-        \Log::info('Deactivate schedules: '.$order_update);
-        return response()->view('errors.page-expired', $data);
+        }else{
+            return response()->view('assets.add-service-unavailable');
+        }   
     }
 }

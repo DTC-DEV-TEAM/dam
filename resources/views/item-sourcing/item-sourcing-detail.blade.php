@@ -47,6 +47,11 @@
                 border:none;
                 background-color:#f0ad4e
             }
+            .cancelled {
+                border:none;
+                background-color:#dd4b39;
+                color:#fff;
+            }
             .green-color {
                 color:green;
                 margin-top:12px;
@@ -123,42 +128,37 @@
 
             @if(in_array($Header->request_type_id,[6]))
                 <div class="row">
-                    <label class="control-label col-md-2">Sampling:</label>
+                    <label class="control-label col-md-2">Color Proofing:</label>
                     <div class="col-md-4">
                             <p >{{$Header->sampling}}</p>
                     </div>
                             
-                    <label class="control-label col-md-2">Mark Up:</label>
+                    <label class="control-label col-md-2">Mock Up:</label>
                     <div class="col-md-4">
                             <p>{{$Header->mark_up}}</p>
                     </div>
                 </div>
-                <div class="row">
-                    <label class="control-label col-md-2">Dismantling:</label>
+                <div class="row">            
+                    <label class="control-label col-md-2">Date Needed:</label>
                     <div class="col-md-4">
-                            <p >{{$Header->dismantling}}</p>
+                            <p>{{$Header->date_needed}}</p>
                     </div>
-                            
                     <label class="control-label col-md-2">Artworklink:</label>
                     <div class="col-md-4">
                             <a href="{{$Header->artworklink}}" target="_blank"> <span style="word-wrap: break-word;">{{$Header->artworklink}}</span></a>
                     </div>
                 </div>
             @endif
-
-            <div class="row">                          
-                <label class="control-label col-md-2">Date Needed:</label>
-                   <div class="col-md-4">
-                        <p>{{$Header->date_needed}}</p>
-                   </div>
-                   @if($versions->version != null)
-                    <label class="control-label col-md-2">Version:</label>
-                    <div class="col-md-4">
-                            <a type="button" value="{{$Header->requestid}}" id="getVersions" data-toggle="modal" data-target="#versionModal"><strong>{{$versions->version}}</strong></a>
-                    </div>
-                @endif
-            </div>
-
+            @if(!in_array($Header->request_type_id,[6]))
+                <div class="row">                          
+                    @if($versions->version != null)
+                        <label class="control-label col-md-2">Version:</label>
+                        <div class="col-md-4">
+                                <a type="button" value="{{$Header->requestid}}" id="getVersions" data-toggle="modal" data-target="#versionModal"><strong>{{$versions->version}}</strong></a>
+                        </div>
+                    @endif
+                </div>
+            @endif
             @if(in_array($Header->request_type_id,[6]))
                 <div class="row">
                     <label class="control-label col-md-2">Uploaded Photos/Files:</label>
@@ -173,6 +173,12 @@
                             @endforeach
                         </div>
                     </div>
+                    @if($versions->version != null)
+                        <label class="control-label col-md-2">Version:</label>
+                        <div class="col-md-4">
+                                <a type="button" value="{{$Header->requestid}}" id="getVersions" data-toggle="modal" data-target="#versionModal"><strong>{{$versions->version}}</strong></a>
+                        </div>
+                    @endif
                 </div>
             @endif
 
@@ -225,8 +231,10 @@
                                                   <th width="7%" class="text-center">Installation</th>
                                                   <th width="7%" class="text-center">Dismantling</th>    
                                                 @endif 
-                                                <th width="2%" class="text-center">Quantity</th>                                                                                                                
-                                                <th width="10%" class="text-center">Budget</th>                                                                                                                
+                                                <th width="2%" class="text-center">Quantity</th>  
+                                                @if(!in_array($Header->request_type_id,[6]))                                                                                                              
+                                                  <th width="10%" class="text-center">Budget</th>    
+                                                @endif                                                                                                             
                                             </tr>
                                             <tr id="tr-table">                                               
                                                 <tr>
@@ -342,9 +350,11 @@
                                                                     {{$rowresult->quantity}}                               
                                                                 </td>
                                                             @endif  
-                                                            <td style="text-align:center" height="10" class="cost">
-                                                                    {{$rowresult->budget}}
-                                                            </td>                                                                                                           
+                                                            @if(!in_array($Header->request_type_id,[6])) 
+                                                                <td style="text-align:center" height="10" class="cost">
+                                                                        {{$rowresult->budget}}
+                                                                </td>  
+                                                            @endif                                                                                                         
                                                         </tr>
                                                     @else
                                                         <tr>
@@ -445,9 +455,11 @@
                                                                     {{$rowresult->quantity}}                               
                                                                 </td>
                                                             @endif  
-                                                            <td style="text-align:center" height="10" class="cost">
-                                                                    {{$rowresult->budget}}
-                                                            </td>                                                                                                           
+                                                            @if(!in_array($Header->request_type_id,[6])) 
+                                                                <td style="text-align:center" height="10" class="cost">
+                                                                        {{$rowresult->budget}}
+                                                                </td>  
+                                                            @endif                                                                                                          
                                                         </tr>
                                                     @endif
                                                                                                                         
@@ -472,7 +484,7 @@
                             <tr>
                                 <th class="text-center">Option</th> 
                                 <th class="text-center">Vendor Name</th>
-                                <th class="text-center">Price</th> 
+                                <th class="text-center">Total Price</th> 
                                 <th class="text-center">Quotation</th> 
                                 <th width="5%" class="text-center"><i class="fa fa-check-circle text-success"></i></th>        
                                 <th width="5%" class="text-center"><i class="fa fa-times-circle text-danger"></i></th>
@@ -495,8 +507,8 @@
                                             <td style="text-align:center" height="10">
                                                 {{number_format($res->price, 2, '.', ',')}}                               
                                             </td>
-                                            <td style="text-align:center" height="10">
-                                                {{$res->file_name}}                              
+                                            <td style="text-align:center;" height="10">
+                                                <a  href='{{CRUDBooster::adminpath("item_sourcing_for_quotation/download/".$res->file_id)."?return_url=".urlencode(Request::fullUrl())}}' class="form-control cancelled">{{$res->file_name}}   <i style="color:#007bff" class="fa fa-download"></i></a>                             
                                             </td>
                                             <td style="text-align:center" height="10">
 

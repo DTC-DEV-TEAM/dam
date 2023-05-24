@@ -519,7 +519,8 @@
 			$quantity 			     = $fields['quantity'];
 			$budget 	             = $fields['budget'];
 			$requestor_comments      = $fields['requestor_comments'];
-		    dd($fields);
+			$request_type_id         = $fields['request_type_id'];
+
 			//upload header file
 			$upload_file             = $fields['upload_file'];
 			$images = [];
@@ -540,32 +541,53 @@
 					$header_images->save();
 				}
 			}
+		
+			$dataLines = [];
+			$insertDataLines = [];
+			if(in_array($request_type_id, [6])){
+				foreach($item_description as $key => $val) {
+					$dataLines['header_request_id'] = $nis_header->id;
+					$dataLines['item_description'] 	= $val;
+					$dataLines['brand'] 	        = $brand[$key];
+					$dataLines['model'] 	        = $model[$key];
+					$dataLines['size'] 	            = $size[$key];
+					$dataLines['actual_color'] 	    = $actual_color[$key];
+					$dataLines['material'] 	        = $material[$key];
+					$dataLines['thickness'] 	    = $thickness[$key];
+					$dataLines['lamination'] 	    = $lamination[$key];
+					$dataLines['add_ons'] 	        = $add_ons[$key];
+					$dataLines['installation'] 	    = $installation[$key];
+					$dataLines['dismantling'] 	    = $dismantling[$key];
+					$dataLines['quantity'] 			= intval(str_replace(',', '', $quantity[$key]));
+					$dataLines['created_at'] 		= date('Y-m-d H:i:s');
+					$insertDataLines[] = $dataLines;
+				}
+				ItemBodySourcing::insert($insertDataLines);
+			}else{
+				ItemBodySourcing::Create([
+					'header_request_id' => $nis_header->id,
+					'item_description' 	=> $item_description,
+					'category_id' 		=> $category_id,
+					'sub_category_id' 	=> $sub_category_id,
+					'class_id' 	        => $class_id,
+					'sub_class_id' 	    => $sub_class_id,
+					'sub_category_id' 	=> $sub_category_id,
+					'brand' 	        => $brand,
+					'model' 	        => $model,
+					'size' 	            => $size,
+					'actual_color' 	    => $actual_color,
+					'material' 	        => $material,
+					'thickness' 	    => $thickness,
+					'lamination' 	    => $lamination,
+					'add_ons' 	        => $add_ons,
+					'installation' 	    => $installation,
+					'dismantling' 	    => $dismantling,
+					'quantity' 			=> $quantity,
+					'budget' 		    => $budget,
+					'created_at' 		=> date('Y-m-d H:i:s'),
+				]);
+			}
 	
-			ItemBodySourcing::Create([
-				'header_request_id' => $nis_header->id,
-				'item_description' 	=> $item_description,
-				'category_id' 		=> $category_id,
-				'sub_category_id' 	=> $sub_category_id,
-				'class_id' 	        => $class_id,
-				'sub_class_id' 	    => $sub_class_id,
-				'sub_category_id' 	=> $sub_category_id,
-				'brand' 	        => $brand,
-				'model' 	        => $model,
-				'size' 	            => $size,
-				'actual_color' 	    => $actual_color,
-				'material' 	        => $material,
-				'thickness' 	    => $thickness,
-				'lamination' 	    => $lamination,
-				'add_ons' 	        => $add_ons,
-				'installation' 	    => $installation,
-				'dismantling' 	    => $dismantling,
-				'quantity' 			=> $quantity,
-				'budget' 		    => $budget,
-				'created_at' 		=> date('Y-m-d H:i:s'),
-			]
-	
-			);
-
 			if($requestor_comments){
 				ItemSourcingComments::Create(
 				    [
@@ -577,8 +599,7 @@
 				);   
 			}
 
-			DB::beginTransaction();
-	
+			// DB::beginTransaction();
 			// try {
 				
 			// 	DB::commit();
