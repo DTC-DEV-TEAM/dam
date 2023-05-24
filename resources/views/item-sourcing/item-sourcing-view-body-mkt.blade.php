@@ -19,17 +19,17 @@
                                         <th width="10%" class="text-center"> Material</th>
                                         <th width="5%" class="text-center"> Thickness</th>
                                         <th width="5%" class="text-center"> Lamination</th>
-                                        <th width="5%" class="text-center"> Adds On</th>
+                                        <th width="5%" class="text-center"> Add Ons</th>
                                         <th width="7%" class="text-center"> Installation</th>
                                         <th width="7%" class="text-center"> Dismantling</th>
-                                        <th width="10%" class="text-center"> Budget Range</th> 
                                         <th width="5%" class="text-center"> {{ trans('message.table.quantity_text') }}</th>                                                    
+                                        <th width="5%" class="text-center">{{ trans('message.table.action') }}</th>
                                     </tr>
                                     
                                     <tr id="tr-table">
                                         <tr>                                                      
                                            
-                                            <td >
+                                            {{-- <td >
                                                 <input type="text" placeholder="Item Description..." onkeyup="this.value = this.value.toUpperCase();" oninput="validate(this)" class="form-control finput itemDesc" id="itemDesc"  name="item_description"  required maxlength="100">
                                             </td> 
                                             <td >
@@ -54,7 +54,7 @@
                                                 <input type="text" placeholder="Lamination..." onkeyup="this.value = this.value.toUpperCase();" oninput="validate(this)" class="form-control finput lamination" id="lamination"  name="lamination"  required maxlength="100">
                                             </td> 
                                             <td >
-                                                <input type="text" placeholder="Adds On..." onkeyup="this.value = this.value.toUpperCase();" oninput="validate(this)" class="form-control finput add_ons" id="add_ons"  name="add_ons"  required maxlength="100">
+                                                <input type="text" placeholder="Add Ons..." onkeyup="this.value = this.value.toUpperCase();" oninput="validate(this)" class="form-control finput add_ons" id="add_ons"  name="add_ons"  required maxlength="100">
                                             </td> 
 
                                             <td> 
@@ -76,22 +76,23 @@
                                              </td> 
 
                                             <td> 
-                                               <select selected data-placeholder="Choose" class="form-control budget" name="budget" id="budget" required style="width:100%"> 
-                                                    <option value=""></option> 
-                                                    @foreach($budget_range as $data)
-                                                        <option value="{{$data->description}}">{{$data->description}}</option>
-                                                    @endforeach
-                                                </select>
-                                            </td> 
-
-                                            <td> 
-                                            <input class="form-control text-center quantity_item" type="text" oninput="validate(this)" required name="quantity" id="quantity"  value="1" min="0" max="9999999999" step="any" onkeypress="return event.charCode <= 57"> 
-                                            </td> 
+                                                 <input class="form-control text-center quantity_item" type="text" oninput="validate(this)" required name="quantity" id="quantity"  value="1" min="0" max="9999999999" step="any" onkeypress="return event.charCode <= 57"> 
+                                            </td>  --}}
                                                             
                                         </tr>
                                     </tr>
                                 
                                 </tbody>
+                                <tfoot>
+                                    <tr id="tr-table1" class="bottom">
+                                        <td colspan="11">
+                                            <button class="red-tooltip" data-toggle="tooltip" data-placement="right" id="add-Row" name="add-Row" title="Add Row"><div class="iconPlus" id="bigplus"></div></button>
+                                        </td>
+                                        <td align="left" colspan="1">
+                                            <input type='text' name="quantity_total" class="form-control text-center" id="quantity_total" readonly>
+                                        </td>
+                                    </tr>
+                                </tfoot>
 
                             </table>
                         </div>

@@ -63,6 +63,57 @@
             font-style: italic; 
             }
 
+            .plus{
+                font-size:20px;
+            }
+            #add-Row{
+                border:none;
+                background-color: #fff;
+            }
+          
+            .iconPlus{
+                background-color: #3c8dbc: 
+            }
+            
+            .iconPlus:before {
+                content: '';
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                /* border: 1px solid rgb(194, 193, 193); */
+                font-size: 35px;
+                color: white;
+                background-color: #3c8dbc;
+       
+            }
+            #bigplus{
+                transition: transform 0.5s ease 0s;
+            }
+            #bigplus:before {
+                content: '\FF0B';
+                background-color: #3c8dbc: 
+                font-size: 50px;
+            }
+            #bigplus:hover{
+                /* cursor: default;
+                transform: rotate(180deg); */
+                -webkit-animation: infinite-spinning 1s ease-out 0s infinite normal;
+                 animation: infinite-spinning 1s ease-out 0s infinite normal;
+               
+            }
+
+            @keyframes infinite-spinning {
+                from {
+                    transform: rotate(0deg);
+                }
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
         </style>
     @endpush
 @section('content')
@@ -162,6 +213,114 @@
                 });
             });
 
+            //ADD ROW
+            $("#add-Row").click(function() {
+                event.preventDefault(); 
+                var description = "";
+                var count_fail = 0;
+                $('.itemDesc').each(function() {
+                    description = $(this).val();
+                    if (description == null) {
+                          swal({
+                                type: 'error',
+                                title: 'Please add an Item!',
+                                icon: 'error',
+                                confirmButtonColor: "#367fa9",
+                            }); 
+                            event.preventDefault(); // cancel default behavior
+                        count_fail++;
+                    } else if (description == "") {
+                          swal({
+                                type: 'error',
+                                title: 'Please add an Item!',
+                                icon: 'error',
+                                confirmButtonColor: "#367fa9",
+                            }); 
+                            event.preventDefault(); // cancel default behavior
+                        count_fail++;
+                    }else{
+                        count_fail = 0;
+                    }
+                });
+
+                tableRow++;
+
+                if(count_fail == 0){
+
+                    var newrow =
+                    '<tr>' +
+                        '<td>' +
+                            '<input type="text" placeholder="Item Description..." onkeyup="this.value = this.value.toUpperCase();" oninput="validate(this)" class="form-control finput itemDesc" id="itemDesc'+ tableRow +'"  name="item_description[]"  required maxlength="100">' +
+                        '</td>' + 
+                        '<td>' +
+                            '<input type="text" placeholder="Brand..." onkeyup="this.value = this.value.toUpperCase();" oninput="validate(this)" class="form-control finput brand" id="brand'+ tableRow +'"  name="brand[]"  required maxlength="100">' +
+                        '</td>' + 
+                        '<td>' +
+                            '<input type="text" placeholder="Model..." onkeyup="this.value = this.value.toUpperCase();" oninput="validate(this)" class="form-control finput model" id="model'+ tableRow +'"  name="model[]"  required maxlength="100">' +
+                        '</td>' + 
+                        '<td>' +
+                            '<input type="text" placeholder="Size..." onkeyup="this.value = this.value.toUpperCase();" oninput="validate(this)" class="form-control finput size" id="size'+ tableRow +'"  name="size[]"  required maxlength="100">' +
+                        '</td>' + 
+                        '<td>' +
+                            '<input type="text" placeholder="Actual Color..." onkeyup="this.value = this.value.toUpperCase();" oninput="validate(this)" class="form-control finput actual_color" id="actual_color'+ tableRow +'"  name="actual_color[]"  required maxlength="100">' +
+                        '</td>' + 
+                        '<td>' +
+                            '<input type="text" placeholder="Material..." onkeyup="this.value = this.value.toUpperCase();" oninput="validate(this)" class="form-control finput material" id="material'+ tableRow +'"  name="material[]"  required maxlength="100">' +
+                        '</td>' + 
+                        '<td>' +
+                            '<input type="text" placeholder="Thickness..." onkeyup="this.value = this.value.toUpperCase();" oninput="validate(this)" class="form-control finput thickness" id="thickness'+ tableRow +'"  name="thickness[]"  required maxlength="100">' +
+                        '</td>' + 
+                        '<td>' +
+                            '<input type="text" placeholder="Lamination..." onkeyup="this.value = this.value.toUpperCase();" oninput="validate(this)" class="form-control finput lamination" id="lamination'+ tableRow +'"  name="lamination[]"  required maxlength="100">' +
+                        '</td>' + 
+                        '<td>' +
+                            '<input type="text" placeholder="Add Ons..." onkeyup="this.value = this.value.toUpperCase();" oninput="validate(this)" class="form-control finput add_ons" id="add_ons'+ tableRow +'"  name="add_ons[]"  required maxlength="100">' +
+                        '</td>' + 
+
+                        '<td>' + 
+                            '<select selected data-placeholder="Choose" class="form-control select2" name="installation[]" id="installation'+ tableRow +'" required style="width:100%">' +
+                                '<option value=""></option>' + 
+                                '@foreach($yesno as $data)' +
+                                    '<option value="{{$data->description}}">{{$data->description}}</option>' +
+                                '@endforeach' +
+                            '</select>' +
+                        '</td>' + 
+
+                        '<td>' + 
+                           '<select selected data-placeholder="Choose" class="form-control select2" name="dismantling_body[]" id="dismantling_body'+ tableRow +'" required style="width:100%">' + 
+                                '<option value=""></option>' +
+                                '@foreach($yesno as $data)' +
+                                    '<option value="{{$data->description}}">{{$data->description}}</option>' +
+                                '@endforeach' +
+                            '</select>' +
+                        '</td>' + 
+
+                        '<td>' + 
+                                '<input class="form-control text-center quantity_item" type="text" oninput="validate(this)" required name="quantity[]" id="quantity'+ tableRow +'"  value="1" min="0" max="9999999999" step="any" onkeypress="return event.charCode <= 57">' + 
+                        '</td>' + 
+
+                        '<td>' +
+                            '<button id="deleteRow" name="removeRow" class="btn btn-danger removeRow"><i class="glyphicon glyphicon-trash"></i></button>' +
+                        '</td>' +
+                        
+                    '</tr>';
+                    $(newrow).insertBefore($('table tr#tr-table1:last'));
+                    $('#installation'+tableRow).select2({});
+                    $('#dismantling_body'+tableRow).select2({});
+                    $("#quantity_total").val(calculateTotalQuantity());
+                }
+                //deleteRow
+                $(document).on('click', '.removeRow', function() {
+                    if ($('#asset-items tbody tr').length != 1) { //check if not the first row then delete the other rows
+                
+                        tableRow--;
+                        $(this).closest('tr').remove();
+                        $("#quantity_total").val(calculateTotalQuantity());
+                        return false;
+                    }
+                });
+            });
+
             //Category
             $('#category_id').change(function(){
                 var category =  this.value;
@@ -251,6 +410,14 @@
      
         });
 
+        function calculateTotalQuantity() {
+            var totalQuantity = 0;
+            $('.quantity_item').each(function() {
+
+            totalQuantity += parseInt($(this).val());
+            });
+            return totalQuantity;
+        }
      
         $("#btnSubmit").click(function(event) {
             event.preventDefault();
@@ -260,23 +427,15 @@
                 if ($('#sampling').val() === "") {
                     swal({
                         type: 'error',
-                        title: 'Sampling required!',
+                        title: 'Color Proofing required!',
                         icon: 'error',
                         confirmButtonColor: "#367fa9",
                     }); 
                     event.preventDefault(); // cancel default behavior
-                }else if ($('#mark_up').val() === "") {
+                }else if ($('#mock_up').val() === "") {
                     swal({
                         type: 'error',
                         title: 'Mark Up required!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    }); 
-                    event.preventDefault(); // cancel default behavior
-                }else if ($('#dismantling').val() === "") {
-                    swal({
-                        type: 'error',
-                        title: 'Dismantling required!',
                         icon: 'error',
                         confirmButtonColor: "#367fa9",
                     }); 
@@ -305,178 +464,9 @@
                         confirmButtonColor: "#367fa9",
                     }); 
                     event.preventDefault(); // cancel default behavior
-                }else if($('#category_id ').val() === ""){
-                    swal({  
-                        type: 'error',
-                        title: 'Please choose Category!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    });
-                    event.preventDefault();
-                    return false;
-                }else if($('#sub_category_id').val() === ""){
-                    swal({  
-                        type: 'error',
-                        title: 'Please choose Sub Category!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    });
-                    event.preventDefault();
-                    return false;
-                }else if($('#class').val() === ""){
-                    swal({  
-                        type: 'error',
-                        title: 'Please choose Class!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    });
-                    event.preventDefault();
-                    return false;
-                }else if($('#sub_class').val() === ""){
-                    swal({  
-                        type: 'error',
-                        title: 'Please choose Sub Class!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    });
-                    event.preventDefault();
-                    return false;
-                }else if($('#itemDesc').val() === ""){
-                            swal({  
-                                type: 'error',
-                                title: 'Item Description required!',
-                                icon: 'error',
-                                confirmButtonColor: "#367fa9",
-                            });
-                            event.preventDefault();
-                            return false;
-                }else if($('#brand').val() === ""){
-                    swal({  
-                        type: 'error',
-                        title: 'Brand required!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    });
-                    event.preventDefault();
-                    return false;
-                }else if($('#model').val() === ""){
-                    swal({  
-                        type: 'error',
-                        title: 'Model required!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    });
-                    event.preventDefault();
-                    return false;
-                }else if($('#size').val() === ""){
-                    swal({  
-                        type: 'error',
-                        title: 'Size required!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    });
-                    event.preventDefault();
-                    return false;
-                }else if($('#actual_color').val() === ""){
-                    swal({  
-                        type: 'error',
-                        title: 'Actual Color required!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    });
-                    event.preventDefault();
-                    return false;
-                }else if($('#material').val() === ""){
-                    swal({  
-                        type: 'error',
-                        title: 'Material required!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    });
-                    event.preventDefault();
-                    return false;
-                }else if($('#thickness').val() === ""){
-                    swal({  
-                        type: 'error',
-                        title: 'Thickness required!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    });
-                    event.preventDefault();
-                    return false;
-                }else if($('#lamination').val() === ""){
-                    swal({  
-                        type: 'error',
-                        title: 'Lamination required!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    });
-                    event.preventDefault();
-                    return false;
-                }else if($('#add_ons').val() === ""){
-                    swal({  
-                        type: 'error',
-                        title: 'Add Ons required!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    });
-                    event.preventDefault();
-                    return false;
-                }else if($('#installation').val() === ""){
-                    swal({  
-                        type: 'error',
-                        title: 'Installation required!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    });
-                    event.preventDefault();
-                    return false;
-                }else if($('#dismantling_body').val() === ""){
-                    swal({  
-                        type: 'error',
-                        title: 'Dismantling required!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    });
-                    event.preventDefault();
-                    return false;
-                }else if($('#budget').val() === ""){
-                    swal({  
-                        type: 'error',
-                        title: 'Budget Range required!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    });
-                    event.preventDefault();
-                    return false;
-                }else if($('#quantity').val() == 0){
-                    swal({  
-                            type: 'error',
-                            title: 'Quantity cannot be empty or zero!',
-                            icon: 'error',
-                            confirmButtonColor: "#367fa9",
-                        });
-                        event.preventDefault();
-                        return false;
-                }else if($('#quantity').val() < 0){
-                    swal({
-                        type: 'error',
-                        title: 'Negative Value is not allowed!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    }); 
-                    event.preventDefault(); // cancel default behavior
-                    return false;
-                }else if($('#quantity').val().match(reg)){
-                    swal({
-                        type: 'error',
-                        title: 'Invalid Quantity Value!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    }); 
-                    event.preventDefault(); // cancel default behavior
-                    return false;     
-                } else{
+                }
+         
+                else{
 
                      //header image validation
                      for (var i = 0; i < $("#upload_file").get(0).files.length; ++i) {
@@ -503,6 +493,218 @@
                             // }                        
                         }
                     }
+
+                    //Description
+                    var item = $("input[name^='item_description']").length;
+                    var item_value = $("input[name^='item_description']");
+                    for(i=0;i<item;i++){
+                        if(item_value.eq(i).val() == 0 || item_value.eq(i).val() == null){
+                            swal({  
+                                    type: 'error',
+                                    title: 'Item Description cannot be empty!',
+                                    icon: 'error',
+                                    confirmButtonColor: "#367fa9",
+                                });
+                                event.preventDefault();
+                                return false;
+                        } 
+                    } 
+
+                    //Brand
+                    var brand = $("input[name^='brand']").length;
+                    var brand_value = $("input[name^='brand']");
+                    for(i=0;i<brand;i++){
+                        if(brand_value.eq(i).val() == 0 || brand_value.eq(i).val() == null){
+                            swal({  
+                                    type: 'error',
+                                    title: 'Brand cannot be empty!',
+                                    icon: 'error',
+                                    confirmButtonColor: "#367fa9",
+                                });
+                                event.preventDefault();
+                                return false;
+                        } 
+                    } 
+
+                    //Model
+                    var model = $("input[name^='model']").length;
+                    var model_value = $("input[name^='model']");
+                    for(i=0;i<model;i++){
+                        if(model_value.eq(i).val() == 0 || model_value.eq(i).val() == null){
+                            swal({  
+                                    type: 'error',
+                                    title: 'Model cannot be empty!',
+                                    icon: 'error',
+                                    confirmButtonColor: "#367fa9",
+                                });
+                                event.preventDefault();
+                                return false;
+                        } 
+                    } 
+
+                    //Size
+                    var size = $("input[name^='size']").length;
+                    var size_value = $("input[name^='size']");
+                    for(i=0;i<size;i++){
+                        if(size_value.eq(i).val() == 0 || size_value.eq(i).val() == null){
+                            swal({  
+                                    type: 'error',
+                                    title: 'Size cannot be empty!',
+                                    icon: 'error',
+                                    confirmButtonColor: "#367fa9",
+                                });
+                                event.preventDefault();
+                                return false;
+                        } 
+                    } 
+
+                    //Actual Color
+                    var ac = $("input[name^='actual_color']").length;
+                    var ac_value = $("input[name^='actual_color']");
+                    for(i=0;i<ac;i++){
+                        if(ac_value.eq(i).val() == 0 || ac_value.eq(i).val() == null){
+                            swal({  
+                                    type: 'error',
+                                    title: 'Actual Color cannot be empty!',
+                                    icon: 'error',
+                                    confirmButtonColor: "#367fa9",
+                                });
+                                event.preventDefault();
+                                return false;
+                        } 
+                    } 
+
+                    //Material
+                    var material = $("input[name^='material']").length;
+                    var material_value = $("input[name^='material']");
+                    for(i=0;i<material;i++){
+                        if(material_value.eq(i).val() == 0 || material_value.eq(i).val() == null){
+                            swal({  
+                                    type: 'error',
+                                    title: 'Material cannot be empty!',
+                                    icon: 'error',
+                                    confirmButtonColor: "#367fa9",
+                                });
+                                event.preventDefault();
+                                return false;
+                        } 
+                    } 
+
+                    //Thickness
+                    var thickness = $("input[name^='thickness']").length;
+                    var thickness_value = $("input[name^='thickness']");
+                    for(i=0;i<thickness;i++){
+                        if(thickness_value.eq(i).val() == 0 || thickness_value.eq(i).val() == null){
+                            swal({  
+                                    type: 'error',
+                                    title: 'Thickness cannot be empty!',
+                                    icon: 'error',
+                                    confirmButtonColor: "#367fa9",
+                                });
+                                event.preventDefault();
+                                return false;
+                        } 
+                    } 
+
+                    //Lamination
+                    var lamination = $("input[name^='lamination']").length;
+                    var lamination_value = $("input[name^='lamination']");
+                    for(i=0;i<lamination;i++){
+                        if(lamination_value.eq(i).val() == 0 || lamination_value.eq(i).val() == null){
+                            swal({  
+                                    type: 'error',
+                                    title: 'Lamination cannot be empty!',
+                                    icon: 'error',
+                                    confirmButtonColor: "#367fa9",
+                                });
+                                event.preventDefault();
+                                return false;
+                        } 
+                    } 
+
+                    //Add Ons
+                    var ao = $("input[name^='add_ons']").length;
+                    var ao_value = $("input[name^='add_ons']");
+                    for(i=0;i<ao;i++){
+                        if(ao_value.eq(i).val() == 0 || ao_value.eq(i).val() == null){
+                            swal({  
+                                    type: 'error',
+                                    title: 'Add Ons cannot be empty!',
+                                    icon: 'error',
+                                    confirmButtonColor: "#367fa9",
+                                });
+                                event.preventDefault();
+                                return false;
+                        } 
+                    } 
+
+                    //Installation
+                    var installation = $("input[name^='installation']").length;
+                    var installation_value = $("input[name^='installation']");
+                    for(i=0;i<installation;i++){
+                        if(installation_value.eq(i).val() == 0 || installation_value.eq(i).val() == null){
+                            swal({  
+                                    type: 'error',
+                                    title: 'Installation cannot be empty!',
+                                    icon: 'error',
+                                    confirmButtonColor: "#367fa9",
+                                });
+                                event.preventDefault();
+                                return false;
+                        } 
+                    } 
+
+                    //Dismantling
+                    var dismantling = $("input[name^='dismantling_body']").length;
+                    var dismantling_value = $("input[name^='dismantling_body']");
+                    for(i=0;i<dismantling;i++){
+                        if(dismantling_value.eq(i).val() == 0 || dismantling_value.eq(i).val() == null){
+                            swal({  
+                                    type: 'error',
+                                    title: 'Dismantling cannot be empty!',
+                                    icon: 'error',
+                                    confirmButtonColor: "#367fa9",
+                                });
+                                event.preventDefault();
+                                return false;
+                        } 
+                    } 
+
+                    //quantity validation
+                    var v = $("input[name^='quantity']").length;
+                    var value = $("input[name^='quantity']");
+                    var reg = /^0/gi;
+                        for(i=0;i<v;i++){
+                            if(value.eq(i).val() == 0){
+                                swal({  
+                                        type: 'error',
+                                        title: 'Quantity cannot be empty or zero!',
+                                        icon: 'error',
+                                        confirmButtonColor: "#367fa9",
+                                    });
+                                    event.preventDefault();
+                                    return false;
+                            }else if(value.eq(i).val() < 0){
+                                swal({
+                                    type: 'error',
+                                    title: 'Negative Value is not allowed!',
+                                    icon: 'error',
+                                    confirmButtonColor: "#367fa9",
+                                }); 
+                                event.preventDefault(); // cancel default behavior
+                                return false;
+                            }else if(value.eq(i).val().match(reg)){
+                                swal({
+                                    type: 'error',
+                                    title: 'Invalid Quantity Value!',
+                                    icon: 'error',
+                                    confirmButtonColor: "#367fa9",
+                                }); 
+                                event.preventDefault(); // cancel default behavior
+                                return false;     
+                            }  
+                    
+                        } 
 
                     swal({
                         title: "Are you sure?",
