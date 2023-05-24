@@ -519,7 +519,7 @@
 			$quantity 			     = $fields['quantity'];
 			$budget 	             = $fields['budget'];
 			$requestor_comments      = $fields['requestor_comments'];
-		 
+		    dd($fields);
 			//upload header file
 			$upload_file             = $fields['upload_file'];
 			$images = [];

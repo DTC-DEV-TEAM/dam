@@ -405,7 +405,7 @@
         if($('#onboarding_date').val() === "" ){
             swal({  
                 type: 'error',
-                title: 'Onboarding Required!',
+                title: 'Onboarding Date Required!',
                 icon: 'error',
                 confirmButtonColor: "#367fa9",
             });

@@ -51,7 +51,14 @@ class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
 
             $duplicate_applicant[$da_key] = $row;
             
+            //screen date
+            $checkIfApplicantExist = DB::table('applicant_table')->select('*')->where('full_name', strtolower(str_replace(' ', '', trim($row['first_name']))).''.strtolower(str_replace(' ', '', trim($row['last_name']))))->get()->count();
        
+            if($checkIfApplicantExist == 0){
+                if($row['screen_date'] === null){
+                    return CRUDBooster::redirect(CRUDBooster::mainpath(),"Screen Date Required! at row: ".($key+1),"danger");
+                }
+            }
             if($getStatus == 36){
                 $status = 31;
                 ErfHeaderRequest::where('reference_number',$row['erf_number'])
@@ -61,6 +68,8 @@ class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
             }else{
                 $status = $getStatus;
             }
+            //dd($checkIfApplicantExist, $row['screen_date']);
+            $screen_date = isset($row['screen_date']) ? Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['screen_date'])) : NULL;
             $save = Applicant::updateOrcreate([
                 'full_name'   => strtolower(str_replace(' ', '', trim($row['first_name']))).''.strtolower(str_replace(' ', '', trim($row['last_name']))),
             ],
@@ -70,14 +79,13 @@ class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
                 'first_name'  => $row['first_name'],
                 'last_name'   => $row['last_name'],
                 'full_name'   => strtolower(str_replace(' ', '', trim($row['first_name']))).''.strtolower(str_replace(' ', '', trim($row['last_name']))),
-                'screen_date' => Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['screen_date'])),
-          
-                
+              
             ]);
             if ($save->wasRecentlyCreated) {
-                $save->created_by = CRUDBooster::myId();
-                $save->created_at = date('Y-m-d H:i:s');
-                $save->updated_at = NULL;
+                $save->created_by  = CRUDBooster::myId();
+                $save->created_at  = date('Y-m-d H:i:s');
+                $save->updated_at  = NULL;
+                $save->screen_date = $screen_date;
             }else{
                 $save->updated_by = CRUDBooster::myId();
                 $save->updated_at = date('Y-m-d H:i:s');
@@ -169,8 +177,7 @@ class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
                 }
             },
             '*.status'       => 'required',
-            '*.erf_number'   => 'required',
-            '*.screen_date'  => 'required',
+            '*.erf_number'   => 'required'
         ];
     }
 
@@ -181,8 +188,7 @@ class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
             '*.erf_number.check_erf_exist'      => 'ERF not veried :input.',
             '*.erf_number.required'             => 'Erf Number field is required.',
             '*.first_name.required'             => 'First Name field is required!.',
-            '*.last_name.required'              => 'Last Name field is required!.',
-            '*.screen_date.required'            => 'Screen Date field is required.',
+            '*.last_name.required'              => 'Last Name field is required!.'
         ];
     }
 }

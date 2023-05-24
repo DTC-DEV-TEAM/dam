@@ -271,7 +271,7 @@
 			//Cancelled
 			$checkRowDbCancelled = DB::table('applicant_table')->select(DB::raw("(full_name) AS fullname"))->where('status', 8)->get()->toArray();
 			$checkRowDbColumnCancelled = array_column($checkRowDbCancelled, 'fullname');
-	
+
 			if (in_array(strtolower(str_replace(' ', '', trim($first_name))).''.strtolower(str_replace(' ', '', trim($last_name))), $checkRowDbColumnJoDone)) {
 				return CRUDBooster::redirect(CRUDBooster::mainpath("add-applicant"),"Applicant Already Exist!","danger");
 			}else if(in_array(strtolower(str_replace(' ', '', trim($first_name))).''.strtolower(str_replace(' ', '', trim($last_name))), $checkRowDbColumnCancelled)){
@@ -316,23 +316,31 @@
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
 	        $fields = Request::all();
+			
 			$erf_number = $fields['erf_number'];
 			// dd($fields);
 			$status = $fields['status'];
 			$update_remarks = $fields['update_remarks'];
-			if($status == 36){
-				ErfHeaderRequest::where('reference_number',$erf_number)
-				->update([
-					'status_id'		 => 31
-				]);	
-			    $postdata['status']              = 31;
-				$postdata['update_remarks']      = $update_remarks;
+			//Jo Done
+			$checkRowDbJoDone = DB::table('applicant_table')->select('*')->where('erf_number', $erf_number)->where('status', 31)->get()->count();
+
+			if ($checkRowDbJoDone != 0 && $status == 36) {
+				return CRUDBooster::redirect(CRUDBooster::mainpath(),"Invalid! Erf have done JO!","danger");
 			}else{
-				$postdata['status']              = $status;
-				$postdata['update_remarks']      = $update_remarks;
+				if($status == 36){
+					ErfHeaderRequest::where('reference_number',$erf_number)
+					->update([
+						'status_id'		 => 31
+					]);	
+					$postdata['status']              = 31;
+					$postdata['update_remarks']      = $update_remarks;
+				}else{
+					$postdata['status']              = $status;
+					$postdata['update_remarks']      = $update_remarks;
+				}
+				
+				$postdata['updated_by']  = CRUDBooster::myId();
 			}
-			
-			$postdata['updated_by']  = CRUDBooster::myId();
 	    }
 
 	    /* 
@@ -527,7 +535,7 @@
 			];
 			$arrData = [
 				"erf_number"         => "ERF-0000001",
-				"status"             => "First Interviewed",
+				"status"             => "1ST Interviewed",
 				"first_name"         => "John",
 				"last_name"          => "Doe",
 				"screen_date"        => "2023-01-01",

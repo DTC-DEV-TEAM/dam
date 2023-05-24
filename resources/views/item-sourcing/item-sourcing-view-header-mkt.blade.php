@@ -33,7 +33,7 @@
 <div class="row">
     <div class="col-md-3">
         <div class="form-group">
-            <label class="control-label require"><span style="color:red">*</span> Sampling</label>
+            <label class="control-label require"><span style="color:red">*</span> Color Proofing</label>
                 <select selected data-placeholder="Choose" class="form-control select2" name="sampling" id="sampling" required required style="width:100%"> 
                     <option value=""></option> 
                         @foreach($yesno as $data)
@@ -45,7 +45,7 @@
 
     <div class="col-md-3">
         <div class="form-group">
-            <label class="control-label require"><span style="color:red">*</span> Mark Up</label>
+            <label class="control-label require"><span style="color:red">*</span> Mock Up</label>
                 <select selected data-placeholder="Choose" class="form-control select2" name="mark_up" id="mark_up" required required style="width:100%"> 
                     <option value=""></option> 
                         @foreach($yesno as $data)
@@ -55,17 +55,6 @@
         </div>
     </div>
 
-    <div class="col-md-3">
-        <div class="form-group">
-            <label class="control-label require"><span style="color:red">*</span> Dismantling</label>
-                <select selected data-placeholder="Choose" class="form-control select2" name="dismantling" id="dismantling" required required style="width:100%"> 
-                    <option value=""></option> 
-                        @foreach($yesno as $data)
-                        <option value="{{$data->description}}">{{$data->description}}</option>
-                            @endforeach
-                </select>                                   
-        </div>
-    </div>
 
     <div class="col-md-3">
         <div class="form-group">
@@ -74,22 +63,25 @@
         </div>
     </div> 
 
+    
+    <div class="col-md-3">
+        <div class="form-group">
+            <label class="control-label require"><span style="color:red">*</span> Photos/File <span style="color:red; font-style:italic">(jpg, jpeg, gif, png, xlsx, docs, pdf)</span></label>
+            <input type="file" class="form-control finput" style="" name="upload_file[]" id="upload_file" multiple>                                
+        </div>
+    </div>
+
 </div>
 
 
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-12">
         <div class="form-group">
             <label class="control-label require"><span style="color:red">*</span> Artwork Link</label>
             <input type="text" class="form-control finput"  id="artworklink" name="artworklink"  required>                                   
         </div>
     </div>
-    <div class="col-md-6">
-        <div class="form-group">
-            <label class="control-label require"><span style="color:red">*</span> Upload Photos/File <span style="color:red; font-style:italic">(jpg, jpeg, gif, png, xlsx, docs, pdf)</span></label>
-            <input type="file" class="form-control finput" style="" name="upload_file[]" id="upload_file" multiple>                                
-        </div>
-    </div>
+   
 </div>
 
 @if(CRUDBooster::myPrivilegeId() == 8)
