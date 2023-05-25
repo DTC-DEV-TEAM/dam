@@ -20,7 +20,7 @@
         public function __construct() {
 			// Register ENUM type
 			//$this->request = $request;
-			$this->middleware('check.approvalschedule',['only' => ['getRequestApproval']]);
+			$this->middleware('check.approvalschedule',['only' => ['getRequestApprovalSupplies']]);
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
 		}
 
@@ -121,7 +121,8 @@
 				
 				$pending           = DB::table('statuses')->where('id', 1)->value('id');
 
-				$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getRequestApproval/[id]'),'icon'=>'fa fa-pencil', "showIf"=>"[status_id] == $pending"];
+				$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getRequestApproval/[id]'),'icon'=>'fa fa-pencil', "showIf"=>"[status_id] == $pending && [request_type_id] != 7"];
+				$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getRequestApprovalSupplies/[id]'),'icon'=>'fa fa-pencil', "showIf"=>"[status_id] == $pending && [request_type_id] == 7"];
 				//$this->addaction[] = ['title'=>'Edit','url'=>CRUDBooster::mainpath('getRequestEdit/[id]'),'icon'=>'fa fa-pencil', "showIf"=>"[status_id] == $Rejected"]; //, "showIf"=>"[status_level1] == $inwarranty"
 			}
 
@@ -548,7 +549,55 @@
 	    //By the way, you can still create your own method in here... :) 
 
 		public function getRequestApproval($id){
-			
+			$this->cbLoader();
+			if(!CRUDBooster::isUpdate() && $this->global_privilege==FALSE) {    
+				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+			}  
+
+			$data = array();
+
+			$data['page_title'] = 'Approve Request';
+
+			$data['Header'] = HeaderRequest::
+				  leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
+				->leftjoin('condition_type', 'header_request.conditions', '=', 'condition_type.id')
+				->leftjoin('cms_users as employees', 'header_request.employee_name', '=', 'employees.id')
+				->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
+				->leftjoin('departments', 'header_request.department', '=', 'departments.id')
+				->leftjoin('positions', 'header_request.position', '=', 'positions.id')
+				->leftjoin('locations', 'employees.location_id', '=', 'locations.id')
+
+				->leftjoin('cms_users as requested', 'header_request.created_by','=', 'requested.id')
+				->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
+				->select(
+						'header_request.*',
+						'header_request.id as requestid',
+						'header_request.created_at as created',
+						'request_type.*',
+						'condition_type.*',
+						'requested.name as requestedby',
+						'employees.bill_to as employee_name',
+						'employees.company_name_id as company_name',
+						'departments.department_name as department',
+						//'positions.position_description as position',
+						'locations.store_name as store_branch',
+						'approved.name as approvedby'
+						)
+				->where('header_request.id', $id)->first();
+
+			$data['Body'] = BodyRequest::leftjoin('assets_supplies_inventory', 'body_request.digits_code','=', 'assets_supplies_inventory.digits_code')
+				->select(
+				  'body_request.*',
+				  'assets_supplies_inventory.quantity as wh_qty'
+				)
+				->where('body_request.header_request_id', $id)
+				->whereNull('deleted_at')
+				->get();
+
+			return $this->view("assets.approval-request", $data);
+		}
+
+		public function getRequestApprovalSupplies($id){
 			$this->cbLoader();
 			if(!CRUDBooster::isUpdate() && $this->global_privilege==FALSE) {    
 				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
