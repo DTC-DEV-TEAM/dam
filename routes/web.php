@@ -72,6 +72,7 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('admin/header_request/getRequestReceive/{id}','AdminHeaderRequestController@getRequestReceive')->name('getRequestReceive');
     //ApproveRequest
     Route::get('/admin/approval/getRequestApproval/{id}','AdminApprovalController@getRequestApproval')->name('approval-request');
+    Route::get('/admin/approval/getRequestApprovalSupplies/{id}','AdminApprovalController@getRequestApprovalSupplies')->name('approval-request-supplies');
     //RecommendationRequest
     Route::get('/admin/recommendation/getRequestReco/{id}','AdminRecommendationController@getRequestReco')->name('reco-request');
     Route::post(config('crudbooster.ADMIN_PATH').'/recommendation/item-search','AdminRecommendationController@itemSearch')->name('it.item.search');
