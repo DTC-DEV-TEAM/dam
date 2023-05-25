@@ -733,7 +733,9 @@
                 },
                 success: function (data) {
                     if (data.status == "success") {
-                        $('.body-comment').append('<span class="session-comment"> ' +
+                        $('.body-comment').append(
+                                            '<strong style="margin-left: 95%">Me</strong>' +
+                                            '<span class="session-comment"> ' +
                                             '<p><span class="comment">'+data.message.comments +'</span> </p>'+
                                             '<p style="text-align:right; font-size:12px; font-style: italic; padding-right:5px;"> '+ new Date(data.message.created_at) +'</p></span>');
                         $('#message').val('');

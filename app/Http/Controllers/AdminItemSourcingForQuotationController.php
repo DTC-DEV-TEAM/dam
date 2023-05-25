@@ -279,14 +279,14 @@
 					$sub_query->whereNull('item_sourcing_header.deleted_at');
 				});
 
-				$query->orderBy('item_sourcing_header.status_id', 'asc')->orderBy('item_sourcing_header.id', 'DESC');
+				$query->orderBy('item_sourcing_header.status_id', 'desc')->orderBy('item_sourcing_header.id', 'asc');
 			}else{
 
 				$query->where(function($sub_query){
 					$sub_query->whereIn('item_sourcing_header.status_id', [$this->forDiscussion, $this->forSourcing,$this->forStreamlining,$this->forItemCreation,$this->forArfCreation])->whereNull('item_sourcing_header.deleted_at'); 
 				});
 
-				$query->orderBy('item_sourcing_header.status_id', 'asc')->orderBy('item_sourcing_header.id', 'desc');
+				$query->orderBy('item_sourcing_header.status_id', 'desc')->orderBy('item_sourcing_header.id', 'asc');
 
 			}
 	            

@@ -415,7 +415,7 @@
             event.preventDefault();
             var countRow = $('#asset-items tfoot tr').length;
             var reg = /^0/gi;
-            ;
+            
                 if ($('#sampling').val() === "") {
                     swal({
                         type: 'error',
@@ -452,6 +452,14 @@
                     swal({
                         type: 'error',
                         title: 'Upload File/Photos required!',
+                        icon: 'error',
+                        confirmButtonColor: "#367fa9",
+                    }); 
+                    event.preventDefault(); // cancel default behavior
+                }else if (countRow == 1) {
+                    swal({
+                        type: 'error',
+                        title: 'Please add an item!',
                         icon: 'error',
                         confirmButtonColor: "#367fa9",
                     }); 
