@@ -71,7 +71,7 @@
 @endif
 <div class='panel panel-default'>
     <div class='panel-heading'>
-        History Detail View
+        View Detailed 
     </div>
     <form method='post' id="myform" name="myform">
         
@@ -211,7 +211,9 @@
                                     <table class="table table-bordered" id="item-sourcing">
                                         <tbody id="bodyTable">
                                             <tr class="tbl_header_color dynamicRows">
-                                                <th width="5%" class="text-center">Digits Code</th>
+                                                @if(!in_array($Header->request_type_id,[6]))  
+                                                   <th width="5%" class="text-center">Digits Code</th>
+                                                @endif
                                                 @if(in_array($Header->request_type_id,[1,5,7])) 
                                                     <th width="12%" class="text-center">Category</th> 
                                                     <th width="12%" class="text-center">Sub Category</th>
@@ -273,40 +275,7 @@
                                                                 <td style="text-align:center" height="10">                                                             
                                                                     <input type="text"  class="form-control finput"  name="actual_color" id="actual_color" value="{{$rowresult->actual_color}}" data-id="{{$tableRow1}}"  required>  
                                                                 </td>
-                                                                @if(in_array($Header->request_type_id,[6]))
-                                                                    <td style="text-align:center" height="10">
-                                                                        <input type="text"  class="form-control finput"  name="material" id="material" value="{{$rowresult->material}}" data-id="{{$tableRow1}}"  required>                              
-                                                                    </td>
-                                                                    <td style="text-align:center" height="10">
-                                                                        <input type="text"  class="form-control finput"  name="thickness" id="thickness" value="{{$rowresult->thickness}}" data-id="{{$tableRow1}}"  required>                                                             
-                                                                    </td>
-                                                                    <td style="text-align:center" height="10">
-                                                                        <input type="text"  class="form-control finput"  name="lamination" id="lamination" value="{{$rowresult->lamination}}" data-id="{{$tableRow1}}"  required>                                                            
-                                                                    </td>
-                                                                    <td style="text-align:center" height="10">
-                                                                        <input type="text"  class="form-control finput"  name="add_ons" id="add_ons" value="{{$rowresult->add_ons}}" data-id="{{$tableRow1}}"  required>                                                             
-                                                                    </td>
-                                                                    <td style="text-align:center" height="10">
-                                                                        <select selected data-placeholder="Choose" class="form-control select2" name="installation" id="installation" required style="width:100%"> 
-                                                                            @foreach($yesno as $res)
-                                                                            <option value="{{ $res->description }}"
-                                                                                {{ isset($rowresult->installation) && $Header->installation == $res->description ? 'selected' : '' }}>
-                                                                                {{ $res->description }} 
-                                                                            </option>>
-                                                                            @endforeach
-                                                                        </select>                                                    
-                                                                    </td>
-                                                                    <td style="text-align:center" height="10">
-                                                                       <select selected data-placeholder="Choose" class="form-control select2" name="dismantling" id="dismantling" required style="width:100%"> 
-                                                                            @foreach($yesno as $res)
-                                                                            <option value="{{ $res->description }}"
-                                                                                {{ isset($rowresult->dismantling) && $Header->dismantling == $res->description ? 'selected' : '' }}>
-                                                                                {{ $res->description }} 
-                                                                            </option>>
-                                                                            @endforeach
-                                                                        </select>                                                            
-                                                                    </td>
-                                                                @endif
+                                                               
                                                                 <td style="text-align:center" height="10" class="qty">
                                                                     <input type="text"  class="form-control finput"  name="quantity" id="quantity" value="{{$rowresult->quantity}}" data-id="{{$tableRow1}}"  required>  
                                                                 </td>                   
@@ -326,73 +295,50 @@
                                                                 <td style="text-align:center" height="10">
                                                                     {{$rowresult->actual_color}}                               
                                                                 </td>
-                                                                @if(in_array($Header->request_type_id,[6]))
-                                                                    <td style="text-align:center" height="10">
-                                                                        {{$rowresult->material}}                               
-                                                                    </td>
-                                                                    <td style="text-align:center" height="10">
-                                                                        {{$rowresult->thickness}}                               
-                                                                    </td>
-                                                                    <td style="text-align:center" height="10">
-                                                                        {{$rowresult->lamination}}                               
-                                                                    </td>
-                                                                    <td style="text-align:center" height="10">
-                                                                        {{$rowresult->add_ons}}                               
-                                                                    </td>
-                                                                    <td style="text-align:center" height="10">
-                                                                        {{$rowresult->installation}}                               
-                                                                    </td>
-                                                                    <td style="text-align:center" height="10">
-                                                                        {{$rowresult->dismantling}}                               
-                                                                    </td>
-                                                                @endif
                                                                 <td style="text-align:center" height="10">
                                                                     {{$rowresult->quantity}}                               
                                                                 </td>
-                                                            @endif  
-                                                            @if(!in_array($Header->request_type_id,[6])) 
+                                                            @endif                                                  
                                                                 <td style="text-align:center" height="10" class="cost">
                                                                         {{$rowresult->budget}}
                                                                 </td>  
-                                                            @endif                                                                                                         
+                                                                                                                                                             
                                                         </tr>
                                                     @else
-                                                        <tr>
-                                                            <input type="hidden"  class="form-control"  name="id" id="id"  required  value="{{$rowresult->body_id}}" readonly>        
-                                                            <td style="text-align:center" height="10">
-                                                                {{$rowresult->digits_code}}                               
-                                                            </td>
-                                                            @if($Header->closed_at === "" || $Header->closed_at === null &&  $Header->cancelled_at === null || $Header->cancelled_at === "")                                    
-                                                                <td style="text-align:center" height="10">                                                             
-                                                                    <input type="text"  class="form-control finput"  name="item_description" id="item_description" value="{{$rowresult->item_description}}" data-id="{{$tableRow1}}"  required>  
-                                                                </td>
-                                                                <td style="text-align:center" height="10">                                                             
-                                                                    <input type="text"  class="form-control finput"  name="brand" id="brand" value="{{$rowresult->brand}}" data-id="{{$tableRow1}}"  required>  
-                                                                </td>
-                                                                <td style="text-align:center" height="10">                                                             
-                                                                    <input type="text"  class="form-control finput"  name="model" id="model" value="{{$rowresult->model}}" data-id="{{$tableRow1}}"  required>  
-                                                                </td>
-                                                                <td style="text-align:center" height="10">                                                             
-                                                                    <input type="text"  class="form-control finput"  name="size" id="size" value="{{$rowresult->size}}" data-id="{{$tableRow1}}"  required>  
-                                                                </td>
-                                                                <td style="text-align:center" height="10">                                                             
-                                                                    <input type="text"  class="form-control finput"  name="actual_color" id="actual_color" value="{{$rowresult->actual_color}}" data-id="{{$tableRow1}}"  required>  
-                                                                </td>
-                                                                @if(in_array($Header->request_type_id,[6]))
+                                                        <tr>     
+                                                            @if($Header->closed_at === "" || $Header->closed_at === null &&  $Header->cancelled_at === null || $Header->cancelled_at === "")                                                              
+                                                                @if(in_array($Header->request_type_id,[6]))  
+                                                                   {{-- MARKETING EDIT --}}
+                                                                    <input type="hidden"  class="form-control"  name="id[]" id="id"  required  value="{{$rowresult->body_id}}" readonly>   
+                                                                    <td style="text-align:center" height="10">                                                             
+                                                                        <input type="text"  class="form-control finput"  name="item_description[]" id="item_description" value="{{$rowresult->item_description}}" data-id="{{$tableRow1}}"  required>  
+                                                                    </td>
+                                                                    <td style="text-align:center" height="10">                                                             
+                                                                        <input type="text"  class="form-control finput"  name="brand[]" id="brand" value="{{$rowresult->brand}}" data-id="{{$tableRow1}}"  required>  
+                                                                    </td>
+                                                                    <td style="text-align:center" height="10">                                                             
+                                                                        <input type="text"  class="form-control finput"  name="model[]" id="model" value="{{$rowresult->model}}" data-id="{{$tableRow1}}"  required>  
+                                                                    </td>
+                                                                    <td style="text-align:center" height="10">                                                             
+                                                                        <input type="text"  class="form-control finput"  name="size[]" id="size" value="{{$rowresult->size}}" data-id="{{$tableRow1}}"  required>  
+                                                                    </td>
+                                                                    <td style="text-align:center" height="10">                                                             
+                                                                        <input type="text"  class="form-control finput"  name="actual_color[]" id="actual_color" value="{{$rowresult->actual_color}}" data-id="{{$tableRow1}}"  required>  
+                                                                    </td>                                                                 
                                                                     <td style="text-align:center" height="10">
-                                                                        <input type="text"  class="form-control finput"  name="material" id="material" value="{{$rowresult->material}}" data-id="{{$tableRow1}}"  required>                              
+                                                                        <input type="text"  class="form-control finput"  name="material[]" id="material" value="{{$rowresult->material}}" data-id="{{$tableRow1}}"  required>                              
                                                                     </td>
                                                                     <td style="text-align:center" height="10">
-                                                                        <input type="text"  class="form-control finput"  name="thickness" id="thickness" value="{{$rowresult->thickness}}" data-id="{{$tableRow1}}"  required>                                                             
+                                                                        <input type="text"  class="form-control finput"  name="thickness[]" id="thickness" value="{{$rowresult->thickness}}" data-id="{{$tableRow1}}"  required>                                                             
                                                                     </td>
                                                                     <td style="text-align:center" height="10">
-                                                                        <input type="text"  class="form-control finput"  name="lamination" id="lamination" value="{{$rowresult->lamination}}" data-id="{{$tableRow1}}"  required>                                                            
+                                                                        <input type="text"  class="form-control finput"  name="lamination[]" id="lamination" value="{{$rowresult->lamination}}" data-id="{{$tableRow1}}"  required>                                                            
                                                                     </td>
                                                                     <td style="text-align:center" height="10">
-                                                                        <input type="text"  class="form-control finput"  name="add_ons" id="add_ons" value="{{$rowresult->add_ons}}" data-id="{{$tableRow1}}"  required>                                                             
+                                                                        <input type="text"  class="form-control finput"  name="add_ons[]" id="add_ons" value="{{$rowresult->add_ons}}" data-id="{{$tableRow1}}"  required>                                                             
                                                                     </td>
                                                                     <td style="text-align:center" height="10">
-                                                                        <select selected data-placeholder="Choose" class="form-control select2" name="installation" id="installation" required style="width:100%"> 
+                                                                        <select selected data-placeholder="Choose" class="form-control select2" name="installation[]" id="installation" required style="width:100%"> 
                                                                             @foreach($yesno as $res)
                                                                             <option value="{{ $res->description }}"
                                                                                 {{ isset($rowresult->installation) && $rowresult->installation == $res->description ? 'selected' : '' }}>
@@ -402,19 +348,43 @@
                                                                         </select>                                                         
                                                                     </td>
                                                                     <td style="text-align:center" height="10">
-                                                                        <select selected data-placeholder="Choose" class="form-control select2" name="dismantling" id="dismantling" required style="width:100%"> 
-                                                                             @foreach($yesno as $res)
-                                                                             <option value="{{ $res->description }}"
-                                                                                 {{ isset($rowresult->dismantling) && $rowresult->dismantling == $res->description ? 'selected' : '' }}>
-                                                                                 {{ $res->description }} 
-                                                                             </option>>
-                                                                             @endforeach
-                                                                         </select>                                                            
-                                                                     </td>
+                                                                        <select selected data-placeholder="Choose" class="form-control select2" name="dismantling[]" id="dismantling" required style="width:100%"> 
+                                                                            @foreach($yesno as $res)
+                                                                            <option value="{{ $res->description }}"
+                                                                                {{ isset($rowresult->dismantling) && $rowresult->dismantling == $res->description ? 'selected' : '' }}>
+                                                                                {{ $res->description }} 
+                                                                            </option>>
+                                                                            @endforeach
+                                                                        </select>                                                            
+                                                                    </td>
+                                                                    <td style="text-align:center" height="10" class="qty">
+                                                                        <input type="text"  class="form-control finput"  name="quantity[]" id="quantity" value="{{$rowresult->quantity}}" data-id="{{$tableRow1}}"  required>  
+                                                                    </td>        
+                                                                @else
+                                                                    <input type="hidden"  class="form-control"  name="id" id="id"  required  value="{{$rowresult->body_id}}" readonly>        
+                                                                    <td style="text-align:center" height="10">
+                                                                        {{$rowresult->digits_code}}                               
+                                                                    </td>
+                                                                    <td style="text-align:center" height="10">                                                             
+                                                                        <input type="text"  class="form-control finput"  name="item_description" id="item_description" value="{{$rowresult->item_description}}" data-id="{{$tableRow1}}"  required>  
+                                                                    </td>
+                                                                    <td style="text-align:center" height="10">                                                             
+                                                                        <input type="text"  class="form-control finput"  name="brand" id="brand" value="{{$rowresult->brand}}" data-id="{{$tableRow1}}"  required>  
+                                                                    </td>
+                                                                    <td style="text-align:center" height="10">                                                             
+                                                                        <input type="text"  class="form-control finput"  name="model" id="model" value="{{$rowresult->model}}" data-id="{{$tableRow1}}"  required>  
+                                                                    </td>
+                                                                    <td style="text-align:center" height="10">                                                             
+                                                                        <input type="text"  class="form-control finput"  name="size" id="size" value="{{$rowresult->size}}" data-id="{{$tableRow1}}"  required>  
+                                                                    </td>
+                                                                    <td style="text-align:center" height="10">                                                             
+                                                                        <input type="text"  class="form-control finput"  name="actual_color" id="actual_color" value="{{$rowresult->actual_color}}" data-id="{{$tableRow1}}"  required>  
+                                                                    </td>
+                                                                    <td style="text-align:center" height="10" class="qty">
+                                                                        <input type="text"  class="form-control finput"  name="quantity" id="quantity" value="{{$rowresult->quantity}}" data-id="{{$tableRow1}}"  required>  
+                                                                    </td>   
                                                                 @endif
-                                                                <td style="text-align:center" height="10" class="qty">
-                                                                    <input type="text"  class="form-control finput"  name="quantity" id="quantity" value="{{$rowresult->quantity}}" data-id="{{$tableRow1}}"  required>  
-                                                                </td>                   
+                                                                                
                                                             @else
                                                                 <td style="text-align:center" height="10">
                                                                     {{$rowresult->item_description}}                               
@@ -981,7 +951,9 @@
                 },
                 success: function (data) {
                     if (data.status == "success") {
-                        $('.body-comment').append('<span class="session-comment"> ' +
+                        $('.body-comment').append(
+                                            '<strong style="margin-left: 95%">Me</strong>' +
+                                            '<span class="session-comment"> ' +
                                             '<p><span class="comment">'+data.message.comments +'</span> </p>'+
                                             '<p style="text-align:right; font-size:12px; font-style: italic; padding-right:5px;"> '+ new Date(data.message.created_at) +'</p></span>');
                         $('#message').val('');

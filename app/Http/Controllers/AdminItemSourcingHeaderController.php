@@ -1072,6 +1072,7 @@
 		public function editItemSource(Request $request){
 			$fields           = Request::all();
 			$id               = $fields['id'];
+			$request_type_id  = $fields['request_type_id'];
 			$item_description = $fields['item_description'];
 			$brand            = $fields['brand'];
 			$model            = $fields['model'];
@@ -1084,49 +1085,108 @@
 			$installation     = $fields['installation'];
 			$dismantling      = $fields['dismantling'];
 			$quantity         = $fields['quantity'];
-			$header_id        = $fields['headerID'];
- 
+			$header_id        = $fields['headerID'];	
+    
 			$item_source_body = ItemBodySourcing::where(['id' => $id])->first();
+			if(in_array($request_type_id, [6])){
+			  $item_source_body_marketing = ItemBodySourcing::whereIn('id', $id)->get();
+			}
 			//dd($item_source_body, $id);
 			$countHeader = DB::table('item_sourcing_edit_versions')->where('item_sourcing_edit_versions.header_id', $id)->count();
 			$finalCountHead = ($countHeader + 2);
-
-			ItemSourcingEditVersions::Create(
-				[
-				'header_id'           => $header_id,
-				'body_id'             => $id,
-				'old_description'     => $item_source_body->item_description,
-				'new_description'     => $item_description,
-				'old_brand_value'     => $item_source_body->brand,
-				'new_brand_value'     => $brand,
-				'old_model_value'     => $item_source_body->model,
-				'new_model_value'     => $model,
-				'old_size_value'      => $item_source_body->size,
-				'new_size_value'      => $size,
-				'old_ac_value'        => $item_source_body->actual_color,
-				'new_ac_value'        => $actual_color,
-				'old_material'        => $item_source_body->material,
-				'new_material'        => $material,
-				'old_thicknes'        => $item_source_body->thicknes,
-				'new_thicknes'        => $thicknes,
-				'old_lamination'      => $item_source_body->lamination,
-				'new_lamination'      => $lamination,
-				'old_add_ons'         => $item_source_body->add_ons,
-				'new_add_ons'         => $add_ons,
-				'old_installation'    => $item_source_body->installation,
-				'new_installation'    => $installation,
-				'old_dismantling'     => $item_source_body->dismantling,
-				'new_dismantling'     => $dismantling,
-				'old_qty_value'       => $item_source_body->quantity,
-				'new_qty_value'       => $quantity,
-				'version'             => "Version"."-". $finalCountHead,
-				'updated_by'          => CRUDBooster::myId(),
-				'created_at' 	      => date('Y-m-d H:i:s'),
-				]
-			);  
-
-     
-			ItemBodySourcing::where(['id' => $id])
+	
+			$commentLines = [];
+			$insertCommentLines = [];
+			if(in_array($request_type_id, [6])){
+				foreach($item_source_body_marketing as $key => $val) {
+					$commentLines['header_id']           = $header_id;
+					$commentLines['body_id']             = $id[$key];
+					$commentLines['old_description']     = $val->item_description;
+					$commentLines['new_description']     = $item_description[$key];
+					$commentLines['old_brand_value']     = $val->brand;
+					$commentLines['new_brand_value']     = $brand[$key];
+					$commentLines['old_model_value']     = $val->model;
+					$commentLines['new_model_value']     = $model[$key];
+					$commentLines['old_size_value']      = $val->size;
+					$commentLines['new_size_value']      = $size[$key];
+					$commentLines['old_ac_value']        = $val->actual_color;
+					$commentLines['new_ac_value']        = $actual_color[$key];
+					$commentLines['old_material']        = $val->material;
+					$commentLines['new_material']        = $material[$key];
+					$commentLines['old_thickness']        = $val->thickness;
+					$commentLines['new_thickness']        = $thickness[$key];
+					$commentLines['old_lamination']      = $val->lamination;
+					$commentLines['new_lamination']      = $lamination[$key];
+					$commentLines['old_add_ons']         = $val->add_ons;
+					$commentLines['new_add_ons']         = $add_ons[$key];
+					$commentLines['old_installation']    = $val->installation;
+					$commentLines['new_installation']    = $installation[$key];
+					$commentLines['old_dismantling']     = $val->dismantling;
+					$commentLines['new_dismantling']     = $dismantling[$key];
+					$commentLines['old_qty_value']       = $val->quantity;
+					$commentLines['new_qty_value']       = $quantity[$key];
+					$commentLines['version']             = "Version"."-". $finalCountHead;
+					$commentLines['updated_by']          = CRUDBooster::myId();
+					$commentLines['created_at'] 	     = date('Y-m-d H:i:s');
+					$insertCommentLines[] = $commentLines;
+				}
+				ItemSourcingEditVersions::insert($insertCommentLines);
+			}else{
+				ItemSourcingEditVersions::Create(
+					[
+					'header_id'           => $header_id,
+					'body_id'             => $id,
+					'old_description'     => $item_source_body->item_description,
+					'new_description'     => $item_description,
+					'old_brand_value'     => $item_source_body->brand,
+					'new_brand_value'     => $brand,
+					'old_model_value'     => $item_source_body->model,
+					'new_model_value'     => $model,
+					'old_size_value'      => $item_source_body->size,
+					'new_size_value'      => $size,
+					'old_ac_value'        => $item_source_body->actual_color,
+					'new_ac_value'        => $actual_color,
+					'old_material'        => $item_source_body->material,
+					'new_material'        => $material,
+					'old_thickness'       => $item_source_body->thickness,
+					'new_thickness'       => $thickness,
+					'old_lamination'      => $item_source_body->lamination,
+					'new_lamination'      => $lamination,
+					'old_add_ons'         => $item_source_body->add_ons,
+					'new_add_ons'         => $add_ons,
+					'old_installation'    => $item_source_body->installation,
+					'new_installation'    => $installation,
+					'old_dismantling'     => $item_source_body->dismantling,
+					'new_dismantling'     => $dismantling,
+					'old_qty_value'       => $item_source_body->quantity,
+					'new_qty_value'       => $quantity,
+					'version'             => "Version"."-". $finalCountHead,
+					'updated_by'          => CRUDBooster::myId(),
+					'created_at' 	      => date('Y-m-d H:i:s'),
+					]
+				);  	
+			}
+			if(in_array($request_type_id, [6])){
+				foreach($item_description as $key => $val) {
+					ItemBodySourcing::where(['id' => $id[$key]])
+					->update([
+							'item_description'           => $val, 
+							'brand'                      => $brand[$key],
+							'model'                      => $model[$key],
+							'size'                       => $size[$key],
+							'actual_color'               => $actual_color[$key],
+							'material'                   => $material[$key],
+							'thickness'                  => $thickness[$key],
+							'lamination'                 => $lamination[$key],
+							'add_ons'                    => $add_ons[$key],
+							'installation'               => $installation[$key],
+							'dismantling'                => $dismantling[$key],
+							'quantity'                   => $quantity[$key],
+							'updated_by'                 => CRUDBooster::myId(),
+							]);
+				}
+			}else{
+				ItemBodySourcing::where(['id' => $id])
 				->update([
 						'item_description'           => $item_description, 
 						'brand'                      => $brand,
@@ -1142,12 +1202,15 @@
 						'quantity'                   => $quantity,
 						'updated_by'                 => CRUDBooster::myId(),
 						]);
+			}
+			
 		    $item_source_header = ItemHeaderSourcing::where(['id' => $header_id])->first();
 			$employee_name = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
 			$approver_name = DB::table('cms_users')->where('id', $employee_name->approver_id)->first();
 			$department_name = DB::table('departments')->where('id', $employee_name->department_id)->first();
 			$fhil = "fhilipacosta@digits.ph";
-
+	
+			$infos['request_type_id'] = $request_type_id;
 			$infos['assign_to'] = $employee_name->bill_to;
 			$infos['reference_number'] = $item_source_header->reference_number;
 			$infos['item_description'] = $item_description;
