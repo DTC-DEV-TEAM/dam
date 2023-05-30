@@ -810,9 +810,11 @@
 			/* process to generate chronological sequential numbers asset code */
 			//segregate fixed assets to get category id
 			$FixAssetsArr = [];
-			$FaCatId = DB::table('category')->find(1);
+			$FaCatId1 = DB::table('category')->find(1);
+			$FaCatId4 = DB::table('category')->find(4);	
+			$FaCatId8 = DB::table('category')->find(8);	
 			foreach ($body as $fkey => $fvalue) {
-				if (strtolower($fvalue['item_category']) == strtolower($FaCatId->category_description)) {
+				if (in_array(strtolower($fvalue['item_category']),[strtolower($FaCatId1->category_description), strtolower($FaCatId4->category_description), strtolower($FaCatId8->category_description)])) {
 					$FixAssetsArr[] = $fvalue;
 					unset($body[$fkey]);
 				}
@@ -823,7 +825,7 @@
 
             //segregate it assets to get category id
 			$ItAssetsArr = [];
-			$itCatId = DB::table('category')->find(5);
+			$itCatId = DB::table('category')->find(6);
 			foreach ($body as $key => $value) {
 				if (strtolower($value['item_category']) == strtolower($itCatId->category_description)) {
 					$ItAssetsArr[] = $value;
@@ -833,117 +835,30 @@
 				foreach($ItAssetsArr as $valIt){
 					$getItAssets = $valIt['item_category'];
 				}
-			}
-
-			//segregate supplies to get category id
-			$suppliesArr = [];
-			$SuppCatId = DB::table('category')->find(2);
-			foreach ($body as $skey => $svalue) {
-				if (strtolower($svalue['item_category']) == strtolower($SuppCatId->category_description)) {
-					$suppliesArr[] = $svalue;
-					unset($body[$skey]);
-				}
-				foreach($suppliesArr as $valSupp){
-					$getSuppliesAssets = $valSupp['item_category'];
-				}
-			}
-
-			//segregate packaging bag to get category id
-			$packagingBagArr = [];
-			$PpbCatId = DB::table('category')->find(3);
-			foreach ($body as $ppbkey => $ppbvalue) {
-				if (strtolower($ppbvalue['item_category']) == strtolower($PpbCatId->category_description)) {
-					$packagingBagArr[] = $ppbvalue;
-					unset($body[$ppbkey]);
-				}
-				foreach($packagingBagArr as $valPpb){
-					$getPackagingBagAssets = $valPpb['item_category'];
-				}
-			}
-
-			//segregate marketing to get category id
-			$marketingArr = [];
-			$marketingCatId = DB::table('category')->find(4);
-			foreach ($body as $mkey => $mvalue) {
-				if (strtolower($mvalue['item_category']) == strtolower($marketingCatId->category_description)) {
-					$marketingArr[] = $mvalue;
-					unset($body[$mkey]);
-				}
-				foreach($marketingArr as $valm){
-					$getMarketingAssets = $valm['item_category'];
-				}
-			}
-
-			//segregate fixtures and furnitures to get category id
-			$fafArr = [];
-			$fafCatId = DB::table('category')->find(6);
-			foreach ($body as $fafkey => $fafvalue) {
-				if (strtolower($fafvalue['item_category']) == strtolower($fafCatId->category_description)) {
-					$fafArr[] = $fafvalue;
-					unset($body[$fafkey]);
-				}
-				foreach($fafArr as $valfaf){
-					$getFafAssets = $valfaf['item_category'];
-				}
-			}
-		
+			}	
 			
 			//put asset code per based on  item category IT ASSETS
 			$finalItAssetsArr = [];
-			$DatabaseCounterIt = DB::table('assets_inventory_body')->where('item_category',$getItAssets)->count();
+			$DatabaseCounterIt = DB::table('assets_inventory_body')->where('item_category','IT ASSETS')->count();
 			foreach((array)$ItAssetsArr as $finalItkey => $finalItvalue) {
 					$finalItvalue['asset_code'] = "A1".str_pad ($DatabaseCounterIt + 1, 6, '0', STR_PAD_LEFT);
+					$finalItvalue['item_category'] = "IT ASSETS";
 					$DatabaseCounterIt++; // or any rule you want.	
 					$finalItAssetsArr[] = $finalItvalue;	
 			}
 	
 			//put asset code per based on  item category FIXED ASSETS
 			$finalFixAssetsArr = [];
-			$DatabaseCounterFixAsset = DB::table('assets_inventory_body')->where('item_category',$getFaAssets)->count();
+			$DatabaseCounterFixAsset = DB::table('assets_inventory_body')->where('item_category','FIXED ASSETS')->count();
 			foreach((array)$FixAssetsArr as $finalfakey => $finalfavalue) {
 					$finalfavalue['asset_code'] = "A2".str_pad ($DatabaseCounterFixAsset + 1, 6, '0', STR_PAD_LEFT);
+					$finalfavalue['item_category'] = "FIXED ASSETS";
 					$DatabaseCounterFixAsset++; // or any rule you want.	
 					$finalFixAssetsArr[] = $finalfavalue;
 			}
 
-			//put asset code per based on  item category SUPPLIES
-			$finalSuppliessArr = [];
-			$DatabaseCounterSupplies = DB::table('assets_inventory_body')->where('item_category',$getSuppliesAssets)->count();
-			foreach((array)$suppliesArr as $finalsuppkey => $finalsuppvalue) {
-					$finalsuppvalue['asset_code'] = "A3".str_pad ($DatabaseCounterSupplies + 1, 6, '0', STR_PAD_LEFT);
-					$DatabaseCounterSupplies++; // or any rule you want.	
-					$finalSuppliessArr[] = $finalsuppvalue;
-			}
-
-			//put asset code per based on  item category PACKAGING BAG
-			$finalPpbArr = [];
-			$DatabaseCounterPpb = DB::table('assets_inventory_body')->where('item_category',$getPackagingBagAssets)->count();
-			foreach((array)$packagingBagArr as $finalppbkey => $finalppbvalue) {
-					$finalppbvalue['asset_code'] = "A4".str_pad ($DatabaseCounterPpb + 1, 6, '0', STR_PAD_LEFT);
-					$DatabaseCounterPpb++; // or any rule you want.	
-					$finalPpbArr[] = $finalppbvalue;
-			}
-
-			//put asset code per based on  item category MARKETING
-			$finalMarketingArr = [];
-			$DatabaseCounterMarketing = DB::table('assets_inventory_body')->where('item_category',$getMarketingAssets)->count();
-			foreach((array)$marketingArr as $finalmkey => $finalmvalue) {
-					$finalmvalue['asset_code'] = "A5".str_pad ($DatabaseCounterMarketing + 1, 6, '0', STR_PAD_LEFT);
-					$DatabaseCounterMarketing++; // or any rule you want.	
-					$finalMarketingArr[] = $finalmvalue;
-			}
-
-			//put asset code per based on  item category FIXTURES AND FURNITURES
-			$finalFafArr = [];
-			$DatabaseCounterFaf = DB::table('assets_inventory_body')->where('item_category',$getFafAssets)->count();
-			foreach((array)$fafArr as $finalfafkey => $finalfafvalue) {
-					$finalfafvalue['asset_code'] = "A6".str_pad ($DatabaseCounterFaf + 1, 6, '0', STR_PAD_LEFT);
-					$DatabaseCounterFaf++; // or any rule you want.	
-					$finalFafArr[] = $finalfafvalue;
-			}
-
             //Merge all data from segragating per item category
-			$finalDataofSplittingArray = array_merge($finalItAssetsArr, $finalFixAssetsArr, $finalSuppliessArr, $finalPpbArr, $finalMarketingArr, $finalFafArr);
+			$finalDataofSplittingArray = array_merge($finalItAssetsArr, $finalFixAssetsArr);
 
 			//save final data
 			$saveData = [];

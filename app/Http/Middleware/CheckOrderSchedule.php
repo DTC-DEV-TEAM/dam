@@ -4,7 +4,9 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Carbon\Carbon;
-use App\OrderSchedule;
+use App\Models\OrderSchedule;
+use DB;
+use CRUDBooster;
 
 class CheckOrderSchedule
 {
@@ -22,7 +24,7 @@ class CheckOrderSchedule
         $current_schedule = OrderSchedule::where('status','ACTIVE')->orderBy('id','desc')->first();
         //$current_schedule = OrderSchedule::where('status','ACTIVE')->whereDate('start_date','<=',$current_date)->whereDate('end_date','>=',$current_date)->orderBy('id','desc')->first();
         
-        $stores_list = array_map('intval',explode(",",$current_schedule->stores_id)); //additional code 20200624
+        $privileges_list = array_map('intval',explode(",",$current_schedule->privilege_id)); //additional code 20200624
 
         if($current_date->lte($current_schedule->end_date)) {
 		    if($current_schedule->period == "HOUR") {
@@ -36,13 +38,19 @@ class CheckOrderSchedule
         
         //if($current_date->between(Carbon::parse($current_schedule->start_date), Carbon::parse($current_schedule->end_date))){
         if($current_date->between(Carbon::parse($current_schedule->start_date), $end_schedule)) {
-            if(empty($stores_list) || in_array(CRUDBooster::myStoreId(), $stores_list) || $stores_list['0'] == 0) { //additional code 20200624
+            if(in_array(CRUDBooster::myPrivilegeId(), $privileges_list) || empty($privileges_list)) { //additional code 20200624
                 return $next($request);
             }
             else {
                 return response()->view('assets.add-service-unavailable');
             }
         }
-        return response()->view('assets.add-service-unavailable');
+        if(in_array(CRUDBooster::myPrivilegeId(), $privileges_list) || empty($privileges_list)) { //additional code 20200624
+            return $next($request);
+        }
+        else {
+            return response()->view('assets.add-service-unavailable');
+        }
+        
     }
 }

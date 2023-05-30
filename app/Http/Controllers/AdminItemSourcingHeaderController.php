@@ -678,7 +678,7 @@
 
 			$data['employeeinfos'] = Users::user($data['user']->id);
 
-			$data['categories'] = DB::table('new_category')->where('id',1)->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
+			$data['categories'] = DB::table('category')->where('id',6)->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
 			$data['budget_range'] = DB::table('sub_masterfile_budget_range')->where('status', 'ACTIVE')->get();
 			$privilegesMatrix = DB::table('cms_privileges')->get();
 			$privileges_array = array();
@@ -712,7 +712,7 @@
 
 			$data['employeeinfos'] = Users::user($data['user']->id);
 
-			$data['categories'] = DB::table('new_category')->where('id',3)->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
+			$data['categories'] = DB::table('category')->whereIn('id',[1,4,8])->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
 			$data['budget_range'] = DB::table('sub_masterfile_budget_range')->where('status', 'ACTIVE')->get();
 			$privilegesMatrix = DB::table('cms_privileges')->get();
 			$privileges_array = array();
@@ -781,7 +781,7 @@
 
 			$data['employeeinfos'] = Users::user($data['user']->id);
 
-			$data['categories'] = DB::table('new_category')->whereIn('id',[2,4])->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
+			$data['categories'] = DB::table('category')->whereIn('id',[2,9])->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
 			$data['budget_range'] = DB::table('sub_masterfile_budget_range')->where('status', 'ACTIVE')->get();
 			$privilegesMatrix = DB::table('cms_privileges')->get();
 			$privileges_array = array();
@@ -1014,11 +1014,11 @@
 		public function Class(Request $request){
 			$data = Request::all();	
 			$id = $data['id'];
-			$sub_categories = DB::table('new_sub_category')->where('sub_category_description', $id)->first();
+			$sub_categories = DB::table('new_sub_category')->where('id', $id)->first();
 
-			$subcategories = DB::table('new_class')
-							->select('new_class.*')
-							->where('sub_category_id', $id)
+			$subcategories = DB::table('class')
+							->select('class.*')
+							->where('category_id', $sub_categories->category_id)
 							->where('class_status', "ACTIVE")
 							->orderby('class_description', 'ASC')->get();
 	

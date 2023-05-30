@@ -327,7 +327,7 @@
                                                 @if(in_array($Header->request_type_id,[6]))
                                                     <th width="7%" class="text-center">Material</th> 
                                                     <th width="7%" class="text-center">Thickness</th> 
-                                                    <th width="7%" class="text-center">lamination</th>
+                                                    <th width="7%" class="text-center">Lamination</th>
                                                     <th width="7%" class="text-center">Add Ons</th>
                                                     <th width="7%" class="text-center">Installation</th>
                                                     <th width="7%" class="text-center">Dismantling</th>    

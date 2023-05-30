@@ -64,8 +64,6 @@
 			$this->col[] = ["label"=>"Category","name"=>"category_id","join"=>"category,category_description"];
 			$this->col[] = ["label"=>"Sub Category","name"=>"class_id","join"=>"class,class_description"];
 
-			$this->col[] = ["label"=>"Useful Life","name"=>"class_id","join"=>"class,useful_life"];
-
 			//$this->col[] = ["label"=>"Item Cost","name"=>"item_cost"];
 			/*$this->col[] = ["label"=>"Quantity","name"=>"quantity"];
 			$this->col[] = ["label"=>"Status","name"=>"status_id","join"=>"statuses,status_description"];
@@ -746,28 +744,6 @@
 					   $status = "ACTIVE";
 					}
 
-					if(in_array($value['category_id'],[2,3,12,13])){
-                        $category_id = 2;
-					}else if(in_array($value['category_id'],[5,10,11])){
-						$category_id = 5;
-					}else if(in_array($value['category_id'],[1,6,7,8])){
-						$category_id = 1;
-					}else{
-						$category_id = $value['category_id'];
-					}
-
-					if(in_array($value['category_id'],[2,3,12])){
-                     $aimfs_category = 2;
-					}else if(in_array($value['category_id'],[13])){
-						$aimfs_category = 4;
-					}else if(in_array($value['category_id'],[5,10,11])){
-						$aimfs_category = 1;
-					}else if(in_array($value['category_id'],[1,6,7,8])){
-						$aimfs_category = 3;
-					}else{
-						$aimfs_category = $value['category_id'];
-					}
-
 					$count++;
 						DB::beginTransaction();
 						try {
@@ -778,10 +754,10 @@
 								'digits_code'         => $value['digits_code'],
 								'item_description'    => $value['item_description'],
 								'brand_id'            => $value['brand_id'],
-								'category_id'         => $category_id,
+								'category_id'         => $value['category_id'],
+								'sub_category_id'     => $value['subcategory_id'],
 								'class_id'            => $value['class_id'],
-								'aimfs_category'      => $aimfs_category,
-								'aimfs_sub_category'  => $value['subcategory_id'],
+								'sub_class_id'        => $value['subclass_id'],
 								'vendor_id'           => $value['vendor_id'],
 								'item_cost'           => $value['current_srp'],
 								'asset_tag'           => "",
@@ -847,33 +823,11 @@
             if(!empty($response["data"])) {
 				foreach ($response["data"] as $key => $value) {
 					if($value['skustatus_id'] == 4){
-						$status = "INACTIVE";
-					 }else{
-						$status = "ACTIVE";
-					 }
-
-					 if(in_array($value['category_id'],[2,3,12,13])){
-						 $category_id = 2;
-					 }else if(in_array($value['category_id'],[5,10,11])){
-						 $category_id = 5;
-					 }else if(in_array($value['category_id'],[1,6,7,8])){
-						 $category_id = 1;
-					 }else{
-						 $category_id = $value['category_id'];
-					 }
-
-					 if(in_array($value['category_id'],[2,3,12])){
-                        $aimfs_category = 2;
-						}else if(in_array($value['category_id'],[13])){
-							$aimfs_category = 4;
-						}else if(in_array($value['category_id'],[5,10,11])){
-							$aimfs_category = 1;
-						}else if(in_array($value['category_id'],[1,6,7,8])){
-							$aimfs_category = 3;
-						}else{
-							$aimfs_category = $value['category_id'];
-						}
-
+                       $status = "INACTIVE";
+					}else{
+					   $status = "ACTIVE";
+					}
+					
 					$count++;
 						DB::beginTransaction();
 						try {
@@ -884,10 +838,10 @@
 								'digits_code'         => $value['digits_code'],
 								'item_description'    => $value['item_description'],
 								'brand_id'            => $value['brand_id'],
-								'category_id'         => $category_id,
+								'category_id'         => $value['category_id'],
+								'sub_category_id'     => $value['subcategory_id'],
 								'class_id'            => $value['class_id'],
-								'aimfs_category'      => $aimfs_category,
-								'aimfs_sub_category'  => $value['subcategory_id'],
+								'sub_class_id'        => $value['subclass_id'],
 								'vendor_id'           => $value['vendor_id'],
 								'item_cost'           => $value['current_srp'],
 								'asset_tag'           => "",
@@ -895,8 +849,8 @@
 								'add_quantity'        => 0,
 								'total_quantity'      => 0,
 								'status'              => $status,
-								'updated_by'          => CRUDBooster::myId(),
-								'updated_at'          => date('Y-m-d H:i:s')
+								'created_by'          => CRUDBooster::myId(),
+								'created_at'          => date('Y-m-d H:i:s')
 							]);
 							DB::commit();
 						} catch (\Exception $e) {

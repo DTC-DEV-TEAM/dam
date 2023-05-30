@@ -264,7 +264,7 @@
                                                             <th width="10%" class="text-center">{{ trans('message.table.digits_code') }}</th>
                                                             <th width="30%" class="text-center">{{ trans('message.table.item_description') }}</th>
                                                            
-                                                            <th width="10%" class="text-center">Category</th>
+                                                            <th width="15%" class="text-center">Category</th>
                                                             <!-- <th width="10%" class="text-center">{{ trans('message.table.item_type') }}</th>      -->
                                                             <th width="15%" class="text-center">{{ trans('message.table.quantity_text') }}</th>
                                                             <!-- <th width="15%" class="text-center"> Serial No</th>  -->
@@ -550,6 +550,23 @@
                         //         }                        
                         //     }
                         // }
+
+                        //check category
+                        var cat = $("input[name^='item_category']").length;
+                        var item_category = $("input[name^='item_category']");
+                        for(i=0;i<cat;i++){
+                            if($.inArray(item_category.eq(i).val(),['IT ASSETS','FIXED ASSETS','APPLIANCES','OFFICE EQUIPMENT']) === -1){
+                                swal({
+                                        type: 'error',
+                                        title: 'Invalid Category. please check Category!',
+                                        icon: 'error',
+                                        confirmButtonColor: "#367fa9",
+                                    });
+                                    event.preventDefault();
+                                    return false;
+                            }
+                        
+                        }
 
                         //location
                         var sub_cat = $("#location option").length;
