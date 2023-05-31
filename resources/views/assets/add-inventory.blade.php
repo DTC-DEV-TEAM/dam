@@ -555,7 +555,7 @@
                         var cat = $("input[name^='item_category']").length;
                         var item_category = $("input[name^='item_category']");
                         for(i=0;i<cat;i++){
-                            if($.inArray(item_category.eq(i).val(),['IT ASSETS','FIXED ASSETS','APPLIANCES','OFFICE EQUIPMENT']) === -1){
+                            if($.inArray(item_category.eq(i).val(),['IT ASSETS','FIXED ASSETS','APPLIANCES','MAINTENANCE HARDWARE','OFFICE EQUIPMENT']) === -1){
                                 swal({
                                         type: 'error',
                                         title: 'Invalid Category. please check Category!',
@@ -879,7 +879,7 @@
                                                 //'<td><select required selected data-placeholder="-- Select Type --" id="item_type' + e.id + '" name="item_type[]" class="select2 item_type" style="width:150px;"><option value=""></option><option value="Serial" data-id="' + e.digits_code + '">Serial</option><option value="General" data-id="' + e.digits_code + '">GENERAL</option></select></td>' +
                                                 '<td><input class="form-control text-center finput add_quantity" placeholder="Quantity" type="number" value="1" readonly name="add_quantity[]" id="add_quantity' + e.id  + '" data-id="' + e.id  + '"  min="0" max="9999999999" step="1" onkeypress="return event.charCode >= 48 && event.charCode <= 57" oninput="validity.valid||(value=1);"></td>' +   
                                                 // '<td><input class="form-control serial_no" type="text" placeholder="Serial No (Optional)" name="serial_no[]" value="" style="width:150px;" data-index="1"></td>' + 
-                                                '<td><input class="form-control finput amount text-center" placeholder="Value" type="text" name="value[]" id="value" required min="1" min="0" max="9999999999"  value="0"></td>' +                                           
+                                                '<td><input class="form-control finput amount text-center" placeholder="Value" type="text" name="value[]" id="value" required min="1" min="0" max="9999999999"  value="'+e.item_cost+'" readonly></td>' +                                           
                                                 '<td><input class="form-control finput text-center" type="text" placeholder="(Month)" name="warranty_coverage[]" id="warranty_coverage" min="1" max="9999999999" step="1" onkeypress="return event.charCode <= 57" value="0"></td>' +                                                                                                                                       
                                                 //'<td class="images_flex"><input type="file" class="form-control body_image" onchange="readURL(this);" id="body_image_body' + e.id + '" name="item_photo[]" style="width:200px;" accept="image/png, image/gif, image/jpeg"><br><div class="body_gallery_image' + e.id + '"></div></td>' + 
                                                 //'<td><img width="50px"; height="50px"; src="{{URL::to('+e.image+')}}" alt="" data-action="zoom"></td>' +

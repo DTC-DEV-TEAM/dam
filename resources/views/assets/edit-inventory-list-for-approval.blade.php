@@ -204,7 +204,7 @@
                         <div class="form-group">
                             <label class="control-label"><span style="color:red">*</span> Upload SI/DR</label>
                             <input type="file" class="form-control finput" style="" name="si_dr[]" id="si_dr" multiple accept="image/png, image/gif, image/jpeg">
-                            <div class="gallery" style="margin-bottom:5px; margin-top:15px"></div>
+                            {{-- <div class="gallery" style="margin-bottom:5px; margin-top:15px"></div>
                             <a class="btn btn-xs btn-danger" style="display:none; margin-left:10px" id="removeImageHeader" href="#"><i class="fa fa-remove"></i></a>
                             @foreach($header_images as $res_header_images)                                    
                                 @if ($res_header_images->file_name)
@@ -212,7 +212,7 @@
                                 @else
                                 
                                 @endif                                         
-                            @endforeach
+                            @endforeach --}}
                         </div>
                     </div>          
                 </div>

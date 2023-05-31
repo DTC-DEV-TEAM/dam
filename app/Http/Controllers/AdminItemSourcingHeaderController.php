@@ -712,7 +712,7 @@
 
 			$data['employeeinfos'] = Users::user($data['user']->id);
 
-			$data['categories'] = DB::table('category')->whereIn('id',[1,4,8])->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
+			$data['categories'] = DB::table('category')->whereIn('id',[1,4,7,8])->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
 			$data['budget_range'] = DB::table('sub_masterfile_budget_range')->where('status', 'ACTIVE')->get();
 			$privilegesMatrix = DB::table('cms_privileges')->get();
 			$privileges_array = array();
@@ -1000,7 +1000,7 @@
 		public function SubCategories(Request $request){
 			$data = Request::all();	
 			$id = $data['id'];
-			$categories = DB::table('new_category')->where('category_description', $id)->first();
+			//$categories = DB::table('new_category')->where('category_description', $id)->first();
 
 			$subcategories = DB::table('new_sub_category')
 							->select('new_sub_category.*')
@@ -1028,7 +1028,7 @@
 		public function SubClass(Request $request){
 			$data = Request::all();	
 			$id = $data['id'];
-			$class = DB::table('new_class')->where('class_description', $id)->first();
+			//$class = DB::table('new_class')->where('class_description', $id)->first();
 
 			$subcategories = DB::table('new_sub_class')
 							->select('new_sub_class.*')
