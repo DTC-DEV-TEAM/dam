@@ -24,23 +24,15 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->call('\App\Http\Controllers\AdminItemsController@getItemsUpdatedAPI')->hourly()->between('9:00', '23:00');
-        // $schedule->call('\App\Http\Controllers\AdminItemsController@getItemsCreatedAPI')->hourly()->between('9:00', '23:00');
+        $schedule->call('\App\Http\Controllers\AdminAssetsController@getItemMasterDataApi')->hourly()->between('9:00', '23:00');
+        $schedule->call('\App\Http\Controllers\AdminAssetsController@getItemMasterUpdatedDataApi')->hourly()->between('9:00', '23:00');
         // $schedule->call('\App\Http\Controllers\BrandController@getBrandUpdatedAPI')->hourly()->between('9:00', '21:00');
         // $schedule->call('\App\Http\Controllers\BrandController@getBrandCreatedAPI')->hourly()->between('9:00', '21:00');
         // $schedule->call('\App\Http\Controllers\CategoryController@getCategoryUpdatedAPI')->hourly()->between('9:00', '21:00');
         // $schedule->call('\App\Http\Controllers\CategoryController@getCategoryCreatedAPI')->hourly()->between('9:00', '21:00');
         
-        // $schedule->call('\App\Http\Controllers\SKULegendController@getSkuLegendUpdatedAPI')->hourly()->between('9:00', '21:00');
-        // $schedule->call('\App\Http\Controllers\SKULegendController@getSkuLegendCreatedAPI')->hourly()->between('9:00', '21:00');
-        
         $schedule->call('\App\Http\Controllers\AdminOrderSchedulesController@deactivateSchedule')->hourly(); //->dailyAt('04:00');
-        
-        // $schedule->call('\App\Http\Controllers\AdminPurchaseOrderController@closeLines')->hourly();
-        // $schedule->call('\App\Http\Controllers\AdminPurchaseOrderController@closeHeaders')->hourly();
-        
-        // $schedule->command('mysql:itemsync')->hourly();
-        $schedule->command('mysql:backup')->daily()->at('20:00');
+        $schedule->command('mysql:backup')->daily()->at('23:50');
     }
 
     /**

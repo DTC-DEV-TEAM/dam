@@ -24,8 +24,8 @@
         public function __construct() {
 			// Register ENUM type
 			//$this->request = $request;
-			$this->middleware('check.suppliescheckrestriction',['only' => ['getAddRequisitionSupplies']]);
-			//$this->middleware('check.orderschedule',['only' => ['getAddRequisitionSupplies']]);
+			//$this->middleware('check.suppliescheckrestriction',['only' => ['getAddRequisitionSupplies']]);
+			$this->middleware('check.orderschedule',['only' => ['getAddRequisitionSupplies']]);
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
 		}
 

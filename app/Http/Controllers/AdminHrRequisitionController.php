@@ -11,6 +11,8 @@
 	use App\StatusMatrix;
 	use App\Models\ErfHeaderDocuments;
 	use Illuminate\Support\Facades\Response;
+	use Illuminate\Contracts\Encryption\DecryptException;
+	use Illuminate\Support\Facades\Crypt;
 
 	class AdminHrRequisitionController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -370,8 +372,8 @@
 			$postdata['position'] 					= $position;
 			$postdata['date_needed'] 			    = date('Y-m-d', strtotime($date_needed));
 			$postdata['work_location'] 				= $work_location;
-			$postdata['salary_range_from'] 			= intval(str_replace(',', '', $salary_range[0]));
-			$postdata['salary_range_to'] 			= intval(str_replace(',', '', $salary_range[1]));
+			$postdata['salary_range_from'] 			= Crypt::encryptString(str_replace(',', '', $salary_range[0]));
+			$postdata['salary_range_to'] 			= Crypt::encryptString(str_replace(',', '', $salary_range[1]));
 			$postdata['schedule'] 					= $schedule;
 			$postdata['allow_wfh'] 		            = $allow_wfh;
 			$postdata['manpower'] 		            = $manpower;

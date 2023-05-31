@@ -21,6 +21,7 @@
 
 	class AdminApplicantModuleController extends \crocodicstudio\crudbooster\controllers\CBController {
 		private $cancelled;
+		private $rejected;
 		private $first_interview;
 		private $final_interview;
 		private $job_offer;
@@ -28,7 +29,8 @@
 		
 		public function __construct() {
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
-			$this->cancelled        =  8;        
+			$this->cancelled        =  8; 
+			$this->rejected         =  5;        
 			$this->first_interview  =  34;  
 			$this->final_interview  =  35;  
 			$this->job_offer        =  36;    
@@ -101,7 +103,8 @@
 			if(CRUDBooster::isUpdate()) {
 				$for_job_offer =  $this->jo_done;
 				$cancelled     =  $this->cancelled;
-				$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('edit-applicant'),'icon'=>'fa fa-pencil' , "showIf"=>"[status] != $for_job_offer && [status] != $cancelled"];
+
+				$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('edit-applicant'),'icon'=>'fa fa-pencil' , "showIf"=>"[status] != $for_job_offer && [status] != $cancelled && [status] != $rejected"];
 				$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('detail-applicant'),'icon'=>'fa fa-eye', "showIf"=>"[status] == $for_job_offer || [status] == $cancelled"];
 
 			}
@@ -231,7 +234,8 @@
 	    |
 	    */    
 	    public function hook_row_index($column_index,&$column_value) {	        
-	    	$cancelled        =  DB::table('statuses')->where('id', $this->cancelled)->value('status_description');        
+	    	$cancelled        =  DB::table('statuses')->where('id', $this->cancelled)->value('status_description');  
+			$rejected         =  DB::table('statuses')->where('id', $this->rejected)->value('status_description');     
 			$first_interview  =  DB::table('statuses')->where('id', $this->first_interview)->value('status_description');  
 			$final_interview  =  DB::table('statuses')->where('id', $this->final_interview)->value('status_description');  
 			$job_offer        =  DB::table('statuses')->where('id', $this->job_offer)->value('status_description');    
@@ -244,7 +248,10 @@
 				}else if($column_value == $jo_done){
 					$column_value = '<span class="label label-success">'.$jo_done.'</span>';
 				}else if($column_value == $cancelled){
+					dd($column_value);
 					$column_value = '<span class="label label-danger">'.$cancelled.'</span>';
+				}else if($column_value == $rejected){
+					$column_value = '<span class="label label-danger">'.$rejected.'</span>';
 				}
 			}
 	    }
@@ -325,7 +332,7 @@
 			$checkRowDbJoDone = DB::table('applicant_table')->select('*')->where('erf_number', $erf_number)->where('status', 31)->get()->count();
 
 			if ($checkRowDbJoDone != 0 && $status == 36) {
-				return CRUDBooster::redirect(CRUDBooster::mainpath(),"Invalid! Erf have done JO!","danger");
+				return CRUDBooster::redirect(CRUDBooster::mainpath(),"Invalid! Erf has done JO!","danger");
 			}else{
 				if($status == 36){
 					ErfHeaderRequest::where('reference_number',$erf_number)
@@ -419,7 +426,7 @@
 			$data['statuses'] = Statuses::select(
 					'statuses.*'
 				  )
-				  ->whereIn('id', [34,35,36,8])
+				  ->whereIn('id', [5,34,35,36,8])
 				  ->get();
 
 			return $this->view("applicant.edit_applicant_status", $data);

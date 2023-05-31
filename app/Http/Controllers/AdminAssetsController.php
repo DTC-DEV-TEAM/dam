@@ -270,64 +270,64 @@
 					});
 				});
 
-				setInterval(getItemMasterData, 60*60*1000);
-				function getItemMasterData(){
-					$.ajax({
-						type: 'POST',
-						url: '".route('get-item-master-data')."',
-						dataType: 'json',
-						data: {
-							'_token': $(\"#token\").val(),
-						},
-						success: function(response) {
-							if (response.status == \"success\") {
-								swal({
-									type: response.status,
-									title: response.message,
-								});
-								location.reload();
-								} else if (response.status == \"error\") {
-								swal({
-									type: response.status,
-									title: response.message,
-								});
-								}
-						},
-						error: function(e) {
-							console.log(e);
-						}
-					});
-				}
+				// setInterval(getItemMasterData, 60*60*1000);
+				// function getItemMasterData(){
+				// 	$.ajax({
+				// 		type: 'POST',
+				// 		url: '".route('get-item-master-data')."',
+				// 		dataType: 'json',
+				// 		data: {
+				// 			'_token': $(\"#token\").val(),
+				// 		},
+				// 		success: function(response) {
+				// 			if (response.status == \"success\") {
+				// 				swal({
+				// 					type: response.status,
+				// 					title: response.message,
+				// 				});
+				// 				location.reload();
+				// 				} else if (response.status == \"error\") {
+				// 				swal({
+				// 					type: response.status,
+				// 					title: response.message,
+				// 				});
+				// 				}
+				// 		},
+				// 		error: function(e) {
+				// 			console.log(e);
+				// 		}
+				// 	});
+				// }
                 
-				//updated item master data
-				setInterval(getItemMasterUpdatedData, 60*60*1000);
-				function getItemMasterUpdatedData(){
-					$.ajax({
-						type: 'POST',
-						url: '".route('get-item-master-updated-data')."',
-						dataType: 'json',
-						data: {
-							'_token': $(\"#token\").val(),
-						},
-						success: function(response) {
-							if (response.status == \"success\") {
-								swal({
-									type: response.status,
-									title: response.message,
-								});
-								location.reload();
-								} else if (response.status == \"error\") {
-								swal({
-									type: response.status,
-									title: response.message,
-								});
-								}
-						},
-						error: function(e) {
-							console.log(e);
-						}
-					});
-				}
+				// //updated item master data
+				// setInterval(getItemMasterUpdatedData, 60*60*1000);
+				// function getItemMasterUpdatedData(){
+				// 	$.ajax({
+				// 		type: 'POST',
+				// 		url: '".route('get-item-master-updated-data')."',
+				// 		dataType: 'json',
+				// 		data: {
+				// 			'_token': $(\"#token\").val(),
+				// 		},
+				// 		success: function(response) {
+				// 			if (response.status == \"success\") {
+				// 				swal({
+				// 					type: response.status,
+				// 					title: response.message,
+				// 				});
+				// 				location.reload();
+				// 				} else if (response.status == \"error\") {
+				// 				swal({
+				// 					type: response.status,
+				// 					title: response.message,
+				// 				});
+				// 				}
+				// 		},
+				// 		error: function(e) {
+				// 			console.log(e);
+				// 		}
+				// 	});
+				// }
 
 
 			});

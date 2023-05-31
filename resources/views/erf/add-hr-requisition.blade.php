@@ -332,7 +332,7 @@
                             </tfoot>
                         </table>
                                               
-                        <div class="col-md-12" id="application_div">
+                        <div class="col-md-12">
                             <hr/>
                             <div class="row"> 
                                 <label class="require control-label col-md-2" required><span style="color:red">*</span> {{ trans('message.form-label.application') }}</label>
@@ -683,7 +683,7 @@
                         fruits.push(this.value.toLowerCase().replace(/\s/g, ''));
                     });
                     console.log(fruits);
-                    if( fruits.includes("laptop") || fruits.includes("desktop")){
+                    if( fruits.includes("COMPUTER EQUIPMENT") || fruits.includes("desktop")){
 
                         $("#application_div").show();
                     }else{
@@ -732,7 +732,7 @@
         //deleteRow
         $(document).on('click', '.removeRow', function() {
             var id_data = $(this).attr("data-id");
-            if($("#sub_category_id"+id_data).val().toLowerCase().replace(/\s/g, '') == "laptop" || $("#sub_category_id"+id_data).val().toLowerCase().replace(/\s/g, '') == "desktop"){
+            if($("#category_id"+id_data).val().toLowerCase().replace(/\s/g, '') == "it assets" || $("#category_id"+id_data).val().toLowerCase().replace(/\s/g, '') == "desktop"){
 
                     $("#application_div").hide();
                     $("#application_div").val("");
@@ -1096,7 +1096,7 @@
                 var sub_cat_value = $('.sub_category_id').find(":selected");
                 for(i=0;i<sub_cat;i++){
                     var val = sub_cat_value.eq(i).val() || '';
-                    if(app_count == 0 && $.inArray((sub_cat_value.eq(i).val() || '').toLowerCase().replace(/\s/g, ''),['laptop','desktop']) > -1){
+                    if(app_count == 0 && $.inArray((sub_cat_value.eq(i).val() || '').toLowerCase().replace(/\s/g, ''),['it assets','desktop']) > -1){
                         swal({  
                                 type: 'error',
                                 title: 'Please choose an Application!',

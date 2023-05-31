@@ -36,8 +36,8 @@
             <div class="col-lg-8 col-12 col-sm-10 offset-lg-2 offset-sm-1">
               <h1 class="m-0">503</h1>
               <h4>Service Unavailable - DAM</h4>
-              <p>Currently <span class="text-info">Supplies</span> Request Assets <span class="text-info">not available</span>, We will announce if service available.</p><br>
-              <p><span class="text-info">Thanks you for Understanding.</span></p>
+              <p><span class="text-info">Supplies</span> approval period <span class="text-info">expired</span>. Please wait for the <span class="text-info">next approval schedule.</span></p>
+              <p><span class="text-info">Thank you for understanding.</span></p>
             </div>
           </div>
         </div>

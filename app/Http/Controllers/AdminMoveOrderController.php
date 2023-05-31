@@ -1940,7 +1940,7 @@
 				CRUDBooster::sendEmail(['to'=>$employee_name->email,'data'=>$infos,'template'=>'assets_confirmation','attachments'=>$files]);
 				//CRUDBooster::sendEmail(['to'=>'marvinmosico@digits.ph','data'=>$infos,'template'=>'assets_confirmation','attachments'=>$files]);
 
-				if($arf_header->print_by_form == null){
+				//if($arf_header->print_by_form == null){
 
 					HeaderRequest::where('id',$requestid)
 					->update([
@@ -1949,7 +1949,7 @@
 						'print_at_form'=> 		date('Y-m-d H:i:s')
 					]);	
 
-				}
+				//}
 
 				MoveOrder::where('header_request_id', $arf_header->id)
 				->update([

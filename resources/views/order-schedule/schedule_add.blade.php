@@ -131,7 +131,7 @@
                 <div class="box-footer">
                     <div class='pull-right'>
                         <a href='{{ CRUDBooster::mainpath() }}' class='btn btn-default'>Cancel</a>
-                        <input type='submit' class='btn btn-success' id="btnSubmit" name='submit' value='Create'/>
+                        <button type='submit' class='btn btn-success' id="btnSubmit">Create</button>
                     </div>
                 </div><!-- /.box-footer-->
             </form>
@@ -155,6 +155,69 @@ $(document).ready(function() {
         }
     });
 
+    $("#btnSubmit").click(function(event) {
+        event.preventDefault();
+
+        if($("#schedule_name").val() === ""){
+            swal({
+                type: 'error',
+                title: 'Schedule Name Required!',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            }); 
+            event.preventDefault(); // cancel default behavior
+            return false;
+        }else if($("#start_date").val() === ""){
+            swal({
+                type: 'error',
+                title: 'Start Date!',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            }); 
+            event.preventDefault(); // cancel default behavior
+            return false;
+        }else if($("#end_date").val() === ""){
+            swal({
+                type: 'error',
+                title: 'End Date Required!',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            }); 
+            event.preventDefault(); // cancel default behavior
+            return false;
+        }else if($("#time_unit").val() === ""){
+            swal({
+                type: 'error',
+                title: 'Time Unit Required!',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            }); 
+            event.preventDefault(); // cancel default behavior
+            return false;
+        }else if($("#period").val() === ""){
+            swal({
+                type: 'error',
+                title: 'Period Required!',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            }); 
+            event.preventDefault(); // cancel default behavior
+            return false;
+        }else{
+            swal({
+                title: "Are you sure?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#41B314",
+                cancelButtonColor: "#F9354C",
+                confirmButtonText: "Yes, create it!",
+                }, function () {
+                    $("#orderScheduleForm").submit();                                                   
+            });
+        }
+                
+        
+    });
     
 });
 
