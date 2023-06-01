@@ -223,7 +223,7 @@
                                                 <th width="12%" class="text-center">{{ trans('message.table.item_description') }}</th>   
                                                 <th width="7%" class="text-center">Brand</th> 
                                                 <th width="7%" class="text-center">Model</th>  
-                                                <th width="7%" class="text-center">Size</th> 
+                                                <th width="7%" class="text-center">Size(L x W x H in cm)</th> 
                                                 <th width="7%" class="text-center">Actual Color</th>   
                                                 @if(in_array($Header->request_type_id,[6]))
                                                     <th width="7%" class="text-center">Material</th> 

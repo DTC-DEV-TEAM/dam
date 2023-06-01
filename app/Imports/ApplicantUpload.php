@@ -78,6 +78,8 @@ class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
                 'status'      => $status,
                 'first_name'  => $row['first_name'],
                 'last_name'   => $row['last_name'],
+                'job_portal'  => $row['job_portal'],
+                'remarks'     => $row['remarks'],
                 'full_name'   => strtolower(str_replace(' ', '', trim($row['first_name']))).''.strtolower(str_replace(' ', '', trim($row['last_name']))),
               
             ]);
@@ -177,7 +179,8 @@ class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
                 }
             },
             '*.status'       => 'required',
-            '*.erf_number'   => 'required'
+            '*.erf_number'   => 'required',
+            '*.job_portal'   => 'required',
         ];
     }
 
@@ -188,7 +191,8 @@ class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
             '*.erf_number.check_erf_exist'      => 'ERF not veried :input.',
             '*.erf_number.required'             => 'Erf Number field is required.',
             '*.first_name.required'             => 'First Name field is required!.',
-            '*.last_name.required'              => 'Last Name field is required!.'
+            '*.last_name.required'              => 'Last Name field is required!.',
+            '*.job_portal.required'             => 'Job Portal field is required!.',
         ];
     }
 }

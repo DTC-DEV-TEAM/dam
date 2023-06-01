@@ -441,14 +441,16 @@
 			$header_ref              = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);			
 			$reference_number	     = "NIS-".$header_ref;
 			$employees               = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
+			$approver               = DB::table('cms_users')->where('id', $employees->approver_id)->first();
 			$departmentsUsers        = DB::table('cms_users')->where('department_id', $employees->department_id)->where('id_cms_privileges','!=',1)->where('id','!=',CRUDBooster::myId())->get();
 			$eachDepartmentsIds      = [];
 			foreach($departmentsUsers as $value){
 				array_push($eachDepartmentsIds, CRUDBooster::myId());
 				array_push($eachDepartmentsIds, $value->id);
+				array_push($eachDepartmentsIds, $approver->id);
 			}
 			
-			$saveDepartment = implode(",",$eachDepartmentsIds);
+			$saveDepartment = implode(",",array_unique($eachDepartmentsIds));
 	
 			$pending                 = DB::table('statuses')->where('id', 1)->value('id');
 			$approved                = DB::table('statuses')->where('id', 4)->value('id');
@@ -746,7 +748,7 @@
 
 			$data['employeeinfos'] = Users::user($data['user']->id);
 
-			$data['categories'] = DB::table('new_category')->where('id',3)->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
+			$data['categories'] = DB::table('category')->where('id',3)->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
 			$data['budget_range'] = DB::table('sub_masterfile_budget_range')->where('status', 'ACTIVE')->get();
 			$data['yesno'] = DB::table('sub_masterfile_yes_no')->get();
 			$privilegesMatrix = DB::table('cms_privileges')->get();
@@ -1053,11 +1055,22 @@
 			$comment->save();
 
 			$item_sourcing_header = ItemHeaderSourcing::where(['id' => $id])->first();
-
-			// $config['content'] = "Item Source Messages (".$item_sourcing_header->reference_number.")";
-			// $config['to'] = $link = CRUDBooster::adminPath('item-sourcing-header/detail/'.$id.'');
-			// $config['id_cms_users'] = [$item_sourcing_header->created_by, $item_sourcing_header->processed_by, $item_sourcing_header->approved_by]; //The Id of the user that is going to receive notification. This could be an array of id users [1,2,3,4,5]
-			// CRUDBooster::sendNotification($config);
+		    $user = reset(explode(',', $item_sourcing_header->created_by));
+	
+			$config['content'] = "Item Source Message(".$item_sourcing_header->reference_number.")";
+			if(in_array(CRUDBooster::myPrivilegeId(),[2,4,5,7,8,9,19])){
+				$config['to'] = $link = CRUDBooster::adminPath('item_sourcing_for_quotation');
+				$config['id_cms_users'] = [$item_sourcing_header->processed_by]; //The Id of the user that is going to receive notification. This could be an array of id users [1,2,3,4,5]
+			}else if(in_array(CRUDBooster::myPrivilegeId(),[3,11,12,14,15,17,18])){
+				$config['to'] = $link = CRUDBooster::adminPath('item-sourcing-header');
+				$config['id_cms_users'] = [$item_sourcing_header->processed_by, $user];
+			}else{
+				$config['to'] = $link = CRUDBooster::adminPath('item-sourcing-header');
+				$config['id_cms_users'] = [$user, $item_sourcing_header->approved_by];
+			}
+			
+			
+			CRUDBooster::sendNotification($config);
 
 			$data = array();
 			$data['status'] = 'error';
@@ -1086,7 +1099,9 @@
 			$dismantling      = $fields['dismantling'];
 			$quantity         = $fields['quantity'];
 			$header_id        = $fields['headerID'];	
-    
+			$sampling         = $fields['sampling'];
+			$mark_up          = $fields['mark_up'];
+       
 			$item_source_body = ItemBodySourcing::where(['id' => $id])->first();
 			if(in_array($request_type_id, [6])){
 			  $item_source_body_marketing = ItemBodySourcing::whereIn('id', $id)->get();
@@ -1185,6 +1200,11 @@
 							'updated_by'                 => CRUDBooster::myId(),
 							]);
 				}
+				ItemHeaderSourcing::where(['id' => $id])
+					->update([
+							'sampling'          => $sampling, 
+							'mark_up'           => $mark_up
+							]);
 			}else{
 				ItemBodySourcing::where(['id' => $id])
 				->update([

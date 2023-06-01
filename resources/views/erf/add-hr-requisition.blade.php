@@ -139,6 +139,9 @@
                                     </label>
                                 </div>
                                 @endforeach
+                                <div class="form-group" id="other_schedule_div" style="display:none;">
+                                    <input type="text" class="form-control finput"  id="other_schedule" name="other_schedule" placeholder="Other Schedule">   
+                                </div>
                         </div>
                         <div class="col-md-6">
                             <label class="require control-label"><span style="color:red">*</span> Allow Wfh</label><br>
@@ -387,7 +390,7 @@
     $(".application").removeAttr('required');
 
     $(".date").datetimepicker({
-        minDate:new Date(), // Current year from transactions
+        minDate:moment().millisecond(0).second(0).minute(0).hour(0),
         viewMode: "days",
         format: "YYYY-MM-DD",
         dayViewHeaderFormat: "MMMM YYYY",
@@ -425,6 +428,20 @@
         }else{
             $("#show_replacement_of").hide();
             $('#replacement_of').val("");
+        }
+
+    });
+
+      //other schedule
+      //checkbox validations
+      $(".schedule").change(function() {
+        var rep = $(this);
+        console.log($(this).val());
+        if(rep.val() === "OTHERS"){
+            $("#other_schedule_div").show();
+        }else{
+            $("#other_schedule_div").hide();
+            $('#other_schedule').val("");
         }
 
     });
@@ -991,6 +1008,14 @@
                 confirmButtonColor: "#367fa9",
             });
             event.preventDefault();
+        }else if (countRow == 1) {
+            swal({
+                type: 'error',
+                title: 'Please add an item!',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            }); 
+            event.preventDefault(); // cancel default behavior
         }
         // else if (countRow == 1) {
         // swal({
@@ -1108,19 +1133,30 @@
                     } 
             
                 } 
-
-                swal({
-                    title: "Are you sure?",
-                    type: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#41B314",
-                    cancelButtonColor: "#F9354C",
-                    confirmButtonText: "Yes, send it!",
-                    width: 450,
-                    height: 200
-                    }, function () {
-                        $("#ERFRequest").submit();                                                   
-                });
+                if(app_count == 0){
+                            swal({  
+                                type: 'error',
+                                title: 'Please choose an Application!',
+                                icon: 'error',
+                                confirmButtonColor: "#367fa9",
+                                
+                            });
+                            event.preventDefault();
+                            return false;
+                }else{
+                    swal({
+                        title: "Are you sure?",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#41B314",
+                        cancelButtonColor: "#F9354C",
+                        confirmButtonText: "Yes, send it!",
+                        width: 450,
+                        height: 200
+                        }, function () {
+                            $("#ERFRequest").submit();                                                   
+                    });
+                }
    
         }
     

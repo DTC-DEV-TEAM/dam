@@ -72,6 +72,10 @@
                     <td style="text-align:center">
                      <label class="label label-info" style="align:center; font-size:10px">{{$val['status_description']}}</label>
                     </td>
+                    @elseif($val['status'] == 42)
+                    <td style="text-align:center">
+                     <label class="label label-info" style="align:center; font-size:10px">{{$val['status_description']}}</label>
+                    </td>
                     @else
                     <td style="text-align:center">
                      <label class="label label-success" style="align:center; font-size:10px">{{$val['status_description']}}</label>

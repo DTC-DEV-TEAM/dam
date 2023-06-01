@@ -337,6 +337,7 @@
 			$work_location             = $fields['work_location'];
 			$salary_range              = explode("-",$fields['salary_range']);
 			$schedule                  = $fields['schedule'];
+			$other_schedule            = $fields['other_schedule'];
 			$allow_wfh                 = $fields['allow_wfh'];
 			$manpower                  = $fields['manpower'];
 			$replacement_of            = $fields['replacement_of'];
@@ -374,7 +375,11 @@
 			$postdata['work_location'] 				= $work_location;
 			$postdata['salary_range_from'] 			= Crypt::encryptString(str_replace(',', '', $salary_range[0]));
 			$postdata['salary_range_to'] 			= Crypt::encryptString(str_replace(',', '', $salary_range[1]));
-			$postdata['schedule'] 					= $schedule;
+			if($schedule === "OTHERS"){
+				$postdata['schedule'] 			    = $other_schedule;
+			}else{
+				$postdata['schedule'] 				= $schedule;
+			}
 			$postdata['allow_wfh'] 		            = $allow_wfh;
 			$postdata['manpower'] 		            = $manpower;
 			$postdata['replacement_of'] 		    = $replacement_of;

@@ -90,7 +90,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label"><span style="color:red">*</span> Screen Date</label>
-                            <input class="form-control finput date" type="text" placeholder="Select Date" name="screen_date" id="screen_date">
+                            <input class="form-control finput date" type="text" placeholder="Select Date" name="screen_date" id="screen_date" autocomplete="off">
                         </div>
                     </div>  
                 </div>
@@ -147,7 +147,7 @@
     setTimeout("preventBack()", 0);
     $('.erf').select2({})
     $(".date").datetimepicker({
-        minDate:new Date(), // Current year from transactions
+        minDate: moment().millisecond(0).second(0).minute(0).hour(0),
         viewMode: "days",
         format: "YYYY-MM-DD",
         dayViewHeaderFormat: "MMMM YYYY",

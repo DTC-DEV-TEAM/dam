@@ -174,11 +174,13 @@
         const now = new Date();
         
         $(".date").datetimepicker({
-            minDate:now.setDate(now.getDate() + numWeeks * 7),
+            //minDate:now.setDate(now.getDate() + numWeeks * 7).setHours(0,0,0,0),
             viewMode: "days",
+            minDate: moment().add('days', 14).millisecond(0).second(0).minute(0).hour(0),
             format: "YYYY-MM-DD",
             dayViewHeaderFormat: "MMMM YYYY",
         });
+   
         $(".date").val('');
 
         $('.select2').select2({});
@@ -440,23 +442,26 @@
                         confirmButtonColor: "#367fa9",
                     }); 
                     event.preventDefault(); // cancel default behavior
-                }else if ($('#artworklink').val() === "") {
-                    swal({
-                        type: 'error',
-                        title: 'Artworklink required!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    }); 
-                    event.preventDefault(); // cancel default behavior
-                }else if ($('#upload_file').val() === "") {
-                    swal({
-                        type: 'error',
-                        title: 'Upload File/Photos required!',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    }); 
-                    event.preventDefault(); // cancel default behavior
-                }else if (countRow == 1) {
+                }
+                // else if ($('#artworklink').val() === "") {
+                //     swal({
+                //         type: 'error',
+                //         title: 'Artworklink required!',
+                //         icon: 'error',
+                //         confirmButtonColor: "#367fa9",
+                //     }); 
+                //     event.preventDefault(); // cancel default behavior
+                // }
+                // else if ($('#upload_file').val() === "") {
+                //     swal({
+                //         type: 'error',
+                //         title: 'Upload File/Photos required!',
+                //         icon: 'error',
+                //         confirmButtonColor: "#367fa9",
+                //     }); 
+                //     event.preventDefault(); // cancel default behavior
+                // }
+                else if (countRow == 1) {
                     swal({
                         type: 'error',
                         title: 'Please add an item!',
@@ -469,28 +474,30 @@
                 else{
 
                      //header image validation
-                     for (var i = 0; i < $("#upload_file").get(0).files.length; ++i) {
-                        var file1=$("#upload_file").get(0).files[i].name;
-                        if(file1){                        
-                            var file_size=$("#upload_file").get(0).files[i].size;
-                            //if(file_size<2097152){
-                                var ext = file1.split('.').pop().toLowerCase();                            
-                                if($.inArray(ext,['jpg','jpeg','gif','png','xlsx','docs','pdf'])===-1){
-                                    swal({
-                                        type: 'error',
-                                        title: 'Invalid Image/File Extension!',
-                                        icon: 'error',
-                                        customClass: 'swal-wide',
-                                        confirmButtonColor: "#367fa9"
-                                    });
-                                    event.preventDefault();
-                                    return false;
-                                }
+                     if($('#upload_file').val() !== ""){
+                        for (var i = 0; i < $("#upload_file").get(0).files.length; ++i) {
+                            var file1=$("#upload_file").get(0).files[i].name;
+                            if(file1){                        
+                                var file_size=$("#upload_file").get(0).files[i].size;
+                                //if(file_size<2097152){
+                                    var ext = file1.split('.').pop().toLowerCase();                            
+                                    if($.inArray(ext,['jpg','jpeg','gif','png','xlsx','docs','pdf'])===-1){
+                                        swal({
+                                            type: 'error',
+                                            title: 'Invalid Image/File Extension!',
+                                            icon: 'error',
+                                            customClass: 'swal-wide',
+                                            confirmButtonColor: "#367fa9"
+                                        });
+                                        event.preventDefault();
+                                        return false;
+                                    }
 
-                            // }else{
-                            //     alert("Screenshot size is too large.");
-                            //     return false;
-                            // }                        
+                                // }else{
+                                //     alert("Screenshot size is too large.");
+                                //     return false;
+                                // }                        
+                            }
                         }
                     }
 

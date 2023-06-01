@@ -32,6 +32,7 @@ class Kernel extends ConsoleKernel
         // $schedule->call('\App\Http\Controllers\CategoryController@getCategoryCreatedAPI')->hourly()->between('9:00', '21:00');
         
         $schedule->call('\App\Http\Controllers\AdminOrderSchedulesController@deactivateSchedule')->hourly(); //->dailyAt('04:00');
+        
         $schedule->command('mysql:backup')->daily()->at('23:50');
     }
 

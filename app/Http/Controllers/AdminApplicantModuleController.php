@@ -426,7 +426,7 @@
 			$data['statuses'] = Statuses::select(
 					'statuses.*'
 				  )
-				  ->whereIn('id', [5,34,35,36,8])
+				  ->whereIn('id', [5,34,35,36,8,42])
 				  ->get();
 
 			return $this->view("applicant.edit_applicant_status", $data);
@@ -539,6 +539,8 @@
 				"first_name"         => "first_name",
 				"last_name"          => "last_name",
 				"screen_date"        => "screen_date",
+				"Job Portal"         => "job_portal",
+				"Remarks"            => "remarks"
 			];
 			$arrData = [
 				"erf_number"         => "ERF-0000001",
@@ -546,11 +548,13 @@
 				"first_name"         => "John",
 				"last_name"          => "Doe",
 				"screen_date"        => "2023-01-01",
+				"job_portal"         => "Indeed",
+				"remarks"            => "Remarks"
 			];
 			$spreadsheet = new Spreadsheet();
 			$spreadsheet->getActiveSheet()->fromArray(array_values($arrHeader), null, 'A1');
 			$spreadsheet->getActiveSheet()->fromArray($arrData, null, 'A2');
-			$filename = "applicant-template";
+			$filename = "applicant-template-".date('Y-m-d');
 			header('Content-Type: application/vnd.ms-excel');
 			header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"');
 			header('Cache-Control: max-age=0');

@@ -49,6 +49,7 @@
                         <th width="auto" style="text-align:center">Jo Done</th>
                         <th width="auto" style="text-align:center">First Interview</th>
                         <th width="auto" style="text-align:center">Final Interview</th>
+                        <th width="auto" style="text-align:center">For Comparison</th>
                         <th width="auto" style="text-align:center">Cancelled</th>
                         <th width="auto" style="text-align:center">Rejected</th>
                     </tr>
@@ -63,7 +64,8 @@
                     <td style="text-align:center"> {{$val->erf_number}}</td>
                     <td class="hover" id="hover" style="text-align:center"><a href='{{CRUDBooster::mainpath("summary-report/".$val->erf_number."-"."31")}}'></a>{{$val->jo_done}}</td>  
                     <td class="hover" id="hover" style="text-align:center"><a href='{{CRUDBooster::mainpath("summary-report/".$val->erf_number."-"."34")}}'></a>{{$val->first_interview}}</td>
-                    <td class="hover" id="hover" style="text-align:center"><a href='{{CRUDBooster::mainpath("summary-report/".$val->erf_number."-"."35")}}'></a>{{$val->final_interview}}</td>    
+                    <td class="hover" id="hover" style="text-align:center"><a href='{{CRUDBooster::mainpath("summary-report/".$val->erf_number."-"."35")}}'></a>{{$val->final_interview}}</td> 
+                    <td class="hover" id="hover" style="text-align:center"><a href='{{CRUDBooster::mainpath("summary-report/".$val->erf_number."-"."42")}}'></a>{{$val->for_comparison}}</td>    
                     <td class="hover" id="hover" style="text-align:center"><a href='{{CRUDBooster::mainpath("summary-report/".$val->erf_number."-"."8")}}'></a>{{$val->cancelled}}</td>
                     <td class="hover" id="hover" style="text-align:center"><a href='{{CRUDBooster::mainpath("summary-report/".$val->erf_number."-"."5")}}'></a>{{$val->rejected}}</td>     
                 </tr>
