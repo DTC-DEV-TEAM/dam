@@ -24,7 +24,8 @@
         public function __construct() {
 			// Register ENUM type
 			//$this->request = $request;
-			$this->middleware('check.suppliescheckrestriction',['only' => ['getAddRequisitionSupplies']]);
+			//$this->middleware('check.suppliescheckrestriction',['only' => ['getAddRequisitionSupplies']]);
+			$this->middleware('check.orderschedule',['only' => ['getAddRequisitionSupplies']]);
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
 		}
 
@@ -833,8 +834,8 @@
 										 ->leftjoin('departments', 'cms_users.department_id', '=', 'departments.id')
 										 ->select( 'cms_users.*', 'positions.position_description as position_description', 'departments.department_name as department_name')
 										 ->where('cms_users.id', $data['user']->id)->first();
-			$data['categories'] = DB::table('category')->where('category_status', 'ACTIVE')->where('id', 5)->orderby('category_description', 'asc')->get();
-			$data['sub_categories'] = DB::table('class')->where('class_status', 'ACTIVE')->where('category_id', 5)->orderby('class_description', 'asc')->get();
+			$data['categories'] = DB::table('category')->where('category_status', 'ACTIVE')->where('id', 6)->orderby('category_description', 'asc')->get();
+			$data['sub_categories'] = DB::table('class')->where('class_status', 'ACTIVE')->where('category_id', 6)->orderby('class_description', 'asc')->get();
 			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();
 			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
 			
@@ -880,10 +881,10 @@
 										 ->leftjoin('departments', 'cms_users.department_id', '=', 'departments.id')
 										 ->select( 'cms_users.*', 'positions.position_description as position_description', 'departments.department_name as department_name')
 										 ->where('cms_users.id', $data['user']->id)->first();
-			$data['categories'] = DB::table('category')->where('id', 1)->where('category_status', 'ACTIVE')
+			$data['categories'] = DB::table('category')->whereIn('id', [4])->where('category_status', 'ACTIVE')
 													   ->orderby('category_description', 'asc')
 													   ->get();
-			$data['sub_categories'] = DB::table('class')->where('class_status', 'ACTIVE')->where('category_id', 1)->orderby('class_description', 'asc')->get();
+			$data['sub_categories'] = DB::table('class')->where('class_status', 'ACTIVE')->whereIn('category_id', [1,4,7,8])->orderby('class_description', 'asc')->get();
 			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();
 			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
 			
@@ -1112,10 +1113,10 @@
 			//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
 
 			$items = DB::table('assets')
-			    ->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',1)->where('assets.status','!=','INACTIVE')
-				->orwhere('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',5)->where('assets.status','!=','INACTIVE')
-				->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',1)->where('assets.status','!=','INACTIVE')
-				->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',5)->where('assets.status','!=','INACTIVE')
+			    ->where('assets.digits_code','LIKE','%'.$search.'%')->whereIn('assets.category_id',[1,4,6,7,8])->where('assets.status','!=','INACTIVE')
+				//->orwhere('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',5)->where('assets.status','!=','INACTIVE')
+				->orWhere('assets.item_description','LIKE','%'.$search.'%')->whereIn('assets.category_id',[1,4,6,7,8])->where('assets.status','!=','INACTIVE')
+				//->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',5)->where('assets.status','!=','INACTIVE')
 				->where('assets.status','!=','INACTIVE')
 				// ->orWhere('assets.item_description','LIKE','%'.$search.'%')
 			
@@ -1545,8 +1546,8 @@
 					//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
 		
 					$items = DB::table('assets')
-					->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',5)->where('assets.status','!=','INACTIVE')
-					->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',5)->where('assets.status','!=','INACTIVE')
+					->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',6)->where('assets.status','!=','INACTIVE')
+					->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',6)->where('assets.status','!=','INACTIVE')
 					
 						->join('category', 'assets.category_id','=', 'category.id')
 						//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
@@ -1605,8 +1606,8 @@
 					//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
 		
 					$items = DB::table('assets')
-					->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',1)->where('assets.status','!=','INACTIVE')
-					->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',1)->where('assets.status','!=','INACTIVE')
+					->where('assets.digits_code','LIKE','%'.$search.'%')->whereIn('assets.category_id',[1,4,7,8])->where('assets.status','!=','INACTIVE')
+					->orWhere('assets.item_description','LIKE','%'.$search.'%')->whereIn('assets.category_id',[1,4,7,8])->where('assets.status','!=','INACTIVE')
 					
 						->join('category', 'assets.category_id','=', 'category.id')
 						//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
@@ -1725,13 +1726,13 @@
 					//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
 		
 					$items = DB::table('assets')
-					->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',2)->where('assets.status','!=','INACTIVE')
-					->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',2)->where('assets.status','!=','INACTIVE')
+					->where('assets.digits_code','LIKE','%'.$search.'%')->whereIn('assets.category_id',[2,9])->where('assets.status','!=','INACTIVE')
+					->orWhere('assets.item_description','LIKE','%'.$search.'%')->whereIn('assets.category_id',[2,9])->where('assets.status','!=','INACTIVE')
 					
 						->join('category', 'assets.category_id','=', 'category.id')
 						->join('class', 'assets.class_id','=', 'class.id')
-						->leftjoin('new_category', 'assets.aimfs_category','=', 'new_category.id')
-						->leftjoin('new_sub_category', 'assets.aimfs_sub_category','=', 'new_sub_category.id')
+						// ->leftjoin('new_category', 'assets.aimfs_category','=', 'new_category.id')
+						->leftjoin('new_sub_category', 'assets.sub_category_id','=', 'new_sub_category.id')
 						->leftjoin('assets_supplies_inventory', 'assets.digits_code','=', 'assets_supplies_inventory.digits_code')
 	
 						//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
@@ -1742,8 +1743,8 @@
 									//'digits_imfs.digits_code as dcode',
 									'category.category_description as category_description',
 									'class.class_description as class_description',
-									'new_category.category_description as aimfs_category_description',
-									'new_sub_category.sub_category_description as aimfs_sub_category_description',
+									// 'new_category.category_description as aimfs_category_description',
+									'new_sub_category.sub_category_description as sub_category_description',
 								)->take(10)->get();
 					$arraySearchUnservedQty = DB::table('body_request')->select('digits_code as digits_code',DB::raw('SUM(unserved_qty) as unserved_qty'))->where('body_request.created_by',CRUDBooster::myId())->groupBy('digits_code')->get()->toArray();
 					$finalItems = [];
@@ -1771,8 +1772,10 @@
 							$return_data[$i]['asset_tag']            = $value->asset_tag;
 							$return_data[$i]['serial_no']            = $value->serial_no;
 							$return_data[$i]['item_description']     = $value->item_description;
-							$return_data[$i]['category_description'] = $value->aimfs_category_description;
-							$return_data[$i]['class_description']    = $value->aimfs_sub_category_description;
+							// $return_data[$i]['category_description'] = $value->aimfs_category_description;
+							// $return_data[$i]['class_description']    = $value->aimfs_sub_category_description;
+							$return_data[$i]['category_description'] = $value->category_description;
+							$return_data[$i]['class_description']    = $value->sub_category_description;
 							$return_data[$i]['item_cost']            = $value->item_cost;
 							$return_data[$i]['item_type']            = $value->item_type;
 							$return_data[$i]['image']                = $value->image;

@@ -1,4 +1,21 @@
 @extends('crudbooster::admin_template')
+@push('head')
+   <style type="text/css">   
+        .select2-selection__choice{
+                font-size:14px !important;
+                color:black !important;
+        }
+        .select2-selection__rendered {
+            line-height: 31px !important;
+        }
+        .select2-container .select2-selection--single {
+            height: 35px !important;
+        }
+        .select2-selection__arrow {
+            height: 34px !important;
+        }
+    </style>
+@endpush
 @section('content')
 
 <div>
@@ -109,60 +126,12 @@
                     </div>
                     
                     <br/>
-                    <br/>
-                    
-                    <div class="row">
-                        <div class="col-sm-3" style="padding-left:50px;">
-                            <b> RETAIL </b><br><br>
-                            <input type="checkbox" id="select_all_rtl"> Select All Retail<br>
-                            <input type="checkbox" id="select_all_rtldw"> Select All Retail DW<br>
-                            <input type="checkbox" id="select_all_rtlbtb"> Select All Retail BTB<br>
-                            <hr>
-                            @foreach($retailStores as $rStore)
-                                <input type="checkbox" class="rtl-stores" id="{{ $rStore->id }}" name="stores_id[]" @if(in_array($rStore->id, $oldStores)) checked @endif value="{{ $rStore->id }}"> <span>{{ $rStore->store_name }}</span><br>
-                            @endforeach
-                        </div>
-                        <div class="col-sm-3" style="padding-left:50px;">
-                            <b> FRANCHISE </b><br><br>
-                            <input type="checkbox" id="select_all_fra"> Select All Franchise<br>
-                            <input type="checkbox" id="select_all_fradw"> Select All Franchise DW<br>
-                            <input type="checkbox" id="select_all_frabtb"> Select All Franchise BTB<br>
-                            <hr>
-                            @foreach($franchiseStores as $fStore)
-                                <input type="checkbox" class="fra-stores" id="{{ $fStore->id }}" name="stores_id[]" @if(in_array($fStore->id, $oldStores)) checked @endif value="{{ $fStore->id }}"> <span>{{ $fStore->store_name }}</span><br>
-                            @endforeach
-                        </div>
-                        <div class="col-sm-3" style="padding-left:50px;">
-                            <b> DISTRIBUTION </b><br><br>
-                            <input type="checkbox" id="select_all_dis"> Select All Distribution<br>
-                            <input type="checkbox" id="select_all_discon"> Select All Distribution CON<br>
-                            <input type="checkbox" id="select_all_disout"> Select All Distribution OUT<br>
-                            <hr>
-                            @foreach($distributionStores as $dStore)
-                                <input type="checkbox" class="dis-stores" id="{{ $dStore->id }}" name="stores_id[]" @if(in_array($dStore->id, $oldStores)) checked @endif value="{{ $dStore->id }}"> <span>{{ $dStore->store_name }}</span><br>
-                            @endforeach
-                        </div>
-                        
-                        <div class="col-sm-3" style="padding-left:50px;">
-                            <b> ONLINE </b><br><br>
-                            <input type="checkbox" id="select_all_onl"> Select All Online<br>
-                            <input type="checkbox" id="select_all_onllazada"> Select All Online LAZADA<br>
-                            <input type="checkbox" id="select_all_onlshopee"> Select All Online SHOPEE<br>
-                            <hr>
-                            @foreach($onlineStores as $oStore)
-                                <input type="checkbox" class="onl-stores" id="{{ $oStore->id }}" name="stores_id[]" @if(in_array($oStore->id, $oldStores)) checked @endif value="{{ $oStore->id }}"> <span>{{ $oStore->store_name }}</span><br>
-                            @endforeach
-                        </div>
-                        
-                        
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-sm-3" style="padding-left:50px;">
-                            <b> DIGITS </b>
-                            <hr>
-                            @foreach($digitsStores as $dtcStore)
-                                <input type="checkbox" class="dtc-stores" id="{{ $dtcStore->id }}" name="stores_id[]" @if(in_array($oStore->id, $oldStores)) checked @endif value="{{ $dtcStore->id }}"> <span>{{ $dtcStore->store_name }}</span><br>
+                            
+                    <div class="form-group header-group-0 col-sm-12" id="form-group-period" >
+                        <div class="col-md-6">
+                            <label class="require control-label"><span style="color:red">*</span> Select Privileges</label> <span> <input type="checkbox" id="select_all_privilege" style="margin-left:10px"> Select All Privileges<br></span><br>
+                            @foreach($privileges as $data)
+                                <input type="checkbox" class="privilege_id" id="{{ $data->id }}" name="privilege_id[]" @if(in_array($data->id, $oldStores)) checked @endif value="{{ $data->id }}"> <span>{{ $data->name }}</span><br>
                             @endforeach
                         </div>
                         
@@ -173,7 +142,7 @@
                 <div class="box-footer">
                     <div class='pull-right'>
                         <a href='{{ CRUDBooster::mainpath() }}' class='btn btn-default'>Cancel</a>
-                        <input type='submit' class='btn btn-success' id="btnSubmit" name='submit' value='Save'/>
+                        <button type='submit' class='btn btn-success' id="btnSubmit">Update</button>
                     </div>
                 </div><!-- /.box-footer-->
             </form>
@@ -186,182 +155,33 @@
 @push('bottom')
 <script type="text/javascript">
 $(document).ready(function() {
-
-    $('#select_all_rtl').change(function() {
+    $('#period, #status').select2({});
+    $('#select_all_privilege').change(function() {
         if(this.checked) {
-            $(".rtl-stores").prop("checked", true);
+            $(".privilege_id").prop("checked", true);
         }
         else{
-            $(".rtl-stores").prop("checked", false);
+            $(".privilege_id").prop("checked", false);
         }
     });
 
-    $('#select_all_rtldw').change(function() {
-        if(this.checked) {
-            checkAll("rtl-dw");
-        }
-        else{
-            $(".rtl-stores").prop("checked", false);
-        }  
+    $("#btnSubmit").click(function(event) {
+        event.preventDefault();
+        swal({
+            title: "Are you sure?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#41B314",
+            cancelButtonColor: "#F9354C",
+            confirmButtonText: "Yes, update it!",
+            }, function () {
+                $("#orderScheduleForm").submit();                                                   
+        }); 
     });
-
-    $('#select_all_rtlbtb').change(function() {
-        if(this.checked) {
-            checkAll("rtl-btb");
-        }
-        else{
-            $(".rtl-stores").prop("checked", false);
-        }     
-    });
-
-    $('#select_all_fra').change(function() {
-        if(this.checked) {
-            $(".fra-stores").prop("checked", true);
-        }
-        else{
-            $(".fra-stores").prop("checked", false);
-        }     
-    });
-
-    $('#select_all_fradw').change(function() {
-        if(this.checked) {
-            checkAll("fra-dw");
-        }
-        else{
-            $(".fra-stores").prop("checked", false);
-        }     
-    });
-
-    $('#select_all_frabtb').change(function() {
-        if(this.checked) {
-            checkAll("fra-btb");
-        }
-        else{
-            $(".fra-stores").prop("checked", false);
-        }    
-    });
-
-    $('#select_all_dis').change(function() {
-        if(this.checked) {
-            $(".dis-stores").prop("checked", true);
-        }
-        else{
-            $(".dis-stores").prop("checked", false);
-        }    
-    });
-
-    $('#select_all_discon').change(function() {
-        if(this.checked) {
-            checkAll("dis-con");
-        }
-        else{
-            $(".dis-stores").prop("checked", false);
-        }    
-    });
-
-    $('#select_all_disout').change(function() {
-        if(this.checked) {
-            checkAll("dis-out");
-        }
-        else{
-            $(".dis-stores").prop("checked", false);
-        }    
-    });
-
-    $('#select_all_onl').change(function() {
-        if(this.checked) {
-            $(".onl-stores").prop("checked", true);
-        }
-        else{
-            $(".onl-stores").prop("checked", false);
-        }    
-    });
-
-    $('#select_all_onllazada').change(function() {
-        if(this.checked) {
-            checkAll("onl-lazada");
-        }
-        else{
-            $(".onl-stores").prop("checked", false);
-        }   
-    });
-
-    $('#select_all_onlshopee').change(function() {
-        if(this.checked) {
-            checkAll("onl-shopee");
-        }
-        else{
-            $(".onl-stores").prop("checked", false);
-        }    
-    });
+   
 });
 
-function checkAll(parameter){
-    switch (parameter) {
-        case "rtl-dw": {
-            $('.rtl-stores').each(function () {
-                if ($(this).next('span').text().indexOf("DIGITAL WALKER") >= 0) {
-                    $(this).prop("checked", true);
-                }
-            });
-        }break;
-        case "rtl-btb": {
-            $('.rtl-stores').each(function () {
-                if ($(this).next('span').text().indexOf("BEYOND THE BOX") >= 0) {
-                    $(this).prop("checked", true);
-                }
-            });
-        }break;
 
-        case "fra-dw": {
-            $('.fra-stores').each(function () {
-                if ($(this).next('span').text().indexOf("DIGITAL WALKER") >= 0) {
-                    $(this).prop("checked", true);
-                }
-            });
-        }break;
-        case "fra-btb": {
-            $('.fra-stores').each(function () {
-                if ($(this).next('span').text().indexOf("BEYOND THE BOX") >= 0) {
-                    $(this).prop("checked", true);
-                }
-            });
-        }break;
-
-        case "onl-lazada": {
-            $('.onl-stores').each(function () {
-                if ($(this).next('span').text().indexOf("LAZADA") >= 0) {
-                    $(this).prop("checked", true);
-                }
-            });
-        }break;
-        case "onl-shopee": {
-            $('.onl-stores').each(function () {
-                if ($(this).next('span').text().indexOf("SHOPEE") >= 0) {
-                    $(this).prop("checked", true);
-                }
-            });
-        }break;
-
-        case "dis-con": {
-            $('.dis-stores').each(function () {
-                if ($(this).next('span').text().indexOf(".CON") >= 0) {
-                    $(this).prop("checked", true);
-                }
-            });
-        }break;
-        case "dis-out": {
-            $('.dis-stores').each(function () {
-                if ($(this).next('span').text().indexOf(".OUT") >= 0 || $(this).next('span').text().indexOf(".CRP") >= 0) {
-                    $(this).prop("checked", true);
-                }
-            });
-        }break;
-    
-        default:
-            break;
-    }
-}
 
 </script>
 

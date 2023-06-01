@@ -24,8 +24,8 @@ class InventoryUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
     * @param Collection $collection
     */
     public function collection(Collection $rows){
-        $it_cat = DB::table('category')->where('id', 5)->value('category_description');
-        $fa_cat = DB::table('category')->where('id', 1)->value('category_description');
+        $it_cat = DB::table('category')->where('id', 6)->value('category_description');
+        $fa_cat = DB::table('category')->where('id', 4)->value('category_description');
         $DatabaseCounterIt = DB::table('assets_inventory_body')->where('item_category', $it_cat)->count();
         $DatabaseCounterFixAsset = DB::table('assets_inventory_body')->where('item_category',$fa_cat)->count();
         foreach ($rows->toArray() as $row) {
@@ -57,7 +57,7 @@ class InventoryUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
                 $location = 4;
             }
             
-            if($item_id->category_id == 5){
+            if($item_id->category_id == 6){
                 $asset_code = "A1".str_pad ($DatabaseCounterIt + 1, 6, '0', STR_PAD_LEFT);
                 $DatabaseCounterIt++; // or any rule you want.	
                 $request_type_id_inventory = 1;

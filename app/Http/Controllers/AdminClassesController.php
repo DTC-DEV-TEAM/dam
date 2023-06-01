@@ -50,7 +50,8 @@
 			# START FORM DO NOT REMOVE THIS LINE
 		$this->form = [];
 		
-		$this->form[] = ["label"=>"Class Code","name"=>"class_code","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:3",'width'=>'col-sm-5'];
+		//$this->form[] = ["label"=>"Class Code","name"=>"class_code","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:3",'width'=>'col-sm-5'];
+		$this->form[] = ['label'=>'Category','name'=>'category_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'category,category_description','width'=>'col-sm-5'];
 		$this->form[] = ["label"=>"Class Description","name"=>"class_description","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255",'width'=>'col-sm-5'];
 
 		if(CRUDBooster::getCurrentMethod() == 'getEdit' || CRUDBooster::getCurrentMethod() == 'postEditSave' || CRUDBooster::getCurrentMethod() == 'getDetail') {

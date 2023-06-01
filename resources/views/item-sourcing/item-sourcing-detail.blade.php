@@ -130,15 +130,30 @@
                 <div class="row">
                     <label class="control-label col-md-2">Color Proofing:</label>
                     <div class="col-md-4">
-                            <p >{{$Header->sampling}}</p>
+                        <select selected data-placeholder="Choose" class="form-control select2" name="sampling" id="sampling" required style="width:50%"> 
+                            @foreach($yesno as $res)
+                            <option value="{{ $res->description }}"
+                                {{ isset($Header->sampling) && $Header->sampling == $res->description ? 'selected' : '' }}>
+                                {{ $res->description }} 
+                            </option>>
+                            @endforeach
+                        </select>  
+                            {{-- <p >{{$Header->sampling}}</p> --}}
                     </div>
                             
                     <label class="control-label col-md-2">Mock Up:</label>
                     <div class="col-md-4">
-                            <p>{{$Header->mark_up}}</p>
+                        <select selected data-placeholder="Choose" class="form-control select2" name="mark_up" id="mark_up" required style="width:50%"> 
+                            @foreach($yesno as $res)
+                            <option value="{{ $res->description }}"
+                                {{ isset($Header->mark_up) && $Header->mark_up == $res->description ? 'selected' : '' }}>
+                                {{ $res->description }} 
+                            </option>>
+                            @endforeach
+                        </select> 
                     </div>
                 </div>
-                <div class="row">            
+                <div class="row" style="margin-top:3px">            
                     <label class="control-label col-md-2">Date Needed:</label>
                     <div class="col-md-4">
                             <p>{{$Header->date_needed}}</p>
@@ -223,7 +238,7 @@
                                                 <th width="12%" class="text-center">{{ trans('message.table.item_description') }}</th>   
                                                 <th width="7%" class="text-center">Brand</th> 
                                                 <th width="7%" class="text-center">Model</th>  
-                                                <th width="7%" class="text-center">Size</th> 
+                                                <th width="7%" class="text-center">Size(L x W x H in cm)</th> 
                                                 <th width="7%" class="text-center">Actual Color</th>    
                                                 @if(in_array($Header->request_type_id,[6]))
                                                   <th width="7%" class="text-center">Material</th> 

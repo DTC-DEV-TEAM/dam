@@ -1,4 +1,21 @@
 @extends('crudbooster::admin_template')
+@push('head')
+   <style type="text/css">   
+        .select2-selection__choice{
+                font-size:14px !important;
+                color:black !important;
+        }
+        .select2-selection__rendered {
+            line-height: 31px !important;
+        }
+        .select2-container .select2-selection--single {
+            height: 35px !important;
+        }
+        .select2-selection__arrow {
+            height: 34px !important;
+        }
+    </style>
+@endpush
 @section('content')
 
 <div>
@@ -82,13 +99,26 @@
                         </label>
 
                         <div class="col-sm-5">
-                            <select class="form-control" id="period" required name="period">
-                                <option value="">** Please select a Time Period</option>
+                            <select selected data-placeholder="** Please select a Time Period" class="form-control" id="period" required name="period">
+                                <option value=""></option>
                                 <option value="DAY">DAY</option>
                                 <option value="HOUR">HOUR</option>
                             </select>
                             <div class="text-danger"></div>
                             <p class="help-block"></p>
+                        </div>
+                    </div>
+
+                    <div class="form-group header-group-0 col-sm-12" id="form-group-period" >
+                        <div class="col-md-6">
+                            <label class="require control-label"><span style="color:red">*</span> Select Privileges</label> <span> <input type="checkbox" id="select_all_privilege" style="margin-left:10px"> Select All Privileges<br></span><br>
+                            @foreach($privileges as $data)
+                            <div class="col-md-6">
+                                <label class="checkbox-inline control-label col-md-12" ><br>
+                                <input type="checkbox" class="privilege_id" name="privilege_id[]" value="{{$data->id}}" >{{$data->name}}
+                                </label>
+                            </div>
+                            @endforeach
                         </div>
                     </div>
                     
@@ -101,7 +131,7 @@
                 <div class="box-footer">
                     <div class='pull-right'>
                         <a href='{{ CRUDBooster::mainpath() }}' class='btn btn-default'>Cancel</a>
-                        <input type='submit' class='btn btn-success' id="btnSubmit" name='submit' value='Create'/>
+                        <button type='submit' class='btn btn-success' id="btnSubmit">Create</button>
                     </div>
                 </div><!-- /.box-footer-->
             </form>
@@ -115,182 +145,82 @@
 <script type="text/javascript">
 
 $(document).ready(function() {
-
-    $('#select_all_rtl').change(function() {
+    $('#period').select2({});
+    $('#select_all_privilege').change(function() {
         if(this.checked) {
-            $(".rtl-stores").prop("checked", true);
+            $(".privilege_id").prop("checked", true);
         }
         else{
-            $(".rtl-stores").prop("checked", false);
+            $(".privilege_id").prop("checked", false);
         }
     });
 
-    $('#select_all_rtldw').change(function() {
-        if(this.checked) {
-            checkAll("rtl-dw");
-        }
-        else{
-            $(".rtl-stores").prop("checked", false);
-        }  
-    });
+    $("#btnSubmit").click(function(event) {
+        event.preventDefault();
 
-    $('#select_all_rtlbtb').change(function() {
-        if(this.checked) {
-            checkAll("rtl-btb");
+        if($("#schedule_name").val() === ""){
+            swal({
+                type: 'error',
+                title: 'Schedule Name Required!',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            }); 
+            event.preventDefault(); // cancel default behavior
+            return false;
+        }else if($("#start_date").val() === ""){
+            swal({
+                type: 'error',
+                title: 'Start Date!',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            }); 
+            event.preventDefault(); // cancel default behavior
+            return false;
+        }else if($("#end_date").val() === ""){
+            swal({
+                type: 'error',
+                title: 'End Date Required!',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            }); 
+            event.preventDefault(); // cancel default behavior
+            return false;
+        }else if($("#time_unit").val() === ""){
+            swal({
+                type: 'error',
+                title: 'Time Unit Required!',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            }); 
+            event.preventDefault(); // cancel default behavior
+            return false;
+        }else if($("#period").val() === ""){
+            swal({
+                type: 'error',
+                title: 'Period Required!',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            }); 
+            event.preventDefault(); // cancel default behavior
+            return false;
+        }else{
+            swal({
+                title: "Are you sure?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#41B314",
+                cancelButtonColor: "#F9354C",
+                confirmButtonText: "Yes, create it!",
+                }, function () {
+                    $("#orderScheduleForm").submit();                                                   
+            });
         }
-        else{
-            $(".rtl-stores").prop("checked", false);
-        }     
+                
+        
     });
-
-    $('#select_all_fra').change(function() {
-        if(this.checked) {
-            $(".fra-stores").prop("checked", true);
-        }
-        else{
-            $(".fra-stores").prop("checked", false);
-        }     
-    });
-
-    $('#select_all_fradw').change(function() {
-        if(this.checked) {
-            checkAll("fra-dw");
-        }
-        else{
-            $(".fra-stores").prop("checked", false);
-        }     
-    });
-
-    $('#select_all_frabtb').change(function() {
-        if(this.checked) {
-            checkAll("fra-btb");
-        }
-        else{
-            $(".fra-stores").prop("checked", false);
-        }    
-    });
-
-    $('#select_all_dis').change(function() {
-        if(this.checked) {
-            $(".dis-stores").prop("checked", true);
-        }
-        else{
-            $(".dis-stores").prop("checked", false);
-        }    
-    });
-
-    $('#select_all_discon').change(function() {
-        if(this.checked) {
-            checkAll("dis-con");
-        }
-        else{
-            $(".dis-stores").prop("checked", false);
-        }    
-    });
-
-    $('#select_all_disout').change(function() {
-        if(this.checked) {
-            checkAll("dis-out");
-        }
-        else{
-            $(".dis-stores").prop("checked", false);
-        }    
-    });
-
-    $('#select_all_onl').change(function() {
-        if(this.checked) {
-            $(".onl-stores").prop("checked", true);
-        }
-        else{
-            $(".onl-stores").prop("checked", false);
-        }    
-    });
-
-    $('#select_all_onllazada').change(function() {
-        if(this.checked) {
-            checkAll("onl-lazada");
-        }
-        else{
-            $(".onl-stores").prop("checked", false);
-        }   
-    });
-
-    $('#select_all_onlshopee').change(function() {
-        if(this.checked) {
-            checkAll("onl-shopee");
-        }
-        else{
-            $(".onl-stores").prop("checked", false);
-        }    
-    });
+    
 });
 
-function checkAll(parameter){
-    switch (parameter) {
-        case "rtl-dw": {
-            $('.rtl-stores').each(function () {
-                if ($(this).next('span').text().indexOf("DIGITAL WALKER") >= 0) {
-                    $(this).prop("checked", true);
-                }
-            });
-        }break;
-        case "rtl-btb": {
-            $('.rtl-stores').each(function () {
-                if ($(this).next('span').text().indexOf("BEYOND THE BOX") >= 0) {
-                    $(this).prop("checked", true);
-                }
-            });
-        }break;
-
-        case "fra-dw": {
-            $('.fra-stores').each(function () {
-                if ($(this).next('span').text().indexOf("DIGITAL WALKER") >= 0) {
-                    $(this).prop("checked", true);
-                }
-            });
-        }break;
-        case "fra-btb": {
-            $('.fra-stores').each(function () {
-                if ($(this).next('span').text().indexOf("BEYOND THE BOX") >= 0) {
-                    $(this).prop("checked", true);
-                }
-            });
-        }break;
-
-        case "onl-lazada": {
-            $('.onl-stores').each(function () {
-                if ($(this).next('span').text().indexOf("LAZADA") >= 0) {
-                    $(this).prop("checked", true);
-                }
-            });
-        }break;
-        case "onl-shopee": {
-            $('.onl-stores').each(function () {
-                if ($(this).next('span').text().indexOf("SHOPEE") >= 0) {
-                    $(this).prop("checked", true);
-                }
-            });
-        }break;
-
-        case "dis-con": {
-            $('.dis-stores').each(function () {
-                if ($(this).next('span').text().indexOf(".CON") >= 0) {
-                    $(this).prop("checked", true);
-                }
-            });
-        }break;
-        case "dis-out": {
-            $('.dis-stores').each(function () {
-                if ($(this).next('span').text().indexOf(".OUT") >= 0 || $(this).next('span').text().indexOf(".CRP") >= 0) {
-                    $(this).prop("checked", true);
-                }
-            });
-        }break;
-    
-        default:
-            break;
-    }
-}
 
 </script>
 

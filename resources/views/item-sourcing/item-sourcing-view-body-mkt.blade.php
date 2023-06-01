@@ -14,7 +14,7 @@
                                         <th width="15%" class="text-center"> {{ trans('message.table.item_description') }}</th>                                                 
                                         <th width="10%" class="text-center"> Brand</th>
                                         <th width="10%" class="text-center"> Model</th>
-                                        <th width="5%" class="text-center"> Size(WxH in Sixe cm)</th>
+                                        <th width="5%" class="text-center"> Size(L x W x H in cm)</th>
                                         <th width="10%" class="text-center"> Actual Color</th>
                                         <th width="10%" class="text-center"> Material</th>
                                         <th width="5%" class="text-center"> Thickness</th>

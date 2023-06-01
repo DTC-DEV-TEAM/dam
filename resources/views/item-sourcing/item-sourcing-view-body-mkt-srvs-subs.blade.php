@@ -14,7 +14,7 @@
                                         <th width="20%" class="text-center"><span style="color:red">*</span> {{ trans('message.table.item_description') }}</th>                                                 
                                         <th width="15%" class="text-center"><span style="color:red">*</span> Brand</th>
                                         <th width="10%" class="text-center"><span style="color:red">*</span> Model</th>
-                                        <th width="5%" class="text-center"><span style="color:red">*</span> Size</th>
+                                        <th width="5%" class="text-center"><span style="color:red">*</span> Size(L x W x H in cm)</th>
                                         <th width="10%" class="text-center"><span style="color:red">*</span> Actual Color</th>
                                         <th width="10%" class="text-center"><span style="color:red">*</span> Budget Range</th> 
                                         <th width="5%" class="text-center"><span style="color:red">*</span> {{ trans('message.table.quantity_text') }}</th>                                                    

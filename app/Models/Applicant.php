@@ -13,6 +13,8 @@ class Applicant extends Model
         'first_name',
         'last_name',
         'full_name',
+        'job_portal',
+        'remarks',
         'screen_date',
         'created_by',
         'created_at	',

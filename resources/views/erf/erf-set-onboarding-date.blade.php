@@ -120,7 +120,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label"> Salary Range</label>
-                            <input type="text" class="form-control finput" value="{{number_format($Header->salary_range_from) .' - '. number_format($Header->salary_range_to)}}" aria-describedby="basic-addon1" readonly>                                                                                         
+                            <input type="text" class="form-control finput" value="{{number_format(Crypt::decryptString($Header->salary_range_from)) .' - '. number_format(Crypt::decryptString($Header->salary_range_to))}}" aria-describedby="basic-addon1" readonly>                                                                                         
    
                         </div>
                     </div> 
@@ -391,7 +391,7 @@
 @push('bottom')
 <script type="text/javascript">
     $(".date").datetimepicker({
-                minDate:new Date(), // Current year from transactions
+            minDate: moment().millisecond(0).second(0).minute(0).hour(0),
             viewMode: "days",
             format: "YYYY-MM-DD",
             dayViewHeaderFormat: "MMMM YYYY",

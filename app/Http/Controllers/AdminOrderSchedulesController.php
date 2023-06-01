@@ -6,7 +6,8 @@
 	use CRUDBooster;
 	use Illuminate\Support\Str;
 	use Illuminate\Support\Facades\Redirect;
-	use App\OrderSchedule;
+	use App\Models\OrderSchedule;
+	use App\Models\CmsPrivileges;
 	use App\Store;
 	use App\Channel;
 	use Carbon\Carbon;
@@ -28,7 +29,7 @@
 			$this->button_table_action = true;
 			$this->button_bulk_action = true;
 			$this->button_action_style = "button_icon";
-			$this->button_add = false;
+			$this->button_add = true;
 			$this->button_edit = true;
 			$this->button_delete = true;
 			$this->button_detail = true;
@@ -46,7 +47,7 @@
 			$this->col[] = ["label"=>"End Date","name"=>"end_date"];
 			$this->col[] = ["label"=>"Time Unit","name"=>"time_unit"];
 			$this->col[] = ["label"=>"Time Period","name"=>"period"];
-			$this->col[] = ["label"=>"Store Name","name"=>"stores_id"]; //additional code 20200624
+			$this->col[] = ["label"=>"Privilege Name","name"=>"privilege_id"]; //additional code 20200624
 			$this->col[] = ["label"=>"Status","name"=>"status"];
 			$this->col[] = ["label"=>"Created Date","name"=>"created_at"];
 			$this->col[] = ["label"=>"Updated Date","name"=>"updated_at"];
@@ -62,7 +63,7 @@
 			$this->form[] = ['label'=>'Time Period','name'=>'period','type'=>'select','validation'=>'required','width'=>'col-sm-5','dataenum'=>'DAY;HOUR'];
 			//start - additional code 20200624
 			// $this->form[] = ["label"=>"Channel","name"=>"channels_id","type"=>"select","datatable"=>"channels,channel_name", 'width'=>'col-sm-5'];
-			$this->form[] = ["label"=>"Store Name","name"=>"stores_id","type"=>"check-box"];
+			$this->form[] = ["label"=>"Privilege Name","name"=>"privilege_id","type"=>"check-box","datatable"=>"cms_privileges,name", 'width'=>'col-sm-5'];
 			//end - additional code 20200624
 			if(CRUDBooster::getCurrentMethod() == 'getEdit' || CRUDBooster::getCurrentMethod() == 'postEditSave' || CRUDBooster::getCurrentMethod() == 'getDetail') {
 				$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE'];
@@ -269,14 +270,20 @@
 	    */    
 	    public function hook_row_index($column_index,&$column_value) {	        
 			//Your code here
-			// if($column_index == 6){
-			// 	$storeLists = $this->storeListing($column_value);
+			if($column_index == 7){
+				$privilegeLists = $this->privilegeListing($column_value);
 				
-			// 	foreach ($storeLists as $value) {
-			// 		$col_values .= '<span stye="display: block;" class="label label-info">'.$value.'</span><br>';
-			// 	}
-			// 	$column_value = $col_values;
-			// }
+				foreach ($privilegeLists as $value) {
+					$col_values .= '<span stye="display: block;" class="label label-info">'.$value.'</span><br>';
+				}
+				$column_value = $col_values;
+			}else if($column_index == 8){
+                if($column_value == 'ACTIVE'){
+					$column_value = '<span class="label label-success">'.$column_value.'</span>';
+				}else{
+					$column_value = '<span class="label label-danger">'.$column_value.'</span>';
+				}
+			}
 	    }
 
 	    /*
@@ -288,24 +295,30 @@
 	    */
 	    public function hook_before_add(&$postdata) {        
 			//Your code here
-			$postdata['schedule_code'] = Str::random(10);
-
-			// if(count((array)$postdata['stores_id']) > 0) {
-			// 	// additional code 20200227
-			// 	$storeData = array();
-			// 	$storeList = json_encode($postdata['stores_id'], true);
-			// 	$storeArray = explode(",", $storeList);
-		
-			// 	foreach ($storeArray as $key => $value) {
-			// 		$storeData[$key] = preg_replace("/[^0-9]/","",$value);
-			// 	}
-				
-			// 	$postdata['stores_id'] = implode(",", $storeData);
-			// 	// end-additional code 20200227
-			// }
-			// else{
-			// 	$postdata['stores_id'] = 0;
-			// }
+            $current_schedule = OrderSchedule::where('status','ACTIVE')->orderBy('id','desc')->count();
+	
+			if($current_schedule == 1){
+				return CRUDBooster::redirect(CRUDBooster::mainpath(),"Already have active Ordering Schedule!","danger");
+			}else{
+				$postdata['schedule_code'] = Str::random(10);
+				if(count((array)$postdata['privilege_id']) > 0) {
+					// additional code 20200227
+					$privData = array();
+					$privList = json_encode($postdata['privilege_id'], true);
+					$privArray = explode(",", $privList);
+			
+					foreach ($privArray as $key => $value) {
+						$privData[$key] = preg_replace("/[^0-9]/","",$value);
+					}
+					
+					$postdata['privilege_id'] = implode(",", $privData);
+					// end-additional code 20200227
+				}
+				else{
+					$postdata['privilege_id'] = 0;
+				}
+			}
+			
 			/*
 			$query_schedules = DB::table('order_schedules')->whereDate('start_date', '<', $postdata['end_date'])
 			->orWhereDate('end_date', '>=', $postdata['end_date'])
@@ -318,7 +331,6 @@
                 return redirect(CRUDBooster::mainpath())->with(['message_type' => 'danger', 'message' => trans('crudbooster.alert_add_save_order_schedule_failed')])->send();
                 exit;
             }*/
-
 	    }
 
 	    /* 
@@ -342,23 +354,22 @@
 	    | 
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
-			//Your code here
-			// if(count((array)$postdata['stores_id']) > 0) {
-			// 	// additional code 20200227
-			// 	$storeData = array();
-			// 	$storeList = json_encode($postdata['stores_id'], true);
-			// 	$storeArray = explode(",", $storeList);
+			if(count((array)$postdata['privilege_id']) > 0) {
+				// additional code 20200227
+				$privilegeData = array();
+				$privilegeList = json_encode($postdata['privilege_id'], true);
+				$privilegeArray = explode(",", $privilegeList);
 		
-			// 	foreach ($storeArray as $key => $value) {
-			// 		$storeData[$key] = preg_replace("/[^0-9]/","",$value);
-			// 	}
-			// 	//dd($storeData);
-			// 	$postdata['stores_id'] = implode(",", $storeData);
-			// 	// end-additional code 20200227
-			// }
-			// else{
-			// 	$postdata['stores_id'] = 0;
-			// }
+				foreach ($privilegeArray as $key => $value) {
+					$privilegeData[$key] = preg_replace("/[^0-9]/","",$value);
+				}
+				//dd($privilegeData);
+				$postdata['privilege_id'] = implode(",", $privilegeData);
+				// end-additional code 20200227
+			}
+			else{
+				$postdata['privilege_id'] = 0;
+			}
 	    }
 
 	    /* 
@@ -405,12 +416,8 @@
 			
 			$data['page_title'] = 'Create Order Schedule';
 			
-			// $data['retailStores'] = Store::where('channels_id',1)->where('store_status','ACTIVE')->orderBy('store_name','ASC')->get();
-			// $data['franchiseStores'] = Store::where('channels_id',2)->where('store_status','ACTIVE')->orderBy('store_name','ASC')->get();
-			// $data['distributionStores'] = Store::where('channels_id',3)->where('store_status','ACTIVE')->orderBy('store_name','ASC')->get();
-			// $data['onlineStores'] = Store::where('channels_id',4)->where('store_status','ACTIVE')->orderBy('store_name','ASC')->get();
-			// $data['digitsStores'] = Store::where('channels_id',5)->where('store_status','ACTIVE')->orderBy('store_name','ASC')->get();
-			
+			$data['privileges'] = DB::table('cms_privileges')->select('*')->whereNotIn('id',[1,13])->get();
+
 			return $this->view("order-schedule.schedule_add", $data);
 	    }
 	    
@@ -422,14 +429,11 @@
 			
 			$data['page_title'] = 'Edit Order Schedule';
 			
-			$data['retailStores'] = Store::where('channels_id',1)->where('store_status','ACTIVE')->orderBy('store_name','ASC')->get();
-			$data['franchiseStores'] = Store::where('channels_id',2)->where('store_status','ACTIVE')->orderBy('store_name','ASC')->get();
-			$data['distributionStores'] = Store::where('channels_id',3)->where('store_status','ACTIVE')->orderBy('store_name','ASC')->get();
-			$data['onlineStores'] = Store::where('channels_id',4)->where('store_status','ACTIVE')->orderBy('store_name','ASC')->get();
-			$data['digitsStores'] = Store::where('channels_id',5)->where('store_status','ACTIVE')->orderBy('store_name','ASC')->get();
+			$data['privileges'] = DB::table('cms_privileges')->select('*')->whereNotIn('id',[1,13])->get();
+
 			$editData = OrderSchedule::where('id', $id)->first();
 			$data['oldData'] = $editData;
-			$data['oldStores'] = explode(",",$editData->stores_id);
+			$data['oldStores'] = explode(",",$editData->privilege_id);
 			
 			return $this->view("order-schedule.schedule_edit", $data);
 	    }
@@ -449,9 +453,9 @@
             }
 		}
 		
-		public function storeListing($ids) {
-    		$stores = explode(",", $ids);
-    		return Store::whereIn('id', $stores)->pluck('store_name');
+		public function privilegeListing($ids) {
+    		$privilege = explode(",", $ids);
+    		return CmsPrivileges::whereIn('id', $privilege)->pluck('name');
     	}
 
 	}

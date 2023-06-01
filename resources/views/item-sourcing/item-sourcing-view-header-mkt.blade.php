@@ -66,7 +66,7 @@
     
     <div class="col-md-3">
         <div class="form-group">
-            <label class="control-label require"><span style="color:red">*</span> Photos/File <span style="color:red; font-style:italic">(jpg, jpeg, gif, png, xlsx, docs, pdf)</span></label>
+            <label class="control-label require"> Photos/File <span style="color:red; font-style:italic">(jpg, jpeg, gif, png, xlsx, docs, pdf)</span></label>
             <input type="file" class="form-control finput" style="" name="upload_file[]" id="upload_file" multiple>                                
         </div>
     </div>
@@ -77,7 +77,7 @@
 <div class="row">
     <div class="col-md-12">
         <div class="form-group">
-            <label class="control-label require"><span style="color:red">*</span> Artwork Link</label>
+            <label class="control-label require"> Artwork Link</label>
             <input type="text" class="form-control finput"  id="artworklink" name="artworklink"  required>                                   
         </div>
     </div>

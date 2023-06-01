@@ -150,6 +150,11 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('/admin/assets_inventory_body/upload-inventory-not-available','AdminAssetsInventoryBodyController@uploadInventoryNotAvailable');
     Route::post('/admin/assets_inventory_body/inventory-upload-not-available','AdminAssetsInventoryBodyController@inventoryUploadNotAvailable')->name('upload-inventory-not-available');
 
+    //inventory update
+    Route::get('/admin/assets_inventory_body/upload-inventory-update','AdminAssetsInventoryBodyController@uploadInventoryUpdate');
+    Route::post('/admin/assets_inventory_body/inventory-upload-update','AdminAssetsInventoryBodyController@inventoryUploadUpdate')->name('upload-inventory-update');
+    Route::get('/admin/assets_inventory_body/restriction-page','AdminAssetsInventoryBodyController@restrictionPage');
+
     //Deployed Assets
     Route::get('/admin/deployed_asset/Detail/{id}','AdminDeployedAssetsController@Detail')->name('deployed-asset');
     Route::get('/admin/deployed_asset/DetailMoOnly/{id}','AdminDeployedAssetsController@DetailMoOnly')->name('deployed-asset');

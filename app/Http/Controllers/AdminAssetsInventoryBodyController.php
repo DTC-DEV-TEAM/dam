@@ -18,6 +18,7 @@
 	use Carbon\Carbon;
 	use App\Imports\InventoryUpload;
 	use App\Imports\InventoryUploadNotAvailable;
+	use App\Imports\InventoryUploadUpdate;
 	
 	class AdminAssetsInventoryBodyController extends \crocodicstudio\crudbooster\controllers\CBController {
 		private static $apiContext;
@@ -160,8 +161,9 @@
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
 			    $this->index_button[] = ["label"=>"Export Data","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('asset-lists-export'),"color"=>"primary"];
 				if(CRUDBooster::isSuperadmin()){
-				    $this->index_button[] = ["title"=>"Upload Inventory","label"=>"Upload Inventory","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('inventory-upload')];
+				    $this->index_button[] = ["title"=>"Upload Inventory/Deployed","label"=>"Upload Inventory/Deployed","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('inventory-upload')];
 					$this->index_button[] = ["title"=>"Upload Not Available Inventory","label"=>"Upload Not Available Inventory","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('upload-inventory-not-available'), "color"=>"warning"];
+					$this->index_button[] = ["title"=>"Update Inventory","label"=>"Update Inventory","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('upload-inventory-update'), "color"=>"success"];
 				}
 				// 	$this->index_button[] = ["label"=>"Add Inventory","icon"=>"fa fa-files-o","url"=>CRUDBooster::adminPath('assets_inventory_header/add-inventory'),"color"=>"success"];
 			// 	//$this->index_button[] = ["label"=>"Return Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-return'),"color"=>"success"];
@@ -737,6 +739,44 @@
 		
 			}
 			CRUDBooster::redirect(CRUDBooster::adminpath('assets_inventory_body'), $errors[0], 'danger');
+		}
+
+		//Temporay Update Inventory
+		public function uploadInventoryUpdate() {
+			$data['page_title']= 'Inventory Update Info';
+			return view('import.inventory-update-import', $data)->render();
+		}
+
+		public function inventoryUploadUpdate(Request $request) {
+			$data = Request::all();	
+			$file = $data['import_file'];
+			$path_excel = $file->store('temp');
+			$path = storage_path('app').'/'.$path_excel;
+
+			try {
+				Excel::import(new InventoryUploadUpdate, $path);	
+			    CRUDBooster::redirect(CRUDBooster::adminpath('assets_inventory_body'), trans("Update Successfully!"), 'success');
+			} catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+				$failures = $e->failures();
+				
+				$error = [];
+				foreach ($failures as $failure) {
+					$line = $failure->row();
+					foreach ($failure->errors() as $err) {
+						$error[] = $err . " on line: " . $line; 
+					}
+				}
+				
+				$errors = collect($error)->unique()->toArray();
+		
+			}
+			CRUDBooster::redirect(CRUDBooster::adminpath('assets_inventory_body'), $errors[0], 'danger');
+		}
+
+		//restrction page
+		public function restrictionPage() {
+			$data['page_title']= 'Forbidden Page';
+			return $this->view("errors.restriction-page", $data);
 		}
 
 	}
