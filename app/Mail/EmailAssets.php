@@ -19,6 +19,7 @@ class EmailAssets extends Mailable
     public function __construct($infos)
     {
         $this->infos = $infos;
+        $this->email = $infos->email;
     }
 
     /**
@@ -28,7 +29,7 @@ class EmailAssets extends Mailable
      */
     public function build()
     {
-        return $this->subject('DAM')
+        return $this->subject('DAM - Test send Deployed Assets via email -'.' '.$this->email)
         ->view('emails.send-assets-via-email');
     }
 }

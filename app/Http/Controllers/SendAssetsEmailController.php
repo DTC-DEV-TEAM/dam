@@ -24,17 +24,21 @@ class SendAssetsEmailController extends Controller
                  'cms_users.bill_to',
                 )
         ->whereNull('mo_body_request.return_flag')
+        ->whereIn('mo_body_request.request_created_by',[1099,1109,956,601,863])
         ->groupBy('mo_body_request.request_created_by')
         ->get();
 
         $deployedAssets = DB::table('mo_body_request')
         ->leftjoin('cms_users', 'mo_body_request.request_created_by', '=', 'cms_users.id')
+        ->leftjoin('statuses', 'mo_body_request.status_id', '=', 'statuses.id')
         ->select( 
                  'mo_body_request.*',
                  'cms_users.email',
                  'cms_users.bill_to',
+                 'statuses.status_description'
                 )
         ->whereNull('mo_body_request.return_flag')
+        ->whereIn('mo_body_request.request_created_by',[1099,1109,956,601,863])
         ->get()->toArray();
 
         $finalDataAssets = array();
@@ -46,9 +50,11 @@ class SendAssetsEmailController extends Controller
             }
             $finalDataAssets[] = $emailData;
         }
-        //dd($finalDataAssets,$deployedAssets);
+        dd($finalDataAssets);
         foreach($finalDataAssets as $key => $infos){
-            Mail::to($infos->email)->send(new EmailAssets($infos));
+            Mail::to($infos->email)
+            //->cc(['bpg@digits.ph'])
+            ->send(new EmailAssets($infos));
         }
         
     }

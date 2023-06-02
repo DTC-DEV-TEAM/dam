@@ -12,6 +12,7 @@
     <table border="1" width="100%" style="text-align: center;">
         <tbody>
         <tr>
+            <th class="control-label col-md-2">Status</th>
             <th class="control-label col-md-2">Digits Code</th>
             <th class="control-label col-md-2">Item Description</th>
             <th class="control-label col-md-2">Asset Code</th>
@@ -19,6 +20,7 @@
         </tr>
         @foreach($infos->assets as $asset)
         <tr>
+            <td class="col-md-4">{{$asset->status_description}}</td>   
             <td class="col-md-4">{{$asset->digits_code}}</td>   
             <td class="col-md-4">{{$asset->item_description}}</td>     
             <td class="col-md-4">{{$asset->asset_code}}</td>  
