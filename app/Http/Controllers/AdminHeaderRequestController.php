@@ -268,6 +268,7 @@
 				
 				$(document).ready(function() {
 					$('#supplies-request-currently-not-available').attr('disabled', 'disabled');
+					$('a[title=\"Cancel Request\"]').prop('class', 'btn btn-xs btn-danger');
 			    });	
 	
 			";

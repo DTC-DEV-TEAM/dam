@@ -241,7 +241,7 @@
 								\"data-placement\":\"bottom\", 
 							},
 				        );
-				
+					$('a[title=\"Detail\"]').prop('class', 'btn btn-xs btn-primary btn-detail');
 					$('.fa.fa-times').click(function(){
 					var strconfirm = confirm('Are you sure you want to cancel this request?');
 					if (strconfirm == true) {

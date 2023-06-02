@@ -74,11 +74,11 @@ class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
                 'full_name'   => strtolower(str_replace(' ', '', trim($row['first_name']))).''.strtolower(str_replace(' ', '', trim($row['last_name']))),
             ],
             [
-                'erf_number'  => $row['erf_number'],
-                'status'      => $status,
-                'first_name'  => $row['first_name'],
-                'last_name'   => $row['last_name'],
-                'job_portal'  => $row['job_portal'],
+                'erf_number'  => trim($row['erf_number']),
+                'status'      => trim($status),
+                'first_name'  => trim($row['first_name']),
+                'last_name'   => trim($row['last_name']),
+                'job_portal'  => trim($row['job_portal']),
                 'remarks'     => $row['remarks'],
                 'full_name'   => strtolower(str_replace(' ', '', trim($row['first_name']))).''.strtolower(str_replace(' ', '', trim($row['last_name']))),
               
@@ -117,7 +117,7 @@ class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
          $checkRowDbColumnErf = array_column($checkRowDbErf, 'erf_number');
      
          if(!empty($data['erf_number'])){
-             if(in_array($data['erf_number'], $checkRowDbColumnErf)){
+             if(in_array(trim($data['erf_number']), $checkRowDbColumnErf)){
                  $data['check_erf_exist']['check'] = true;
              }
          }else{
