@@ -140,9 +140,9 @@
 				// $this->index_button[] = ["label"=>"Add Data","icon"=>"fa fa-plus-circle","url"=>CRUDBooster::mainpath('add-supplies-inventory'),"color"=>"success"];
 				$this->index_button[] = ["label"=>"Upload Inventory","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('supplies-inventory-upload'),'color'=>'primary'];
 				$this->index_button[] = ["label"=>"Export","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('supplies-inventory-export'),'color'=>'success'];
-				if(CRUDBooster::myPrivilegeId() == 18 || CRUDBooster::isSuperadmin()){
-					$this->index_button[] = ["label"=>"Restrict Supplies Requisition","icon"=>"fa fa-ban","url"=>CRUDBooster::mainpath('restrict-supplies-requisition'),"color"=>"danger"];
-				}
+				// if(CRUDBooster::myPrivilegeId() == 18 || CRUDBooster::isSuperadmin()){
+				// 	$this->index_button[] = ["label"=>"Restrict Supplies Requisition","icon"=>"fa fa-ban","url"=>CRUDBooster::mainpath('restrict-supplies-requisition'),"color"=>"danger"];
+				// }
 			}
 
 
