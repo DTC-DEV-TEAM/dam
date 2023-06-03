@@ -13,6 +13,7 @@ use App\Http\Controllers\AdminAssetsInventoryBodyController;
 |
 */
 Route::get('/admin/reports/request-reports', 'AdminReportsController@getReports')->name('api.reports.index');
+Route::get('/admin/reports/request-reports-search', 'AdminReportsController@getGeneratedReports')->name('api.searched.reports');
 
 //Route::get('/admin/reports/search-approved', 'AdminReportsController@searchApplicant')->name('api.reports.approved');
 

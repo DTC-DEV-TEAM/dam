@@ -57,51 +57,10 @@
                         <th width="auto">IT Comments</th>
                         <th width="auto">Transacted By</th>
                         <th width="auto">Transacted Date</th>
-               
                     </tr>
                 </thead>
                 <tbody>
-                @foreach($result as $val)
-                    <tr>
-                    @if($val['status'] == "FOR APPROVAL")
-                    <td style="text-align:center">
-                     <label class="label label-warning" style="align:center">{{$val['status']}}</label>
-                    </td>
-                    @elseif($val['status'] == "CLOSED")
-                    <td style="text-align:center">
-                     <label class="label label-success" style="align:center">{{$val['status']}}</label>
-                    </td>
-                    @elseif($val['status'] == "CANCELLED" || $val['status'] == "REJECTED")
-                    <td style="text-align:center">
-                     <label class="label label-danger" style="align:center">{{$val['status']}}</label>
-                    </td>
-                    @else
-                    <td style="text-align:center">
-                     <label class="label label-info" style="align:center">{{$val['status']}}</label>
-                    </td>
-                    @endif
-                    <td>{{$val['reference_number']}}</td>
-                    <td>{{$val['description']}}</td>  
-                    <td>{{$val['request_quantity']}}</td>
-                    <td>{{$val['transaction_type']}}</td>  
-                    <td>{{$val['request_type']}}</td>
-                    <td>{{$val['requested_by']}}</td>     
-                    <td>{{$val['department']}}</td>                                                                
-                    <td>{{$val['store_branch']}}</td>  
-                    <td>{{$val['mo_reference']}}</td>  
-                    <td>{{$val['mo_item_code']}}</td>  
-                    <td>{{$val['mo_item_description']}}</td>  
-                    <td>{{$val['mo_qty_serve_qty']}}</td>  
-                    <td>{{$val['requested_date']}}</td> 
-                    <td>{{$val['approved_by']}}</td> 
-                    <td>{{$val['approved_at']}}</td> 
-                    <td>{{$val['recommended_by']}}</td>  
-                    <td>{{$val['recommended_at']}}</td>  
-                    <td>{{$val['it_comments']}}</td>  
-                    <td>{{$val['transacted_by']}}</td>  
-                    <td>{{$val['transacted_date']}}</td>  
-                    </tr>
-                @endforeach
+                
                 </tbody>
             </table>
         </div>                 
@@ -181,6 +140,52 @@
                         },
                     },
                     ],
+                processing: true,
+                serverSide: true,
+                ajax: '{{ route("api.searched.reports") }}',
+                columns : [
+                        {data: 'status'},
+                        {data: 'reference_number'},
+                        {data: 'description'},  
+                        {data: 'request_quantity'},
+                        {data: 'transaction_type'},  
+                        {data: 'request_type'},
+                        {data: 'requested_by'},     
+                        {data: 'department'},                                                                
+                        {data: 'store_branch'},  
+                        {data: 'mo_reference'},  
+                        {data: 'mo_item_code'},  
+                        {data: 'mo_item_description'},  
+                        {data: 'mo_qty_serve_qty'},  
+                        {data: 'requested_date'}, 
+                        {data: 'approved_by'}, 
+                        {data: 'approved_at'}, 
+                        {data: 'recommended_by'},  
+                        {data: 'recommended_at'},  
+                        {data: 'it_comments'},  
+                        {data: 'transacted_by'},  
+                        {data: 'transacted_date'} 
+                ],
+                columnDefs: [{
+                    targets: [0],
+                            render : function (data, type, row) {
+                              	if(row.status == "FOR APPROVAL"){
+                                    return '<label class="label label-warning" style="align:center">'+row.status+'</label>';
+                                }else if(row.status == "CLOSED"){
+                                    return '<label class="label label-success" style="align:center">'+row.status+'</label>';
+                                }else if(row.status == "CANCELLED" || row.status == "REJECTED"){
+                                    return '<label class="label label-danger" style="align:center">'+row.status+'</label>';
+                                }else{
+                                    return '<label class="label label-info" style="align:center">'+row.status+'</label>';
+                                }
+                    
+                    },
+                    // targets : targetColumns,
+                    // render(v){
+                    //     return (+v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})
+                    // }
+        
+                }],
             });
             $("#btn-export").on("click", function () {
                 table.button(".buttons-excel").trigger();

@@ -8,6 +8,7 @@
 	use App\HeaderRequest;
 	use App\MoveOrder;
 	use App\Models\ReturnTransferAssets;
+	use App\Models\GeneratedAssetsReports;
 	use Maatwebsite\Excel\Facades\Excel;
 	use PhpOffice\PhpSpreadsheet\Spreadsheet;
 	use PhpOffice\PhpSpreadsheet\Reader\Exception;
@@ -413,10 +414,10 @@
 			ini_set('memory_limit','-1');
             ini_set('max_execution_time', 0);
 			$fields = Request::all();
-			
 			$from = $fields['from'];
 			$to = $fields['to'];
 		    $category = $fields['category'];
+			$overwrite = $fields['overwrite'];
 			$data = [];
             $filters = [];
 			$data['page_title'] = 'Export Request/Return and Transfer Reports';
@@ -425,7 +426,9 @@
 			$returnTransferRes = ReturnTransferAssets::returnfilter($fields);
 			$suppliesMarketing = [];
 			$suppliesMarketingCon = [];
-	
+			if($overwrite == 1){
+				GeneratedAssetsReports::truncate(); 
+			}
 			foreach($requestRes as $smVal){
 				$suppliesMarketingCon['id'] = $smVal['requestid'];
 				$suppliesMarketingCon['reference_number'] = $smVal['reference_number'];
@@ -493,13 +496,42 @@
 			}
 			//dd($returnTransfer);
 			$data['result'] = array_merge($suppliesMarketing, $returnTransfer);
-	
+			$insertData = [];
+			$container = [];
+			foreach($data['result'] as $key => $val){
+				$container['reference_number'] = $val['reference_number'];
+				$container['requested_by'] = $val['requested_by'];
+				$container['department'] = $val['department'];
+				$container['store_branch'] = $val['store_branch'];
+				$container['transaction_type'] = $val['transaction_type'];
+				$container['status'] = $val['status'];
+				$container['description'] = $val['description'];
+				$container['request_quantity'] = $val['request_quantity'];
+				$container['request_type'] = $val['request_type'];
+				$container['mo_reference'] = $val['mo_reference'];
+				$container['mo_item_code'] = $val['mo_item_code'];
+				$container['mo_item_description'] = $val['mo_item_description'];
+				$container['mo_qty_serve_qty'] = $val['mo_qty_serve_qty'];
+				$container['requested_date'] = $val['requested_date'];
+				$container['approved_by'] = $val['approved_by'];
+				$container['approved_at'] = $val['approved_at'];
+				$container['transacted_by'] = $val['transacted_by'];
+				$container['recommended_by'] = $val['recommended_by'];
+				$container['recommended_at'] = $val['recommended_at'];
+				$container['it_comments'] = $val['it_comments'];
+				$container['transacted_date'] = $val['transacted_date'];
+				$insertData[] = $container;
+			}
+        
+			GeneratedAssetsReports::insert($insertData);
+	    
 			$data['from']          = $from;
 			$data['to']            = $to;
 			$data['category']      = $category;
-			//$data['filters'] = $filters;
-			//dd($data['result'], $data['filters']);
+			$data['filters'] = $filters;
+		
 			return $this->view("assets.purchasing-reports-view", $data);
+			
 		}
 
 		public function requestExport(Request $request){
@@ -509,8 +541,7 @@
 
 		}
 
-		public function getReports()
-		{
+		public function getReports(){
 			ini_set('memory_limit','-1');
             ini_set('max_execution_time', 0);
 			$result_one = BodyRequest::arrayone();
@@ -600,6 +631,14 @@
 				   'display' => e($row['requested_date']->format('Y-m-d')),
 				];
 			 })
+			->rawColumns(['action'])
+			->make(true);
+		}
+
+		public function getGeneratedReports(){
+           $reports = GeneratedAssetsReports::select('*')->get();
+		   return datatables($reports)
+			->addIndexColumn()
 			->rawColumns(['action'])
 			->make(true);
 		}
