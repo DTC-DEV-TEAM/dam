@@ -127,6 +127,7 @@
                     <div class="modal-body">
                         <form  id="filterForm" method='post' target='_blank' name="filterForm" action="{{route('request-search')}}">
                             <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
+                            <input type="hidden" value="1" name="overwrite" id="overwrite">
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">

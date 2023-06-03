@@ -51,9 +51,9 @@
                 <tr>
                     <td style="text-align:center">   
                     @if(!in_array($val->status, [5,8,31]))     
-                    <a class='btn btn-xs btn-success' href='{{CRUDBooster::mainpath("edit-applicant/".$val->apid)."?return_url=".urlencode(Request::fullUrl())}}'><i class='fa fa-pencil'></i></a>                                         
+                    <a data-toggle="tooltip" data-placement="right" title="Edit" class='btn btn-xs btn-success' href='{{CRUDBooster::mainpath("edit-applicant/".$val->apid)."?return_url=".urlencode(Request::fullUrl())}}'><i class='fa fa-pencil'></i></a>                                         
                     @else
-                    <a class='btn btn-xs btn-primary' href='{{CRUDBooster::mainpath("detail-applicant/".$val->apid)."?return_url=".urlencode(Request::fullUrl())}}'><i class='fa fa-eye'></i></a>   
+                    <a data-toggle="tooltip" data-placement="right" title="View" class='btn btn-xs btn-primary' href='{{CRUDBooster::mainpath("detail-applicant/".$val->apid)."?return_url=".urlencode(Request::fullUrl())}}'><i class='fa fa-eye'></i></a>   
                     @endif
                     </td>  
                     @if($val['status'] == 8)
