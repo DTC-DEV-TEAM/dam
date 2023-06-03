@@ -24,7 +24,7 @@ class SendAssetsEmailController extends Controller
                  'cms_users.bill_to',
                 )
         ->whereNull('mo_body_request.return_flag')
-        ->whereIn('mo_body_request.request_created_by',[1099,1109,956,601,863])
+        ->whereIn('mo_body_request.request_created_by',[601])
         ->groupBy('mo_body_request.request_created_by')
         ->get();
 
@@ -38,7 +38,7 @@ class SendAssetsEmailController extends Controller
                  'statuses.status_description'
                 )
         ->whereNull('mo_body_request.return_flag')
-        ->whereIn('mo_body_request.request_created_by',[1099,1109,956,601,863])
+        ->whereIn('mo_body_request.request_created_by',[601])
         ->get()->toArray();
 
         $finalDataAssets = array();
@@ -50,12 +50,23 @@ class SendAssetsEmailController extends Controller
             }
             $finalDataAssets[] = $emailData;
         }
-        dd($finalDataAssets);
+        //dd($finalDataAssets);
         foreach($finalDataAssets as $key => $infos){
             Mail::to($infos->email)
             //->cc(['bpg@digits.ph'])
             ->send(new EmailAssets($infos));
         }
+     
+    	// send all mail in the queue.
+        $job = (new \App\Jobs\SendBulkQueueEmail($infos))
+            ->delay(
+            	now()
+            	->addSeconds(2)
+            ); 
+
+        dispatch($job);
+
+        echo "Bulk mail send successfully in the background...";
         
     }
 }
