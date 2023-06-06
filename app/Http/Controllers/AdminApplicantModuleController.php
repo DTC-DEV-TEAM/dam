@@ -533,6 +533,7 @@
 		}
 
 		function downloadApplicantTemplate() {
+			//FIRST SHEET
 			$arrHeader = [
 				"erf_number"         => "erf_number",
 				"status"             => "status",
@@ -551,9 +552,31 @@
 				"job_portal"         => "Indeed",
 				"remarks"            => "Remarks"
 			];
+			//2ND SHEET
+			// $statusHeader = [
+			// 	"statuses"           => "statuses",
+			// ];
+			// $statusData = [
+			// 	["statuses"          => "1st Interviewed"],
+			// 	["statuses"          => "Final Interview"],
+			// 	["statuses"          => "Job Offer"],
+			// 	["statuses"          => "Cancelled"],
+			// 	["statuses"          => "For Comparison"],
+			// 	["statuses"          => "Rejected"]	
+			// ];
 			$spreadsheet = new Spreadsheet();
+			//$spreadsheet->setActiveSheetIndex(0);
 			$spreadsheet->getActiveSheet()->fromArray(array_values($arrHeader), null, 'A1');
 			$spreadsheet->getActiveSheet()->fromArray($arrData, null, 'A2');
+			$spreadsheet->getActiveSheet()->setTitle('applicant-template');
+			//$spreadsheet->createSheet();
+
+			// Add some data to the second sheet, resembling some different data types
+			// $spreadsheet->setActiveSheetIndex(1);
+			// $spreadsheet->getActiveSheet()->fromArray(array_values($statusHeader), null, 'A1');
+			// $spreadsheet->getActiveSheet()->fromArray($statusData, null, 'A2');
+			// $spreadsheet->getActiveSheet()->setTitle('Status');
+
 			$filename = "applicant-template-".date('Y-m-d');
 			header('Content-Type: application/vnd.ms-excel');
 			header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"');

@@ -1,9 +1,17 @@
 <?php namespace App\Http\Controllers;
 
 	use Session;
-	use Request;
+	//use Request;
+	use Illuminate\Http\Request;
 	use DB;
 	use CRUDBooster;
+	use App\Models\PositionsModel;
+	use App\Imports\PositionsImport;
+	use PhpOffice\PhpSpreadsheet\Spreadsheet;
+	use PhpOffice\PhpSpreadsheet\Reader\Exception;
+	use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+	use PhpOffice\PhpSpreadsheet\IOFactory;
+	use Excel;
 
 	class AdminPositionsController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -140,7 +148,15 @@
 	        | 
 	        */
 	        $this->index_button = array();
-
+			if(CRUDBooster::isSuperadmin()){
+				$this->index_button[] = [
+					"title"=>"Import Position",
+					"label"=>"Import Position",
+					"icon"=>"fa fa-download",
+					"color"=>"success",
+					"url"=>CRUDBooster::mainpath('positions-upload')];
+			}
+			
 
 
 	        /* 
@@ -355,9 +371,20 @@
 
 	    }
 
+        public function uploadPositionsView() {
+			// if(!CRUDBooster::isSuperadmin()) {    
+			// 	CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+			// }
+			$data['page_title']= 'Positions Upload';
+			return view('import.positions-import', $data)->render();
+		}
 
-
-	    //By the way, you can still create your own method in here... :) 
+		public function positionsUpload(Request $request) {
+			$path_excel = $request->file('import_file')->store('temp');
+			$path = storage_path('app').'/'.$path_excel;
+			Excel::import(new PositionsImport, $path);	
+			CRUDBooster::redirect(CRUDBooster::adminpath('positions'), trans("Upload Successfully!"), 'success');
+		}
 
 
 	}

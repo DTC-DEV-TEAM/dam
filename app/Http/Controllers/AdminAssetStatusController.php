@@ -37,7 +37,9 @@
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
 			$this->col[] = ["label"=>"Status Description","name"=>"status_description"];
+			if(CRUDBooster::isSuperadmin()){
 			$this->col[] = ["label"=>"Status Type","name"=>"status_type"];
+			}
 			$this->col[] = ["label"=>"Status","name"=>"status"];
 			$this->col[] = ["label" => "Created By", "name" => "created_by", "join" => "cms_users,name"];
 			$this->col[] = ["label" => "Created At", "name" => "created_at"];
@@ -262,7 +264,16 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-	        //Your code here
+	        if(CRUDBooster::isSuperadmin()){
+				$query->whereNull('statuses.deleted_at')
+					  ->orderBy('statuses.id', 'ASC')
+					  ->orderBy('statuses.id', 'DESC');
+			}elseif(in_array(CRUDBooster::myPrivilegeId(),[4,15])){
+				$query->whereNull('statuses.deleted_at')
+				->whereIn('statuses.id',[5,8,34,35,36,42])
+				->orderBy('statuses.id', 'ASC')
+				->orderBy('statuses.id', 'DESC');
+			}
 	            
 	    }
 

@@ -522,9 +522,14 @@
 				$container['transacted_date'] = $val['transacted_date'];
 				$insertData[] = $container;
 			}
-        
-			GeneratedAssetsReports::insert($insertData);
-	    
+
+			$insert_data = collect($insertData);
+			$chunks = $insert_data->chunk(500);
+
+			foreach ($chunks as $chunk){
+			 GeneratedAssetsReports::insert($chunk->toArray());
+			}
+
 			$data['from']          = $from;
 			$data['to']            = $to;
 			$data['category']      = $category;

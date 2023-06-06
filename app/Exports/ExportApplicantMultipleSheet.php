@@ -20,8 +20,8 @@ class ExportApplicantMultipleSheet implements WithMultipleSheets
     {
         $sheets = [];
         $sheets[] = new ApplicantExport($this->filter_column);
-        // $sheets[] = new ApplicantErf($this->filter_column);
-        // $sheets[] = new ApplicantStatus($this->filter_column);
+        //$sheets[] = new ApplicantErf($this->filter_column);
+        $sheets[] = new ApplicantStatus();
         return $sheets;
     }
 }

@@ -123,7 +123,7 @@ Route::group(['middleware' => ['web']], function() {
     //Item Master
     Route::get('/admin/assets/item-master-upload','AdminAssetsController@UploadItemMaster');
     Route::post('/admin/assets/upload-item-master','AdminAssetsController@itemMasterUpload')->name('upload-item-master');
-    Route::get('/admin/db-truncate','TruncateController@dbtruncate');
+   
     Route::post(config('crudbooster.ADMIN_PATH').'/get-item-master-data','AdminAssetsController@getItemMasterDataApi')->name('get-item-master-data');
     Route::post(config('crudbooster.ADMIN_PATH').'/get-item-master-updated-data','AdminAssetsController@getItemMasterUpdatedDataApi')->name('get-item-master-updated-data');
 
@@ -242,8 +242,15 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/assets_supplies_inventory/add-supplies-inventory','AdminRequestsController@addSuppliesInventory')->name('add.supplies.inventory');
     Route::post(config('crudbooster.ADMIN_PATH').'/assets_supplies_inventory/restrict-request-asset','AdminRequestsController@restrictSuppliesRequest')->name('restrict-request-asset');
    
+    //POSITION
+  
+    Route::get('/admin/positions/positions-upload','AdminPositionsController@uploadpositionsView');
+    Route::post('/admin/positions/upload-positions','AdminPositionsController@positionsUpload')->name('upload-positions');
+    Route::get('/admin/positions/upload-positions-template','AdminPositionsController@uploadpositionsTemplate');
+ 
     //Deployed Assets Send to Users Via Email
-    Route::get('/admin/send-assets-email','SendAssetsEmailController@sendEmails');
+    //Route::get('/admin/send-assets-email','SendAssetsEmailController@sendEmails');
+    //Route::get('/admin/db-truncate','TruncateController@dbtruncate');
     Route::get('/admin/clear-view', function() {
         Artisan::call('view:clear');
         return "View cache is cleared!";

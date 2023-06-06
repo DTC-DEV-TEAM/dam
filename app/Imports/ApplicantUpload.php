@@ -100,7 +100,7 @@ class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
     {
         //Statuses
         $data['status_exist']['check'] = false;
-        $checkRowDb = DB::table('statuses')->select(DB::raw("LOWER(TRIM(REPLACE(`status_description`,' ',''))) AS status"))->whereIn('id', [8,34,35,36])->get()->toArray();
+        $checkRowDb = DB::table('statuses')->select(DB::raw("LOWER(TRIM(REPLACE(`status_description`,' ',''))) AS status"))->whereIn('id', [5,8,34,35,36,42])->get()->toArray();
         $checkRowDbColumn = array_column($checkRowDb, 'status');
 
         if(!empty($data['status'])){
