@@ -263,7 +263,16 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
-	        //Your code here
+	        if(CRUDBooster::isSuperadmin()){
+				$query->whereNull('statuses.deleted_at')
+					  ->orderBy('statuses.status_id', 'ASC')
+					  ->orderBy('statuses.id', 'DESC');
+			}elseif(in_array(CRUDBooster::myPrivilegeId(),[4,15])){
+				$query->whereNull('statuses.deleted_at')
+				->whereIn('statuses.id',[5,8,34,35,36,42])
+				->orderBy('statuses.status_id', 'ASC')
+				->orderBy('statuses.id', 'DESC');
+			}
 	            
 	    }
 

@@ -29,7 +29,7 @@ class EmailAssets extends Mailable
      */
     public function build()
     {
-        return $this->subject('DAM - Test send Deployed Assets via email -'.' '.$this->email)
+        return $this->subject('DAM - Deployed Assets -'.' '.$this->email)
         ->view('emails.send-assets-via-email');
     }
 }
