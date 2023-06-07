@@ -15,6 +15,7 @@ class Applicant extends Model
         'full_name',
         'job_portal',
         'remarks',
+        'update_remarks',
         'screen_date',
         'created_by',
         'created_at	',

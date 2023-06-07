@@ -79,18 +79,21 @@ class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
                 'first_name'  => trim($row['first_name']),
                 'last_name'   => trim($row['last_name']),
                 'job_portal'  => trim($row['job_portal']),
-                'remarks'     => $row['remarks'],
+                //'remarks'     => $row['remarks'],
                 'full_name'   => strtolower(str_replace(' ', '', trim($row['first_name']))).''.strtolower(str_replace(' ', '', trim($row['last_name']))),
               
             ]);
             if ($save->wasRecentlyCreated) {
-                $save->created_by  = CRUDBooster::myId();
-                $save->created_at  = date('Y-m-d H:i:s');
-                $save->updated_at  = NULL;
-                $save->screen_date = $screen_date;
+                $save->created_by     = CRUDBooster::myId();
+                $save->created_at     = date('Y-m-d H:i:s');
+                $save->updated_at     = NULL;
+                $save->screen_date    = $screen_date;
+                $save->remarks        = $row['remarks'];
             }else{
-                $save->updated_by = CRUDBooster::myId();
-                $save->updated_at = date('Y-m-d H:i:s');
+                $save->updated_by     = CRUDBooster::myId();
+                $save->updated_at     = date('Y-m-d H:i:s');
+                $save->update_remarks = $row['remarks'];
+
             }
             $save->save();
         }
