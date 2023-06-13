@@ -24,14 +24,14 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->call('\App\Http\Controllers\AdminAssetsController@getItemMasterDataApi')->hourly()->between('9:00', '23:00');
-        // $schedule->call('\App\Http\Controllers\AdminAssetsController@getItemMasterUpdatedDataApi')->hourly()->between('9:00', '23:00');
+        $schedule->call('\App\Http\Controllers\AdminAssetsController@getItemMasterDataApi')->hourly()->between('9:00', '23:00');
+        $schedule->call('\App\Http\Controllers\AdminAssetsController@getItemMasterUpdatedDataApi')->hourly()->between('9:00', '23:00');
         //$schedule->call('\App\Http\Controllers\AdminCategoriesController@getCategoriesDataApi')->hourly()->between('9:00', '21:00');
         //$schedule->call('\App\Http\Controllers\AdminCategoriesController@getCategoriesUpdatedDataApi')->hourly()->between('9:00', '21:00');
         
-        $schedule->call('\App\Http\Controllers\AdminClassesController@getClassCreatedDataApi')->everyMinute();
+        //$schedule->call('\App\Http\Controllers\AdminClassesController@getClassCreatedDataApi')->everyMinute();
        
-        //$schedule->call('\App\Http\Controllers\AdminOrderSchedulesController@deactivateSchedule')->hourly(); //->dailyAt('04:00');
+        $schedule->call('\App\Http\Controllers\AdminOrderSchedulesController@deactivateSchedule')->hourly(); //->dailyAt('04:00');
         
         $schedule->command('mysql:backup')->daily()->at('23:50');
     }

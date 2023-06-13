@@ -41,8 +41,8 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/export-assets-body', 'AdminAssetsInventoryHeaderController@ExportAssetsBody')->name('assets.export.assets.body'); 
     Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/export-assets-header', 'AdminAssetsInventoryHeaderController@ExportAssetsHeader')->name('assets.export.assets.header'); 
     Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/check-row','AdminAssetsInventoryHeaderController@checkRow')->name('assets.check.row');
-    Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/get-approvedProcess','AdminAssetsInventoryHeaderForApprovalController@getapprovedProcess')->name('assets.get.approvedProcess');
-    Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/get-rejectedProcess','AdminAssetsInventoryHeaderForApprovalController@getrejectedProcess')->name('assets.get.rejectedProcess');
+    Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/get-approvedProcess','AdminAssetsInventoryHeaderController@getapprovedProcess')->name('assets.get.approvedProcess');
+    Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/get-rejectedProcess','AdminAssetsInventoryHeaderController@getrejectedProcess')->name('assets.get.rejectedProcess');
     
     Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/get-history','AdminHeaderRequestController@getHistory')->name('assets.get.history');
     Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/get-comments','AdminHeaderRequestController@getComments')->name('assets.get.comments');
