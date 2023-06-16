@@ -337,7 +337,7 @@
                                               
                         <div class="col-md-12">
                             <hr/>
-                            <div class="row"> 
+                            <div class="row" id="application_div"> 
                                 <label class="require control-label col-md-2" required><span style="color:red">*</span> {{ trans('message.form-label.application') }}</label>
                                     @foreach($applications as $data)
                                         <div class="col-md-2">
@@ -373,6 +373,9 @@
 @endsection
 @push('bottom')
 <script type="text/javascript">
+    $(function(){
+        $('body').addClass("sidebar-collapse");
+    });
     function preventBack() {
         window.history.forward();
     }
@@ -491,7 +494,7 @@
     $(document).ready(function() {
         const fruits = [];
         $("#add-Row").click(function() {
-
+            $("#application_div").show();
             var description = "";
             var count_fail = 0;
             $('.itemDesc').each(function() {
@@ -748,6 +751,11 @@
         
         //deleteRow
         $(document).on('click', '.removeRow', function() {
+            $("#application_div").hide();
+            $("#application_others_div").hide();
+            $(".application").prop('checked', false);
+            $(".application_others").prop('checked', false);
+            $("#application_others").removeAttr('required');
             var id_data = $(this).attr("data-id");
             if($("#category_id"+id_data).val().toLowerCase().replace(/\s/g, '') == "it assets" || $("#category_id"+id_data).val().toLowerCase().replace(/\s/g, '') == "desktop"){
 
@@ -846,7 +854,7 @@
     //SUBMIT REQUEST
     $("#btnSubmit").click(function(event) {
         event.preventDefault();
-        var countRow = $('#asset-items tfoot tr').length;
+        var countRow = $('#asset-items tfoot tr').length - 1;
         var reg = /^0/gi;
         // var value = $('.vvalue').val();
         if($("#requested_date").val() === ""){
@@ -1008,15 +1016,16 @@
                 confirmButtonColor: "#367fa9",
             });
             event.preventDefault();
-        }else if (countRow == 1) {
-            swal({
-                type: 'error',
-                title: 'Please add an item!',
-                icon: 'error',
-                confirmButtonColor: "#367fa9",
-            }); 
-            event.preventDefault(); // cancel default behavior
         }
+        // else if (countRow == 1) {
+        //     swal({
+        //         type: 'error',
+        //         title: 'Please add an item!',
+        //         icon: 'error',
+        //         confirmButtonColor: "#367fa9",
+        //     }); 
+        //     event.preventDefault(); // cancel default behavior
+        // }
         // else if (countRow == 1) {
         // swal({
         //     type: 'error',
@@ -1029,7 +1038,7 @@
         else{
 
             if($('#show_replacement_of').is(":visible")){
-                if($('#replacement_of')){
+                if($('#replacement_of').val() === ""){
                     swal({
                         type: 'error',
                         title: 'Replacement Of required!',
@@ -1116,47 +1125,52 @@
                     } 
             
                 } 
-
-                var sub_cat = $(".sub_category_id option").length;
-                var sub_cat_value = $('.sub_category_id').find(":selected");
-                for(i=0;i<sub_cat;i++){
-                    var val = sub_cat_value.eq(i).val() || '';
-                    if(app_count == 0 && $.inArray((sub_cat_value.eq(i).val() || '').toLowerCase().replace(/\s/g, ''),['it assets','desktop']) > -1){
-                        swal({  
-                                type: 'error',
-                                title: 'Please choose an Application!',
-                                icon: 'error',
-                                confirmButtonColor: "#367fa9",
-                            });
-                            event.preventDefault();
-                            return false;
-                    } 
-            
-                } 
-                if(app_count == 0){
+                if(countRow == 1){
+                    var sub_cat = $(".sub_category_id option").length;
+                    var sub_cat_value = $('.sub_category_id').find(":selected");
+                    for(i=0;i<sub_cat;i++){
+                        var val = sub_cat_value.eq(i).val() || '';
+                        if(app_count == 0 && $.inArray((sub_cat_value.eq(i).val() || '').toLowerCase().replace(/\s/g, ''),['it assets','desktop']) > -1){
                             swal({  
-                                type: 'error',
-                                title: 'Please choose an Application!',
-                                icon: 'error',
-                                confirmButtonColor: "#367fa9",
-                                
-                            });
-                            event.preventDefault();
-                            return false;
-                }else{
-                    swal({
-                        title: "Are you sure?",
-                        type: "warning",
-                        showCancelButton: true,
-                        confirmButtonColor: "#41B314",
-                        cancelButtonColor: "#F9354C",
-                        confirmButtonText: "Yes, send it!",
-                        width: 450,
-                        height: 200
-                        }, function () {
-                            $("#ERFRequest").submit();                                                   
-                    });
+                                    type: 'error',
+                                    title: 'Please choose an Application!',
+                                    icon: 'error',
+                                    confirmButtonColor: "#367fa9",
+                                });
+                                event.preventDefault();
+                                return false;
+                        } 
+                
+                    } 
                 }
+               
+                if(countRow == 1){
+                    if(app_count == 0){
+                                swal({  
+                                    type: 'error',
+                                    title: 'Please choose an Application!',
+                                    icon: 'error',
+                                    confirmButtonColor: "#367fa9",
+                                    
+                                });
+                                event.preventDefault();
+                                return false;
+                    }
+                }
+               
+                swal({
+                    title: "Are you sure?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#41B314",
+                    cancelButtonColor: "#F9354C",
+                    confirmButtonText: "Yes, send it!",
+                    width: 450,
+                    height: 200
+                    }, function () {
+                        $("#ERFRequest").submit();                                                   
+                });
+                
    
         }
     

@@ -63,12 +63,16 @@
 @endif
 
     <div class='panel-heading'>
-        Set On Boarding Date Form
+        Set On Boarding Date Form @if($Header->locking_onboarding_date !== CRUDBooster::myId()) <span style="color: red">(This form request currently used by {{$Header->current_user}}!)</span> @endif
     </div>
 
     <form method='post' id="myform" action='{{CRUDBooster::mainpath('edit-save/'.$Header->requestid)}}'>
         <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
         <input type="hidden" value="" name="approval_action" id="approval_action">
+        <input type="hidden" value="0" name="action" id="action">
+        <input type="hidden" name="id" id="id" value="{{$Header->requestid}}">
+        <input type="hidden" value="{{$Header->locking_onboarding_date}}" name="locking" id="locking">
+        <input type="hidden" value="{{CRUDBooster::myId()}}" name="current_user" id="current_user">
 
             <div class="card">
                 <div class="row">
@@ -374,14 +378,17 @@
                         <div class="form-group">
                         <label class="control-label">On Boarding Date</i></label>
                             <input type="hidden" class="form-control finput" id="requesid" value="{{$Header->requestid}}" aria-describedby="basic-addon1" >             
-                            <input type="text" class="form-control finput date" name="onboarding_date" id="onboarding_date" aria-describedby="basic-addon1">             
+                            <input type="text" class="form-control finput date" name="onboarding_date" id="onboarding_date" value="{{$Header->onboarding_date}}" aria-describedby="basic-addon1">             
                         </div>
                     </div>
                   
                 </div>
                 <hr>
                 <a href="{{ CRUDBooster::mainpath() }}" id="btn-cancel" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
-                <button class="btn btn-success pull-right" type="button" id="btnSet"> Submit</button>
+                @if($Header->locking_onboarding_date === CRUDBooster::myId())
+                <button class="btn btn-success pull-right" type="button" id="btnSet"> <i class="fa fa-send" ></i> Submit</button>
+                <button class="btn btn-warning pull-right" type="submit" id="btnUpdate" style="margin-right: 10px;"> <i class="fa fa-refresh" ></i> {{ trans('message.form.update') }}</button> 
+                @endif
             </div>
             
 
@@ -390,6 +397,46 @@
 @endsection
 @push('bottom')
 <script type="text/javascript">
+    $(function(){
+        $('body').addClass("sidebar-collapse");
+    });
+    window.onbeforeunload = function() {
+        return "";
+    };
+    function preventBack() {
+        window.history.forward();
+    }
+    setTimeout("preventBack()", 0);
+
+    if($('#locking').val() === $('#current_user').val()){
+        const pageHideListener = (event) => {
+            var id = $('#id').val();
+            $.ajaxSetup({
+                headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+            });
+            $.ajax({
+                type: 'POST',
+                url: "{{ route('delete-locking-onboarding-date') }}",
+                dataType: 'json',
+                data: {
+                    'header_request_id': id
+                },
+                success: function ()
+                {
+                    
+                }
+            });  
+        };
+        window.addEventListener("pagehide", pageHideListener);
+
+        var online = navigator.onLine;
+        if(online == false){
+            window.addEventListener("pagehide", pageHideListener);
+        }
+    }
+
     $(".date").datetimepicker({
             minDate: moment().millisecond(0).second(0).minute(0).hour(0),
             viewMode: "days",
@@ -439,6 +486,61 @@
                                 setTimeout(function(){
                                     window.location.replace(document.referrer);
                                 }, 2000); 
+                                } else if (data.status == "error") {
+                                swal({
+                                    type: data.status,
+                                    title: data.message,
+                                });
+                            }             
+                        },
+                        error: function (data) {
+                            console.log('Error:', data);
+                        }
+                    });                 
+            });
+        }
+            
+    });
+
+    $('#btnUpdate').click(function(event) {
+        var id = $('#requesid').val();
+        var date = $('#onboarding_date').val();
+        event.preventDefault();
+        if($('#onboarding_date').val() === "" ){
+            swal({  
+                type: 'error',
+                title: 'Onboarding Date Required!',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            });
+            event.preventDefault();
+            return false;
+        }else{
+            swal({
+                title: "Are you sure?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#41B314",
+                cancelButtonColor: "#F9354C",
+                confirmButtonText: "Yes, update it!",
+                width: 450,
+                height: 200
+                }, function () {
+                    $.ajax({
+                        url: "{{ route('set-update-onboarding-date') }}",
+                        type: "POST",
+                        data: {
+                            id: id,
+                            date: date,
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.status == "success") {
+                                swal({
+                                    type: data.status,
+                                    title: data.message,
+                                });
+                                location.reload();               
                                 } else if (data.status == "error") {
                                 swal({
                                     type: data.status,

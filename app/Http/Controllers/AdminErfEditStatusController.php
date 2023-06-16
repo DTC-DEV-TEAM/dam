@@ -71,6 +71,9 @@
 			$this->col[] = ["label"=>"Requested Date","name"=>"date_requested"];
 			$this->col[] = ["label"=>"Date Needed","name"=>"date_needed"];
 			$this->col[] = ["label"=>"Requested By","name"=>"created_by","join"=>"cms_users,name"];
+			$this->col[] = ["label"=>"Locking","name"=>"locking_edit","visible"=>false];
+			$this->col[] = ["label"=>"Locking Create Account","name"=>"locking_create_account","visible"=>false];
+			$this->col[] = ["label"=>"Locking Onboarding Date","name"=>"locking_onboarding_date","visible"=>false];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
@@ -108,10 +111,22 @@
 			if(CRUDBooster::isUpdate()) {
 				$for_verification =  29;
 				$jo_done =  31;
-				$for_onboarding = 33;
-				$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getEditErf/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[status_id] == $for_verification"];
-				$this->addaction[] = ['title'=>'Create Account','url'=>CRUDBooster::mainpath('getErfCreateAccount/[id]'),'icon'=>'fa fa-pencil', "showIf"=>"[status_id] == $jo_done"];
-				$this->addaction[] = ['title'=>'Set Onboarding Date','url'=>CRUDBooster::mainpath('getErfSetOnboardingDate/[id]'),'icon'=>'fa fa-pencil', "showIf"=>"[status_id] == $for_onboarding"];
+				$for_onboarding = 33; 
+                $id = CRUDBooster::myId();
+
+				//locking in edit for verification
+				$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('getEditErf/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[status_id] == $for_verification && [locking_edit] == null || [locking_edit] == $id"];
+				$this->addaction[] = ['title'=>'LockEdit','url'=>CRUDBooster::mainpath('getLockingForm/[id]'),'icon'=>'fa fa-pencil' , "showIf"=>"[status_id] == $for_verification && [locking_edit] != null && [locking_edit] != $id"];
+				
+				//locking in creating  account
+				$this->addaction[] = ['title'=>'Create Account','url'=>CRUDBooster::mainpath('getErfCreateAccount/[id]'),'icon'=>'fa fa-pencil', "showIf"=>"[status_id] == $jo_done && [locking_create_account] == null || [locking_create_account] == $id"];
+				$this->addaction[] = ['title'=>'Lock Create Account','url'=>CRUDBooster::mainpath('getLockingErfCreateAccountForm/[id]'),'icon'=>'fa fa-pencil', "showIf"=>"[status_id] == $jo_done && [locking_create_account] != null && [locking_create_account] != $id"];
+
+				//Locking onboarding date
+				$this->addaction[] = ['title'=>'Set Onboarding Date','url'=>CRUDBooster::mainpath('getErfSetOnboardingDate/[id]'),'icon'=>'fa fa-pencil', "showIf"=>"[status_id] == $for_onboarding && [locking_onboarding_date] == null || [locking_onboarding_date] == $id"];
+				$this->addaction[] = ['title'=>'Locking Onboarding Date','url'=>CRUDBooster::mainpath('getLockingErfSetOnboardingDate/[id]'),'icon'=>'fa fa-pencil', "showIf"=>"[status_id] == $for_onboarding && [locking_onboarding_date] != null && [locking_onboarding_date] != $id"];
+				
+				
 				$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailErf/[id]'),'icon'=>'fa fa-eye', "showIf"=>"[status_id] != $for_verification && [status_id] != $for_onboarding"];
 				
 			}
@@ -185,7 +200,119 @@
 	        |
 	        */
 	        $this->script_js = NULL;
+			$this->script_js = "
+			$(document).ready(function() {
+				$('a[title=\"Update\"]').click(function(e){
+					var id = $(this).attr('href').split('/').pop();
+					$.ajaxSetup({
+						headers: {
+									'X-CSRF-TOKEN': $('meta[name=\"csrf-token\"]').attr('content')
+								}
+					});
+					$.ajax({
+						type: 'POST',
+						url: '".route('locking-form')."',
+						dataType: 'json',
+						data: {
+							'header_request_id': id
+						},
+						success: function(response) {
+							if (response.status == \"success\") {
+								swal({
+									type: response.status,
+									title: response.message,
+								});
 
+								window.location.replace(response.redirect_url);
+								} else if (response.status == \"error\") {
+								swal({
+									type: response.status,
+									title: response.message,
+								});
+								}
+						},
+						error: function(e) {
+							console.log(e);
+						}
+					});
+                   
+				});
+
+				//CREATE ACCOUNT LOCKING
+				$('a[title=\"Create Account\"]').click(function(e){
+					var id = $(this).attr('href').split('/').pop();
+					$.ajaxSetup({
+						headers: {
+									'X-CSRF-TOKEN': $('meta[name=\"csrf-token\"]').attr('content')
+								}
+					});
+					$.ajax({
+						type: 'POST',
+						url: '".route('locking-form-create-account')."',
+						dataType: 'json',
+						data: {
+							'header_request_id': id
+						},
+						success: function(response) {
+							if (response.status == \"success\") {
+								swal({
+									type: response.status,
+									title: response.message,
+								});
+
+								window.location.replace(response.redirect_url);
+								} else if (response.status == \"error\") {
+								swal({
+									type: response.status,
+									title: response.message,
+								});
+								}
+						},
+						error: function(e) {
+							console.log(e);
+						}
+					});
+                   
+				});
+
+				//ONBARDING DATE LOCKING
+				$('a[title=\"Set Onboarding Date\"]').click(function(e){
+					var id = $(this).attr('href').split('/').pop();
+					$.ajaxSetup({
+						headers: {
+									'X-CSRF-TOKEN': $('meta[name=\"csrf-token\"]').attr('content')
+								}
+					});
+					$.ajax({
+						type: 'POST',
+						url: '".route('locking-form-onboarding-date')."',
+						dataType: 'json',
+						data: {
+							'header_request_id': id
+						},
+						success: function(response) {
+							if (response.status == \"success\") {
+								swal({
+									type: response.status,
+									title: response.message,
+								});
+
+								window.location.replace(response.redirect_url);
+								} else if (response.status == \"error\") {
+								swal({
+									type: response.status,
+									title: response.message,
+								});
+								}
+						},
+						error: function(e) {
+							console.log(e);
+						}
+					});
+                   
+				});
+			});
+			";
 
             /*
 	        | ---------------------------------------------------------------------- 
@@ -366,6 +493,7 @@
 				    'hr_comments'	                    => $hr_comments,
 				    'approved_hr_by' 		            => CRUDBooster::myId(),
 				    'approved_hr_at' 		            => date('Y-m-d H:i:s'),
+					'locking_edit'                      => NULL,
 				]);	
 				//add in arf heaader request table
 			$count_header       = DB::table('header_request')->count();
@@ -614,6 +742,7 @@
 				    'hr_comments'	                    => $hr_comments,
 				    'approved_hr_by' 		            => CRUDBooster::myId(),
 				    'approved_hr_at' 		            => date('Y-m-d H:i:s'),
+					'locking_edit'                      => NULL,
 				]);	
 			}
 			CRUDBooster::redirect(CRUDBooster::mainpath(), trans('Successfully Rejected!'), 'success');
@@ -681,6 +810,7 @@
 				->leftjoin('departments', 'erf_header_request.department', '=', 'departments.id')
 				->leftjoin('cms_users as approver', 'erf_header_request.approved_immediate_head_by', '=', 'approver.id')
 				->leftjoin('cms_users as verifier', 'erf_header_request.approved_hr_by', '=', 'verifier.id')
+				->leftjoin('cms_users as currentUser', 'erf_header_request.locking_edit', '=', 'currentUser.id')
 				->leftJoin('applicant_table', function($join) 
 				{
 					$join->on('erf_header_request.reference_number', '=', 'applicant_table.erf_number')
@@ -691,6 +821,7 @@
 						'erf_header_request.id as requestid',
 						'approver.name as approved_head_by',
 						'verifier.name as verified_by',
+						'currentUser.name as current_user',
 						'departments.department_name as department',
 						'applicant_table.*'
 						)
@@ -801,6 +932,7 @@
 			$data['Header'] = ErfHeaderRequest::
 				leftjoin('companies', 'erf_header_request.company', '=', 'companies.id')
 				->leftjoin('departments', 'erf_header_request.department', '=', 'departments.id')
+				->leftjoin('cms_users as currentUser', 'erf_header_request.locking_create_account', '=', 'currentUser.id')
 				->leftJoin('applicant_table', function($join) 
 				{
 					$join->on('erf_header_request.reference_number', '=', 'applicant_table.erf_number')
@@ -810,6 +942,7 @@
 						'erf_header_request.*',
 						'erf_header_request.id as requestid',
 						'departments.department_name as department',
+						'currentUser.name as current_user',
 						'applicant_table.*'
 						)
 				->where('erf_header_request.id', $id)->first();
@@ -899,6 +1032,7 @@
 			erfHeaderRequest::where(['id' => $fields['id']])
 					->update([
 							'status_id' => $this->onboarding, 
+							'locking_create_account' => NULL,
 							]);
 			$message = ['status'=>'success', 'message' => 'Created Successfully!'];
 			echo json_encode($message);
@@ -950,6 +1084,7 @@
 			$data['Header'] = ErfHeaderRequest::
 				leftjoin('companies', 'erf_header_request.company', '=', 'companies.id')
 				->leftjoin('departments', 'erf_header_request.department', '=', 'departments.id')
+				->leftjoin('cms_users as currentUser', 'erf_header_request.locking_onboarding_date', '=', 'currentUser.id')
 				->leftJoin('applicant_table', function($join) 
 				{
 					$join->on('erf_header_request.reference_number', '=', 'applicant_table.erf_number')
@@ -959,6 +1094,7 @@
 						'erf_header_request.*',
 						'erf_header_request.id as requestid',
 						'departments.department_name as department',
+						'currentUser.name as current_user',
 						'applicant_table.*'
 						)
 				->where('erf_header_request.id', $id)->first();
@@ -993,8 +1129,108 @@
 					->update([
 							'status_id' => $this->closed, 
 							'onboarding_date' => $fields['date'],
+							'locking_onboarding_date' => NULL,
 							]);
 			$message = ['status'=>'success', 'message' => 'Set Successfully!'];
 			echo json_encode($message);
+		}
+
+		public function setUpdateOnboarding(Request $request) {	
+			$fields = Request::all();
+			erfHeaderRequest::where(['id' => $fields['id']])
+					->update([
+							'onboarding_date' => $fields['date'],
+							]);
+			$message = ['status'=>'success', 'message' => 'Update Successfully!'];
+			echo json_encode($message);
+		}
+
+		public function getDownload($id) {
+			$getFile = DB::table('erf_header_documents')->where('id',$id)->first();
+			$file= public_path(). "/vendor/crudbooster/erf_folder/".$getFile->file_name;
+
+			$headers = array(
+					'Content-Type: application/pdf',
+					);
+
+			return Response::download($file, $getFile->file_name, $headers);
+		}
+
+		//LOCKING FORM EDIT
+		public function lockForm(Request $request) {	
+			$fields = Request::all();
+			$check = DB::table('erf_header_request')->where('id',$fields['header_request_id'])->whereNull('locking_edit')->count();
+			if($check == 1){
+				erfHeaderRequest::where(['id' => $fields['header_request_id']])
+				->update([
+						'locking_edit' => CRUDBooster::myId(),
+						]);
+			}
+		}
+
+		public function lockDeleteForm(Request $request) {	
+			$fields = Request::all();
+			erfHeaderRequest::where(['id' => $fields['header_request_id']])
+					->update([
+							'locking_edit' => NULL,
+							]);
+		}
+
+		public function getLockingFormView($id) {	
+			$data = [];
+			$data['user'] = DB::table('erf_header_request')->leftjoin('cms_users as currentUser', 'erf_header_request.locking_edit', '=', 'currentUser.id')->select('currentUser.name as current_user')->where('erf_header_request.id',$id)->first();
+			return response()->view('errors.form-used-page',$data);
+		}
+
+		//LOCKING FORM CREATE ACCOUNT
+		public function lockFormCreateAccount(Request $request) {	
+			$fields = Request::all();
+			$check = DB::table('erf_header_request')->where('id',$fields['header_request_id'])->whereNull('locking_create_account')->count();
+			if($check == 1){
+				erfHeaderRequest::where(['id' => $fields['header_request_id']])
+				->update([
+						'locking_create_account' => CRUDBooster::myId(),
+						]);
+			}
+		}
+
+		public function createAccountlockDelete(Request $request) {	
+			$fields = Request::all();
+			erfHeaderRequest::where(['id' => $fields['header_request_id']])
+					->update([
+							'locking_create_account' => NULL,
+							]);
+		}
+
+		public function getLockingErfCreateAcountFormView($id) {	
+			$data = [];
+			$data['user'] = DB::table('erf_header_request')->leftjoin('cms_users as currentUser', 'erf_header_request.locking_create_account', '=', 'currentUser.id')->select('currentUser.name as current_user')->where('erf_header_request.id',$id)->first();
+			return response()->view('errors.form-used-erf-create-account-page',$data);
+		}
+
+		//LOCKING ONBOARDING DATE
+		public function lockFormOnboardingDate(Request $request) {	
+			$fields = Request::all();
+			$check = DB::table('erf_header_request')->where('id',$fields['header_request_id'])->whereNull('locking_onboarding_date')->count();
+			if($check == 1){
+				erfHeaderRequest::where(['id' => $fields['header_request_id']])
+				->update([
+						'locking_onboarding_date' => CRUDBooster::myId(),
+						]);
+			}
+		}
+
+		public function onboardingDatelockDelete(Request $request) {	
+			$fields = Request::all();
+			erfHeaderRequest::where(['id' => $fields['header_request_id']])
+					->update([
+							'locking_onboarding_date' => NULL,
+							]);
+		}
+
+		public function getLockingErfOnboardingDateFormView($id) {	
+			$data = [];
+			$data['user'] = DB::table('erf_header_request')->leftjoin('cms_users as currentUser', 'erf_header_request.locking_onboarding_date', '=', 'currentUser.id')->select('currentUser.name as current_user')->where('erf_header_request.id',$id)->first();
+			return response()->view('errors.form-used-erf-onboarding-date-page',$data);
 		}
 	}

@@ -63,6 +63,7 @@
     <form method='post' id="myform" action='{{CRUDBooster::mainpath('edit-save/'.$Header->requestid)}}'>
         <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
         <input type="hidden" value="" name="approval_action" id="approval_action">
+        <input type="hidden" value="{{$Header->requestid}}" name="header_id" id="header_id">
 
             <div class="card">
                 <div class="row">
@@ -341,6 +342,48 @@
 @endsection
 @push('bottom')
 <script type="text/javascript">
+$(function(){
+    $('body').addClass("sidebar-collapse");
+});
+
+    //DELETE LOCKING
+    $(window).unload(function(){
+        var id = $('#header_id').val();
+        $.ajaxSetup({
+                    headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            }
+                });
+        $.ajax({
+            type: 'POST',
+            url: "{{ route('delete-locking-form') }}",
+            dataType: 'json',
+            async:false,
+            data: {
+                'header_request_id': id
+            },
+            success: function(response) {
+                if (response.status == "success") {
+                    swal({
+                        type: response.status,
+                        title: response.message,
+                    });
+
+                    window.location.replace(response.redirect_url);
+                    } else if (response.status == "error") {
+                    swal({
+                        type: response.status,
+                        title: response.message,
+                    });
+                    }
+            },
+            error: function(e) {
+                console.log(e);
+            }
+        });
+
+    });
+
  $('#btnApprove').click(function(event) {
         event.preventDefault();
         swal({
@@ -394,6 +437,8 @@
                 window.history.back();                                                  
         });
     });
+
+   
 
     var tds = document
     .getElementById("table_dashboard")

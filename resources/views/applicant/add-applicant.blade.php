@@ -119,7 +119,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="control-label"><span style="color:red">*</span> Remarks</label>
+                            <label class="control-label"> Remarks(Optional)</label>
                             <input type="text" class="form-control finput"  id="remarks" name="remarks"  required>                                   
                         </div>
                     </div>
@@ -147,7 +147,6 @@
     setTimeout("preventBack()", 0);
     $('.erf').select2({})
     $(".date").datetimepicker({
-        minDate: moment().millisecond(0).second(0).minute(0).hour(0),
         viewMode: "days",
         format: "YYYY-MM-DD",
         dayViewHeaderFormat: "MMMM YYYY",

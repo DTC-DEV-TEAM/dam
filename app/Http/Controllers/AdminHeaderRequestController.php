@@ -376,8 +376,8 @@
 				$released  = 		DB::table('statuses')->where('id', 12)->value('id');
 
 				$query->whereNull('header_request.deleted_at')
-					  ->orderBy('header_request.status_id', 'ASC')
-					  ->orderBy('header_request.id', 'DESC');
+					  ->orderBy('header_request.status_id', 'DESC')
+					  ->orderBy('header_request.id', 'ASC');
 
 			}else{
 

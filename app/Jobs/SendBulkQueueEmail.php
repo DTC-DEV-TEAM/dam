@@ -45,8 +45,7 @@ class SendBulkQueueEmail implements ShouldQueue
                  'cms_users.bill_to',
                 )
         ->whereNull('mo_body_request.return_flag')
-        //->whereIn('mo_body_request.request_created_by',[1099,1109,956,601,863])
-        //->whereIn('mo_body_request.request_created_by',[601,956])
+        ->whereIn('mo_body_request.request_created_by',[839,927,929,940,1035,969,977,994,1048,966,865,998,1067,963,862,965,997,951,868,1104,1100,1045,1017,980])
         ->groupBy('mo_body_request.request_created_by')
         ->get();
 
@@ -60,8 +59,7 @@ class SendBulkQueueEmail implements ShouldQueue
                  'statuses.status_description'
                 )
         ->whereNull('mo_body_request.return_flag')
-        //->whereIn('mo_body_request.request_created_by',[1099,1109,956,601,863])
-        //->whereIn('mo_body_request.request_created_by',[601,956])
+        ->whereIn('mo_body_request.request_created_by',[839,927,929,940,1035,969,977,994,1048,966,865,998,1067,963,862,965,997,951,868,1104,1100,1045,1017,980])
         ->get()->toArray();
 
         $finalDataAssets = array();
@@ -73,7 +71,7 @@ class SendBulkQueueEmail implements ShouldQueue
             }
             $finalDataAssets[] = $emailData;
         }
-        //dd($finalDataAssets);
+        // dd($finalDataAssets);
         foreach($finalDataAssets as $key => $infos){
             Mail::to($infos->email)
             ->cc(['marvinmosico@digits.ph'])
