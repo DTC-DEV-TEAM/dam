@@ -671,8 +671,13 @@
 			$this->cbLoader();
 
 			$data['page_title'] = 'Add Inventory';
-
-			$data['warehouse_location'] = WarehouseLocationModel::where('id','!=',4)->get();;
+            if(CRUDBooster::isSuperadmin()){
+			    $data['warehouse_location'] = WarehouseLocationModel::where('id','!=',4)->get();
+			}else if(CRUDBooster::myPrivilegeId() == 5){
+				$data['warehouse_location'] = WarehouseLocationModel::where('id','=',3)->get();
+			}else if(CRUDBooster::myPrivilegeId() == 9){
+				$data['warehouse_location'] = WarehouseLocationModel::whereIn('id',[1,2])->get();
+			}
 			$data['reserved_assets'] = AssetsInventoryReserved::whereNotNull('for_po')->get();
 			$data['header_images'] = AssetsHeaderImages::select(
 				'assets_header_images.*'
@@ -1202,16 +1207,18 @@
 			$brand        = $fields['brand'];
 			$specs        = $fields['specs'];
 
-			$getLastId = AssetsInventoryHeader::Create(
+			$getLastId = AssetsInventoryHeaderForApproval::Create(
 				[
 					'po_no'                  => $po_no, 
 					'invoice_date'           => $invoice_date,
 					'invoice_no'             => $invoice_no,
 					'rr_date'                => $rr_date,
 					'location'               => $location,
-					'header_status'          => 22,
+					'header_approval_status' => 22,
 					'created_by'             => CRUDBooster::myId(),
-					'created_at'             => date('Y-m-d H:i:s')
+					'created_at'             => date('Y-m-d H:i:s'),
+					'updated_by'             => CRUDBooster::myId(), 
+					'date_updated'           => date('Y-m-d H:i:s')
 				]
 			);     
 			

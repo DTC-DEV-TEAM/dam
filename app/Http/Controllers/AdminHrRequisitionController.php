@@ -10,6 +10,7 @@
 	use App\ApprovalMatrix;
 	use App\StatusMatrix;
 	use App\Models\ErfHeaderDocuments;
+	use App\Models\Applicant;
 	use Illuminate\Support\Facades\Response;
 	use Illuminate\Contracts\Encryption\DecryptException;
 	use Illuminate\Support\Facades\Crypt;
@@ -238,7 +239,7 @@
 	        */
 	        $this->load_css = array();
 			$this->load_css[] = asset("datetimepicker/bootstrap-datetimepicker.min.css");
-	        
+			$this->load_css[] = asset("css/font-family.css");
 	    }
 
 
@@ -344,6 +345,7 @@
 			$absorption                = $fields['absorption'];
 			$manpower_type             = $fields['manpower_type'];
 			$required_exams            = $fields['required_exams'];
+			$other_required_exams      = $fields['other_required_exams'];
 			$qualifications            = $fields['qualifications'];
 			$job_descriptions          = $fields['job_descriptions'];
 			$quantity_total 	       = $fields['quantity_total'];
@@ -375,17 +377,20 @@
 			$postdata['work_location'] 				= $work_location;
 			$postdata['salary_range_from'] 			= Crypt::encryptString(str_replace(',', '', $salary_range[0]));
 			$postdata['salary_range_to'] 			= Crypt::encryptString(str_replace(',', '', $salary_range[1]));
-			if($schedule === "OTHERS"){
-				$postdata['schedule'] 			    = $other_schedule;
-			}else{
+
+			if(!empty($schedule)){
 				$postdata['schedule'] 				= $schedule;
+				$postdata['other_schedule'] 	    = $other_schedule;
 			}
+
 			$postdata['allow_wfh'] 		            = $allow_wfh;
 			$postdata['manpower'] 		            = $manpower;
 			$postdata['replacement_of'] 		    = $replacement_of;
 			$postdata['absorption'] 		        = $absorption;
 			$postdata['manpower_type'] 		        = $manpower_type;
+
 			if(!empty($required_exams)){
+				$postdata['other_required_exams'] 	= $other_required_exams;
 				$postdata['required_exams'] 	    = implode(", ",$required_exams);
 			}
 
@@ -615,11 +620,11 @@
 			$asset_usage = explode(",",$data['Header']->asset_usage);
 			$application = explode(",",$data['Header']->application);
 			$required_system = explode(",",$data['Header']->required_system);
-			$data['required_exams'] = $res_req;
-			$data['interaction'] = $interact_with;
-			$data['asset_usage'] = $asset_usage;
+			$data['res_req'] = array_map('trim', $res_req);
+			$data['interaction'] = array_map('trim', $interact_with);
+			$data['asset_usage_array'] = array_map('trim', $asset_usage);
 			$data['application'] = $application;
-			$data['required_system'] = $required_system;
+			$data['required_system_array'] = array_map('trim', $required_system);
 			$data['Body'] = ErfBodyRequest::
 				select(
 				  'erf_body_request.*'
@@ -631,7 +636,25 @@
 				  )
 				  ->where('erf_header_documents.header_id', $id)
 				  ->get();
-	
+			$data['applicants'] = Applicant::leftjoin('statuses', 'applicant_table.status', '=', 'statuses.id')
+			        ->select(
+					'applicant_table.*',
+					'statuses.status_description',
+					'statuses.id as status_id',
+					)
+					->where('applicant_table.erf_number', $data['Header']->reference_number)
+					->get();
+					
+			$data['schedule'] = DB::table('sub_masterfile_schedule')->where('status', 'ACTIVE')->get();
+			$data['allow_wfh'] = DB::table('sub_masterfile_allow_wfh')->where('status', 'ACTIVE')->get();
+			$data['manpower'] = DB::table('sub_masterfile_manpower')->where('status', 'ACTIVE')->get();
+			$data['manpower_type'] = DB::table('sub_masterfile_manpower_type')->where('status', 'ACTIVE')->get();
+			$data['required_exams'] = DB::table('sub_masterfile_required_exams')->where('status', 'ACTIVE')->get();
+			$data['asset_usage'] = DB::table('sub_masterfile_asset_usage')->where('status', 'ACTIVE')->get();
+			$data['shared_files'] = DB::table('sub_masterfile_shared_files')->where('status', 'ACTIVE')->get();
+			$data['interact_with'] = DB::table('sub_masterfile_interact_with')->where('status', 'ACTIVE')->get();
+			$data['email_domain'] = DB::table('sub_masterfile_email_domain')->where('status', 'ACTIVE')->get();
+			$data['required_system'] = DB::table('sub_masterfile_required_system')->where('status', 'ACTIVE')->get();
 			return $this->view("erf.erf_details", $data);
 		}
 

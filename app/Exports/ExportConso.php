@@ -16,6 +16,7 @@ class ExportConso implements FromQuery, WithHeadings, WithMapping
     public function __construct($data){
         $this->from      = $data['from'];
         $this->to        = $data['to'];
+        $this->category  = $data['category'];
     }
 
     public function headings():array{
@@ -108,6 +109,9 @@ class ExportConso implements FromQuery, WithHeadings, WithMapping
         //dd($this->from, $this->to);
         if($this->from && $this->to){
             $data->whereBetween('header_request.approved_at',[$this->from,$this->to]);
+        }
+        if($this->category){
+            $data->where('header_request.request_type_id',$this->category);
         }
         return $data;
     }

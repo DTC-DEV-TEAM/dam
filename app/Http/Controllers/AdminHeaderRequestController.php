@@ -19,7 +19,8 @@
 	use Illuminate\Support\Facades\Log;
 	use Illuminate\Support\Facades\Redirect;
 	use App\MoveOrder;
-
+	use Illuminate\Support\Facades\Response;
+	
 	class AdminHeaderRequestController extends \crocodicstudio\crudbooster\controllers\CBController {
 
         public function __construct() {
@@ -1929,6 +1930,18 @@
 		
 		public function getServiceUnavailable() {
 			return view('assets.add-service-unavailable');
+		}
+
+		public function getDownload() {
+			$file= public_path(). "/vendor/crudbooster/it_assets_price/IT Assets Pricelist.xlsx";
+            if(in_array($getFile->ext,['xlsx','docs','pdf'])){
+			    $headers = array(
+					'Content-Type: application/pdf',
+					);
+			    return Response::download($file, $getFile->file_name, $headers);
+			}else{
+				return Response::download($file, $getFile->file_name);
+			}
 		}
 
 	}

@@ -16,6 +16,7 @@
 	use App\HeaderRequest;
 	use App\BodyRequest;
 	use App\Statuses;
+	use App\Models\Applicant;
 	use Illuminate\Support\Facades\Hash;
 
 	class AdminErfEditStatusController extends \crocodicstudio\crudbooster\controllers\CBController {
@@ -372,7 +373,7 @@
 	        */
 	        $this->load_css = array();
 			$this->load_css[] = asset("datetimepicker/bootstrap-datetimepicker.min.css");
-	        
+	        $this->load_css[] = asset("css/font-family.css");
 	    }
 
 
@@ -502,12 +503,12 @@
 				$arfHeaderContainer = [];
 				foreach($req_type as $arfHeadKey => $arfHeadVal){
 					if($arfHeadVal['request_type_id'] == 1){
-						$arfHeaderContainer['status_id']              = 4;
+						$arfHeaderContainer['status_id']              = 14;
 						$arfHeaderContainer['application'] 			  = $erf_header->application;
 						$arfHeaderContainer['application_others'] 	  = $erf_header->application_others;
 						$arfHeaderContainer['to_reco']                = 1;
 					}else{
-						$arfHeaderContainer['status_id']              = 7;
+						$arfHeaderContainer['status_id']              = 14;
 						$arfHeaderContainer['application'] 			  = NULL;
 						$arfHeaderContainer['application_others'] 	  = NULL;  
 						$arfHeaderContainer['to_reco']                = 0;
@@ -624,110 +625,111 @@
 					DB::commit();
 
 					// //manage replenishment
-					// $arf_body = BodyRequest::where(['header_request_id' => $itId->id])->whereNull('deleted_at')->get();
-					// //GET ASSETS INVENTORY AVAILABLE COUNT
-					// $inventoryList = DB::table('assets_inventory_body')->select('digits_code as digits_code',DB::raw('SUM(quantity) as avail_qty'))->where('statuses_id',6)->groupBy('digits_code')->get();
-					// //GET RESERVED QTY 
-					// $reservedList = DB::table('assets_inventory_reserved')->select('digits_code as digits_code',DB::raw('SUM(approved_qty) as reserved_qty'))->whereNotNull('reserved')->groupBy('digits_code')->get()->toArray();
+					$arf_header = HeaderRequest::where(['id' => $itId->id])->whereNull('deleted_at')->first();
+					$arf_body = BodyRequest::where(['header_request_id' => $itId->id])->whereNull('deleted_at')->get();
+					//GET ASSETS INVENTORY AVAILABLE COUNT
+					$inventoryList = DB::table('assets_inventory_body')->select('digits_code as digits_code',DB::raw('SUM(quantity) as avail_qty'))->where('statuses_id',6)->groupBy('digits_code')->get();
+					//GET RESERVED QTY 
+					$reservedList = DB::table('assets_inventory_reserved')->select('digits_code as digits_code',DB::raw('SUM(approved_qty) as reserved_qty'))->whereNotNull('reserved')->groupBy('digits_code')->get()->toArray();
 					
-					// $resultInventory = [];
-					// foreach($inventoryList as $invKey => $invVal){
-					// 	$i = array_search($invVal->digits_code, array_column($reservedList,'digits_code'));
-					// 	if($i !== false){
-					// 		$invVal->reserved_value = $reservedList[$i];
-					// 		$resultInventory[] = $invVal;
-					// 	}else{
-					// 		$invVal->reserved_value = "";
-					// 		$resultInventory[] = $invVal;
-					// 	}
-					// }
-					// //get the final available qty
-					// $finalInventory = [];
-					// foreach($resultInventory as $fKey => $fVal){
-					// 	$fVal->available_qty = max($fVal->avail_qty - $fVal->reserved_value->reserved_qty,0);
-					// 	$finalInventory[] = $fVal;
-					// }
+					$resultInventory = [];
+					foreach($inventoryList as $invKey => $invVal){
+						$i = array_search($invVal->digits_code, array_column($reservedList,'digits_code'));
+						if($i !== false){
+							$invVal->reserved_value = $reservedList[$i];
+							$resultInventory[] = $invVal;
+						}else{
+							$invVal->reserved_value = "";
+							$resultInventory[] = $invVal;
+						}
+					}
+					//get the final available qty
+					$finalInventory = [];
+					foreach($resultInventory as $fKey => $fVal){
+						$fVal->available_qty = max($fVal->avail_qty - $fVal->reserved_value->reserved_qty,0);
+						$finalInventory[] = $fVal;
+					}
 
-					// $finalItFaBodyValue = [];
-					// foreach($arf_body as $bodyItFafKey => $bodyItFaVal){
-					// 	$i = array_search($bodyItFaVal['digits_code'], array_column($finalInventory,'digits_code'));
-					// 	if($i !== false){
-					// 		$bodyItFaVal->inv_qty = $finalInventory[$i];
-					// 		$finalItFaBodyValue[] = $bodyItFaVal;
-					// 	}else{
-					// 		$bodyItFaVal->inv_qty = "";
-					// 		$finalItFaBodyValue[] = $bodyItFaVal;
-					// 	}
-					// }
+					$finalItFaBodyValue = [];
+					foreach($arf_body as $bodyItFafKey => $bodyItFaVal){
+						$i = array_search($bodyItFaVal['digits_code'], array_column($finalInventory,'digits_code'));
+						if($i !== false){
+							$bodyItFaVal->inv_qty = $finalInventory[$i];
+							$finalItFaBodyValue[] = $bodyItFaVal;
+						}else{
+							$bodyItFaVal->inv_qty = "";
+							$finalItFaBodyValue[] = $bodyItFaVal;
+						}
+					}
                    
-					// foreach($finalItFaBodyValue as $fBodyItFaKey => $fBodyItFaVal){
-					// 	$countAvailQty = DB::table('assets_inventory_body')->select('digits_code as digits_code',DB::raw('SUM(quantity) as avail_qty'))->where('statuses_id',6)->where('digits_code',$fBodyItFaVal->digits_code)->groupBy('digits_code')->count();
-                    //     $reservedListCount = DB::table('assets_inventory_reserved')->select('digits_code as digits_code',DB::raw('SUM(approved_qty) as reserved_qty'))->whereNotNull('reserved')->where('digits_code',$fBodyItFaVal->digits_code)->groupBy('digits_code')->count();
-					// 	$available_quantity = max($countAvailQty - $reservedListCount,0);
+					foreach($finalItFaBodyValue as $fBodyItFaKey => $fBodyItFaVal){
+						$countAvailQty = DB::table('assets_inventory_body')->select('digits_code as digits_code',DB::raw('SUM(quantity) as avail_qty'))->where('statuses_id',6)->where('digits_code',$fBodyItFaVal->digits_code)->groupBy('digits_code')->count();
+                        $reservedListCount = DB::table('assets_inventory_reserved')->select('digits_code as digits_code',DB::raw('SUM(approved_qty) as reserved_qty'))->whereNotNull('reserved')->where('digits_code',$fBodyItFaVal->digits_code)->groupBy('digits_code')->count();
+						$available_quantity = max($countAvailQty - $reservedListCount,0);
 			
-					// 	if($available_quantity >= $fBodyItFaVal->quantity){
-					// 		//add to reserved taable
-					// 		AssetsInventoryReserved::Create(
-					// 			[
-					// 				'reference_number'    => $arf_header->reference_number, 
-					// 				'body_id'             => $fBodyItFaVal->id,
-					// 				'digits_code'         => $fBodyItFaVal->digits_code, 
-					// 				'approved_qty'        => $fBodyItFaVal->quantity,
-					// 				'reserved'            => $fBodyItFaVal->quantity,
-					// 				'for_po'              => NULL,
-					// 				'created_by'          => CRUDBooster::myId(),
-					// 				'created_at'          => date('Y-m-d H:i:s'),
-					// 				'updated_by'          => CRUDBooster::myId(),
-					// 				'updated_at'          => date('Y-m-d H:i:s')
-					// 			]
-					// 		); 
+						if($available_quantity >= $fBodyItFaVal->quantity){
+							//add to reserved taable
+							AssetsInventoryReserved::Create(
+								[
+									'reference_number'    => $arf_header->reference_number, 
+									'body_id'             => $fBodyItFaVal->id,
+									'digits_code'         => $fBodyItFaVal->digits_code, 
+									'approved_qty'        => $fBodyItFaVal->quantity,
+									'reserved'            => $fBodyItFaVal->quantity,
+									'for_po'              => NULL,
+									'created_by'          => CRUDBooster::myId(),
+									'created_at'          => date('Y-m-d H:i:s'),
+									'updated_by'          => CRUDBooster::myId(),
+									'updated_at'          => date('Y-m-d H:i:s')
+								]
+							); 
 							
-					// 		//update details in body table
-					// 		BodyRequest::where('id', $fBodyItFaVal->id)
-					// 		->update([
-					// 			'replenish_qty'      =>  $fBodyItFaVal->quantity,
-					// 			'reorder_qty'        =>  NULL,
-					// 			'serve_qty'          =>  NULL,
-					// 			'unserved_qty'       =>  $fBodyItFaVal->quantity,
-					// 			'unserved_rep_qty'   =>  $fBodyItFaVal->quantity,
-					// 			'unserved_ro_qty'    =>  NULL
-					// 		]);	
+							//update details in body table
+							BodyRequest::where('id', $fBodyItFaVal->id)
+							->update([
+								'replenish_qty'      =>  $fBodyItFaVal->quantity,
+								'reorder_qty'        =>  NULL,
+								'serve_qty'          =>  NULL,
+								'unserved_qty'       =>  $fBodyItFaVal->quantity,
+								'unserved_rep_qty'   =>  $fBodyItFaVal->quantity,
+								'unserved_ro_qty'    =>  NULL
+							]);	
 
-					// 		HeaderRequest::where('id',$itId->id)
-					// 		->update([
-					// 			'to_mo' => 1
-					// 		]);
+							HeaderRequest::where('id',$itId->id)
+							->update([
+								'to_mo' => 1
+							]);
 							 
-					// 	}else{
-					// 		$reorder = $fBodyItFaVal->quantity - $available_quantity;
-					// 		AssetsInventoryReserved::Create(
-					// 			[
-					// 				'reference_number'    => $arf_header->reference_number, 
-					// 				'body_id'             => $fBodyItFaVal->id,
-					// 				'digits_code'         => $fBodyItFaVal->digits_code, 
-					// 				'approved_qty'        => $fBodyItFaVal->quantity,
-					// 				'reserved'            => NULL,
-					// 				'for_po'              => 1,
-					// 				'created_by'          => CRUDBooster::myId(),
-					// 				'created_at'          => date('Y-m-d H:i:s'),
-					// 				'updated_by'          => CRUDBooster::myId(),
-					// 				'updated_at'          => date('Y-m-d H:i:s')
-					// 			]
-					// 		);  
+						}else{
+							$reorder = $fBodyItFaVal->quantity - $available_quantity;
+							AssetsInventoryReserved::Create(
+								[
+									'reference_number'    => $arf_header->reference_number, 
+									'body_id'             => $fBodyItFaVal->id,
+									'digits_code'         => $fBodyItFaVal->digits_code, 
+									'approved_qty'        => $fBodyItFaVal->quantity,
+									'reserved'            => NULL,
+									'for_po'              => 1,
+									'created_by'          => CRUDBooster::myId(),
+									'created_at'          => date('Y-m-d H:i:s'),
+									'updated_by'          => CRUDBooster::myId(),
+									'updated_at'          => date('Y-m-d H:i:s')
+								]
+							);  
 
-					// 		BodyRequest::where('id', $fBodyItFaVal->id)
-					// 		->update([
-					// 			'replenish_qty'      =>  $available_quantity,
-					// 			'reorder_qty'        =>  $reorder,
-					// 			'serve_qty'          =>  NULL,
-					// 			'unserved_qty'       =>  $fBodyItFaVal->quantity,
-					// 			'unserved_rep_qty'   =>  $available_quantity,
-					// 			'unserved_ro_qty'    =>  $reorder
-					// 		]);	
+							BodyRequest::where('id', $fBodyItFaVal->id)
+							->update([
+								'replenish_qty'      =>  $available_quantity,
+								'reorder_qty'        =>  $reorder,
+								'serve_qty'          =>  NULL,
+								'unserved_qty'       =>  $fBodyItFaVal->quantity,
+								'unserved_rep_qty'   =>  $available_quantity,
+								'unserved_ro_qty'    =>  $reorder
+							]);	
 
 							
-					//     }
-					// }
+					    }
+					}
 				} catch (\Exception $e) {
 					DB::rollback();
 					CRUDBooster::redirect(CRUDBooster::mainpath(), trans("crudbooster.alert_database_error",['database_error'=>$e]), 'danger');
@@ -832,11 +834,11 @@
 			$asset_usage = explode(",",$data['Header']->asset_usage);
 			$application = explode(",",$data['Header']->application);
 			$required_system = explode(",",$data['Header']->required_system);
-			$data['required_exams'] = $res_req;
-			$data['interaction'] = $interact_with;
-			$data['asset_usage'] = $asset_usage;
+			$data['res_req'] = array_map('trim', $res_req);
+			$data['interaction'] = array_map('trim', $interact_with);
+			$data['asset_usage_array'] = array_map('trim', $asset_usage);
 			$data['application'] = $application;
-			$data['required_system'] = $required_system;
+			$data['required_system_array'] = array_map('trim', $required_system);
 			$data['Body'] = ErfBodyRequest::
 				select(
 				  'erf_body_request.*'
@@ -853,7 +855,16 @@
 				  )
 				  ->whereIn('id', [29,30,31,32])
 				  ->get();
-	
+			$data['schedule'] = DB::table('sub_masterfile_schedule')->where('status', 'ACTIVE')->get();
+			$data['allow_wfh'] = DB::table('sub_masterfile_allow_wfh')->where('status', 'ACTIVE')->get();
+			$data['manpower'] = DB::table('sub_masterfile_manpower')->where('status', 'ACTIVE')->get();
+			$data['manpower_type'] = DB::table('sub_masterfile_manpower_type')->where('status', 'ACTIVE')->get();
+			$data['required_exams'] = DB::table('sub_masterfile_required_exams')->where('status', 'ACTIVE')->get();
+			$data['asset_usage'] = DB::table('sub_masterfile_asset_usage')->where('status', 'ACTIVE')->get();
+			$data['shared_files'] = DB::table('sub_masterfile_shared_files')->where('status', 'ACTIVE')->get();
+			$data['interact_with'] = DB::table('sub_masterfile_interact_with')->where('status', 'ACTIVE')->get();
+			$data['email_domain'] = DB::table('sub_masterfile_email_domain')->where('status', 'ACTIVE')->get();
+			$data['required_system'] = DB::table('sub_masterfile_required_system')->where('status', 'ACTIVE')->get();
 			return $this->view("erf.erf_hr_approval", $data);
 		}
 
@@ -893,11 +904,11 @@
 			$asset_usage = explode(",",$data['Header']->asset_usage);
 			$application = explode(",",$data['Header']->application);
 			$required_system = explode(",",$data['Header']->required_system);
-			$data['required_exams'] = $res_req;
-			$data['interaction'] = $interact_with;
-			$data['asset_usage'] = $asset_usage;
+			$data['res_req'] = array_map('trim', $res_req);
+			$data['interaction'] = array_map('trim', $interact_with);
+			$data['asset_usage_array'] = array_map('trim', $asset_usage);
 			$data['application'] = $application;
-			$data['required_system'] = $required_system;
+			$data['required_system_array'] = array_map('trim', $required_system);
 			$data['Body'] = ErfBodyRequest::
 				select(
 				  'erf_body_request.*'
@@ -914,7 +925,25 @@
 				  )
 				  ->whereIn('id', [29,30,31,32])
 				  ->get();
-	
+
+			$data['applicants'] = Applicant::leftjoin('statuses', 'applicant_table.status', '=', 'statuses.id')
+				  ->select(
+				  'applicant_table.*',
+				  'statuses.status_description',
+				  'statuses.id as status_id',
+				  )
+				  ->where('applicant_table.erf_number', $data['Header']->reference_number)
+				  ->get();
+			$data['schedule'] = DB::table('sub_masterfile_schedule')->where('status', 'ACTIVE')->get();
+			$data['allow_wfh'] = DB::table('sub_masterfile_allow_wfh')->where('status', 'ACTIVE')->get();
+			$data['manpower'] = DB::table('sub_masterfile_manpower')->where('status', 'ACTIVE')->get();
+			$data['manpower_type'] = DB::table('sub_masterfile_manpower_type')->where('status', 'ACTIVE')->get();
+			$data['required_exams'] = DB::table('sub_masterfile_required_exams')->where('status', 'ACTIVE')->get();
+			$data['asset_usage'] = DB::table('sub_masterfile_asset_usage')->where('status', 'ACTIVE')->get();
+			$data['shared_files'] = DB::table('sub_masterfile_shared_files')->where('status', 'ACTIVE')->get();
+			$data['interact_with'] = DB::table('sub_masterfile_interact_with')->where('status', 'ACTIVE')->get();
+			$data['email_domain'] = DB::table('sub_masterfile_email_domain')->where('status', 'ACTIVE')->get();
+			$data['required_system'] = DB::table('sub_masterfile_required_system')->where('status', 'ACTIVE')->get();
 			return $this->view("erf.erf_details", $data);
 		}
 
@@ -1104,11 +1133,11 @@
 			$asset_usage = explode(",",$data['Header']->asset_usage);
 			$application = explode(",",$data['Header']->application);
 			$required_system = explode(",",$data['Header']->required_system);
-			$data['required_exams'] = $res_req;
-			$data['interaction'] = $interact_with;
-			$data['asset_usage'] = $asset_usage;
+			$data['res_req'] = array_map('trim', $res_req);
+			$data['interaction'] = array_map('trim', $interact_with);
+			$data['asset_usage_array'] = array_map('trim', $asset_usage);
 			$data['application'] = $application;
-			$data['required_system'] = $required_system;
+			$data['required_system_array'] = array_map('trim', $required_system);
 			$data['Body'] = ErfBodyRequest::
 				select(
 				  'erf_body_request.*'
@@ -1120,6 +1149,16 @@
 				  )
 				  ->where('erf_header_documents.header_id', $id)
 				  ->get();
+			$data['schedule'] = DB::table('sub_masterfile_schedule')->where('status', 'ACTIVE')->get();
+			$data['allow_wfh'] = DB::table('sub_masterfile_allow_wfh')->where('status', 'ACTIVE')->get();
+			$data['manpower'] = DB::table('sub_masterfile_manpower')->where('status', 'ACTIVE')->get();
+			$data['manpower_type'] = DB::table('sub_masterfile_manpower_type')->where('status', 'ACTIVE')->get();
+			$data['required_exams'] = DB::table('sub_masterfile_required_exams')->where('status', 'ACTIVE')->get();
+			$data['asset_usage'] = DB::table('sub_masterfile_asset_usage')->where('status', 'ACTIVE')->get();
+			$data['shared_files'] = DB::table('sub_masterfile_shared_files')->where('status', 'ACTIVE')->get();
+			$data['interact_with'] = DB::table('sub_masterfile_interact_with')->where('status', 'ACTIVE')->get();
+			$data['email_domain'] = DB::table('sub_masterfile_email_domain')->where('status', 'ACTIVE')->get();
+			$data['required_system'] = DB::table('sub_masterfile_required_system')->where('status', 'ACTIVE')->get();
 			return $this->view("erf.erf-set-onboarding-date", $data);
 		}
 

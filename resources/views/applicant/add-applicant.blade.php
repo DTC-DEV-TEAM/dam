@@ -119,7 +119,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="control-label"> Remarks(Optional)</label>
+                            <label class="control-label"> Remarks</label>
                             <input type="text" class="form-control finput"  id="remarks" name="remarks"  required>                                   
                         </div>
                     </div>

@@ -175,7 +175,7 @@
 	        $this->index_button = array();
             if(CRUDBooster::getCurrentMethod() == 'getIndex'){
 				$this->index_button[] = ["label"=>"Export","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('export'),"color"=>"primary"];
-				if(CRUDBooster::myPrivilegeId() == 6 || CRUDBooster::isSuperadmin()){ 
+				if(in_array(CRUDBooster::myPrivilegeId(),[1,5,9])){ 
 				    $this->index_button[] = ["label"=>"Add Inventory","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-inventory'),"color"=>"success"];
 				}
 			}
@@ -545,8 +545,17 @@
 
 			$data['page_title'] = 'Add Inventory';
 
-			$data['warehouse_location'] = WarehouseLocationModel::where('id','!=',4)->get();;
-			$data['reserved_assets'] = AssetsInventoryReserved::whereNotNull('for_po')->get();
+			if(CRUDBooster::isSuperadmin()){
+			    $data['warehouse_location'] = WarehouseLocationModel::where('id','!=',4)->get();
+				$data['reserved_assets'] = AssetsInventoryReserved::leftjoin('header_request','assets_inventory_reserved.reference_number','=','header_request.reference_number')->whereNotNull('for_po')->get();
+			}else if(CRUDBooster::myPrivilegeId() == 5){
+				$data['reserved_assets'] = AssetsInventoryReserved::leftjoin('header_request','assets_inventory_reserved.reference_number','=','header_request.reference_number')->whereNotNull('for_po')->where('header_request.request_type_id',1)->get();
+				$data['warehouse_location'] = WarehouseLocationModel::where('id','=',3)->get();
+			}else if(CRUDBooster::myPrivilegeId() == 9){
+				$data['warehouse_location'] = WarehouseLocationModel::whereIn('id',[2])->get();
+				$data['reserved_assets'] = AssetsInventoryReserved::leftjoin('header_request','assets_inventory_reserved.reference_number','=','header_request.reference_number')->whereNotNull('for_po')->where('header_request.request_type_id',5)->get();
+			}
+
 			$data['header_images'] = AssetsHeaderImages::select(
 				'assets_header_images.*'
 			  )

@@ -207,8 +207,12 @@
                                                 <th width="14%" class="text-center">{{ trans('message.table.reco_digits_code_text') }}</th> 
                                                 <th width="24%" class="text-center">{{ trans('message.table.reco_item_description_text') }}</th>
                                             @endif 
+                                            
+                                            @if($Header->approved_by == null || $Header->approved_by == "")
+                                                <th width="5%" class="text-center">{{ trans('message.table.action') }}</th>
+                                            @endif 
 
-                                            @if(in_array($Header->request_type_id, [6,7]))
+                                            {{-- @if(in_array($Header->request_type_id, [6,7]))
                                                 @if($Header->approved_by == null || $Header->approved_by == "")
                                                     <th width="5%" class="text-center">{{ trans('message.table.action') }}</th>
                                                 @endif 
@@ -216,7 +220,7 @@
                                                 @if($Header->po_number == null || $Header->po_number == "")  
                                                    <th width="5%" class="text-center">{{ trans('message.table.action') }}</th>
                                                 @endif
-                                            @endif
+                                            @endif --}}
                                         </tr>
                                         <tr id="tr-table">
                                             <?php   $tableRow = 1; ?>
@@ -321,8 +325,13 @@
                                                                         {{$rowresult->reco_item_description}}
                                                                     </td>
                                                                 @endif
-                                                        
-                                                                @if(in_array($Header->request_type_id, [6,7]))
+
+                                                                @if($Header->status_id == 1)    
+                                                                    <td style="text-align:center" height="10">
+                                                                        <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow btn-sm" data-toggle="tooltip" data-placement="bottom" title="Cancel"><i class="fa fa-trash"></i></button>
+                                                                    </td>
+                                                                @endif
+                                                                {{-- @if(in_array($Header->request_type_id, [6,7]))
                                                                     @if($Header->status_id == 1)    
                                                                         <td style="text-align:center" height="10">
                                                                             <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow btn-sm" data-toggle="tooltip" data-placement="bottom" title="Cancel"><i class="fa fa-trash"></i></button>
@@ -334,7 +343,7 @@
                                                                             <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow btn-sm" data-toggle="tooltip" data-placement="bottom" title="Cancel"><i class="fa fa-trash"></i></button>
                                                                         </td>
                                                                     @endif
-                                                                @endif
+                                                                @endif --}}
                                                                                         
                                                             </tr>
                                                         @endif
@@ -605,48 +614,48 @@
     
         }
     
-        if($('#request_type_id').val() == 1 || $('#request_type_id').val() == 5){
-            var tds = document
-            .getElementById("asset-items1")
-            .getElementsByTagName("td");
-            var sumqty       = 0;
-            var rep_qty      = 0;
-            var ro_qty       = 0;
-            var served_qty   = 0;
-            var unserved_qty = 0;
-            var dr_qty       = 0;
-            var po_qty       = 0;
-            for (var i = 0; i < tds.length; i++) {
-                if(tds[i].className == "qty") {
-                    sumqty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-                }else if(tds[i].className == "rep_qty"){
-                    rep_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-                }else if(tds[i].className == "ro_qty"){
-                    ro_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-                }else if(tds[i].className == "served_qty"){
-                    served_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-                }else if(tds[i].className == "unserved_qty"){
-                    unserved_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-                }else if(tds[i].className == "dr_qty"){
-                    dr_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-                }else if(tds[i].className == "po_qty"){
-                    po_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-                }
-            }
-            document.getElementById("asset-items1").innerHTML +=
-            "<tr>"+
-                "<td colspan='4' style='text-align:right;border:none'>"+
-                        "<strong>TOTAL</strong>"+
-                    "</td>"+
+        // if($('#request_type_id').val() == 1 || $('#request_type_id').val() == 5){
+        //     var tds = document
+        //     .getElementById("asset-items1")
+        //     .getElementsByTagName("td");
+        //     var sumqty       = 0;
+        //     var rep_qty      = 0;
+        //     var ro_qty       = 0;
+        //     var served_qty   = 0;
+        //     var unserved_qty = 0;
+        //     var dr_qty       = 0;
+        //     var po_qty       = 0;
+        //     for (var i = 0; i < tds.length; i++) {
+        //         if(tds[i].className == "qty") {
+        //             sumqty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+        //         }else if(tds[i].className == "rep_qty"){
+        //             rep_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+        //         }else if(tds[i].className == "ro_qty"){
+        //             ro_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+        //         }else if(tds[i].className == "served_qty"){
+        //             served_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+        //         }else if(tds[i].className == "unserved_qty"){
+        //             unserved_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+        //         }else if(tds[i].className == "dr_qty"){
+        //             dr_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+        //         }else if(tds[i].className == "po_qty"){
+        //             po_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+        //         }
+        //     }
+        //     document.getElementById("asset-items1").innerHTML +=
+        //     "<tr>"+
+        //         "<td colspan='4' style='text-align:right;border:none'>"+
+        //                 "<strong>TOTAL</strong>"+
+        //             "</td>"+
                     
-                    "<td style='text-align:center;border:none'>"+
-                        "<strong>" +
-                        sumqty +
-                        "</strong>"+
-                    "</td>"+
+        //             "<td style='text-align:center;border:none'>"+
+        //                 "<strong>" +
+        //                 sumqty +
+        //                 "</strong>"+
+        //             "</td>"+
                     
-            "</tr>";
-        }else{
+        //     "</tr>";
+        // }else{
             var tds = document.getElementById("asset-items1").getElementsByTagName("td");
             var sumqty       = 0;
             var rep_qty      = 0;
@@ -715,11 +724,11 @@
                     "</td>"+
                     "<td style='text-align:center'>"+
                     "</td>"+
-                    "<td colspan='3' style='text-align:center'>"+
+                    "<td colspan='4' style='text-align:center'>"+
                     "</td>"+
                    
             "</tr>";
-        }
+        //}
 
         var tds = document.getElementById("asset-items").getElementsByTagName("td");
         var moQty        = 0;

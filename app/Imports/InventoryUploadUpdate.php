@@ -24,12 +24,11 @@ class InventoryUploadUpdate implements ToCollection, WithHeadingRow
     public function collection(Collection $rows)
     {
         foreach ($rows->toArray() as $row){
-        
+            dd($row);
             AssetsInventoryBody::where('asset_code', $row['asset_code'])
                 ->update([
-                    'statuses_id'   => 28,
-                    'quantity'      => $row['quantity'], 
-                    'updated_by'    => CRUDBooster::myId()
+                    'digits_code'           => $row['digits_code'], 
+                    'item_description'      => $row['item_description']
                 ]);
         }
     }

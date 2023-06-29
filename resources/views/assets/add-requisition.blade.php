@@ -237,9 +237,14 @@
                         <textarea placeholder="{{ trans('message.table.comments') }} ..." rows="3" class="form-control finput" name="requestor_comments"></textarea>
                     </div>
                 </div>
-         
             </div>
-
+            <hr>
+            <div class="col-md-12">
+                <div class="form-group text-center">
+                    <label>CAN'T FIND WHAT YOU ARE LOOKING FOR?</label>
+                    <a href='{{CRUDBooster::adminpath("header_request/download")."?return_url=".urlencode(Request::fullUrl())}}'>CHECK HERE</a>
+                </div>
+            </div>
         </div>
 
         <div class='panel-footer'>

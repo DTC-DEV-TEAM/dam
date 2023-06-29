@@ -650,7 +650,9 @@
 								'serve_qty'        => 1, 
 								'unserved_rep_qty' => DB::raw("unserved_rep_qty - 1"), 
 								'unserved_ro_qty'  => DB::raw("unserved_ro_qty - 1"), 
-								'unserved_qty'     => DB::raw("unserved_qty - 1")          
+								'unserved_qty'     => DB::raw("unserved_qty - 1"),      
+								'dr_qty'           => 1,
+								'mo_so_num'        => $HeaderID->mo_reference_number       
 								]
 							);
 
@@ -903,8 +905,11 @@
 			//   ->get();
 			
 			$data['good_defect_lists'] = GoodDefectLists::all();
-			$data['assets_code'] = AssetsInventoryBody::select('asset_code as asset_code','id as id','digits_code as digits_code')->where('statuses_id',6)->where('item_category', 'IT ASSETS')->whereIn('digits_code', $arrayDigitsCode)->get();
-		
+			if(CRUDBooster::myPrivilegeId() == 5){
+			    $data['assets_code'] = AssetsInventoryBody::select('asset_code as asset_code','id as id','digits_code as digits_code')->where('statuses_id',6)->where('item_category', 'IT ASSETS')->whereIn('digits_code', $arrayDigitsCode)->get();
+			}else{
+				$data['assets_code'] = AssetsInventoryBody::select('asset_code as asset_code','id as id','digits_code as digits_code')->where('statuses_id',6)->whereIn('item_category', ['FIXED ASSETS','FIXED ASSET'])->whereIn('digits_code', $arrayDigitsCode)->get();
+			}
 			return $this->view("assets.picking-request", $data);
 		}
 

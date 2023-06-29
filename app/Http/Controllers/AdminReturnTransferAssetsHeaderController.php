@@ -697,6 +697,9 @@
 				$container['asset_type'] = $rData['category_id'];
 				$container['requested_by'] = CRUDBooster::myId(); 
 				$container['requested_date'] = date('Y-m-d H:i:s');
+				if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15])){ 
+					$container['approved_date'] = date('Y-m-d H:i:s');
+				}
 				$containerSave[] = $container;
 			}
 			ReturnTransferAssets::insert($containerSave);
@@ -791,6 +794,9 @@
 				$container['asset_type'] = $rData['category_id'];
 				$container['requested_by'] = CRUDBooster::myId(); 
 				$container['requested_date'] = date('Y-m-d H:i:s');
+				if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15])){ 
+					$container['approved_date'] = date('Y-m-d H:i:s');
+				}
 				$container['transfer_to'] = $user_id;
 				$containerSave[] = $container;
 			}

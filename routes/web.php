@@ -224,6 +224,7 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('admin/item-sourcing-header/getDetailReject/{id}','AdminItemSourcingHeaderController@getDetailReject')->name('getDetailReject');
     
     //reports
+    Route::get('/admin/reports/export-report','AdminReportsController@exportReportAssetsList')->name('export-assets-report-list');
     //Route::get('/admin/reports/getIndex','AdminReportsController@getIndex')->name('get-report');
     //Route::get('/admin/get-reports/getIndex', [AdminReportsv2Controller::class, 'getIndex'])->name('get-report');
 

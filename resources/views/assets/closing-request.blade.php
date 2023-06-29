@@ -183,8 +183,9 @@
                                                     <th width="14%" class="text-center">{{ trans('message.table.reco_digits_code_text') }}</th> 
                                                     <th width="24%" class="text-center">{{ trans('message.table.reco_item_description_text') }}</th>
                                                 @endif 
-                                               <th>Action</th>
-                                                   
+                                                @if($Header->approved_by == null || $Header->approved_by == "")
+                                                 <th>Action</th>
+                                                @endif 
                                              
                                             </tr>
                                             <tr id="tr-table">
@@ -502,7 +503,9 @@
 @endsection
 @push('bottom')
 <script type="text/javascript">
-
+    $(function(){
+        $('body').addClass("sidebar-collapse");
+    });
     function preventBack() {
         window.history.forward();
     }

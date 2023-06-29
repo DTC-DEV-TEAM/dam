@@ -131,7 +131,43 @@
                     border: 1px solid rgba(000, 0, 0, .5);
                     padding: 8px;
                 }
-              
+
+                /* ::-webkit-scrollbar-track
+                {
+                    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+                    border-radius: 10px;
+                    background-color: #F5F5F5;
+                }
+
+                ::-webkit-scrollbar
+                {
+                    width: 12px;
+                    background-color: #F5F5F5;
+                }
+
+                ::-webkit-scrollbar-thumb
+                {
+                    border-radius: 10px;
+                    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+                    background-color: #555;
+                } */
+                ::-webkit-scrollbar-track
+                {
+                    /* -webkit-box-shadow: inset 0 0 6px rgba(32, 83, 178, 0.3); */
+                    background-color: #F5F5F5;
+                }
+
+                ::-webkit-scrollbar
+                {
+                    width: 10px;
+                    background-color: #F5F5F5;
+                }
+
+                ::-webkit-scrollbar-thumb
+                {
+                    background-color: #3c8dbc;
+                    /* border: px solid #367fa9; */
+                }
         </style>
     @endpush
 @section('content')
@@ -165,9 +201,8 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label"><span style="color:red">*</span> Location</label>
-                            <select required selected data-placeholder="Choose Location" id="location" name="location" class="form-select select2" style="width:100%;">
+                            <select  id="location" name="location" class="form-select select2" style="width:100%;">
                             @foreach($warehouse_location as $res)
-                                <option value=""></option>
                                 <option value="{{ $res->id }}">{{ $res->location }}</option>
                             @endforeach
                             </select>
@@ -248,7 +283,7 @@
                         <div class="table-responsive">
                             <div class="pic-container">
                                 <div class="pic-row">
-                                    <table id="asset-items">
+                                    <table id="asset-items" style="width: 130%">
                                         <tbody id="bodyTable">
                                             <tr class="tbl_header_color dynamicRows">
                                                 <th width="7%" class="text-center">{{ trans('message.table.digits_code') }}</th>
@@ -794,7 +829,7 @@
                         var cat = $("input[name^='item_category']").length;
                         var item_category = $("input[name^='item_category']");
                         for(i=0;i<cat;i++){
-                            if($.inArray(item_category.eq(i).val(),['IT ASSETS','FIXED ASSETS','APPLIANCES','MAINTENANCE HARDWARE','OFFICE EQUIPMENT']) === -1){
+                            if($.inArray(item_category.eq(i).val(),['IT ASSETS','FIXED ASSETS','APPLIANCES','MAINTENANCE HARDWARE','OFFICE EQUIPMENT','FIXED ASSET']) === -1){
                                 swal({
                                         type: 'error',
                                         title: 'Invalid Category. please check Category!',
@@ -1082,21 +1117,23 @@
                                                 '<td><input class="form-control upc_code finput" oninput="validate(this)" type="text" placeholder="UPC Code" name="upc_code[]" style="width:100%" data-index="1"></td>' + 
                                                 '<td><input class="form-control brand finput" oninput="validate(this)" type="text" placeholder="Brand" name="brand[]" style="width:100%" data-index="1"></td>' +
                                                 '<td><input class="form-control specs finput" oninput="validate(this)" type="text" placeholder="ADM Ryzen 5 3rd Gen/8 GB DDR4 RAM 512 GB SSD" name="specs[]" style="width:100%" data-index="1"></td>' +  
+
                                                 '<td>'+
                                                     '<select selected data-placeholder="RO items(Optional)" class="form-control arf_tag" name="arf_tag[]" data-id="' +  e.id + '" id="arf_tag' + e.id + '" required style="width:100%">' +
                                                     '  <option value=""></option>' +
-                                                    '        @foreach($reserved_assets as $reserve)'+
-                                                    '          <option value="{{$reserve->id}}" data-code="{{$reserve->digits_code}}">{{$reserve->reference_number}} | {{$reserve->digits_code}}</option>'+
+                                                    '         @foreach($reserved_assets as $reserve)'+
+                                                                '<option value="{{$reserve->id}}" data-code="{{$reserve->digits_code}}">{{$reserve->reference_number}} | {{$reserve->digits_code}}</option> '+
                                                     '         @endforeach'+
                                                     '</select>'+
                                                 '</td>' +
+                        
                                                 '<td style="text-align:center"><a id="delete_item' +e.id + '" class="btn btn-sm btn-danger delete_item btn-lg"><i class="fa fa-trash"></i></a></td>' +
                                                 '<input type="hidden" name="item_id[]" readonly value="' +e.id + '">' +
                                                 '<input type="hidden" id="checkImage" value="' + e.image + '" readonly>' +
                                                 '<input type="hidden" name="item_category[]" id="item_cat" value="' + e.category_description + '">' +
                                                 '<input type="hidden" name="category_id[]" id="catid" value="' + e.category_id + '">' +
                                                 '</tr>';
-                                           
+                                        //alert($reserved_assets);
                                         //}
                          
                                     //$(new_row).insertAfter($('table tr.dynamicRows:last'));
@@ -1111,13 +1148,34 @@
                                     //     );
                                     //     return $state;
                                     // };
-                                    $('#arf_tag'+ e.id).select2({
+                                    $('.arf_tag').select2({
                                         allowClear:true,
-                                        tags: true
                                     });
-                                    
-                                    
-                                    
+
+                                    var $selects = $('.arf_tag');
+                                    $selects.select2();
+                                    $('.arf_tag').change(function () {
+                                        $('option:hidden', $selects).each(function () {
+                                            var self = this,
+                                                toShow = true;
+                                            $selects.not($(this).parent()).each(function () {
+                                                if (self.value == this.value) toShow = false;
+                                            })
+                                            if (toShow) {
+                                                $(this).removeAttr('disabled');
+                                                $(this).parent().select2();
+                                            }
+                                        });
+                                        if (this.value != "") {
+                                            //$selects.not(this).children('option[value=' + this.value + ']').attr('disabled', 'disabled');
+                                            $selects.not(this).children('option[value=' + this.value + ']').remove();
+                                            $selects.select2({
+                                                allowClear:true,
+                                            });
+                                        }
+                                    });
+                    
+                                                                   
                                     $(document).on('click', '#delete_item' + e.id, function () {
                                         var parentTR = $(this).parents('tr');  
                                         $(parentTR).remove();
@@ -1130,12 +1188,6 @@
                                         $("#quantity_total").val(calculateTotalQuantity());
                                        
                                     });
-
-                                    
-                                    $('#arf_tag'+ e.id)
-                                    .parent()
-                                    .siblings('.select2-search')
-                                    .css('background-color', 'red');
                                    
                                     $(".date").datetimepicker({
                                             viewMode: "days",
@@ -1144,10 +1196,6 @@
                                     });
                               
                                     $(document).on("keyup","#quantity, #amount, #value", function (e) {
-                                        $('#arf_tag'+ e.id).select2({
-                                            allowClear:true,
-                                            tags: true
-                                        });
                                         if (e.which >= 37 && e.which <= 40) return;
                                         if (this.value.charAt(0) == ".") {
                                             this.value = this.value.replace(
