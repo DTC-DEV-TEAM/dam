@@ -10,6 +10,7 @@
 	use App\StatusMatrix;
 	use App\Users;
 	use App\Models\AssetsSuppliesInventory;
+	use App\Models\AssetsInventoryReserved;
 	//use Illuminate\Http\Request;
 	//use Illuminate\Support\Facades\Input;
 	use Illuminate\Support\Facades\Log;
@@ -68,27 +69,6 @@
 			$this->form = [];
 
 			# END FORM DO NOT REMOVE THIS LINE
-
-			# OLD START FORM
-			//$this->form = [];
-			//$this->form[] = ["label"=>"Reference Number","name"=>"reference_number","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Status Id","name"=>"status_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"status,id"];
-			//$this->form[] = ["label"=>"Employee Name","name"=>"employee_name","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Company Name","name"=>"company_name","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Position","name"=>"position","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Department","name"=>"department","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Store Branch","name"=>"store_branch","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Purpose","name"=>"purpose","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Conditions","name"=>"conditions","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Quantity Total","name"=>"quantity_total","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Cost Total","name"=>"cost_total","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Total","name"=>"total","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Approved By","name"=>"approved_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Approved At","name"=>"approved_at","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
-			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Updated By","name"=>"updated_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Rejected At","name"=>"rejected_at","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			# OLD END FORM
 
 			/* 
 	        | ---------------------------------------------------------------------- 
@@ -389,20 +369,12 @@
 			$rejected               =  DB::table('statuses')->where('id', 5)->value('id');
 			$for_move_order         =  DB::table('statuses')->where('id', 14)->value('id');
 
-			$arf_header = HeaderRequest::where(['id' => $id])->first();
+			$arf_header             = HeaderRequest::where(['id' => $id])->first();
 
-			$arf_body = BodyRequest::where(['header_request_id' => $id])->whereNull('deleted_at')->get();
+			$arf_body               = BodyRequest::where(['header_request_id' => $id])->whereNull('deleted_at')->get();
 
 			if($approval_action  == 1){
-				
-                if(in_array($arf_header->request_type_id, [7])){
-				    $postdata['status_id']          = $for_move_order;
-				}else{
-					$postdata['status_id']		    = StatusMatrix::where('current_step', 2)
-														->where('request_type', $arf_header->request_type_id)
-														->value('status_id');
-				}
-				
+				$postdata['status_id']          = $for_move_order;
 				$postdata['approver_comments'] 	= $approver_comments;
 				$postdata['approved_by'] 		= CRUDBooster::myId();
 				$postdata['approved_at'] 		= date('Y-m-d H:i:s');
@@ -475,7 +447,112 @@
 					    }
 						$finalContData[] = $containerData;
 					}
-			    }
+			    }else{
+					//GET ASSETS INVENTORY AVAILABLE COUNT
+					$inventoryList = DB::table('assets_inventory_body')->select('digits_code as digits_code',DB::raw('SUM(quantity) as avail_qty'))->where('statuses_id',6)->groupBy('digits_code')->get();
+					//GET RESERVED QTY 
+					$reservedList = DB::table('assets_inventory_reserved')->select('digits_code as digits_code',DB::raw('SUM(approved_qty) as reserved_qty'))->whereNotNull('reserved')->groupBy('digits_code')->get()->toArray();
+					
+					$resultInventory = [];
+					foreach($inventoryList as $invKey => $invVal){
+						$i = array_search($invVal->digits_code, array_column($reservedList,'digits_code'));
+						if($i !== false){
+							$invVal->reserved_value = $reservedList[$i];
+							$resultInventory[] = $invVal;
+						}else{
+							$invVal->reserved_value = "";
+							$resultInventory[] = $invVal;
+						}
+					}
+					//get the final available qty
+					$finalInventory = [];
+					foreach($resultInventory as $fKey => $fVal){
+						$fVal->available_qty = max($fVal->avail_qty - $fVal->reserved_value->reserved_qty,0);
+						$finalInventory[] = $fVal;
+					}
+
+					$finalItFaBodyValue = [];
+					foreach($arf_body as $bodyItFafKey => $bodyItFaVal){
+						$i = array_search($bodyItFaVal['digits_code'], array_column($finalInventory,'digits_code'));
+						if($i !== false){
+							$bodyItFaVal->inv_qty = $finalInventory[$i];
+							$finalItFaBodyValue[] = $bodyItFaVal;
+						}else{
+							$bodyItFaVal->inv_qty = "";
+							$finalItFaBodyValue[] = $bodyItFaVal;
+						}
+					}
+                   
+					foreach($finalItFaBodyValue as $fBodyItFaKey => $fBodyItFaVal){
+						$countAvailQty = DB::table('assets_inventory_body')->select('digits_code as digits_code',DB::raw('SUM(quantity) as avail_qty'))->where('statuses_id',6)->where('digits_code',$fBodyItFaVal->digits_code)->groupBy('digits_code')->count();
+                        $reservedListCount = DB::table('assets_inventory_reserved')->select('digits_code as digits_code',DB::raw('SUM(approved_qty) as reserved_qty'))->whereNotNull('reserved')->where('digits_code',$fBodyItFaVal->digits_code)->groupBy('digits_code')->count();
+						$available_quantity = max($countAvailQty - $reservedListCount,0);
+			
+						if($available_quantity >= $fBodyItFaVal->quantity){
+							//add to reserved taable
+							AssetsInventoryReserved::Create(
+								[
+									'reference_number'    => $arf_header->reference_number, 
+									'body_id'             => $fBodyItFaVal->id,
+									'digits_code'         => $fBodyItFaVal->digits_code, 
+									'approved_qty'        => $fBodyItFaVal->quantity,
+									'reserved'            => $fBodyItFaVal->quantity,
+									'for_po'              => NULL,
+									'created_by'          => CRUDBooster::myId(),
+									'created_at'          => date('Y-m-d H:i:s'),
+									'updated_by'          => CRUDBooster::myId(),
+									'updated_at'          => date('Y-m-d H:i:s')
+								]
+							); 
+							
+							//update details in body table
+							BodyRequest::where('id', $fBodyItFaVal->id)
+							->update([
+								'replenish_qty'      =>  $fBodyItFaVal->quantity,
+								'reorder_qty'        =>  NULL,
+								'serve_qty'          =>  NULL,
+								'unserved_qty'       =>  $fBodyItFaVal->quantity,
+								'unserved_rep_qty'   =>  $fBodyItFaVal->quantity,
+								'unserved_ro_qty'    =>  NULL
+							]);	
+
+							HeaderRequest::where('id',$id)
+							->update([
+								'to_mo' => 1
+							]);
+							 
+						}else{
+							$reorder = $fBodyItFaVal->quantity - $available_quantity;
+							AssetsInventoryReserved::Create(
+								[
+									'reference_number'    => $arf_header->reference_number, 
+									'body_id'             => $fBodyItFaVal->id,
+									'digits_code'         => $fBodyItFaVal->digits_code, 
+									'approved_qty'        => $fBodyItFaVal->quantity,
+									'reserved'            => NULL,
+									'for_po'              => 1,
+									'created_by'          => CRUDBooster::myId(),
+									'created_at'          => date('Y-m-d H:i:s'),
+									'updated_by'          => CRUDBooster::myId(),
+									'updated_at'          => date('Y-m-d H:i:s')
+								]
+							);  
+
+							BodyRequest::where('id', $fBodyItFaVal->id)
+							->update([
+								'replenish_qty'      =>  $available_quantity,
+								'reorder_qty'        =>  $reorder,
+								'serve_qty'          =>  NULL,
+								'unserved_qty'       =>  $fBodyItFaVal->quantity,
+								'unserved_rep_qty'   =>  $available_quantity,
+								'unserved_ro_qty'    =>  $reorder
+							]);	
+
+							
+					    }
+					}
+
+				}
 
 			}else{
 
@@ -484,6 +561,13 @@
 				$postdata['approved_by'] 		= CRUDBooster::myId();
 				$postdata['rejected_at'] 		= date('Y-m-d H:i:s');
 
+				for ($i = 0; $i < count($body_ids); $i++) {
+					BodyRequest::where('id', $body_ids[$i])
+					->update([
+						'deleted_at'=> 		date('Y-m-d H:i:s'),
+						'deleted_by'=> 		CRUDBooster::myId()
+					]);	
+			    }
 			}
 
 	    }
@@ -585,7 +669,7 @@
 						)
 				->where('header_request.id', $id)->first();
 
-			$data['Body'] = BodyRequest::leftjoin('assets_supplies_inventory', 'body_request.digits_code','=', 'assets_supplies_inventory.digits_code')
+				$body = BodyRequest::leftjoin('assets_supplies_inventory', 'body_request.digits_code','=', 'assets_supplies_inventory.digits_code')
 				->select(
 				  'body_request.*',
 				  'assets_supplies_inventory.quantity as wh_qty'
@@ -593,6 +677,39 @@
 				->where('body_request.header_request_id', $id)
 				->whereNull('deleted_at')
 				->get();
+			$arraySearch = DB::table('assets_inventory_body')->select('digits_code as digits_code',DB::raw('SUM(quantity) as wh_qty'))->where('statuses_id',6)->groupBy('digits_code')->get()->toArray();
+			$items = [];
+			foreach($body as $itemKey => $itemVal){
+				$i = array_search($itemVal->digits_code, array_column($arraySearch,'digits_code'));
+				if($i !== false){
+					$itemVal->inv_value = $arraySearch[$i];
+					$items[] = $itemVal;
+				}else{
+					$itemVal->inv_value = "";
+					$items[] = $itemVal;
+				}
+			}
+			//get reserved qty
+			$reservedList = DB::table('assets_inventory_reserved')->select('digits_code as digits_code',DB::raw('SUM(approved_qty) as reserved_qty'))->whereNotNull('reserved')->groupBy('digits_code')->get()->toArray();
+			$resultInventory = [];
+			foreach($items as $invKey => $invVal){
+				$i = array_search($invVal->digits_code, array_column($reservedList,'digits_code'));
+				if($i !== false){
+					$invVal->reserved_value = $reservedList[$i];
+					$resultInventory[] = $invVal;
+				}else{
+					$invVal->reserved_value = "";
+					$resultInventory[] = $invVal;
+				}
+			}
+			//get the final available qty
+			$finalInventory = [];
+			foreach($resultInventory as $fKey => $fVal){
+				$fVal->available_qty = max($fVal->inv_value->wh_qty - $fVal->reserved_value->reserved_qty,0);
+				$finalInventory[] = $fVal;
+			}
+
+			$data['Body'] = $finalInventory;
 
 			return $this->view("assets.approval-request", $data);
 		}
@@ -634,7 +751,7 @@
 						)
 				->where('header_request.id', $id)->first();
 
-			$data['Body'] = BodyRequest::leftjoin('assets_supplies_inventory', 'body_request.digits_code','=', 'assets_supplies_inventory.digits_code')
+			$body = BodyRequest::leftjoin('assets_supplies_inventory', 'body_request.digits_code','=', 'assets_supplies_inventory.digits_code')
 				->select(
 				  'body_request.*',
 				  'assets_supplies_inventory.quantity as wh_qty'
@@ -642,7 +759,40 @@
 				->where('body_request.header_request_id', $id)
 				->whereNull('deleted_at')
 				->get();
+			$arraySearch = DB::table('assets_inventory_body')->select('digits_code as digits_code',DB::raw('SUM(quantity) as wh_qty'))->where('statuses_id',6)->groupBy('digits_code')->get()->toArray();
+			$items = [];
+			foreach($body as $itemKey => $itemVal){
+				$i = array_search($itemVal->digits_code, array_column($arraySearch,'digits_code'));
+				if($i !== false){
+					$itemVal->inv_value = $arraySearch[$i];
+					$items[] = $itemVal;
+				}else{
+					$itemVal->inv_value = "";
+					$items[] = $itemVal;
+				}
+			}
+			//get reserved qty
+			$reservedList = DB::table('assets_inventory_reserved')->select('digits_code as digits_code',DB::raw('SUM(approved_qty) as reserved_qty'))->whereNotNull('reserved')->groupBy('digits_code')->get()->toArray();
+			$resultInventory = [];
+			foreach($items as $invKey => $invVal){
+				$i = array_search($invVal->digits_code, array_column($reservedList,'digits_code'));
+				if($i !== false){
+					$invVal->reserved_value = $reservedList[$i];
+					$resultInventory[] = $invVal;
+				}else{
+					$invVal->reserved_value = "";
+					$resultInventory[] = $invVal;
+				}
+			}
+			//get the final available qty
+			$finalInventory = [];
+			foreach($resultInventory as $fKey => $fVal){
+				$fVal->available_qty = max($fVal->inv_value->wh_qty - $fVal->reserved_value->reserved_qty,0);
+				$finalInventory[] = $fVal;
+			}
 
+			$data['Body'] = $finalInventory;
+	
 			return $this->view("assets.approval-request", $data);
 		}
 

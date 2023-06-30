@@ -29,9 +29,10 @@
             <div class="row">
            
         <div class="row" style="margin:5px">   
-            <button type="button" id="btn-export" class="btn btn-primary btn-sm btn-export" style="margin-bottom:10px"><i class="fa fa-download"></i>
+            {{-- <button type="button" id="btn-export" class="btn btn-primary btn-sm btn-export" style="margin-bottom:10px"><i class="fa fa-download"></i>
                 <span>Download</span>
-            </button>
+            </button> --}}
+            <a href="{{route('export-assets-report-list')}}" class="btn btn-primary btn-sm btn-export" style="margin-bottom:10px"><i class="fa fa-download"></i> <span>Download</span></a>
             <table class='table table-hover table-striped table-bordered' id="table_dashboard">
             
                 <thead>
@@ -124,6 +125,10 @@
                 language: {
                     searchPlaceholder: "Search"
                 },
+                scrollCollapse: true,
+                crollX: true,
+                fixedColumns: true,
+                fixedHeader: true,
                 lengthMenu: [
                     [10, 25, 50, 100, -1],
                     [10, 25, 50, 100, "All"],

@@ -24,9 +24,9 @@ class ExportItemSource implements FromCollection, WithHeadings
         ->leftjoin('cms_users as processed', 'item_sourcing_header.processed_by','=', 'processed.id')
         ->leftjoin('cms_users as closed', 'item_sourcing_header.closed_by','=', 'closed.id')
         ->leftjoin('statuses', 'item_sourcing_header.status_id', '=', 'statuses.id')
-        ->leftjoin('new_category', 'item_sourcing_body.category_id', '=', 'new_category.id')
+        ->leftjoin('category', 'item_sourcing_body.category_id', '=', 'category.id')
         ->leftjoin('new_sub_category', 'item_sourcing_body.sub_category_id', '=', 'new_sub_category.id')
-        ->leftjoin('new_class', 'item_sourcing_body.class_id', '=', 'new_class.id')
+        ->leftjoin('class', 'item_sourcing_body.class_id', '=', 'class.id')
         ->leftjoin('new_sub_class', 'item_sourcing_body.sub_class_id', '=', 'new_sub_class.id')
         ->select(
           'statuses.status_description',
@@ -35,9 +35,9 @@ class ExportItemSource implements FromCollection, WithHeadings
           'departments.department_name',
           'item_sourcing_header.position',
           'item_sourcing_header.company_name',
-          'new_category.category_description',
+          'category.category_description',
           'new_sub_category.sub_category_description',
-          'new_class.class_description',
+          'class.class_description',
           'new_sub_class.sub_class_description',
           'item_sourcing_body.item_description',
           'item_sourcing_body.brand',

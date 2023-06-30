@@ -420,7 +420,7 @@
 							'deployed_to_id'=> 			NULL,
 							'location'=> 				3
 						]);
-						DB::table('assets_inventory_body')->where('id', $mo_info->inventory_id)->increment('quantity');
+						DB::table('assets_inventory_body')->where('id', $mo_info->inventory_id)->update(['quantity'=>1]);
 					}else{
 						DB::table('assets_inventory_body')->where('id', $mo_info->inventory_id)
 						->update([
@@ -430,7 +430,7 @@
 							'deployed_to_id'=> 			NULL,
 							'location'=> 				2
 						]);
-						DB::table('assets_inventory_body')->where('id', $mo_info->inventory_id)->increment('quantity');
+						DB::table('assets_inventory_body')->where('id', $mo_info->inventory_id)->update(['quantity'=>1]);
 					}
 					
 
@@ -455,7 +455,7 @@
 							'deployed_to_id'=> 			NULL,
 							'location'=> 				3
 						]);
-						DB::table('assets_inventory_body')->where('id', $finalinventory_id[$x])->increment('quantity');
+						DB::table('assets_inventory_body')->where('id', $finalinventory_id[$x])->update(['quantity'=>1]);
 			    	}else{
 						DB::table('assets_inventory_body')->where('id', $finalinventory_id[$x])
 						->update([
@@ -464,7 +464,7 @@
 							'deployed_to_id'=> 			NULL,
 							'location'=> 				2	
 						]);
-						DB::table('assets_inventory_body')->where('id', $finalinventory_id[$x])->increment('quantity');
+						DB::table('assets_inventory_body')->where('id', $finalinventory_id[$x])->update(['quantity'=>1]);
 					}
 
 				}

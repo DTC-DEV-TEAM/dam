@@ -58,6 +58,57 @@
             .panel-heading{
                 background-color: #f5f5f5 ;
             }
+
+            .plus{
+                font-size:20px;
+            }
+            #add-Row{
+                border:none;
+                background-color: #fff;
+            }
+          
+            .iconPlus{
+                background-color: #3c8dbc: 
+            }
+            
+            .iconPlus:before {
+                content: '';
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                /* border: 1px solid rgb(194, 193, 193); */
+                font-size: 35px;
+                color: white;
+                background-color: #3c8dbc;
+       
+            }
+            #bigplus{
+                transition: transform 0.5s ease 0s;
+            }
+            #bigplus:before {
+                content: '\FF0B';
+                background-color: #3c8dbc: 
+                font-size: 50px;
+            }
+            #bigplus:hover{
+                /* cursor: default;
+                transform: rotate(180deg); */
+                -webkit-animation: infinite-spinning 1s ease-out 0s infinite normal;
+                 animation: infinite-spinning 1s ease-out 0s infinite normal;
+               
+            }
+
+            @keyframes infinite-spinning {
+                from {
+                    transform: rotate(0deg);
+                }
+                to {
+                    transform: rotate(360deg);
+                }
+            }
         </style>
     @endpush
 @section('content')
@@ -199,6 +250,9 @@
                                 </label>
                             </div>
                             @endforeach
+                            <div class="form-group" id="other_required_exams_div" style="display:none;">
+                                <input type="text" class="form-control finput"  id="other_required_exams" name="other_required_exams" placeholder="Other Required Exams">   
+                            </div>
                     </div>
                     <div class="col-md-6">
                         <label class="require control-label"><span style="color:red">*</span> Does the Employee need to shared files?</label><br>
@@ -326,7 +380,8 @@
                             <tfoot>
                                 <tr id="tr-table1" class="bottom">
                                     <td colspan="4">
-                                        <input type="button" id="add-Row" name="add-Row" class="btn btn-primary add" value='Add Item' />
+                                        {{-- <input type="button" id="add-Row" name="add-Row" class="btn btn-primary add" value='Add Item' /> --}}
+                                        <button class="red-tooltip" data-toggle="tooltip" data-placement="right" id="add-Row" name="add-Row" title="Add Row"><div class="iconPlus" id="bigplus"></div></button>
                                     </td>
                                     <td align="left" colspan="1">
                                         <input type='number' name="quantity_total" class="form-control text-center" id="quantity_total" readonly>
@@ -337,7 +392,7 @@
                                               
                         <div class="col-md-12">
                             <hr/>
-                            <div class="row"> 
+                            <div class="row" id="application_div"> 
                                 <label class="require control-label col-md-2" required><span style="color:red">*</span> {{ trans('message.form-label.application') }}</label>
                                     @foreach($applications as $data)
                                         <div class="col-md-2">
@@ -373,6 +428,9 @@
 @endsection
 @push('bottom')
 <script type="text/javascript">
+    $(function(){
+        $('body').addClass("sidebar-collapse");
+    });
     function preventBack() {
         window.history.forward();
     }
@@ -422,8 +480,7 @@
      //checkbox validations
      $(".manpower").change(function() {
         var rep = $(this);
-        console.log($(this).val());
-        if(rep.val() === "REPLACEMENT"){
+        if(rep.val() === "REPLACEMENT" && rep.is(':checked')){
             $("#show_replacement_of").show();
         }else{
             $("#show_replacement_of").hide();
@@ -436,8 +493,7 @@
       //checkbox validations
       $(".schedule").change(function() {
         var rep = $(this);
-        console.log($(this).val());
-        if(rep.val() === "OTHERS"){
+        if(rep.val() === "OTHERS" && rep.is(':checked')){
             $("#other_schedule_div").show();
         }else{
             $("#other_schedule_div").hide();
@@ -446,11 +502,10 @@
 
     });
 
-    //checkbox validations
+    //checkbox validations manpower
     $(".manpower").change(function() {
         var rep = $(this);
-        console.log($(this).val());
-        if(rep.val() === "ABSORPTION"){
+        if(rep.val() === "ABSORPTION" && rep.is(':checked')){
             $("#absorption_div").show();
         }else{
             $("#absorption_div").hide();
@@ -462,13 +517,24 @@
     //other email domain
       //checkbox validations
       $(".email_domain").change(function() {
-        var rep = $(this);
-        console.log($(this).val());
-        if(rep.val() === "OTHERS"){
+        var rep = $(this);;
+        if(rep.val() === "OTHERS" && rep.is(':checked')){
             $("#other_email_domain").show();
         }else{
             $("#other_email_domain").hide();
             $('#other_email').val("");
+        }
+    });
+
+     //other Required Exam
+      //checkbox validations
+      $(".required_exams").change(function() {
+        var rep = $(this);
+        if(rep.val() === "OTHERS" && rep.is(':checked')){
+            $("#other_required_exams_div").show();
+        }else{
+            $("#other_required_exams_div").hide();
+            $('#other_required_exams').val("");
         }
 
     });
@@ -491,7 +557,8 @@
     $(document).ready(function() {
         const fruits = [];
         $("#add-Row").click(function() {
-
+            event.preventDefault(); 
+            $("#application_div").show();
             var description = "";
             var count_fail = 0;
             $('.itemDesc').each(function() {
@@ -748,6 +815,11 @@
         
         //deleteRow
         $(document).on('click', '.removeRow', function() {
+            $("#application_div").hide();
+            $("#application_others_div").hide();
+            $(".application").prop('checked', false);
+            $(".application_others").prop('checked', false);
+            $("#application_others").removeAttr('required');
             var id_data = $(this).attr("data-id");
             if($("#category_id"+id_data).val().toLowerCase().replace(/\s/g, '') == "it assets" || $("#category_id"+id_data).val().toLowerCase().replace(/\s/g, '') == "desktop"){
 
@@ -846,7 +918,7 @@
     //SUBMIT REQUEST
     $("#btnSubmit").click(function(event) {
         event.preventDefault();
-        var countRow = $('#asset-items tfoot tr').length;
+        var countRow = $('#asset-items tfoot tr').length - 1;
         var reg = /^0/gi;
         // var value = $('.vvalue').val();
         if($("#requested_date").val() === ""){
@@ -1008,15 +1080,16 @@
                 confirmButtonColor: "#367fa9",
             });
             event.preventDefault();
-        }else if (countRow == 1) {
-            swal({
-                type: 'error',
-                title: 'Please add an item!',
-                icon: 'error',
-                confirmButtonColor: "#367fa9",
-            }); 
-            event.preventDefault(); // cancel default behavior
         }
+        // else if (countRow == 1) {
+        //     swal({
+        //         type: 'error',
+        //         title: 'Please add an item!',
+        //         icon: 'error',
+        //         confirmButtonColor: "#367fa9",
+        //     }); 
+        //     event.preventDefault(); // cancel default behavior
+        // }
         // else if (countRow == 1) {
         // swal({
         //     type: 'error',
@@ -1029,7 +1102,7 @@
         else{
 
             if($('#show_replacement_of').is(":visible")){
-                if($('#replacement_of')){
+                if($('#replacement_of').val() === ""){
                     swal({
                         type: 'error',
                         title: 'Replacement Of required!',
@@ -1116,47 +1189,52 @@
                     } 
             
                 } 
-
-                var sub_cat = $(".sub_category_id option").length;
-                var sub_cat_value = $('.sub_category_id').find(":selected");
-                for(i=0;i<sub_cat;i++){
-                    var val = sub_cat_value.eq(i).val() || '';
-                    if(app_count == 0 && $.inArray((sub_cat_value.eq(i).val() || '').toLowerCase().replace(/\s/g, ''),['it assets','desktop']) > -1){
-                        swal({  
-                                type: 'error',
-                                title: 'Please choose an Application!',
-                                icon: 'error',
-                                confirmButtonColor: "#367fa9",
-                            });
-                            event.preventDefault();
-                            return false;
-                    } 
-            
-                } 
-                if(app_count == 0){
+                if(countRow == 1){
+                    var sub_cat = $(".sub_category_id option").length;
+                    var sub_cat_value = $('.sub_category_id').find(":selected");
+                    for(i=0;i<sub_cat;i++){
+                        var val = sub_cat_value.eq(i).val() || '';
+                        if(app_count == 0 && $.inArray((sub_cat_value.eq(i).val() || '').toLowerCase().replace(/\s/g, ''),['it assets','desktop']) > -1){
                             swal({  
-                                type: 'error',
-                                title: 'Please choose an Application!',
-                                icon: 'error',
-                                confirmButtonColor: "#367fa9",
-                                
-                            });
-                            event.preventDefault();
-                            return false;
-                }else{
-                    swal({
-                        title: "Are you sure?",
-                        type: "warning",
-                        showCancelButton: true,
-                        confirmButtonColor: "#41B314",
-                        cancelButtonColor: "#F9354C",
-                        confirmButtonText: "Yes, send it!",
-                        width: 450,
-                        height: 200
-                        }, function () {
-                            $("#ERFRequest").submit();                                                   
-                    });
+                                    type: 'error',
+                                    title: 'Please choose an Application!',
+                                    icon: 'error',
+                                    confirmButtonColor: "#367fa9",
+                                });
+                                event.preventDefault();
+                                return false;
+                        } 
+                
+                    } 
                 }
+               
+                if(countRow == 1){
+                    if(app_count == 0){
+                                swal({  
+                                    type: 'error',
+                                    title: 'Please choose an Application!',
+                                    icon: 'error',
+                                    confirmButtonColor: "#367fa9",
+                                    
+                                });
+                                event.preventDefault();
+                                return false;
+                    }
+                }
+               
+                swal({
+                    title: "Are you sure?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#41B314",
+                    cancelButtonColor: "#F9354C",
+                    confirmButtonText: "Yes, send it!",
+                    width: 450,
+                    height: 200
+                    }, function () {
+                        $("#ERFRequest").submit();                                                   
+                });
+                
    
         }
     

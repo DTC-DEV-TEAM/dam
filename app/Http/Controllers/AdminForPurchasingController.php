@@ -287,6 +287,8 @@
 						dayViewHeaderFormat: \"MMMM YYYY\",
 				});
 
+				$('#category').select2({});
+
 				$('#exportBtn').click(function(event) {
 					event.preventDefault();
 					var from = $('#from').val();
@@ -320,9 +322,10 @@
 	        | $this->pre_index_html = "<p>test</p>";
 	        |
 	        */
+	
 	        $this->pre_index_html = null;
 	        $this->pre_index_html = "
-
+            
 			   <!-- Modal HTML -->
 			   <div id=\"modal-conso-export\" class=\"modal fade\" tabindex=\"-1\">
 				   <div class=\"modal-dialog\">
@@ -352,6 +355,17 @@
 								   </div>
 								</div>
 
+								<div class=\"col-md-6\">
+									<div class=\"form-group\">
+										<label class=\"control-label require\">Category</label>
+										<select selected data-placeholder=\"-- Select Category --\" id=\"category\" name=\"category\" class=\"form-select erf\" style=\"width:100%;\">
+												<option value=\"1\">IT ASSETS</option>
+												<option value=\"5\">FA</option>
+												<option value=\"7\">SUPPLIES</option>
+										</select>
+									</div>
+								</div>  
+								
 								<br>	
 							  </div>
 						    </form>
@@ -412,6 +426,19 @@
 				-webkit-border-radius: 5px !important;
 				-moz-border-radius: 5px !important;
 				border-radius: 5px !important; 
+			}
+			.select2-selection__choice{
+				font-size:14px !important;
+				color:black !important;
+			}
+			.select2-selection__rendered {
+				line-height: 31px !important;
+			}
+			.select2-container .select2-selection--single {
+				height: 35px !important;
+			}
+			.select2-selection__arrow {
+				height: 34px !important;
 			}
 			";
 	        /*

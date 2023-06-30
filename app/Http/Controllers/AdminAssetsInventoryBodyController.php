@@ -161,7 +161,7 @@
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
 			    $this->index_button[] = ["label"=>"Export Data","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('asset-lists-export'),"color"=>"primary"];
 				if(CRUDBooster::isSuperadmin()){
-				    $this->index_button[] = ["title"=>"Upload Inventory/Deployed","label"=>"Upload Inventory/Deployed","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('inventory-upload')];
+				    $this->index_button[] = ["title"=>"Upload Inventory","label"=>"Upload Inventory","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('inventory-upload')];
 					$this->index_button[] = ["title"=>"Upload Not Available Inventory","label"=>"Upload Not Available Inventory","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('upload-inventory-not-available'), "color"=>"warning"];
 					$this->index_button[] = ["title"=>"Update Inventory","label"=>"Update Inventory","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('upload-inventory-update'), "color"=>"success"];
 				}
@@ -771,12 +771,6 @@
 		
 			}
 			CRUDBooster::redirect(CRUDBooster::adminpath('assets_inventory_body'), $errors[0], 'danger');
-		}
-
-		//restrction page
-		public function restrictionPage() {
-			$data['page_title']= 'Forbidden Page';
-			return $this->view("errors.restriction-page", $data);
 		}
 
 	}

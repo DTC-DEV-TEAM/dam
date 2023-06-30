@@ -18,6 +18,7 @@
 	use Illuminate\Support\Facades\Redirect;
 	use Illuminate\Contracts\Cache\LockTimeoutException;
 	use App\Exports\ExportMultipleByApprover;
+	use App\Exports\ExportReportAssetsList;
 	use Carbon\Carbon;
 	//use DataTables;
 
@@ -646,6 +647,11 @@
 			->addIndexColumn()
 			->rawColumns(['action'])
 			->make(true);
+		}
+
+		public function exportReportAssetsList(){
+			$filename = "Request and Return Transfer Assets Report".date('Y-m-d');
+			return Excel::download(new ExportReportAssetsList, $filename.'.xlsx');
 		}
 
 

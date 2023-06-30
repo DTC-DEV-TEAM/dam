@@ -91,7 +91,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 			//$this->form[] = array("label"=>"Stores","name"=>"stores_id","type"=>"select","datatable"=>"stores,name_name", 'required'=>true,'width'=>'col-sm-5');				
 		}elseif(CRUDBooster::myPrivilegeId() == 4 || CRUDBooster::myPrivilegeId() == 15){
 			$this->form[] = array("label"=>"Privilege","name"=>"id_cms_privileges","required"=>true,"type"=>"select","datatable"=>"cms_privileges,name", 'datatable_where'=>"id in (2,3,11,12)", 'width'=>'col-sm-5');	
-			$this->form[] = array('label'=>'Approver','name'=>'approver_id','type'=>'select2','datatable'=>'cms_users,name','datatable_where'=>"id_cms_privileges in (3,11,12,14,15,17,18)",'width'=>'col-sm-5');
+			$this->form[] = array('label'=>'Approver','name'=>'approver_id','type'=>'select2','datatable'=>'cms_users,name','datatable_where'=>"id_cms_privileges in (3,11,12,14,15,17,18,20)",'width'=>'col-sm-5');
 			$this->form[] = array('label'=>'Approver','name'=>'approver_id_manager','type'=>'select2','datatable'=>'cms_users,name','datatable_where'=>"id_cms_privileges in (11,12,14,15)",'width'=>'col-sm-5', 'class'=>'approver_one');
 			$this->form[] = array("label"=>"Location","name"=>"location_id","type"=>"select2","required"=>true,"datatable"=>"locations,store_name", 'datatable_where'=>"store_status = 'ACTIVE'",'width'=>'col-sm-5');
 			//$this->form[] = array("label"=>"ERF","name"=>"erf_id","type"=>"select2","required"=>true,"datatable"=>"erf_header_request,reference_number", 'datatable_where'=>"status_id = 32 && to_tag_employee = 1",'width'=>'col-sm-5');
@@ -99,7 +99,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 		}elseif(CRUDBooster::isSuperadmin()) {
 
 			$this->form[] = array("label"=>"Privilege","name"=>"id_cms_privileges","required"=>true,"type"=>"select","datatable"=>"cms_privileges,name", 'width'=>'col-sm-5');	
-			$this->form[] = array('label'=>'Approver','name'=>'approver_id','type'=>'select2','datatable'=>'cms_users,name','datatable_where'=>"id_cms_privileges in (3,11,12,14,15,17,18)",'width'=>'col-sm-5');
+			$this->form[] = array('label'=>'Approver','name'=>'approver_id','type'=>'select2','datatable'=>'cms_users,name','datatable_where'=>"id_cms_privileges in (3,11,12,14,15,17,18,20)",'width'=>'col-sm-5');
 			$this->form[] = array('label'=>'Approver','name'=>'approver_id_manager','type'=>'select2','datatable'=>'cms_users,name','datatable_where'=>"id_cms_privileges in (11,12,14,15)",'width'=>'col-sm-5', 'class'=>'approver_one');
 			//$this->form[] = array('label'=>'Approver','name'=>'approver_id_executive','type'=>'select2','datatable'=>'cms_users,name','datatable_where'=>"id_cms_privileges = '12'",'width'=>'col-sm-5');
 			$this->form[] = array("label"=>"Location","name"=>"location_id","type"=>"select2","datatable"=>"locations,store_name", 'datatable_where'=>"store_status = 'ACTIVE'",'width'=>'col-sm-5');

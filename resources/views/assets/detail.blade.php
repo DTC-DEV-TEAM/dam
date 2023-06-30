@@ -142,18 +142,7 @@
 
         
             </div>
-            <!--
-            <hr/>
-
-            <div class="row">                           
-                <label class="control-label col-md-2">{{ trans('message.form-label.condition') }}:</label>
-                <div class="col-md-4">
-                        <p>{{$Header->condition_description}}</p>
-                </div>
-
-        
-            </div> -->
-
+ 
             @if($Header->requestor_comments != null || $Header->requestor_comments != "")
                 <hr/>
                 <div class="row">                           
@@ -201,27 +190,29 @@
                                             <th width="9%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
                                             <th width="10%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
                                             <th width="5%" class="text-center">{{ trans('message.table.quantity_text') }}</th> 
-                                            
-                                            @if(in_array($Header->request_type_id, [6,7]))       
-                                                <th width="5%" class="text-center">For Replenish Qty</th> 
-                                                <th width="5%" class="text-center">For ReOrder Qty</th> 
-                                                <th width="5%" class="text-center">Fulfilled Qty</th> 
-                                                <th width="5%" class="text-center">UnServed Qty</th>                                                                                                                                                                                                          
-                                                <th width="5%" class="text-center">DR Qty</th>
-                                                <th width="5%" class="text-center">PO Qty</th>     
-                                                <th width="10%" class="text-center">DR#</th>         
-                                                <th width="10%" class="text-center">PO#</th>   
-                                                <th width="5%" class="text-center">Cancelled Qty</th> 
-                                                <th>Reason</th>                                
-                                            @endif 
-
+                                                                                   
+                                            <th width="5%" class="text-center">For Replenish Qty</th> 
+                                            <th width="5%" class="text-center">For ReOrder Qty</th> 
+                                            <th width="5%" class="text-center">Fulfilled Qty</th> 
+                                            <th width="5%" class="text-center">UnServed Qty</th>                                                                                                                                                                                                          
+                                            <th width="5%" class="text-center">DR Qty</th>
+                                            <th width="5%" class="text-center">PO Qty</th>     
+                                            <th width="10%" class="text-center">DR#</th>         
+                                            <th width="10%" class="text-center">PO#</th>   
+                                            <th width="5%" class="text-center">Cancelled Qty</th> 
+                                            <th>Reason</th>                                
+                       
                                             @if($Header->recommendedby != null || $Header->recommendedby != "")
                                                 <th width="13%" class="text-center">{{ trans('message.table.recommendation_text') }}</th> 
                                                 <th width="14%" class="text-center">{{ trans('message.table.reco_digits_code_text') }}</th> 
                                                 <th width="24%" class="text-center">{{ trans('message.table.reco_item_description_text') }}</th>
                                             @endif 
+                                            
+                                            @if($Header->approved_by == null || $Header->approved_by == "")
+                                                <th width="5%" class="text-center">{{ trans('message.table.action') }}</th>
+                                            @endif 
 
-                                            @if(in_array($Header->request_type_id, [6,7]))
+                                            {{-- @if(in_array($Header->request_type_id, [6,7]))
                                                 @if($Header->approved_by == null || $Header->approved_by == "")
                                                     <th width="5%" class="text-center">{{ trans('message.table.action') }}</th>
                                                 @endif 
@@ -229,7 +220,7 @@
                                                 @if($Header->po_number == null || $Header->po_number == "")  
                                                    <th width="5%" class="text-center">{{ trans('message.table.action') }}</th>
                                                 @endif
-                                            @endif
+                                            @endif --}}
                                         </tr>
                                         <tr id="tr-table">
                                             <?php   $tableRow = 1; ?>
@@ -259,18 +250,18 @@
                                                                     {{-- <input type='hidden' name="quantity" class="form-control text-center quantity_item" id="quantity" readonly value="{{$rowresult->quantity}}">
                                                                     <input type='hidden' name="quantity_body" id="quantity{{$tableRow}}" readonly value="{{$rowresult->quantity}}"> --}}
                                                                 </td>
-                                                                @if(in_array($Header->request_type_id, [6,7]))
-                                                                    <td style="text-align:center">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
-                                                                    <td style="text-align:center">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                           
-                                                                    <td style="text-align:center">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>
-                                                                    <td style="text-align:center">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td>
-                                                                    <td style="text-align:center">{{$rowresult->dr_qty ? $rowresult->dr_qty : 0}}</td> 
-                                                                    <td style="text-align:center">{{$rowresult->po_qty ? $rowresult->po_qty : 0}}</td>   
-                                                                    <td style="text-align:center">{{$rowresult->mo_so_num}}</td>   
-                                                                    <td style="text-align:center">{{$rowresult->po_no}}</td>  
-                                                                    <td style="text-align:center">{{$rowresult->cancelled_qty ? $rowresult->cancelled_qty : 0}}</td>   
-                                                                    <td style="text-align:center">{{$rowresult->reason_to_cancel}}</td>  
-                                                                @endif
+                                                             
+                                                                <td style="text-align:center">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
+                                                                <td style="text-align:center">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                           
+                                                                <td style="text-align:center">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>
+                                                                <td style="text-align:center">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td>
+                                                                <td style="text-align:center">{{$rowresult->dr_qty ? $rowresult->dr_qty : 0}}</td> 
+                                                                <td style="text-align:center">{{$rowresult->po_qty ? $rowresult->po_qty : 0}}</td>   
+                                                                <td style="text-align:center">{{$rowresult->mo_so_num}}</td>   
+                                                                <td style="text-align:center">{{$rowresult->po_no}}</td>  
+                                                                <td style="text-align:center">{{$rowresult->cancelled_qty ? $rowresult->cancelled_qty : 0}}</td>   
+                                                                <td style="text-align:center">{{$rowresult->reason_to_cancel}}</td>  
+                                                            
 
                                                                 @if($Header->recommendedby != null || $Header->recommendedby != "")                                                                               
                                                                     <td style="text-align:center" height="10">
@@ -311,19 +302,18 @@
                                                                         {{-- <input type='hidden' name="quantity" class="form-control text-center quantity_item" id="quantity" readonly value="{{$rowresult->quantity}}">
                                                                         <input type='hidden' name="quantity_body" id="quantity{{$tableRow}}" readonly value="{{$rowresult->quantity}}"> --}}
                                                                 </td>
-                                                                @if(in_array($Header->request_type_id, [6,7]))
-                                                                    <td style="text-align:center" class="rep_qty">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
-                                                                    <td style="text-align:center" class="ro_qty">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                           
-                                                                    <td style="text-align:center" class="served_qty">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>
-                                                                    <td style="text-align:center" class="unserved_qty">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td>
-                                                                    <td style="text-align:center" class="dr_qty">{{$rowresult->dr_qty ? $rowresult->dr_qty : 0}}</td> 
-                                                                    <td style="text-align:center" class="po_qty">{{$rowresult->po_qty ? $rowresult->po_qty : 0}}</td>   
-                                                                    <td style="text-align:center">{{$rowresult->mo_so_num}}</td>   
-                                                                    <td style="text-align:center">{{$rowresult->po_no}}</td>     
-                                                                    <td style="text-align:center" class="po_qty">{{$rowresult->cancelled_qty ? $rowresult->cancelled_qty : 0}}</td>   
-                                                                    <td style="text-align:center">{{$rowresult->reason_to_cancel}}</td>  
+                                                        
+                                                                <td style="text-align:center" class="rep_qty">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
+                                                                <td style="text-align:center" class="ro_qty">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                           
+                                                                <td style="text-align:center" class="served_qty">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>
+                                                                <td style="text-align:center" class="unserved_qty">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td>
+                                                                <td style="text-align:center" class="dr_qty">{{$rowresult->dr_qty ? $rowresult->dr_qty : 0}}</td> 
+                                                                <td style="text-align:center" class="po_qty">{{$rowresult->po_qty ? $rowresult->po_qty : 0}}</td>   
+                                                                <td style="text-align:center">{{$rowresult->mo_so_num}}</td>   
+                                                                <td style="text-align:center">{{$rowresult->po_no}}</td>     
+                                                                <td style="text-align:center" class="po_qty">{{$rowresult->cancelled_qty ? $rowresult->cancelled_qty : 0}}</td>                                                                 <td style="text-align:center">{{$rowresult->reason_to_cancel}}</td>  
                                                                 
-                                                                @endif
+                                                             
                                                                 @if($Header->recommendedby != null || $Header->recommendedby != "")                                                                               
                                                                     <td style="text-align:center" height="10">
                                                                         {{$rowresult->recommendation}}
@@ -335,8 +325,13 @@
                                                                         {{$rowresult->reco_item_description}}
                                                                     </td>
                                                                 @endif
-                                                        
-                                                                @if(in_array($Header->request_type_id, [6,7]))
+
+                                                                @if($Header->status_id == 1)    
+                                                                    <td style="text-align:center" height="10">
+                                                                        <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow btn-sm" data-toggle="tooltip" data-placement="bottom" title="Cancel"><i class="fa fa-trash"></i></button>
+                                                                    </td>
+                                                                @endif
+                                                                {{-- @if(in_array($Header->request_type_id, [6,7]))
                                                                     @if($Header->status_id == 1)    
                                                                         <td style="text-align:center" height="10">
                                                                             <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow btn-sm" data-toggle="tooltip" data-placement="bottom" title="Cancel"><i class="fa fa-trash"></i></button>
@@ -348,7 +343,7 @@
                                                                             <button id="deleteRow{{$tableRow}}" name="removeRow" data-id="{{$tableRow}}" class="btn btn-danger removeRow btn-sm" data-toggle="tooltip" data-placement="bottom" title="Cancel"><i class="fa fa-trash"></i></button>
                                                                         </td>
                                                                     @endif
-                                                                @endif
+                                                                @endif --}}
                                                                                         
                                                             </tr>
                                                         @endif
@@ -473,35 +468,10 @@
                     <div class="col-md-6">
                         <table style="width:100%">
                             <tbody id="footer">
-                                @if($Header->request_type_id == 1 || $Header->request_type_id == 5)
                                 <tr>
-                                    <th class="control-label col-md-2">{{ trans('message.form-label.po_number') }}:</th>
-                                    <td class="col-md-4">{{$Header->po_number}}</td>     
+                                    <th class="control-label col-md-2">{{ trans('message.form-label.mo_by') }}:</th>
+                                    <td class="col-md-4">{{$Header->mo_by}} / {{$Header->mo_at}}</td>     
                                 </tr>
-
-                                <tr>
-                                    <th class="control-label col-md-2">{{ trans('message.form-label.po_date') }}:</th>
-                                    <td class="col-md-4">{{$Header->po_date}}</td>
-                                </tr>
-
-                                <tr>
-                                    <th class="control-label col-md-2">{{ trans('message.form-label.quote_date') }}:</th>
-                                    <td class="col-md-4">{{$Header->quote_date}}</td>
-                                </tr>
-                                @endif
-                                @if( $Header->processedby != null )
-                                    <tr>
-                                        <th class="control-label col-md-2">{{ trans('message.form-label.processed_by') }}:</th>
-                                        <td class="col-md-4">{{$Header->processedby}} / {{$Header->purchased2_at}}</td>
-                                    </tr>
-                                @endif
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="col-md-6">
-                        <table style="width:100%">
-                            <tbody id="footer">
                                 @if($Header->ac_comments != null)
                                     <tr>
                                         <th class="control-label col-md-2">{{ trans('message.table.ac_comments') }}:</th>
@@ -514,6 +484,13 @@
                                         <td class="col-md-4">{{$Header->pickedby}} / {{$Header->picked_at}}</td>
                                     </tr>
                                 @endif
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="col-md-6">
+                        <table style="width:100%">
+                            <tbody id="footer">
                                 @if( $Header->receivedby != null )
                                     <tr>
                                         <th class="control-label col-md-2">{{ trans('message.form-label.received_by') }}:</th>
@@ -637,48 +614,48 @@
     
         }
     
-        if($('#request_type_id').val() == 1 || $('#request_type_id').val() == 5){
-            var tds = document
-            .getElementById("asset-items1")
-            .getElementsByTagName("td");
-            var sumqty       = 0;
-            var rep_qty      = 0;
-            var ro_qty       = 0;
-            var served_qty   = 0;
-            var unserved_qty = 0;
-            var dr_qty       = 0;
-            var po_qty       = 0;
-            for (var i = 0; i < tds.length; i++) {
-                if(tds[i].className == "qty") {
-                    sumqty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-                }else if(tds[i].className == "rep_qty"){
-                    rep_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-                }else if(tds[i].className == "ro_qty"){
-                    ro_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-                }else if(tds[i].className == "served_qty"){
-                    served_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-                }else if(tds[i].className == "unserved_qty"){
-                    unserved_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-                }else if(tds[i].className == "dr_qty"){
-                    dr_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-                }else if(tds[i].className == "po_qty"){
-                    po_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
-                }
-            }
-            document.getElementById("asset-items1").innerHTML +=
-            "<tr>"+
-                "<td colspan='4' style='text-align:right;border:none'>"+
-                        "<strong>TOTAL</strong>"+
-                    "</td>"+
+        // if($('#request_type_id').val() == 1 || $('#request_type_id').val() == 5){
+        //     var tds = document
+        //     .getElementById("asset-items1")
+        //     .getElementsByTagName("td");
+        //     var sumqty       = 0;
+        //     var rep_qty      = 0;
+        //     var ro_qty       = 0;
+        //     var served_qty   = 0;
+        //     var unserved_qty = 0;
+        //     var dr_qty       = 0;
+        //     var po_qty       = 0;
+        //     for (var i = 0; i < tds.length; i++) {
+        //         if(tds[i].className == "qty") {
+        //             sumqty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+        //         }else if(tds[i].className == "rep_qty"){
+        //             rep_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+        //         }else if(tds[i].className == "ro_qty"){
+        //             ro_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+        //         }else if(tds[i].className == "served_qty"){
+        //             served_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+        //         }else if(tds[i].className == "unserved_qty"){
+        //             unserved_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+        //         }else if(tds[i].className == "dr_qty"){
+        //             dr_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+        //         }else if(tds[i].className == "po_qty"){
+        //             po_qty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+        //         }
+        //     }
+        //     document.getElementById("asset-items1").innerHTML +=
+        //     "<tr>"+
+        //         "<td colspan='4' style='text-align:right;border:none'>"+
+        //                 "<strong>TOTAL</strong>"+
+        //             "</td>"+
                     
-                    "<td style='text-align:center;border:none'>"+
-                        "<strong>" +
-                        sumqty +
-                        "</strong>"+
-                    "</td>"+
+        //             "<td style='text-align:center;border:none'>"+
+        //                 "<strong>" +
+        //                 sumqty +
+        //                 "</strong>"+
+        //             "</td>"+
                     
-            "</tr>";
-        }else{
+        //     "</tr>";
+        // }else{
             var tds = document.getElementById("asset-items1").getElementsByTagName("td");
             var sumqty       = 0;
             var rep_qty      = 0;
@@ -747,11 +724,11 @@
                     "</td>"+
                     "<td style='text-align:center'>"+
                     "</td>"+
-                    "<td colspan='3' style='text-align:center'>"+
+                    "<td colspan='4' style='text-align:center'>"+
                     "</td>"+
                    
             "</tr>";
-        }
+        //}
 
         var tds = document.getElementById("asset-items").getElementsByTagName("td");
         var moQty        = 0;

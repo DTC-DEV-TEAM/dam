@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\HeaderRequest;
+use App\BodyRequest;
 use Illuminate\Support\Facades\Hash;
 //use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -23,17 +24,20 @@ class StatusUpdateUpload implements ToCollection, WithHeadingRow
     public function collection(Collection $rows)
     {
         foreach ($rows->toArray() as $row){
+            $header = HeaderRequest::where(['reference_number' => $row['reference_number']])->first();
+
             HeaderRequest::where(['reference_number'=>$row['reference_number']])
             ->update(
                         [
-                        'status_id'          => $row['status'],
-                        'approved_by'        => NULL,
-                        'approved_at'        => NULL, 
-                        'approver_comments'  => NULL, 
-                        'purchased1_by'      => NULL, 
-                        'purchased1_at'      => NULL,  
-                        'purchased2_by'      => NULL, 
-                        'purchased2_at'      => NULL         
+                            'status_id'          => $row['status'],   
+                        ]
+                    );
+
+            BodyRequest::where(['header_request_id'=>$header->id])
+            ->update(
+                        [
+                            'deleted_by'=> CRUDBooster::myId(),
+                            'deleted_at'=> date('Y-m-d H:i:s')   
                         ]
                     );
         }

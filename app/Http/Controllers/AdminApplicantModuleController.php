@@ -212,7 +212,7 @@
 	        */
 	        $this->load_css = array();
 			$this->load_css[] = asset("datetimepicker/bootstrap-datetimepicker.min.css");
-	        
+	        $this->load_css[] = asset("css/font-family.css");
 	    }
 
 	    /*
@@ -273,16 +273,11 @@
 			$remarks      = $fields['remarks'];
 
 			//Jo Done
-			$checkRowDbJoDone = DB::table('applicant_table')->select(DB::raw("(full_name) AS fullname"))->get()->toArray();
+			$checkRowDbJoDone = DB::table('applicant_table')->select(DB::raw("(full_name) AS fullname"))->where('erf_number',$erf_number)->get()->toArray();
 			$checkRowDbColumnJoDone = array_column($checkRowDbJoDone, 'fullname');
-			//Cancelled
-			$checkRowDbCancelled = DB::table('applicant_table')->select(DB::raw("(full_name) AS fullname"))->where('status', 8)->get()->toArray();
-			$checkRowDbColumnCancelled = array_column($checkRowDbCancelled, 'fullname');
 
 			if (in_array(strtolower(str_replace(' ', '', trim($first_name))).''.strtolower(str_replace(' ', '', trim($last_name))), $checkRowDbColumnJoDone)) {
-				return CRUDBooster::redirect(CRUDBooster::mainpath("add-applicant"),"Applicant Already Exist!","danger");
-			}else if(in_array(strtolower(str_replace(' ', '', trim($first_name))).''.strtolower(str_replace(' ', '', trim($last_name))), $checkRowDbColumnCancelled)){
-				return CRUDBooster::redirect(CRUDBooster::mainpath("add-applicant"),"Applicant Already Exist!/Cancelled","danger");
+				return CRUDBooster::redirect(CRUDBooster::mainpath("add-applicant"),"Applicant Already Exist in this ERF!","danger");
 			}else{
 				$postdata['status']      = 34;
 				$postdata['erf_number']  = $erf_number;

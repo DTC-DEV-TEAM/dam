@@ -34,9 +34,9 @@
         <div class="col-lg-6 offset-lg-3 col-sm-6 offset-sm-3 col-12 p-3 error-main">
           <div class="row">
             <div class="col-lg-8 col-12 col-sm-10 offset-lg-2 offset-sm-1">
-              <h1 class="m-0">503</h1>
-              <h4>Service Unavailable - DAM</h4>
-              <p><span class="text-info">Supplies</span> request assets period <span class="text-info">expired</span>. Please wait for the <span class="text-info">next schedule request.</span></p>
+              <img src="{{asset('img/stop-order.gif')}}" alt="Warning" class="text-center" width="200" height="200">
+              <h4>Supplies Request Expired - DAM</h4>
+              <p><span class="text-info">Supplies</span> request assets period <span class="text-info">expired</span>. Please wait for the <span class="text-info">supplies request to open.</span></p>
               <p><span class="text-info">Thank you for understanding.</span></p>
             </div>
           </div>

@@ -41,8 +41,8 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/export-assets-body', 'AdminAssetsInventoryHeaderController@ExportAssetsBody')->name('assets.export.assets.body'); 
     Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/export-assets-header', 'AdminAssetsInventoryHeaderController@ExportAssetsHeader')->name('assets.export.assets.header'); 
     Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/check-row','AdminAssetsInventoryHeaderController@checkRow')->name('assets.check.row');
-    Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/get-approvedProcess','AdminAssetsInventoryHeaderForApprovalController@getapprovedProcess')->name('assets.get.approvedProcess');
-    Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/get-rejectedProcess','AdminAssetsInventoryHeaderForApprovalController@getrejectedProcess')->name('assets.get.rejectedProcess');
+    Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/get-approvedProcess','AdminAssetsInventoryHeaderController@getapprovedProcess')->name('assets.get.approvedProcess');
+    Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/get-rejectedProcess','AdminAssetsInventoryHeaderController@getrejectedProcess')->name('assets.get.rejectedProcess');
     
     Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/get-history','AdminHeaderRequestController@getHistory')->name('assets.get.history');
     Route::post(config('crudbooster.ADMIN_PATH').'/assets_inventory/get-comments','AdminHeaderRequestController@getComments')->name('assets.get.comments');
@@ -170,8 +170,19 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/customers/get-checkEmail','AdminErfEditStatusController@checkEmail')->name('checkEmail');
     Route::get('/admin/erf_edit_status/getErfSetOnboardingDate/{id}','AdminErfEditStatusController@getErfSetOnboardingDate')->name('set-onboarding-erf');
     Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/setOnboarding','AdminErfEditStatusController@setOnboarding')->name('set-onboarding-date');
+    Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/setUpdateOnboarding','AdminErfEditStatusController@setUpdateOnboarding')->name('set-update-onboarding-date'); //new
+    Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/lockform','AdminErfEditStatusController@lockForm')->name('locking-form'); //new
     Route::post(config('crudbooster.ADMIN_PATH').'/hr_requisition/erf-item-search','AdminHrRequisitionController@itemErfITSearch')->name('item.erf.it.search');
-    
+    Route::get('/admin/erf_edit_status/getLockingForm/{id}','AdminErfEditStatusController@getLockingFormView')->name('get-locking-form'); //new
+    Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/deleteLockform','AdminErfEditStatusController@lockDeleteForm')->name('delete-locking-form'); //new
+    Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/lockformcreateaccount','AdminErfEditStatusController@lockFormCreateAccount')->name('locking-form-create-account'); //new
+    Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/deleteLockformCreateAccount','AdminErfEditStatusController@createAccountlockDelete')->name('delete-locking-create-account'); //new
+    Route::get('/admin/erf_edit_status/getLockingErfCreateAccountForm/{id}','AdminErfEditStatusController@getLockingErfCreateAcountFormView')->name('get-locking-erf-create-account-form'); //new
+
+    Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/getLockingErfSetOnboardingDate','AdminErfEditStatusController@lockFormOnboardingDate')->name('locking-form-onboarding-date'); //new
+    Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/deleteLockformOnboardingDate','AdminErfEditStatusController@onboardingDatelockDelete')->name('delete-locking-onboarding-date'); //new
+    Route::get('/admin/erf_edit_status/getLockingErfSetOnboardingDate/{id}','AdminErfEditStatusController@getLockingErfOnboardingDateFormView')->name('get-locking-erf-onboarding-date-form'); //new
+   
     //Applicant Moduel
     Route::get('/admin/applicant_module/getEditApplicant/{id}','AdminApplicantModuleController@getEditApplicant')->name('edit-applicant');
     Route::get('/admin/applicant_module/getDetailApplicant/{id}','AdminApplicantModuleController@getDetailApplicant')->name('applicant-detail');
@@ -213,6 +224,7 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('admin/item-sourcing-header/getDetailReject/{id}','AdminItemSourcingHeaderController@getDetailReject')->name('getDetailReject');
     
     //reports
+    Route::get('/admin/reports/export-report','AdminReportsController@exportReportAssetsList')->name('export-assets-report-list');
     //Route::get('/admin/reports/getIndex','AdminReportsController@getIndex')->name('get-report');
     //Route::get('/admin/get-reports/getIndex', [AdminReportsv2Controller::class, 'getIndex'])->name('get-report');
 

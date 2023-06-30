@@ -27,7 +27,7 @@ class InventoryUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
         $it_cat = DB::table('category')->where('id', 6)->value('category_description');
         $fa_cat = DB::table('category')->where('id', 4)->value('category_description');
         $DatabaseCounterIt = DB::table('assets_inventory_body')->where('item_category', $it_cat)->count();
-        $DatabaseCounterFixAsset = DB::table('assets_inventory_body')->where('item_category',$fa_cat)->count();
+        $DatabaseCounterFixAsset = DB::table('assets_inventory_body')->where('item_category','FIXED ASSETS')->count();
         foreach ($rows->toArray() as $row) {
             $name_id     = DB::table('cms_users')->where('id','!=',1)->where(DB::raw('LOWER(TRIM(email))'),strtolower(trim($row['email'])))->value('id');
             $name     = DB::table('cms_users')->where('id','!=',1)->where(DB::raw('LOWER(TRIM(email))'),strtolower(trim($row['email'])))->value('name');

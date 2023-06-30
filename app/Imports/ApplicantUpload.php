@@ -72,6 +72,7 @@ class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
             $screen_date = isset($row['screen_date']) ? Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['screen_date'])) : NULL;
             $save = Applicant::updateOrcreate([
                 'full_name'   => strtolower(str_replace(' ', '', trim($row['first_name']))).''.strtolower(str_replace(' ', '', trim($row['last_name']))),
+                'erf_number'  => trim($row['erf_number'])
             ],
             [
                 'erf_number'  => trim($row['erf_number']),

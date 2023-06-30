@@ -84,17 +84,11 @@
         <div class='panel-body'>
 
             <div class="row">
-
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label class="control-label require">{{ trans('message.form-label.employee_name') }}</label>
-                         
+                        <label class="control-label require">{{ trans('message.form-label.employee_name') }}</label>          
                         <input type="text" class="form-control finput"  id="employee_name" name="employee_name"  required readonly value="{{$employeeinfos->bill_to}}"> 
-
-                   
-
                     </div>
-
                 </div>
 
                 <div class="col-md-6">
@@ -103,15 +97,10 @@
                         <input type="text" class="form-control finput"  id="company_name" name="company_name"  required readonly value="{{$employeeinfos->company_name_id}}">                                   
                     </div>
                 </div>
-
             </div>
 
 
             <div class="row">
-
-
-
-
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label require">{{ trans('message.form-label.department') }}</label>
@@ -120,16 +109,27 @@
 
                 </div>
 
-
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label require">{{ trans('message.form-label.position') }}</label>
                         <input type="text" class="form-control finput"  id="position" name="position"  required readonly value="{{$employeeinfos->position_id}}">                                   
                     </div>
                 </div>
-
             </div>
 
+            @if(CRUDBooster::myPrivilegeId() == 8)
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label require">{{ trans('message.form-label.store_branch') }}</label>
+                            
+                            <input type="text" class="form-control finput"  id="store_branch" name="store_branch"  required readonly value="{{$stores->store_name}}"> 
+                            <input type="hidden" class="form-control"  id="store_branch_id" name="store_branch_id"  required readonly value="{{$stores->id}}"> 
+
+                        </div>
+                    </div>
+                </div>
+            @endif
             <hr/>
 
             <div class="row"> 
@@ -169,6 +169,8 @@
                                                             <th width="20%" class="text-center">Digits Code</th>
                                                             <th width="25%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                                                                                    
                                                             <th width="20%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
+                                                            <th width="15%" class="text-center"> Wh Quantity</th>
+                                                            <th width="15%" class="text-center"> Unserved Quantity</th> 
                                                             <th width="7%" class="text-center">*{{ trans('message.table.quantity_text') }}</th> 
                                                             <th width="5%" class="text-center">{{ trans('message.table.action') }}</th>
                                                         </tr>
@@ -185,7 +187,7 @@
 
                                                         <tr id="tr-table1" class="bottom">
             
-                                                            <td colspan="4">
+                                                            <td colspan="6">
                                                                 <input type="button" id="add-Row" name="add-Row" class="btn btn-primary add" value='Add Item' />
                                                             </td>
                                                             <td align="left" colspan="1">
@@ -235,9 +237,14 @@
                         <textarea placeholder="{{ trans('message.table.comments') }} ..." rows="3" class="form-control finput" name="requestor_comments"></textarea>
                     </div>
                 </div>
-         
             </div>
-
+            <hr>
+            <div class="col-md-12">
+                <div class="form-group text-center">
+                    <label>CAN'T FIND WHAT YOU ARE LOOKING FOR?</label>
+                    <a href='{{CRUDBooster::adminpath("header_request/download")."?return_url=".urlencode(Request::fullUrl())}}'>CHECK HERE</a>
+                </div>
+            </div>
         </div>
 
         <div class='panel-footer'>
@@ -402,17 +409,9 @@
                             '</select>'+
                         '</td>' +
 
-                        /*    
-                        '<td>'+
-                            '<select class="js-example-basic-multiple" multiple="multiple" name="app_id' + tableRow + '[]" data-id="' + tableRow + '" id="app_id' + tableRow + '" required style="width:100%;">' +
+                        '<td><input class="form-control text-center sinput wh_quantity" type="text" required name="wh_quantity[]" id="wh_quantity' + tableRow + '" data-id="' + tableRow  + '" readonly></td>' +
                         
-                            '        @foreach($applications as $data)'+
-                            '        <option value="{{$data->app_name}}">{{$data->app_name}}</option>'+
-                            '         @endforeach'+
-                            '</select>'+
-                            '<br/><br/><input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control AppOthers" data-id="' + tableRow + '" id="AppOthers' + tableRow + '"  name="app_id_others[]" maxlength="100">' +
-                        '</td>' +   
-                        */        
+                        '<td><input class="form-control text-center sinput unserved_quantity" type="text" required name="unserved_quantity[]" id="unserved_quantity' + tableRow + '" data-id="' + tableRow  + '" readonly></td>' +     
                         
                         '<td><input class="form-control text-center quantity_item" type="number" required name="quantity[]" id="quantity' + tableRow + '" data-id="' + tableRow  + '"  value="1" min="0" max="9999999999" step="any" onKeyPress="if(this.value.length==4) return false;" oninput="validity.valid;" readonly></td>' +
                         
@@ -507,6 +506,8 @@
                                                 value:                      item.item_description,
                                                 category_description:       item.category_description,
                                                 item_cost:                  item.item_cost,
+                                                wh_qty:                     item.wh_qty,
+                                                unserved_qty:               item.unserved_qty,
                                             
                                             }
 
@@ -538,6 +539,8 @@
                                     $('#itemDesc'+$(this).attr("data-id")).val(e.value);
                                     $('#itemDesc'+$(this).attr("data-id")).attr('readonly','readonly');
                                     $('#fixed_description'+$(this).attr("data-id")).val(e.value);
+                                    $('#wh_quantity'+$(this).attr("data-id")).val(e.wh_qty);
+                                    $('#unserved_quantity'+$(this).attr("data-id")).val(e.unserved_qty);
                                     $('#val_item').html('');
                                     return false;
 
