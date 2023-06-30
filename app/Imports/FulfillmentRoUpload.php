@@ -53,7 +53,9 @@ class FulfillmentRoUpload implements ToCollection, WithHeadingRow
          
             HeaderRequest::where('id',$header->id)
 			->update([
-					'mo_so_num' => $row['dr_number'],
+					'mo_so_num'      => $row['dr_number'],
+                    'purchased2_by'	 => CRUDBooster::myId(),
+                    'purchased2_at'  => date('Y-m-d H:i:s')
 			]);	
             BodyRequest::where(['header_request_id'=>$header->id,'digits_code'=>$row['digits_code']])
             ->update(
@@ -65,7 +67,6 @@ class FulfillmentRoUpload implements ToCollection, WithHeadingRow
                         'dr_qty'          => DB::raw("IF(dr_qty IS NULL, '".(int)$row['dr_qty']."', dr_qty + '".(int)$row['dr_qty']."')")            
                         ]
                     );
-
             FulfillmentHistories::Create(
                 [
                     'arf_number'  => $row['arf_number'], 

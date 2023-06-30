@@ -629,6 +629,9 @@
 				$conHeader['request_type'] = "RETURN";
 				$conHeader['requested_by'] = CRUDBooster::myId(); 
 				$conHeader['requested_date'] = date('Y-m-d H:i:s');
+				if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15])){ 
+					$conHeader['approved_date'] = date('Y-m-d H:i:s');
+				}
 				if($hData == 1){
 					$conHeader['location_to_pick'] = 3; 
 				}else{
@@ -697,9 +700,6 @@
 				$container['asset_type'] = $rData['category_id'];
 				$container['requested_by'] = CRUDBooster::myId(); 
 				$container['requested_date'] = date('Y-m-d H:i:s');
-				if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15])){ 
-					$container['approved_date'] = date('Y-m-d H:i:s');
-				}
 				$containerSave[] = $container;
 			}
 			ReturnTransferAssets::insert($containerSave);
@@ -760,7 +760,11 @@
 			// Header Area
 			$count_header       = DB::table('return_transfer_assets_header')->count();
 			$reference_no = "1".str_pad($count_header + 1, 7, '0', STR_PAD_LEFT)."AT";
-
+			if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15])){ 
+				$approved = date('Y-m-d H:i:s');
+			}else{
+			    $approved = NULL;
+			}
 			$id = ReturnTransferAssetsHeader::Create(
                 [
                     'status' => $status, 
@@ -770,6 +774,7 @@
                     'request_type' => "TRANSFER",
                     'requested_by' => CRUDBooster::myId(),
                     'requested_date' => date('Y-m-d H:i:s'),
+					'approved_date'  => $approved,
                     'location_to_pick' => 5,
                     'store_branch' => $location,
                     'transfer_to' => $user_id,
@@ -794,9 +799,6 @@
 				$container['asset_type'] = $rData['category_id'];
 				$container['requested_by'] = CRUDBooster::myId(); 
 				$container['requested_date'] = date('Y-m-d H:i:s');
-				if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15])){ 
-					$container['approved_date'] = date('Y-m-d H:i:s');
-				}
 				$container['transfer_to'] = $user_id;
 				$containerSave[] = $container;
 			}

@@ -534,7 +534,7 @@
 			$data['from']          = $from;
 			$data['to']            = $to;
 			$data['category']      = $category;
-			$data['filters'] = $filters;
+			$data['filters']       = $filters;
 		
 			return $this->view("assets.purchasing-reports-view", $data);
 			

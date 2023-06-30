@@ -1937,7 +1937,14 @@
 									'assign_by'=>	$item_Value->deployed_at
 								]; */
 
-				}	
+				}
+				
+				HeaderRequest::where('id',$requestid)
+				->update([
+					'status_id'      => $for_receiving,
+					'print_by_form'  => CRUDBooster::myId(),
+					'print_at_form'  => date('Y-m-d H:i:s')
+				]);	
 				
 				$infos['assign_to'] = $employee_name->bill_to;
 				$infos['reference_number'] = $arf_header->reference_number;
@@ -1957,14 +1964,7 @@
 				$infos['serial_no'] = '<p>'. implode("<br>", $serial_no) .'</p>';
 				
 				//CRUDBooster::sendEmail(['to'=>$employee_name->email,'data'=>$infos,'template'=>'assets_confirmation','attachments'=>$files]);
-				CRUDBooster::sendEmail(['to'=>'marvinmosico@digits.ph','data'=>$infos,'template'=>'assets_confirmation','attachments'=>$files]);
-
-				HeaderRequest::where('id',$requestid)
-				->update([
-					'status_id'      => $for_receiving,
-					'print_by_form'  => CRUDBooster::myId(),
-					'print_at_form'  => date('Y-m-d H:i:s')
-				]);	
+				CRUDBooster::sendEmail(['to'=>'fhilipacosta@digits.ph','data'=>$infos,'template'=>'assets_confirmation','attachments'=>$files]);
 
 				MoveOrder::where('header_request_id', $arf_header->id)
 				->update([
