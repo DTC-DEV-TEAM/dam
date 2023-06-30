@@ -359,8 +359,8 @@
 									<div class=\"form-group\">
 										<label class=\"control-label require\">Category</label>
 										<select selected data-placeholder=\"-- Select Category --\" id=\"category\" name=\"category\" class=\"form-select erf\" style=\"width:100%;\">
-												<option value=\"\"></option>
-												<option value=\"1\">IT ASSETS</option>
+											<option value=\"\"></option>
+											<option value=\"1\">IT ASSETS</option>
 												<option value=\"5\">FA</option>
 												<option value=\"7\">SUPPLIES</option>
 										</select>

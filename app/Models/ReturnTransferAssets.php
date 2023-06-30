@@ -23,6 +23,7 @@ class ReturnTransferAssets extends Model
                     'return_transfer_assets.*',
 					'return_transfer_assets_header.*',
 					'return_transfer_assets_header.id as requestid',
+					'return_transfer_assets.digits_code as r_digits_code',
 					'requests.request_name as request_name',
 					'employees.name as employee_name',
 					'employees.company_name_id as company',
@@ -69,6 +70,7 @@ class ReturnTransferAssets extends Model
 					'closed.name as closedby',
 					'locations.store_name as store_branch',
                     'statuses.status_description as status_description',
+					'return_transfer_assets.digits_code as r_digits_code',
                     'mo_body_request.quantity as quantity',
 			);
 			if($from != '' && !is_null($from)){

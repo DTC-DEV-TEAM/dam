@@ -126,6 +126,7 @@
                         <tr>
                             <input type="hidden" value="{{$rowresult->id}}" name="body_ids[]">
                             <input type="hidden" value="{{$rowresult->wh_qty}}" name="wh_qty[]">
+                            <input type="hidden" value="{{$rowresult->available_qty}}" name="it_wh_qty[]">
                             <td style="text-align:center">{{$rowresult->digits_code}}</td>
                             <td style="text-align:center">{{$rowresult->item_description}}</td>
                             <td style="text-align:center">{{$rowresult->category_id}}</td>

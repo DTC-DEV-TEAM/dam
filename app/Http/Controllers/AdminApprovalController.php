@@ -363,7 +363,11 @@
 			$approval_action 		= $fields['approval_action'];
 			$approver_comments 		= $fields['approver_comments'];
 			$body_ids 		        = $fields['body_ids'];
-			$wh_qty 		        = $fields['wh_qty'];
+			if(in_array($arf_header->request_type_id, [7])){
+			    $wh_qty 		    = $fields['wh_qty'];
+			}else{
+				$wh_qty 		    = $fields['it_wh_qty'];
+			}
 
 			$approved               =  DB::table('statuses')->where('id', 4)->value('id');
 			$rejected               =  DB::table('statuses')->where('id', 5)->value('id');

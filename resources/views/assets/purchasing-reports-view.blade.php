@@ -39,6 +39,7 @@
                     <tr class="active">
                         <th width="auto">Status</th>
                         <th width="auto">Reference No.</th>
+                        <th width="auto">Digits Code</th>
                         <th width="auto">Description</th>
                         <th width="auto">Request Quantity</th>
                         <th width="auto">Request Type</th>
@@ -151,6 +152,7 @@
                 columns : [
                         {data: 'status'},
                         {data: 'reference_number'},
+                        {data: 'digits_code'},  
                         {data: 'description'},  
                         {data: 'request_quantity'},
                         {data: 'transaction_type'},  
