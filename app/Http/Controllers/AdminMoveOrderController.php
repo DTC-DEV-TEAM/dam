@@ -13,6 +13,12 @@
 	//use Illuminate\Support\Facades\Input;
 	use Illuminate\Support\Facades\Log;
 	use Illuminate\Support\Facades\Redirect;
+	use App\Exports\ExportConso;
+	use Maatwebsite\Excel\Facades\Excel;
+	use PhpOffice\PhpSpreadsheet\Spreadsheet;
+	use PhpOffice\PhpSpreadsheet\Reader\Exception;
+	use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+	use PhpOffice\PhpSpreadsheet\IOFactory;
 
 	class AdminMoveOrderController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -214,12 +220,14 @@
 	        */
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
-
-				$this->index_button[] = ["label"=>"MO Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-mo'),"color"=>"success"];
-
-
-				$this->index_button[] = ["title"=>"Export","label"=>"Export","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('GetExtractMO').'?'.urldecode(http_build_query(@$_GET))];
-
+				if(in_array(CRUDBooster::myPrivilegeId(), [1,6,20])){
+					$this->index_button[] = ["label"=>"Consolidation","icon"=>"fa fa-download",'url'=>"javascript:showConsoExport()"];
+					$this->index_button[] = ["label"=>"Upload PO","icon"=>"fa fa-upload","url"=>CRUDBooster::adminpath('for_purchasing/po-upload'),'color'=>'success'];
+				}
+				if(in_array(CRUDBooster::myPrivilegeId(), [5,9])){
+					$this->index_button[] = ["label"=>"MO Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-mo'),"color"=>"success"];
+					$this->index_button[] = ["title"=>"Export","label"=>"Export","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('GetExtractMO').'?'.urldecode(http_build_query(@$_GET))];
+				}
 			}
 
 
@@ -256,7 +264,40 @@
 	        |
 	        */
 	        $this->script_js = NULL;
+			$this->script_js = "
+			$(document).ready(function() {
+				$('.date').datetimepicker({
+						viewMode: \"days\",
+						format: \"YYYY-MM-DD\",
+						dayViewHeaderFormat: \"MMMM YYYY\",
+				});
 
+				$('#category').select2({});
+
+				$('#exportBtn').click(function(event) {
+					event.preventDefault();
+					var from = $('#from').val();
+					var to = $('#to').val();
+					if(from > to){
+						swal({
+							type: 'error',
+							title: 'Invalid Date of Range',
+							icon: 'error',
+							confirmButtonColor: \"#367fa9\",
+						}); 
+						event.preventDefault(); // cancel default behavior
+						return false;
+					}else{
+						$('#filterForm').submit(); 
+					}
+				   
+				});
+		    });
+			function showConsoExport() {
+				$('#modal-conso-export').modal('show');
+			}
+			
+			";
 
             /*
 	        | ---------------------------------------------------------------------- 
@@ -267,7 +308,64 @@
 	        |
 	        */
 	        $this->pre_index_html = null;
-	        
+	        $this->pre_index_html = "
+            
+			   <!-- Modal HTML -->
+			   <div id=\"modal-conso-export\" class=\"modal fade\" tabindex=\"-1\">
+				   <div class=\"modal-dialog\">
+					   <div class=\"modal-content\">
+						   <div class=\"modal-header\">
+						   <button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button>
+							   <h4 class=\"modal-title\"><strong>Filter Export</strong></h4>
+							  
+						   </div>
+						   <div class=\"modal-body\">
+						    <form  id=\"filterForm\" method='post' target='_blank' name=\"filterForm\" action='".route('export-conso')."'>
+						      <div class='row'>
+							  <input type=\"hidden\" name=\"request_id\" id=\"request_id\">
+								<input type=\"hidden\" value='".csrf_token()."' name=\"_token\" id=\"token\">
+
+								<div class='col-md-6'>
+								  <div class=\"form-group\">
+									<label class=\"control-label require\"> Approved Date From</label>
+								     <input type\"text\" class=\"form-control date\" name=\"from\"  id=\"from\" placeholder=\"Please Select Date From\">
+								  </div>
+								</div>
+
+								<div class='col-md-6'>
+								   <div class=\"form-group\">
+                                    <label class=\"control-label require\"> Approved Date To</label>
+								    <input type\"text\" class=\"form-control date\" name=\"to\"  id=\"to\" placeholder=\"Please Select Date To\">
+								   </div>
+								</div>
+
+								<div class=\"col-md-6\">
+									<div class=\"form-group\">
+										<label class=\"control-label require\">Category</label>
+										<select selected data-placeholder=\"-- Select Category --\" id=\"category\" name=\"category\" class=\"form-select erf\" style=\"width:100%;\">
+											<option value=\"\"></option>
+											<option value=\"1\">IT ASSETS</option>
+												<option value=\"5\">FA</option>
+												<option value=\"7\">SUPPLIES</option>
+										</select>
+									</div>
+								</div>  
+								
+								<br>	
+							  </div>
+						    </form>
+						   </div>
+						   <div class=\"modal-footer\">
+							   <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Cancel</button>
+							   <button type='button' id=\"exportBtn\" class=\"btn btn-primary btn-sm\">
+                                <i class=\"fa fa-save\"></i> Export
+                                </button>
+						   </div>
+					   </div>
+				   </div>
+			   </div>
+			
+			";
 	        
 	        
 	        /*
@@ -291,7 +389,7 @@
 	        |
 	        */
 	        $this->load_js = array();
-	        
+	        $this->load_js[] = asset("datetimepicker/bootstrap-datetimepicker.min.js");
 	        
 	        
 	        /*
@@ -303,7 +401,31 @@
 	        |
 	        */
 	        $this->style_css = NULL;
-	        
+	        $this->style_css = "
+			.fa.fa-plus-circle{
+				color:green;
+				font-size:18px;
+				margin-top: 3px;
+			}
+			.modal-content  {
+				-webkit-border-radius: 5px !important;
+				-moz-border-radius: 5px !important;
+				border-radius: 5px !important; 
+			}
+			.select2-selection__choice{
+				font-size:14px !important;
+				color:black !important;
+			}
+			.select2-selection__rendered {
+				line-height: 31px !important;
+			}
+			.select2-container .select2-selection--single {
+				height: 35px !important;
+			}
+			.select2-selection__arrow {
+				height: 34px !important;
+			}
+			";
 	        
 	        
 	        /*
@@ -316,7 +438,7 @@
 	        */
 	        $this->load_css = array();
 			$this->load_css[] = asset("css/font-family.css");
-	        
+			$this->load_css[] = asset("datetimepicker/bootstrap-datetimepicker.min.css");
 	    }
 
 
@@ -1330,14 +1452,14 @@
 				select(
 				  'body_request.*'
 				)
-				->where('body_request.header_request_id', $id)
+				->where('body_request.header_request_id', $HeaderID->header_request_id)
 				->get();
 
 			$data['Body1'] = BodyRequest::
 				select(
 				  'body_request.*'
 				)
-				->where('body_request.header_request_id', $id)
+				->where('body_request.header_request_id', $HeaderID->header_request_id)
 				->wherenotnull('body_request.digits_code')
 				->orderby('body_request.id', 'desc')
 				->get();
@@ -1945,6 +2067,17 @@
 					'print_by_form'  => CRUDBooster::myId(),
 					'print_at_form'  => date('Y-m-d H:i:s')
 				]);	
+
+				MoveOrder::where('header_request_id', $arf_header->id)
+				->update([
+					'to_print'=> 	0
+				]);	
+				
+				$item_string = implode(",",$itemID);
+
+				$itemList = array_map('intval',explode(",",$item_string));
+
+				$items = MoveOrder::wherein('id',$id)->get();
 				
 				$infos['assign_to'] = $employee_name->bill_to;
 				$infos['reference_number'] = $arf_header->reference_number;
@@ -1964,18 +2097,7 @@
 				$infos['serial_no'] = '<p>'. implode("<br>", $serial_no) .'</p>';
 				
 				//CRUDBooster::sendEmail(['to'=>$employee_name->email,'data'=>$infos,'template'=>'assets_confirmation','attachments'=>$files]);
-				CRUDBooster::sendEmail(['to'=>'fhilipacosta@digits.ph','data'=>$infos,'template'=>'assets_confirmation','attachments'=>$files]);
-
-				MoveOrder::where('header_request_id', $arf_header->id)
-				->update([
-					'to_print'=> 	0
-				]);	
-				
-				$item_string = implode(",",$itemID);
-
-				$itemList = array_map('intval',explode(",",$item_string));
-
-				$items = MoveOrder::wherein('id',$id)->get();
+				CRUDBooster::sendEmail(['to'=>'marvinmosico@digits.ph','data'=>$infos,'template'=>'assets_confirmation','attachments'=>$files]);
 
 		}
 
@@ -2117,4 +2239,16 @@
 			exit;
 			 
 			}
+
+			//Export Conso
+		public function ExportConso(Request $request){
+			$data = Request::all();
+			return Excel::download(new ExportConso($data), 'Consolidation-'.date('Y-m-d H:i:s') .'.xlsx');
+		}
+
+		//UPLOAD PO
+		public function UploadPo() {
+			$data['page_title']= 'PO Upload';
+			return view('import.po-upload', $data)->render();
+		}
 	}

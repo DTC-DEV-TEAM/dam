@@ -440,6 +440,7 @@
 				$bodyStatus = $smVal['body_statuses_description'] ? $smVal['body_statuses_description'] : $smVal['status_description'];
 				if(in_array($smVal['request_type_id'], [6,7])){
 					$suppliesMarketingCon['status'] = $smVal['status_description'];
+					$suppliesMarketingCon['body_digits_code'] = $smVal['body_digits_code'];
 					$suppliesMarketingCon['description'] = $smVal['body_description'];
 					$suppliesMarketingCon['request_quantity'] = $smVal['body_quantity'];
 					$suppliesMarketingCon['request_type'] = $smVal['body_category_id'];
@@ -449,6 +450,7 @@
 					$suppliesMarketingCon['mo_qty_serve_qty'] = $smVal['serve_qty'];
 				}else{
 					$suppliesMarketingCon['status'] = isset($smVal['mo_reference_number']) ? $smVal['mo_statuses_description'] : $bodyStatus;
+					$suppliesMarketingCon['body_digits_code'] = $smVal['body_digits_code'];
 					$suppliesMarketingCon['description'] = $smVal['body_description'];
 					$suppliesMarketingCon['request_quantity'] = $smVal['body_quantity'];
 					$suppliesMarketingCon['request_type'] = $smVal['body_category_id'];
@@ -477,6 +479,7 @@
 				$returnTransferCon['department'] = $rtVal['department_name'] ? $rtVal['department_name'] : $rtVal['store_branch'];
 				$returnTransferCon['store_branch'] = $rtVal['store_branch'] ? $rtVal['store_branch'] : $rtVal['department_name'];
 				$returnTransferCon['status'] = $rtVal['status_description'];
+				$returnTransferCon['body_digits_code']    = $rtVal['r_digits_code'];
 				$returnTransferCon['description'] = $rtVal['description'];
 				$returnTransferCon['request_quantity'] = $rtVal['quantity'];
 				$returnTransferCon['transaction_type'] = $rtVal['request_type'];
@@ -506,6 +509,7 @@
 				$container['store_branch'] = $val['store_branch'];
 				$container['transaction_type'] = $val['transaction_type'];
 				$container['status'] = $val['status'];
+				$container['digits_code']    = $val['body_digits_code'];
 				$container['description'] = $val['description'];
 				$container['request_quantity'] = $val['request_quantity'];
 				$container['request_type'] = $val['request_type'];
@@ -565,6 +569,7 @@
 				$bodyStatus = $smVal['body_statuses_description'] ? $smVal['body_statuses_description'] : $smVal['status_description'];
 				if(in_array($smVal['request_type_id'], [6,7])){
 					$suppliesMarketingCon['status'] = $smVal['status_description'];
+					$suppliesMarketingCon['body_digits_code'] = $smVal['body_digits_code'];
 					$suppliesMarketingCon['description'] = $smVal['body_description'];
 					$suppliesMarketingCon['request_quantity'] = $smVal['body_quantity'];
 					$suppliesMarketingCon['request_type'] = $smVal['body_category_id'];
@@ -574,6 +579,7 @@
 					$suppliesMarketingCon['mo_qty_serve_qty'] = $smVal['serve_qty'];
 				}else{
 					$suppliesMarketingCon['status']              = isset($smVal['mo_reference_number']) ? $smVal['mo_statuses_description'] : $bodyStatus;
+					$suppliesMarketingCon['body_digits_code']    = $smVal['body_digits_code'];
 					$suppliesMarketingCon['description']         = $smVal['body_description'];
 					$suppliesMarketingCon['request_quantity']    = $smVal['body_quantity'];
 					$suppliesMarketingCon['request_type']        = $smVal['body_category_id'];
@@ -600,6 +606,7 @@
 				$returnTransferCon['department']          = $rtVal['department_name'] ? $rtVal['department_name'] : $rtVal['store_branch'];
 				$returnTransferCon['store_branch']        = $rtVal['store_branch'] ? $rtVal['store_branch'] : $rtVal['department_name'];
 				$returnTransferCon['status']              = $rtVal['status_description'];
+				$returnTransferCon['body_digits_code']    = $rtVal['r_digits_code'];
 				$returnTransferCon['description']         = $rtVal['description'];
 				$returnTransferCon['request_quantity']    = $rtVal['quantity'];
 				$returnTransferCon['transaction_type']    = $rtVal['request_type'];

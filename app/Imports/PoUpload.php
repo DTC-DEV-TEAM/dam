@@ -33,22 +33,22 @@ class PoUpload implements ToCollection, WithHeadingRow
             $checkRowDbColumnDigitsCode = array_column($checkRowDbDigitsCode, 'codes');
           
             if(!in_array($row['digits_code'], $checkRowDbColumnDigitsCode)){
-                return CRUDBooster::redirect(CRUDBooster::adminpath('for_purchasing'),"Digits Code not exist in Item Master: ".($key+2),"danger");
+                return CRUDBooster::redirect(CRUDBooster::adminpath('move_order'),"Digits Code not exist in Item Master: ".($key+2),"danger");
             }
 
             $checkRowDbRefNo       = DB::table('header_request')->select("reference_number AS ref_num")->get()->toArray();
             $checkRowDbColumnRefNo = array_column($checkRowDbRefNo, 'ref_num');
           
             if(!in_array($row['arf_number'], $checkRowDbColumnRefNo)){
-                return CRUDBooster::redirect(CRUDBooster::adminpath('for_purchasing'),"Arf Invalid! please check arf reference no: ".($key+2),"danger");
+                return CRUDBooster::redirect(CRUDBooster::adminpath('move_order'),"Arf Invalid! please check arf reference no: ".($key+2),"danger");
             }
             
             if($row['po_qty'] > $checkQty){
-                return CRUDBooster::redirect(CRUDBooster::adminpath('for_purchasing'),"PO Fullfill Qty Exceed! at line: ".($key+2),"danger");
+                return CRUDBooster::redirect(CRUDBooster::adminpath('move_order'),"PO Fullfill Qty Exceed! at line: ".($key+2),"danger");
             }
 
             if(empty($row['po_qty'])){
-                return CRUDBooster::redirect(CRUDBooster::adminpath('for_purchasing'),"PO Qty Required! at line: ".($key+2),"danger");
+                return CRUDBooster::redirect(CRUDBooster::adminpath('move_order'),"PO Qty Required! at line: ".($key+2),"danger");
             }
             
             BodyRequest::where(['header_request_id'=>$header->id,'digits_code'=>$row['digits_code']])

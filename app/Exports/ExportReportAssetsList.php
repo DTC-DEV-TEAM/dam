@@ -19,6 +19,7 @@ class ExportReportAssetsList implements FromCollection, WithHeadings, WithTitle
         return GeneratedAssetsReports::select(
             'generated_assets_report.status',
             'generated_assets_report.reference_number',
+            'generated_assets_report.digits_code',
             'generated_assets_report.description',
             'generated_assets_report.request_quantity',
             'generated_assets_report.transaction_type',
@@ -46,6 +47,7 @@ class ExportReportAssetsList implements FromCollection, WithHeadings, WithTitle
         return [
             "Status",
             "Reference No",
+            "Digits Code",
             "Description",
             "Request Quantity",
             "Request Type",

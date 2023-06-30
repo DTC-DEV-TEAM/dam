@@ -94,7 +94,7 @@ class AdminImportController extends \crocodicstudio\crudbooster\controllers\CBCo
         $path_excel = $request->file('import_file')->store('temp');
         $path = storage_path('app').'/'.$path_excel;
         Excel::import(new PoUpload, $path);	
-        CRUDBooster::redirect(CRUDBooster::adminpath('for_purchasing'), trans("Upload Successfully!"), 'success');
+        CRUDBooster::redirect(CRUDBooster::adminpath('move_order'), trans("Upload Successfully!"), 'success');
     }
      //UPLOAD PO TEMPLATE
     function downloadPOTemplate() {
