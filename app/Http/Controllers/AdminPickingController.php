@@ -552,7 +552,7 @@
          
 			$HeaderID 					= MoveOrder::where('id', $id)->first();
 
-			//dd($HeaderID->header_request_id);
+			//dd($fields);
 
 			$arf_header 				= HeaderRequest::where(['id' => $HeaderID->header_request_id])->first();
 
@@ -574,60 +574,60 @@
 
 				//if($item_id[$x] == 1){
 
-				if($defective_text[$x] == 1){
+				// if($defective_text[$x] == 1){
 
-					$cancelled  = 		DB::table('statuses')->where('id', 8)->value('id');
-					$inventoryDetails = AssetsInventoryBody::where('id',$asset_code_tag[$x])->first();
+				// 	$cancelled  = 		DB::table('statuses')->where('id', 8)->value('id');
+				// 	$inventoryDetails = AssetsInventoryBody::where('id',$asset_code_tag[$x])->first();
 					
-					MoveOrder::where('id',$item_id[$x])
-					->update([
-						'item_id'         => $inventoryDetails->item_id,
-						'inventory_id'    => $inventoryDetails->id,
-						'asset_code'      => $inventoryDetails->asset_code,
-						'serial_no'       => $inventoryDetails->serial_no,
-						'unit_cost'       => $inventoryDetails->value,
-						'total_unit_cost' => $inventoryDetails->value,
-						'status_id'       => $cancelled,
-						'to_pick'         => 1,
-						'good'            => $good_text[$x],
-						'defective'       => $defective_text[$x]
-					]);	
+				// 	MoveOrder::where('id',$item_id[$x])
+				// 	->update([
+				// 		'item_id'         => $inventoryDetails->item_id,
+				// 		'inventory_id'    => $inventoryDetails->id,
+				// 		'asset_code'      => $inventoryDetails->asset_code,
+				// 		'serial_no'       => $inventoryDetails->serial_no,
+				// 		'unit_cost'       => $inventoryDetails->value,
+				// 		'total_unit_cost' => $inventoryDetails->value,
+				// 		'status_id'       => $cancelled,
+				// 		'to_pick'         => 1,
+				// 		'good'            => $good_text[$x],
+				// 		'defective'       => $defective_text[$x]
+				// 	]);	
 
-					$mo_info 	= 		MoveOrder::where('id',$item_id[$x])->first();
+				// 	$mo_info 	= 		MoveOrder::where('id',$item_id[$x])->first();
 
-					// HeaderRequest::where('id', $arf_header->id)
-					// ->update([
-					// 	'to_mo'=> 	1
-					// ]);	
+				// 	// HeaderRequest::where('id', $arf_header->id)
+				// 	// ->update([
+				// 	// 	'to_mo'=> 	1
+				// 	// ]);	
 
-					// BodyRequest::where('id', $mo_info->body_request_id)
-					// ->update([
-					// 	'to_mo'=> 	1
-					// ]);	
+				// 	// BodyRequest::where('id', $mo_info->body_request_id)
+				// 	// ->update([
+				// 	// 	'to_mo'=> 	1
+				// 	// ]);	
 
-					BodyRequest::where('id', $body_id[$x])
-					->update(
-								[
-								'serve_qty'         => 1, 
-								'unserved_rep_qty'  => DB::raw("unserved_rep_qty - 1"), 
-								'unserved_ro_qty'   => DB::raw("unserved_ro_qty - 1"), 
-								'unserved_qty'      => DB::raw("unserved_qty - 1"),
-								'cancelled_qty'     => 1,
-								'reason_to_cancel'  => 'DEFECTIVE'          
-								]
-							);
+				// 	BodyRequest::where('id', $body_id[$x])
+				// 	->update(
+				// 				[
+				// 				'serve_qty'         => 1, 
+				// 				'unserved_rep_qty'  => DB::raw("unserved_rep_qty - 1"), 
+				// 				'unserved_ro_qty'   => DB::raw("unserved_ro_qty - 1"), 
+				// 				'unserved_qty'      => DB::raw("unserved_qty - 1"),
+				// 				'cancelled_qty'     => 1,
+				// 				'reason_to_cancel'  => 'DEFECTIVE'          
+				// 				]
+				// 			);
 
-					DB::table('assets_inventory_reserved')->where('body_id', $mo_info->body_request_id)->delete();
+				// 	DB::table('assets_inventory_reserved')->where('body_id', $mo_info->body_request_id)->delete();
 
-					DB::table('assets_inventory_body')->where('id', $mo_info->inventory_id)
-					->update([
-						'statuses_id'=> 			23,
-						'item_condition'=> 			"Defective"
+				// 	DB::table('assets_inventory_body')->where('id', $mo_info->inventory_id)
+				// 	->update([
+				// 		'statuses_id'=> 			23,
+				// 		'item_condition'=> 			"Defective"
 						
-					]);
+				// 	]);
 
 
-				}else{
+				// }else{
 					$inventoryDetails = AssetsInventoryBody::where('id',$asset_code_tag[$x])->first();
 
 					MoveOrder::where('id',$item_id[$x])
@@ -663,7 +663,7 @@
 
 					DB::table('assets_inventory_reserved')->where('body_id', $body_id[$x])->delete();
 
-				}
+				//}
 				//}
 			}
 
@@ -684,95 +684,68 @@
 
 			}
 
-
-
-
-			//$arf_header = HeaderRequest::where(['id' => $id])->first();
-
-			//$postdata['picked_by'] 		= CRUDBooster::myId();
-
-			//$postdata['picked_at'] 		= date('Y-m-d H:i:s');
-
-
-			/*
-			if($arf_header->request_type_id == 5){
-
-				$postdata['status_id']		 			=	StatusMatrix::where('current_step', 5)
-																		  ->where('request_type', $arf_header->request_type_id)
-																		  //->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
-																		  ->value('status_id');
-
-			}else{
-
-				$postdata['status_id']		 			=	StatusMatrix::where('current_step', 6)
-																		 ->where('request_type', $arf_header->request_type_id)
-																		 //->where('id_cms_privileges', CRUDBooster::myPrivilegeId())
-																		 ->value('status_id');
-
-			}
-			*/
             
 			//save defect and good comments
-			$invACode = array();
-			foreach($item_id as $code){
-				array_push($invACode, $code);
-			}
-			$searchCode = implode(",",$invACode);
-			$searchCodeFinal = array_map('intval',explode(",",$searchCode));
-			$inventoryDetailsDefect = MoveOrder::whereIn('id',$searchCodeFinal)->where('defective',1)->get();
-			$assetCode = [];
+			// $invACode = array();
+			// foreach($item_id as $code){
+			// 	array_push($invACode, $code);
+			// }
+			// $searchCode = implode(",",$invACode);
+			// $searchCodeFinal = array_map('intval',explode(",",$searchCode));
+			// $inventoryDetailsDefect = MoveOrder::whereIn('id',$searchCodeFinal)->where('defective',1)->get();
+			// $assetCode = [];
 
-			foreach($inventoryDetailsDefect as $asset_code){
-              array_push($assetCode, $asset_code->asset_code);
-			}
+			// foreach($inventoryDetailsDefect as $asset_code){
+            //   array_push($assetCode, $asset_code->asset_code);
+			// }
 			
-			$container = [];
-			$containerSave = [];
-			foreach((array)$comments as $key => $val){
-				$container['arf_number'] = $arf_number;
-				$container['digits_code'] = explode("|",$val)[1];
-				$container['asset_code'] = $assetCode[$key];
-				$container['comments'] = explode("|",$val)[2];
-				$container['users'] = CRUDBooster::myId();
-				$container['created_at'] = date('Y-m-d H:i:s');
-				$containerSave[] = $container;
-			}
-			$otherCommentContainer = [];
-			$otherCommentFinalData = [];
-			foreach((array)$assetCode as $aKey => $aVal){
-				$otherCommentContainer['asset_code'] = $aVal;
-				$otherCommentContainer['digits_code'] = $digits_code[$aKey];
-				$otherCommentContainer['other_comment'] = $other_comment[$aKey];
-				$otherCommentFinalData[] = $otherCommentContainer;
-			}
+			// $container = [];
+			// $containerSave = [];
+			// foreach((array)$comments as $key => $val){
+			// 	$container['arf_number'] = $arf_number;
+			// 	$container['digits_code'] = explode("|",$val)[1];
+			// 	$container['asset_code'] = $assetCode[$key];
+			// 	$container['comments'] = explode("|",$val)[2];
+			// 	$container['users'] = CRUDBooster::myId();
+			// 	$container['created_at'] = date('Y-m-d H:i:s');
+			// 	$containerSave[] = $container;
+			// }
+			// $otherCommentContainer = [];
+			// $otherCommentFinalData = [];
+			// foreach((array)$assetCode as $aKey => $aVal){
+			// 	$otherCommentContainer['asset_code'] = $aVal;
+			// 	$otherCommentContainer['digits_code'] = $digits_code[$aKey];
+			// 	$otherCommentContainer['other_comment'] = $other_comment[$aKey];
+			// 	$otherCommentFinalData[] = $otherCommentContainer;
+			// }
 			
-			//search other comment in another array
-			$finalData = [];
-			foreach((array)$containerSave as $csKey => $csVal){
-				$i = array_search($csVal['asset_code'], array_column($otherCommentFinalData,'asset_code'));
-				if($i !== false){
-					$csVal['other_comment'] = $otherCommentFinalData[$i];
-					$finalData[] = $csVal;
-				}else{
-					$csVal['other_comment'] = "";
-					$finalData[] = $csVal;
-				}
-			}
+			// //search other comment in another array
+			// $finalData = [];
+			// foreach((array)$containerSave as $csKey => $csVal){
+			// 	$i = array_search($csVal['asset_code'], array_column($otherCommentFinalData,'asset_code'));
+			// 	if($i !== false){
+			// 		$csVal['other_comment'] = $otherCommentFinalData[$i];
+			// 		$finalData[] = $csVal;
+			// 	}else{
+			// 		$csVal['other_comment'] = "";
+			// 		$finalData[] = $csVal;
+			// 	}
+			// }
 			
-			$finalContainerSave = [];
-			$finalContainer = [];
-			foreach((array)$finalData as $key => $val){
-				$finalContainer['arf_number'] = $val['arf_number'];
-				$finalContainer['digits_code'] = $val['digits_code'];
-				$finalContainer['asset_code'] = $val['asset_code'];
-				$finalContainer['comments'] = $val['comments'];
-				$finalContainer['other_comment'] = $val['other_comment'] ? $val['other_comment']['other_comment'] : $val['other_comment'];
-				$finalContainer['users'] = $val['users'];
-				$finalContainer['created_at'] = $val['created_at'];
-				$finalContainerSave[] = $finalContainer;
-			}
+			// $finalContainerSave = [];
+			// $finalContainer = [];
+			// foreach((array)$finalData as $key => $val){
+			// 	$finalContainer['arf_number'] = $val['arf_number'];
+			// 	$finalContainer['digits_code'] = $val['digits_code'];
+			// 	$finalContainer['asset_code'] = $val['asset_code'];
+			// 	$finalContainer['comments'] = $val['comments'];
+			// 	$finalContainer['other_comment'] = $val['other_comment'] ? $val['other_comment']['other_comment'] : $val['other_comment'];
+			// 	$finalContainer['users'] = $val['users'];
+			// 	$finalContainer['created_at'] = $val['created_at'];
+			// 	$finalContainerSave[] = $finalContainer;
+			// }
 	
-			CommentsGoodDefect::insert($finalContainerSave);
+			// CommentsGoodDefect::insert($finalContainerSave);
 
 	    }
 
