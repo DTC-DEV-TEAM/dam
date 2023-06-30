@@ -108,7 +108,7 @@ class BodyRequest extends Model
 					'mo_body_request.item_description as mo_item_description',
 					'body_request.mo_so_num as body_mo_so_num'
 					
-				    );
+				    )->groupBy('body.id');
                 if($from != '' && !is_null($from)){
                     $query->whereBetween('header_request.approved_at',[$from,$to]);
                 }

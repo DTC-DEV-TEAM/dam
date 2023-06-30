@@ -1122,7 +1122,7 @@
                                                     '<select selected data-placeholder="RO items(Optional)" class="form-control arf_tag" name="arf_tag[]" data-id="' +  e.id + '" id="arf_tag' + e.id + '" required style="width:100%">' +
                                                     '  <option value=""></option>' +
                                                     '         @foreach($reserved_assets as $reserve)'+
-                                                                '<option value="{{$reserve->id}}" data-code="{{$reserve->digits_code}}">{{$reserve->reference_number}} | {{$reserve->digits_code}}</option> '+
+                                                                '<option value="{{$reserve->served_id}}" data-code="{{$reserve->digits_code}}">{{$reserve->reference_number}} | {{$reserve->digits_code}}</option> '+
                                                     '         @endforeach'+
                                                     '</select>'+
                                                 '</td>' +

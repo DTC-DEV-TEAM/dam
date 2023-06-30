@@ -549,11 +549,11 @@
 			    $data['warehouse_location'] = WarehouseLocationModel::where('id','!=',4)->get();
 				$data['reserved_assets'] = AssetsInventoryReserved::leftjoin('header_request','assets_inventory_reserved.reference_number','=','header_request.reference_number')->whereNotNull('for_po')->get();
 			}else if(CRUDBooster::myPrivilegeId() == 5){
-				$data['reserved_assets'] = AssetsInventoryReserved::leftjoin('header_request','assets_inventory_reserved.reference_number','=','header_request.reference_number')->whereNotNull('for_po')->where('header_request.request_type_id',1)->get();
+				$data['reserved_assets'] = AssetsInventoryReserved::leftjoin('header_request','assets_inventory_reserved.reference_number','=','header_request.reference_number')->select('assets_inventory_reserved.*','header_request.*','assets_inventory_reserved.id as served_id')->whereNotNull('for_po')->where('header_request.request_type_id',1)->get();
 				$data['warehouse_location'] = WarehouseLocationModel::where('id','=',3)->get();
 			}else if(CRUDBooster::myPrivilegeId() == 9){
 				$data['warehouse_location'] = WarehouseLocationModel::whereIn('id',[2])->get();
-				$data['reserved_assets'] = AssetsInventoryReserved::leftjoin('header_request','assets_inventory_reserved.reference_number','=','header_request.reference_number')->whereNotNull('for_po')->where('header_request.request_type_id',5)->get();
+				$data['reserved_assets'] = AssetsInventoryReserved::leftjoin('header_request','assets_inventory_reserved.reference_number','=','header_request.reference_number')->select('assets_inventory_reserved.*','header_request.*','assets_inventory_reserved.id as served_id')->whereNotNull('for_po')->where('header_request.request_type_id',5)->get();
 			}
 
 			$data['header_images'] = AssetsHeaderImages::select(
