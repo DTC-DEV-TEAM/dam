@@ -463,9 +463,9 @@
 				$suppliesMarketingCon['approved_by'] = $smVal['approvedby'];
 				$suppliesMarketingCon['approved_at'] = $smVal['approved_at'];
 				$suppliesMarketingCon['transacted_by'] = $smVal['taggedby'];
-				$suppliesMarketingCon['recommended_by']          = $smVal['recommendedby'];
-				$suppliesMarketingCon['recommended_at']          = $smVal['recommended_at'];
-				$suppliesMarketingCon['it_comments']             = $smVal['it_comments'];
+				// $suppliesMarketingCon['recommended_by']          = $smVal['recommendedby'];
+				// $suppliesMarketingCon['recommended_at']          = $smVal['recommended_at'];
+				// $suppliesMarketingCon['it_comments']             = $smVal['it_comments'];
 				$suppliesMarketingCon['transacted_date'] = $smVal['transacted_date'];
 				$suppliesMarketing[] = $suppliesMarketingCon;
 			}
@@ -491,9 +491,9 @@
 				$returnTransferCon['requested_date'] = $rtVal['requested_date'];
 				$returnTransferCon['approved_by'] = $rtVal['approved_by_return'];
 				$returnTransferCon['approved_at'] = $rtVal['approved_date'];
-				$returnTransferCon['recommended_by']      = NULL;
-				$returnTransferCon['recommended_at']      = NULL;
-				$returnTransferCon['it_comments']         = NULL;
+				// $returnTransferCon['recommended_by']      = NULL;
+				// $returnTransferCon['recommended_at']      = NULL;
+				// $returnTransferCon['it_comments']         = NULL;
 				$returnTransferCon['transacted_by'] = $rtVal['receivedby'];
 				$returnTransferCon['transacted_date'] = $rtVal['transacted_date'];
 				$returnTransfer[] = $returnTransferCon;
@@ -521,9 +521,9 @@
 				$container['approved_by'] = $val['approved_by'];
 				$container['approved_at'] = $val['approved_at'];
 				$container['transacted_by'] = $val['transacted_by'];
-				$container['recommended_by'] = $val['recommended_by'];
-				$container['recommended_at'] = $val['recommended_at'];
-				$container['it_comments'] = $val['it_comments'];
+				// $container['recommended_by'] = $val['recommended_by'];
+				// $container['recommended_at'] = $val['recommended_at'];
+				// $container['it_comments'] = $val['it_comments'];
 				$container['transacted_date'] = $val['transacted_date'];
 				$insertData[] = $container;
 			}
@@ -589,9 +589,9 @@
 					$suppliesMarketingCon['mo_qty_serve_qty']    = $smVal['quantity'];
 				}
 				$suppliesMarketingCon['requested_date']          = $smVal['created_at'];
-				$suppliesMarketingCon['recommended_by']          = $smVal['recommendedby'];
-				$suppliesMarketingCon['recommended_at']          = $smVal['recommended_at'];
-				$suppliesMarketingCon['it_comments']             = $smVal['it_comments'];
+				// $suppliesMarketingCon['recommended_by']          = $smVal['recommendedby'];
+				// $suppliesMarketingCon['recommended_at']          = $smVal['recommended_at'];
+				// $suppliesMarketingCon['it_comments']             = $smVal['it_comments'];
 				$suppliesMarketingCon['transacted_by']           = $smVal['taggedby'];
 				$suppliesMarketingCon['transacted_date']         = $smVal['transacted_date'];
 				$suppliesMarketing[] = $suppliesMarketingCon;
@@ -616,9 +616,9 @@
 				$returnTransferCon['mo_item_description'] = $rtVal['description'];
 				$returnTransferCon['mo_qty_serve_qty']    = $rtVal['quantity'];
 				$returnTransferCon['requested_date']      = Carbon::parse($rtVal['requested_date']);
-				$returnTransferCon['recommended_by']      = NULL;
-				$returnTransferCon['recommended_at']      = NULL;
-				$returnTransferCon['it_comments']         = NULL;
+				// $returnTransferCon['recommended_by']      = NULL;
+				// $returnTransferCon['recommended_at']      = NULL;
+				// $returnTransferCon['it_comments']         = NULL;
 				$returnTransferCon['transacted_by']       = $rtVal['receivedby'];
 				$returnTransferCon['transacted_date']     = $rtVal['transacted_date'];
 				$returnTransfer[] = $returnTransferCon;

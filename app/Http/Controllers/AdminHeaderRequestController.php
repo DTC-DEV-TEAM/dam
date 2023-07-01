@@ -174,7 +174,7 @@
 
 				$this->index_button[] = ["label"=>"FA Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-requisition-fa'),"color"=>"success"];
 
-				$this->index_button[] = ["label"=>"Marketing Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-requisition-marketing'),"color"=>"success"];
+				//$this->index_button[] = ["label"=>"Marketing Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-requisition-marketing'),"color"=>"success"];
 				
 		    	$usersPrivilege = DB::table('cms_privileges')->select('id')->whereNull('cannot_create')->get();
 				$usersPrivileges_array = array();
@@ -377,8 +377,8 @@
 				$released  = 		DB::table('statuses')->where('id', 12)->value('id');
 
 				$query->whereNull('header_request.deleted_at')
-					  ->orderBy('header_request.status_id', 'DESC')
-					  ->orderBy('header_request.id', 'ASC');
+					  ->orderBy('header_request.status_id', 'asc')
+					  ->orderBy('header_request.id', 'desc');
 
 			}else{
 
