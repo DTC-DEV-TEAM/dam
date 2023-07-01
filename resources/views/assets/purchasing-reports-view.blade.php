@@ -54,9 +54,9 @@
                         <th width="auto">Requested Date</th>
                         <th width="auto">Approved By</th>
                         <th width="auto">Approved Date</th>
-                        <th width="auto">Recommended By</th>
+                        {{-- <th width="auto">Recommended By</th>
                         <th width="auto">Recommended At</th>
-                        <th width="auto">IT Comments</th>
+                        <th width="auto">IT Comments</th> --}}
                         <th width="auto">Transacted By</th>
                         <th width="auto">Transacted Date</th>
                     </tr>
@@ -167,9 +167,9 @@
                         {data: 'requested_date'}, 
                         {data: 'approved_by'}, 
                         {data: 'approved_at'}, 
-                        {data: 'recommended_by'},  
-                        {data: 'recommended_at'},  
-                        {data: 'it_comments'},  
+                        // {data: 'recommended_by'},  
+                        // {data: 'recommended_at'},  
+                        // {data: 'it_comments'},  
                         {data: 'transacted_by'},  
                         {data: 'transacted_date'} 
                 ],

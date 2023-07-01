@@ -34,9 +34,9 @@ class ExportReportAssetsList implements FromCollection, WithHeadings, WithTitle
             'generated_assets_report.requested_date',
             'generated_assets_report.approved_by',
             'generated_assets_report.approved_at',
-            'generated_assets_report.recommended_by',
-            'generated_assets_report.recommended_at',
-            'generated_assets_report.it_comments',
+            // 'generated_assets_report.recommended_by',
+            // 'generated_assets_report.recommended_at',
+            // 'generated_assets_report.it_comments',
             'generated_assets_report.transacted_by',
             'generated_assets_report.transacted_date'
             )->get();
@@ -62,9 +62,9 @@ class ExportReportAssetsList implements FromCollection, WithHeadings, WithTitle
             "Requested Date",
             "Approved By",
             "Approved Date",
-            "Recommended By",
-            "Recommended At",
-            "IT Comments",
+            // "Recommended By",
+            // "Recommended At",
+            // "IT Comments",
             "Transacted By",
             "Transacted Date",
                ];

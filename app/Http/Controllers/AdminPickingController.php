@@ -554,8 +554,8 @@
 
 			//dd($fields);
 
-			$arf_header 				= HeaderRequest::where(['id' => $HeaderID->header_request_id])->first();
-
+			$arf_header    = HeaderRequest::where(['id' => $HeaderID->header_request_id])->first();
+			$employee_name = DB::table('cms_users')->where('id', $arf_header->employee_name)->first();
 			if(in_array($arf_header->request_type_id, [5, 6, 7])){
 			//if($arf_header->request_type_id == 5){
 				$for_receiving 				= StatusMatrix::where('current_step', 7)
@@ -658,7 +658,8 @@
 
 					DB::table('assets_inventory_body')->where('id', $asset_code_tag[$x])
 					->update([
-						'statuses_id'=> 			2
+						'statuses_id'=> 2,
+						'deployed_to'=> $employee_name->bill_to
 					]);
 
 					DB::table('assets_inventory_reserved')->where('body_id', $body_id[$x])->delete();
