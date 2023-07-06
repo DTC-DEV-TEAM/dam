@@ -74,7 +74,7 @@ class ReturnTransferAssets extends Model
                     'mo_body_request.quantity as quantity',
 			);
 			if($from != '' && !is_null($from)){
-				$query->whereBetween('return_transfer_assets_header.approved_date',[$from,$to]);
+				$query->whereBetween('return_transfer_assets_header.requested_date',[$from,$to]);
 			}
 			if($category != '' && !is_null($category)){
 				$query->where('return_transfer_assets_header.request_type_id', $category);

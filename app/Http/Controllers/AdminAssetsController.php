@@ -14,6 +14,7 @@
 	use Illuminate\Support\Facades\Redirect;
 	use Maatwebsite\Excel\HeadingRowImport;
 	use App\Imports\ItemMasterImport;
+	use App\Imports\ItemMasterEolImport;
 	//use App\Imports\InventoryUpload;
 	use App\Exports\ExportItemMaster;
 
@@ -691,7 +692,11 @@
 		public function itemMasterUpload(Request $request) {
 			$path_excel = $request->file('import_file')->store('temp');
 			$path = storage_path('app').'/'.$path_excel;
-			Excel::import(new ItemMasterImport, $path);	
+			if($request->upload_type == "categories"){
+			    Excel::import(new ItemMasterImport, $path);	
+			}else{
+				Excel::import(new ItemMasterEolImport, $path);
+			}
 			CRUDBooster::redirect(CRUDBooster::adminpath('assets'), trans("Upload Successfully!"), 'success');
 		}
 

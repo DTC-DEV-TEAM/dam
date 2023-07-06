@@ -718,8 +718,8 @@
 			//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
 
 			$items = DB::table('assets')
-			->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',6)->where('assets.status','!=','INACTIVE')->whereIn('digits_code',[40001124, 40001123, 40001122, 40001121, 40001120, 40001119, 40001118])
-			->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',6)->where('assets.status','!=','INACTIVE')->whereIn('digits_code',[40001124, 40001123, 40001122, 40001121, 40001120, 40001119, 40001118])
+			->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',6)->where('assets.status','!=','INACTIVE')->whereNotIn('assets.category_id',[3,5])
+			->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',6)->where('assets.status','!=','INACTIVE')->whereNotIn('assets.category_id',[3,5])
 			->join('category', 'assets.category_id','=', 'category.id')
 			->leftjoin('new_sub_category', 'assets.sub_category_id','=', 'new_sub_category.id')
 			->select(

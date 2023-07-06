@@ -132,13 +132,13 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label class="control-label require"> Approved Date From</label>
+                                        <label class="control-label require"> Date From</label>
                                         <input type="text" class="form-control date" name="from"  id="from" placeholder="Please Select Date">
                                     </div>
                                 </div>  
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label class="control-label require"> Approved Date To</label>
+                                        <label class="control-label require"> Date To</label>
                                         <input type="text" class="form-control date" name="to"  id="to" placeholder="Please Select Date">
                                     </div>
                                 </div>  

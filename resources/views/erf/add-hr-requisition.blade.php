@@ -310,8 +310,8 @@
                     <div class="col-md-6">
                         <label class="require control-label"> Required System</label><br>
                         @foreach($required_system as $data)
-                        <div class="col-md-6">
-                            <label class="checkbox-inline control-label col-md-6" ><br>
+                        <div class="col-md-3">
+                            <label class="checkbox-inline control-label col-md-3" ><br>
                                 <input type="checkbox" required multiple class="required_system" name="required_system[]" value="{{$data->description}}" >{{$data->description}}
                             </label>
                         </div>
@@ -411,7 +411,13 @@
                                     <input type="text" class="form-control"  id="application_others" name="application_others"  required placeholder="e.g. VIBER, WHATSAPP, TELEGRAM" onkeyup="this.value = this.value.toUpperCase();">
                                 </div>
                             </div>
-                            <hr/>
+                        </div>
+                        <hr/>
+                        <div class="col-md-12">
+                            <div class="form-group text-center">
+                                <label>CAN'T FIND WHAT YOU ARE LOOKING FOR?</label>
+                                <a href='{{CRUDBooster::adminpath("header_request/download")."?return_url=".urlencode(Request::fullUrl())}}'>CHECK HERE</a>
+                            </div>
                         </div>
                     </div> 
                </div>
