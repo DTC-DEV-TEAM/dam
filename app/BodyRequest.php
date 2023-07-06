@@ -54,6 +54,7 @@ class BodyRequest extends Model
                  'mo_body_request.body_request_id as mo_body_request_id',
                  'body_request.mo_so_num as body_mo_so_num',
                  )->orderBy('header_request.created_at','DESC')
+                 ->groupBy('body_request.id')
         ->get();
     }
 
@@ -110,7 +111,7 @@ class BodyRequest extends Model
 					
 				    )->groupBy('body_request.id');
                 if($from != '' && !is_null($from)){
-                    $query->whereBetween('header_request.approved_at',[$from,$to]);
+                    $query->whereBetween('header_request.created_at',[$from,$to]);
                 }
                 if($category != '' && !is_null($category)){
                     $query->where('header_request.request_type_id', $category);

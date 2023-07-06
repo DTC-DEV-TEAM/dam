@@ -13,6 +13,7 @@ use App\Imports\FulfillmentRoUpload;
 use App\Imports\PoUpload;
 use App\Imports\CancellationUpload;
 use App\Imports\StatusUpdateUpload;
+use App\Imports\StatusUpdateMoveOrderUpload;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Reader\Exception;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -157,7 +158,11 @@ class AdminImportController extends \crocodicstudio\crudbooster\controllers\CBCo
      public function updateStatusUpload(Request $request) {
         $path_excel = $request->file('import_file')->store('temp');
         $path = storage_path('app').'/'.$path_excel;
-        Excel::import(new StatusUpdateUpload, $path);	
+        if($request->upload_type == "cancel"){
+            Excel::import(new StatusUpdateUpload, $path);	
+        }else{
+            Excel::import(new StatusUpdateMoveOrderUpload, $path);
+        }
         CRUDBooster::redirect(CRUDBooster::adminpath('header_request'), trans("Update Successfully!"), 'success');
     }
 
