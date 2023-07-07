@@ -61,8 +61,6 @@
 
 			$this->form[] = ['label'=>'Position Description','name'=>'position_description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
 			
-
-
 			
 			if(CRUDBooster::getCurrentMethod() == 'getEdit' || CRUDBooster::getCurrentMethod() == 'postEditSave' || CRUDBooster::getCurrentMethod() == 'getDetail') {
 				$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE'];
@@ -332,6 +330,7 @@
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
 	        //Your code here
+			$postdata['department_id'] = $postdata['department_id'];
 			$postdata['updated_by']=CRUDBooster::myId();
 	    }
 

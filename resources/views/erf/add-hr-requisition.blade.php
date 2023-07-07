@@ -564,7 +564,7 @@
         const fruits = [];
         $("#add-Row").click(function() {
             event.preventDefault(); 
-            $("#application_div").show();
+            //$("#application_div").show();
             var description = "";
             var count_fail = 0;
             $('.itemDesc').each(function() {
@@ -602,6 +602,7 @@
                     '<td>' + 
                         '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control text-center digits_code sinput" data-id="'+ tableRow +'" id="digits_code'+ tableRow +'"  name="digits_code[]"   maxlength="100" readonly>' +
                         '<input type="hidden" onkeyup="this.value = this.value.toUpperCase();" class="form-control fixed_description sinput" data-id="'+ tableRow +'" id="fixed_description'+ tableRow +'"  name="fixed_description[]"   maxlength="100" readonly>' +
+                        '<input type="hidden" onkeyup="this.value = this.value.toUpperCase();" class="form-control class_type sinput" data-id="'+ tableRow +'" id="class_type'+ tableRow +'"  name="class_type[]"   maxlength="100" readonly>' +
                     '</td>' +
 
                     // '<td>'+
@@ -717,7 +718,7 @@
                                             category_description:       item.category_description,
                                             class_description:          item.class_description,
                                             item_cost:                  item.item_cost,
-                                        
+                                            class_type:                 item.class_type
                                         }
 
                                     }));
@@ -740,9 +741,8 @@
                         },
                         select: function (event, ui) {
                             var e = ui.item;
-
+                            console.log(e);
                             if (e.id) {
-                            
                                 $("#digits_code"+$(this).attr("data-id")).val(e.digits_code);
                                 $("#supplies_cost"+$(this).attr("data-id")).val(e.item_cost);
                                 $('#itemDesc'+$(this).attr("data-id")).val(e.value);
@@ -750,10 +750,15 @@
                                 $('#fixed_description'+$(this).attr("data-id")).val(e.value);
                                 $('#category_id'+$(this).attr("data-id")).val(e.category_description);
                                 $('#sub_category_id'+$(this).attr("data-id")).val(e.class_description);
+                                $('#class_type'+$(this).attr("data-id")).val(e.class_type);
                                 $('#val_item').html('');
-                                return false;
 
+                                if($.inArray(e.class_type,['LAPTOP','DESKTOP','MACBOOK']) > -1){
+                                    $("#application_div").show();
+                                }
+                                return false;
                             }
+
                         },
 
                         minLength: 1,
@@ -821,20 +826,19 @@
         
         //deleteRow
         $(document).on('click', '.removeRow', function() {
-            $("#application_div").hide();
-            $("#application_others_div").hide();
-            $(".application").prop('checked', false);
-            $(".application_others").prop('checked', false);
-            $("#application_others").removeAttr('required');
+            // $("#application_div").hide();
+            // $("#application_others_div").hide();
+            // $(".application").prop('checked', false);
+            // $(".application_others").prop('checked', false);
+            // $("#application_others").removeAttr('required');
             var id_data = $(this).attr("data-id");
-            if($("#category_id"+id_data).val().toLowerCase().replace(/\s/g, '') == "it assets" || $("#category_id"+id_data).val().toLowerCase().replace(/\s/g, '') == "desktop"){
-
-                    $("#application_div").hide();
-                    $("#application_div").val("");
-                    $(".application").prop('checked', false);
-                    $(".application_others").prop('checked', false);
-                    $("#application_others_div").hide();
-                    $("#application_others").removeAttr('required');
+            if($.inArray($("#class_type"+id_data).val().toLowerCase().replace(/\s/g, ''), ['laptop','desktop','macbook']) > -1){
+                $("#application_div").hide();
+                $("#application_div").val("");
+                $(".application").prop('checked', false);
+                $(".application_others").prop('checked', false);
+                $("#application_others_div").hide();
+                $("#application_others").removeAttr('required');
 
             }
 
@@ -1195,12 +1199,12 @@
                     } 
             
                 } 
-                if(countRow == 1){
-                    var sub_cat = $(".sub_category_id option").length;
-                    var sub_cat_value = $('.sub_category_id').find(":selected");
+                if(countRow){
+                    var sub_cat = $("input[name^='class_type']").length;
+                    var sub_cat_value = $("input[name^='class_type']");
                     for(i=0;i<sub_cat;i++){
                         var val = sub_cat_value.eq(i).val() || '';
-                        if(app_count == 0 && $.inArray((sub_cat_value.eq(i).val() || '').toLowerCase().replace(/\s/g, ''),['it assets','desktop']) > -1){
+                        if(app_count == 0 && $.inArray((sub_cat_value.eq(i).val() || '').toLowerCase().replace(/\s/g, ''),['laptop','desktop','macbook']) > -1){
                             swal({  
                                     type: 'error',
                                     title: 'Please choose an Application!',
@@ -1214,19 +1218,19 @@
                     } 
                 }
                
-                if(countRow == 1){
-                    if(app_count == 0){
-                                swal({  
-                                    type: 'error',
-                                    title: 'Please choose an Application!',
-                                    icon: 'error',
-                                    confirmButtonColor: "#367fa9",
+                // if(countRow){
+                //     if(app_count == 0){
+                //                 swal({  
+                //                     type: 'error',
+                //                     title: 'Please choose an Application!',
+                //                     icon: 'error',
+                //                     confirmButtonColor: "#367fa9",
                                     
-                                });
-                                event.preventDefault();
-                                return false;
-                    }
-                }
+                //                 });
+                //                 event.preventDefault();
+                //                 return false;
+                //     }
+                // }
                
                 swal({
                     title: "Are you sure?",

@@ -58,6 +58,12 @@
             .panel-heading{
                 background-color: #f5f5f5 ;
             }
+
+            table, th, td {
+            border: 1px solid rgba(000, 0, 0, .5);
+            padding: 8px;
+            border-radius: 5px 0 0 5px;
+            }
            
         </style>
     @endpush

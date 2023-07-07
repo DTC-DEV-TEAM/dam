@@ -25,6 +25,7 @@ class ExportConso implements FromQuery, WithHeadings, WithMapping
             'Reference Number', 
             'Requested By',
             'Department',
+            'Sub Department',
             'Store Branch',
             'Digits Code',
             'Item Description',
@@ -50,6 +51,7 @@ class ExportConso implements FromQuery, WithHeadings, WithMapping
             $conso->reference_number,
             $conso->bill_to,
             $conso->department_name,
+            $conso->sub_department_name,
             $conso->store_branch,
             $conso->digits_code,
             $conso->item_description,
@@ -81,6 +83,7 @@ class ExportConso implements FromQuery, WithHeadings, WithMapping
         ->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
         ->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
         ->leftjoin('cms_users as tagged', 'header_request.purchased2_by','=', 'tagged.id')
+        ->leftjoin('sub_department', 'requested.sub_department_id', '=', 'sub_department.id')
         ->leftjoin('statuses', 'header_request.status_id', '=', 'statuses.id')
         ->select(
           'statuses.status_description',
@@ -88,6 +91,7 @@ class ExportConso implements FromQuery, WithHeadings, WithMapping
           'requested.bill_to',
           'departments.department_name',
           DB::raw('IF(header_request.store_branch IS NULL, departments.department_name, locations.store_name) as store_branch'),
+          'sub_department.sub_department_name',
           'body_request.digits_code',
           'body_request.item_description',
           'body_request.category_id',

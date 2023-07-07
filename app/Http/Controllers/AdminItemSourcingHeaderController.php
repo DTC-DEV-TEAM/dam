@@ -816,7 +816,7 @@
 
 			$data['employeeinfos'] = Users::user($data['user']->id);
 
-			$data['categories'] = DB::table('new_category')->whereIn('id',[2,4])->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
+			//$data['categories'] = DB::table('new_category')->whereIn('id',[2,4])->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
 			$data['budget_range'] = DB::table('sub_masterfile_budget_range')->where('status', 'ACTIVE')->get();
 			//$privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
 			$privilegesMatrix = DB::table('cms_privileges')->get();
@@ -851,7 +851,7 @@
 
 			$data['employeeinfos'] = Users::user($data['user']->id);
 
-			$data['categories'] = DB::table('new_category')->whereIn('id',[2,4])->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
+			//$data['categories'] = DB::table('new_category')->whereIn('id',[2,4])->where('category_status', 'ACTIVE')->orderby('category_description', 'asc')->get();
 			$data['budget_range'] = DB::table('sub_masterfile_budget_range')->where('status', 'ACTIVE')->get();
 			//$privilegesMatrix = DB::table('cms_privileges')->where('id', '!=', 8)->get();
 			$privilegesMatrix = DB::table('cms_privileges')->get();
