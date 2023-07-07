@@ -551,20 +551,20 @@
 			$this->cbLoader();
 			$data['page_title'] = 'Create Employee Requisition Form';
 			$data['conditions'] = DB::table('condition_type')->where('status', 'ACTIVE')->get();
-			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
 			$data['stores'] = DB::table('stores')->where('status', 'ACTIVE')->get();
-			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
+			
 			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
 			$data['employeeinfos'] = DB::table('cms_users')
 										 ->leftjoin('positions', 'cms_users.position_id', '=', 'positions.id')
 										 ->leftjoin('departments', 'cms_users.department_id', '=', 'departments.id')
 										 ->select( 'cms_users.*', 'positions.position_description as position_description', 'departments.department_name as department_name')
 										 ->where('cms_users.id', $data['user']->id)->first();
+			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
 			$data['categories'] = DB::table('category')->where('category_status', 'ACTIVE')->whereIn('id', [5,1,2])->orderby('category_description', 'asc')->get();
 			$data['sub_categories'] = DB::table('class')->where('class_status', 'ACTIVE')->where('category_id', 5)->orderby('class_description', 'asc')->get();
 			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();
 			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
-			$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
+
 			$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'Employee')->get();
 			$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
 			$data['purposes'] = DB::table('request_type')->where('status', 'ACTIVE')->where('privilege', 'HR')->get();
@@ -580,7 +580,7 @@
 			$data['interact_with'] = DB::table('sub_masterfile_interact_with')->where('status', 'ACTIVE')->get();
 			$data['email_domain'] = DB::table('sub_masterfile_email_domain')->where('status', 'ACTIVE')->get();
 			$data['required_system'] = DB::table('sub_masterfile_required_system')->where('status', 'ACTIVE')->get();
-			$data['positions'] = DB::table('positions')->where('status', 'ACTIVE')->get();
+			$data['positions'] = DB::table('positions')->where('department_id',$data['employeeinfos']->department_id)->where('status', 'ACTIVE')->get();
 			return $this->view("erf.add-hr-requisition", $data);
 				
 		}
@@ -722,11 +722,13 @@
 			->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',6)->where('assets.status','!=','INACTIVE')->whereNotIn('assets.category_id',[3,5])
 			->join('category', 'assets.category_id','=', 'category.id')
 			->leftjoin('new_sub_category', 'assets.sub_category_id','=', 'new_sub_category.id')
+			->leftjoin('class','assets.class_id','class.id')
 			->select(
 				'assets.*',
 				'assets.id as assetID',
 				'category.category_description as category_description',
-				'new_sub_category.sub_category_description as sub_category_description'
+				'new_sub_category.sub_category_description as sub_category_description',
+				'class.class_description as class_type'
 			)->take(10)->get();
 			
 			if($items){
@@ -745,6 +747,7 @@
 					$return_data[$i]['item_description']     = $value->item_description;
 					$return_data[$i]['category_description'] = $value->category_description;
 					$return_data[$i]['class_description']    = $value->sub_category_description;
+					$return_data[$i]['class_type']           = $value->class_type;
 					$return_data[$i]['item_cost']            = $value->item_cost;
 					$return_data[$i]['item_type']            = $value->item_type;
 					$return_data[$i]['image']                = $value->image;
