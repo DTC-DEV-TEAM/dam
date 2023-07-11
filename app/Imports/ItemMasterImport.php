@@ -24,28 +24,35 @@ class ItemMasterImport implements ToCollection, SkipsEmptyRows, WithHeadingRow
     public function collection(Collection $rows)
     {
         foreach ($rows->toArray() as $row){
-            Assets::updateOrcreate([
-                'digits_code' => $row['digits_code'] 
-            ],
-            [
-                'digits_code' => $row['digits_code'],
-                'item_description' => $row['item_description'],
-                'item_cost' => $row['purchase_price'],
-                'brand_id' => $row['brand_id'],
-                'category_id' => $row['category_id'],  
-                'class_id' => $row['class_id'],
-                'sub_category_id' => $row['subcategory_id'],  
-                'sub_class_id' => $row['subclass_id'],
-                'vendor_id' => NULL,
-                'created_by' => CRUDBooster::myId(),
-                'created_at' => date('Y-m-d H:i:s'),
-                'asset_tag' => "",
-                'quantity' => 0,
-                'add_quantity' => 0,
-                'total_quantity' => 0,
-                'status_id' => 0,
+            DB::beginTransaction();
+			try {
+                Assets::updateOrcreate([
+                    'digits_code' => $row['digits_code'] 
+                ],
+                [
+                    'digits_code' => $row['digits_code'],
+                    'item_description' => $row['item_description'],
+                    'item_cost' => $row['purchase_price'],
+                    'brand_id' => $row['brand_id'],
+                    'category_id' => $row['category_id'],  
+                    'class_id' => $row['class_id'],
+                    'sub_category_id' => $row['subcategory_id'],  
+                    'sub_class_id' => $row['subclass_id'],
+                    'vendor_id' => NULL,
+                    'created_by' => CRUDBooster::myId(),
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'asset_tag' => "",
+                    'quantity' => 0,
+                    'add_quantity' => 0,
+                    'total_quantity' => 0,
+                    'status_id' => 0,
 
-            ]);
+                ]);
+            DB::commit();
+            } catch (\Exception $e) {
+                \Log::debug($e);
+                DB::rollback();
+            }
             // $category         = DB::table('new_category')->where(DB::raw('LOWER(TRIM(category_description))'),strtolower(trim($row['category'])))->value('id');
             // $sub_category     = DB::table('new_sub_category')->where(DB::raw('LOWER(TRIM(sub_category_description))'),strtolower(trim($row['sub_category'])))->value('id');
         

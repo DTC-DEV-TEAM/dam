@@ -172,7 +172,7 @@
 
 				//dd($id);
 				// or [to_print] == 1
-				$this->addaction[] = ['title'=>'Print','url'=>CRUDBooster::mainpath('getRequestPrintADF/[id]'),'icon'=>'fa fa-print', "showIf"=>"[status_id] == $for_printing_adf || [status_id] == $cancelled"];
+				$this->addaction[] = ['title'=>'Print','url'=>CRUDBooster::mainpath('getRequestPrintADF/[id]'),'icon'=>'fa fa-print', "showIf"=>"[status_id] == $for_printing_adf"];
 
 				$this->addaction[] = ['title'=>'Print','url'=>CRUDBooster::mainpath('getRequestPrintPickList/[id]'),'icon'=>'fa fa-print', "showIf"=>"[mo_plug] == 0"];
 
