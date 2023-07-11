@@ -745,6 +745,8 @@
 				foreach ($response["data"] as $key => $value) {
 					if($value['skustatus_id'] == 4){
                        $status = "INACTIVE";
+					}elseif($value['skustatus_id'] == 2){
+						$status = "EOL-DIGITS";
 					}else{
 					   $status = "ACTIVE";
 					}
@@ -827,11 +829,13 @@
             $count = 0;
             if(!empty($response["data"])) {
 				foreach ($response["data"] as $key => $value) {
-					if($value['skustatus_id'] == 4){
-                       $status = "INACTIVE";
-					}else{
-					   $status = "ACTIVE";
-					}
+					 if($value['skustatus_id'] == 4){
+						$status = "INACTIVE";
+					 }elseif($value['skustatus_id'] == 2){
+						 $status = "EOL-DIGITS";
+					 }else{
+						$status = "ACTIVE";
+					 }
 					
 					$count++;
 						DB::beginTransaction();

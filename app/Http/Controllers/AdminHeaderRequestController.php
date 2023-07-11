@@ -1579,14 +1579,17 @@
 					//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
 		
 					$item = DB::table('assets')
-					->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',6)->where('assets.status','!=','INACTIVE')
-					->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',6)->where('assets.status','!=','INACTIVE')
+					->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',6)->whereNotIn('assets.status',['EOL-DIGITS','INACTIVE'])
+					->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',6)->whereNotIn('assets.status',['EOL-DIGITS','INACTIVE'])
 					->join('category', 'assets.category_id','=', 'category.id')
-
+					->leftjoin('new_sub_category', 'assets.sub_category_id','=', 'new_sub_category.id')
+			        ->leftjoin('class','assets.class_id','class.id')
 					//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
 					->select(	'assets.*',
 								'assets.id as assetID',
-								'category.category_description as category_description'
+								'category.category_description as category_description',
+								'new_sub_category.sub_category_description as sub_category_description',
+				                'class.class_description as class_type'
 							)->take(10)->get();
 
 					$arraySearch = DB::table('assets_inventory_body')->select('digits_code as digits_code',DB::raw('SUM(quantity) as wh_qty'))->where('statuses_id',6)->groupBy('digits_code')->get()->toArray();
@@ -1650,6 +1653,8 @@
 							$return_data[$i]['serial_no']            = 	$value->serial_no;
 							$return_data[$i]['item_description']     = 	$value->item_description;
 							$return_data[$i]['category_description'] = 	$value->category_description;
+							$return_data[$i]['class_description']    =  $value->sub_category_description;
+					        $return_data[$i]['class_type']           =  $value->class_type;
 							$return_data[$i]['item_cost']            = 	$value->item_cost;
 							$return_data[$i]['item_type']            = 	$value->item_type;
 							$return_data[$i]['image']                = 	$value->image;

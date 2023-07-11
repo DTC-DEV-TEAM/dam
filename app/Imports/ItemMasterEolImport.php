@@ -28,7 +28,8 @@ class ItemMasterEolImport implements ToCollection, SkipsEmptyRows, WithHeadingRo
             ->update(
                         [
                         'category_id' => $row['category_id'],
-                        'class_id'    => $row['class_id']         
+                        'class_id'    => $row['class_id'],
+                        //'status'      => 'INACTIVE'         
                         ]
                     );
    
