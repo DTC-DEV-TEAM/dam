@@ -580,7 +580,7 @@
 			$data['interact_with'] = DB::table('sub_masterfile_interact_with')->where('status', 'ACTIVE')->get();
 			$data['email_domain'] = DB::table('sub_masterfile_email_domain')->where('status', 'ACTIVE')->get();
 			$data['required_system'] = DB::table('sub_masterfile_required_system')->where('status', 'ACTIVE')->get();
-			$data['positions'] = DB::table('positions')->where('department_id',$data['employeeinfos']->department_id)->where('status', 'ACTIVE')->get();
+			$data['positions'] = DB::table('positions')->where('department_id','LIKE', '%'.$data['employeeinfos']->department_id.'%')->where('status', 'ACTIVE')->get();
 			return $this->view("erf.add-hr-requisition", $data);
 				
 		}
@@ -718,8 +718,8 @@
 			//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
 
 			$items = DB::table('assets')
-			->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',6)->where('assets.status','!=','INACTIVE')->whereNotIn('assets.category_id',[3,5])
-			->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',6)->where('assets.status','!=','INACTIVE')->whereNotIn('assets.category_id',[3,5])
+			->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',6)->whereNotIn('assets.status',['EOL-DIGITS','INACTIVE'])->whereNotIn('assets.category_id',[3,5])
+			->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',6)->whereNotIn('assets.status',['EOL-DIGITS','INACTIVE'])->whereNotIn('assets.category_id',[3,5])
 			->join('category', 'assets.category_id','=', 'category.id')
 			->leftjoin('new_sub_category', 'assets.sub_category_id','=', 'new_sub_category.id')
 			->leftjoin('class','assets.class_id','class.id')

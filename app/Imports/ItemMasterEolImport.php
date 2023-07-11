@@ -24,14 +24,21 @@ class ItemMasterEolImport implements ToCollection, SkipsEmptyRows, WithHeadingRo
     public function collection(Collection $rows)
     {
         foreach ($rows->toArray() as $row){
+            DB::beginTransaction();
+			try {
             Assets::where(['digits_code'=>$row['digits_code']])
             ->update(
                         [
                         'category_id' => $row['category_id'],
                         'class_id'    => $row['class_id'],
-                        //'status'      => 'INACTIVE'         
+                        'status'      => $row['status']         
                         ]
                     );
+            DB::commit();
+            } catch (\Exception $e) {
+                \Log::debug($e);
+                DB::rollback();
+            }
    
         }
     }

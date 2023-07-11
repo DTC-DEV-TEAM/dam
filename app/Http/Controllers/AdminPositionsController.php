@@ -7,6 +7,7 @@
 	use CRUDBooster;
 	use App\Models\PositionsModel;
 	use App\Imports\PositionsImport;
+	use App\Department;
 	use PhpOffice\PhpSpreadsheet\Spreadsheet;
 	use PhpOffice\PhpSpreadsheet\Reader\Exception;
 	use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -44,7 +45,7 @@
 
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
-			$this->col[] = ["label"=>"Department","name"=>"department_id", "join"=>"departments,department_name"];
+			$this->col[] = ["label"=>"Departments","name"=>"department_id"];
 			
 			$this->col[] = ["label"=>"Position Description","name"=>"position_description"];
 			$this->col[] = ["label"=>"Status","name"=>"status"];
@@ -57,7 +58,7 @@
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
 
-			$this->form[] = ['label'=>'Department','name'=>'department_id','type'=>'select2','validation'=>'integer|min:0','width'=>'col-sm-5','datatable'=>'departments,department_name','datatable_where'=>"status = 'ACTIVE'"];
+			$this->form[] = ['label'=>'Department','name'=>'department_id','type'=>'select2-new','width'=>'col-sm-5','datatable'=>'departments,department_name','datatable_where'=>"status = 'ACTIVE'"];
 
 			$this->form[] = ['label'=>'Position Description','name'=>'position_description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
 			
@@ -190,6 +191,23 @@
 	        $this->script_js = NULL;
 			$this->script_js = "
 			$(document).ready(function() {
+				$('#department_id').select2();
+				let x = $(location).attr('pathname').split('/');
+				let add_action = x.includes('add');
+				let edit_action = x.includes('edit');
+				if (edit_action){
+					var a  = 	department_id.split(',').length;
+					var b = 	department_id.split(',');
+					var selectedValues = new Array();
+	
+					for (let i = 0; i < a; i++) {
+					
+						selectedValues[i] = b[i];
+	
+						$('#department_id').val(selectedValues);
+					}
+				}
+				
 				$('#position_description').keyup(function() {
 					this.value = this.value.toLocaleUpperCase();
 				});
@@ -292,7 +310,14 @@
 	    |
 	    */    
 	    public function hook_row_index($column_index,&$column_value) {	        
-	    	//Your code here
+	    	if($column_index == 2){
+				$departmentLists = $this->departmentListing($column_value);
+				
+				foreach ($departmentLists as $value) {
+					$col_values .= '<span stye="display: block;" class="label label-info">'.$value.'</span><br>';
+				}
+				$column_value = $col_values;
+			}
 	    }
 
 	    /*
@@ -303,7 +328,16 @@
 	    |
 	    */
 	    public function hook_before_add(&$postdata) {        
-	        //Your code here
+	        $departmentIds = array();
+    		$department = json_encode($postdata['department_id'], true);
+    		$departmentArray1 = explode(",", $department);
+    
+    		foreach ($departmentArray1 as $key => $value) {
+    			$departmentIds[$key] = preg_replace("/[^0-9]/","",$value);
+    		}
+    
+    		$postdata['department_id'] = implode(",", $departmentIds);
+
 			$postdata['created_by']=CRUDBooster::myId();
 
 	    }
@@ -316,7 +350,7 @@
 	    | 
 	    */
 	    public function hook_after_add($id) {        
-	        //Your code here
+			
 
 	    }
 
@@ -329,8 +363,16 @@
 	    | 
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
-	        //Your code here
-			$postdata['department_id'] = $postdata['department_id'];
+			$departmentIds = array();
+    		$department = json_encode($postdata['department_id'], true);
+    		$departmentArray1 = explode(",", $department);
+    
+    		foreach ($departmentArray1 as $key => $value) {
+    			$departmentIds[$key] = preg_replace("/[^0-9]/","",$value);
+    		}
+
+    		$postdata['department_id'] = implode(",", $departmentIds);
+
 			$postdata['updated_by']=CRUDBooster::myId();
 	    }
 
@@ -385,5 +427,9 @@
 			CRUDBooster::redirect(CRUDBooster::adminpath('positions'), trans("Upload Successfully!"), 'success');
 		}
 
+		public function departmentListing($ids) {
+    		$departmentIds = explode(",", $ids);
+    		return Department::whereIn('id', $departmentIds)->pluck('department_name');
+    	}
 
 	}
