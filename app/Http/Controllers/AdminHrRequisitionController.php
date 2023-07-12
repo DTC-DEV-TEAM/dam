@@ -365,7 +365,9 @@
 			//dd($fields);
 			$postdata['reference_number']		 	= $reference_number;
 			if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15])){ 
-			    $postdata['status_id']              = 29;
+			    $postdata['status_id']                          = 29;
+				$postdata['approved_immediate_head_by']         = CRUDBooster::myId();
+				$postdata['approved_immediate_head_at']         = date('Y-m-d H:i:s');
 			}else{
 				$postdata['status_id']              = 1;
 			}
