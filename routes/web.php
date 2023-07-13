@@ -190,6 +190,9 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/setCloseRequest','AdminErfEditStatusController@setRequestClose')->name('set-close-request'); // new
     Route::get('/admin/erf_edit_status/getLockingErfCloseRequest/{id}','AdminErfEditStatusController@getLockingCloseErfFormView')->name('get-locking-erf-close-form');
 
+    //get position route api erf
+    Route::post(config('crudbooster.ADMIN_PATH').'/erf_header_request/get-positions','AdminHrRequisitionController@positions')->name('get-positions'); // new
+
     //Applicant Moduel
     Route::get('/admin/applicant_module/getEditApplicant/{id}','AdminApplicantModuleController@getEditApplicant')->name('edit-applicant');
     Route::get('/admin/applicant_module/getDetailApplicant/{id}','AdminApplicantModuleController@getDetailApplicant')->name('applicant-detail');

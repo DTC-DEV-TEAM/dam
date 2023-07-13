@@ -330,9 +330,9 @@
 	    */
 	    public function hook_before_add(&$postdata) {        
 			$fields = Request::all();
-			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
+			$data['user']       = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
 			$company                   = $fields['company'];
-			$department                = $data['user']->department_id;
+			$department                = $fields['department'];
 			$date_needed               = $fields['date_needed'];
 			$position                  = $fields['position'];
 			$work_location             = $fields['work_location'];
@@ -561,7 +561,9 @@
 										 ->leftjoin('departments', 'cms_users.department_id', '=', 'departments.id')
 										 ->select( 'cms_users.*', 'positions.position_description as position_description', 'departments.department_name as department_name')
 										 ->where('cms_users.id', $data['user']->id)->first();
-			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
+			$departmentList = array_map('intval',explode(",",$data['employeeinfos']->department_id));
+			$data['departments'] = DB::table('departments')->whereIn('id',$departmentList)->where('status', 'ACTIVE')->get();
+	
 			$data['categories'] = DB::table('category')->where('category_status', 'ACTIVE')->whereIn('id', [5,1,2])->orderby('category_description', 'asc')->get();
 			$data['sub_categories'] = DB::table('class')->where('class_status', 'ACTIVE')->where('category_id', 5)->orderby('class_description', 'asc')->get();
 			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();
@@ -764,6 +766,13 @@
 
 			echo json_encode($data);
 			exit;  
+		}
+
+		public function positions(Request $request){
+			$data = Request::all();	
+			$id = $data['id'];
+			$positions = DB::table('positions')->select('positions.*')->where('department_id', $id)->where('status', "ACTIVE")->orderby('position_description', 'ASC')->get();
+			return($positions);
 		}
 
 	}

@@ -136,7 +136,13 @@
                     <div class="col-md-6">
                     <div class="form-group">
                             <label class="control-label"><span style="color:red">*</span> Department</label>
-                            <input type="text" class="form-control finput"  id="department" name="department" value="{{$employeeinfos->department_name}}"  required readonly>
+                            <select required selected data-placeholder="-- Please choose department --" id="department" name="department" class="form-select select2" style="width:100%;">
+                            @foreach($departments as $res)
+                                <option value=""></option>
+                                <option value="{{ $res->id }}">{{ $res->department_name }}</option>
+                            @endforeach
+                            </select>
+                            {{-- <input type="text" class="form-control finput"  id="department" name="department" value="{{$employeeinfos->department_name}}"  required readonly> --}}
                         </div>
                     </div>  
                 </div>
@@ -153,10 +159,10 @@
                         <div class="form-group">
                             <label class="control-label"><span style="color:red">*</span> Position</label>
                             <select required selected data-placeholder="-- Please Select Positions/Title --" id="position" name="position" class="form-select select2" style="width:100%;">
-                            @foreach($positions as $res)
+                            {{-- @foreach($positions as $res)
                                 <option value=""></option>
-                                <option value="{{ $res->position_description }}">{{ $res->position_description }}</option>
-                            @endforeach
+                                <option value="{{ $res->id }}">{{ $res->position_description }}</option>
+                            @endforeach --}}
                             </select>
                         </div>
                     </div>
@@ -446,6 +452,7 @@
     setTimeout("preventBack()", 0);
 
     var tableRow = 1;
+    $('#department').select2({})
     $('#position').select2({})
     $("#application_div").hide();
     $("#application_others_div").hide();
@@ -557,6 +564,29 @@
         }
     });
 
+    //DEPARTMENT CHANGE
+    $('#department').change(function(){
+        var department_id =  this.value;
+        $.ajax
+        ({ 
+            type: 'POST',
+            url: "{{ route('get-positions') }}",
+            data: {
+                "id": department_id
+            },
+            success: function(result) {
+                var i;
+                var showData = [];
+                showData[0] = "<option value=''>-- Please choose position --</option>";
+                for (i = 0; i < result.length; ++i) {
+                    var j = i + 1;
+                    showData[j] = "<option value='"+result[i].position_description+"'>"+result[i].position_description+"</option>";
+                }
+                $('#position').attr('disabled', false);
+                jQuery('#position').html(showData);        
+            }
+        });
+    });
     
 
 
@@ -793,30 +823,7 @@
                     }
 
                 });
-                //CATEGORY CHANGE
-                $('#category_id'+tableRow).change(function(){
-                   var category =  this.value;
-                   var id_data = $(this).attr("data-id");
-                    $.ajax
-                    ({ 
-                        type: 'POST',
-                        url: "{{ route('asset.sub.categories') }}",
-                        data: {
-                            "id": category
-                        },
-                        success: function(result) {
-                            var i;
-                            var showData = [];
-                            showData[0] = "<option value=''>-- Select Sub Category --</option>";
-                            for (i = 0; i < result.length; ++i) {
-                                var j = i + 1;
-                                showData[j] = "<option value='"+result[i].class_description+"'>"+result[i].class_description+"</option>";
-                            }
-                            $('#sub_category_id'+id_data).attr('disabled', false);
-                            jQuery('#sub_category_id'+id_data).html(showData);        
-                        }
-                    });
-                });
+                
 
                 $("#quantity_total").val(calculateTotalQuantity());
                 

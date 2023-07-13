@@ -361,6 +361,23 @@
                 </div>
             </div>
 
+            <br>
+            @if($Header->application != null || $Header->application != "")
+                <div class="form-group">                          
+                    <label class="control-label col-md-2">{{ trans('message.form-label.application') }}:</label>
+                    <div class="col-md-4">
+                            <p>{{$Header->application}}</p>
+                    </div>
+                    
+                    @if($Header->application_others != null || $Header->application_others != "")
+                        <label class="control-label col-md-2">{{ trans('message.form-label.application_others') }}:</label>
+                        <div class="col-md-4">
+                                <p>{{$Header->application_others}}</p>
+                        </div>
+                    @endif  
+                </div>
+            @endif  
+
             @if($Header->recommendedby != null || $Header->recommendedby != "")
                 <hr/>
                 <div class="row">                           
