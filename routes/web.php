@@ -170,19 +170,29 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/customers/get-checkEmail','AdminErfEditStatusController@checkEmail')->name('checkEmail');
     Route::get('/admin/erf_edit_status/getErfSetOnboardingDate/{id}','AdminErfEditStatusController@getErfSetOnboardingDate')->name('set-onboarding-erf');
     Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/setOnboarding','AdminErfEditStatusController@setOnboarding')->name('set-onboarding-date');
-    Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/setUpdateOnboarding','AdminErfEditStatusController@setUpdateOnboarding')->name('set-update-onboarding-date'); //new
-    Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/lockform','AdminErfEditStatusController@lockForm')->name('locking-form'); //new
+    Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/setUpdateOnboarding','AdminErfEditStatusController@setUpdateOnboarding')->name('set-update-onboarding-date'); 
+    Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/lockform','AdminErfEditStatusController@lockForm')->name('locking-form'); 
     Route::post(config('crudbooster.ADMIN_PATH').'/hr_requisition/erf-item-search','AdminHrRequisitionController@itemErfITSearch')->name('item.erf.it.search');
-    Route::get('/admin/erf_edit_status/getLockingForm/{id}','AdminErfEditStatusController@getLockingFormView')->name('get-locking-form'); //new
-    Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/deleteLockform','AdminErfEditStatusController@lockDeleteForm')->name('delete-locking-form'); //new
-    Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/lockformcreateaccount','AdminErfEditStatusController@lockFormCreateAccount')->name('locking-form-create-account'); //new
-    Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/deleteLockformCreateAccount','AdminErfEditStatusController@createAccountlockDelete')->name('delete-locking-create-account'); //new
-    Route::get('/admin/erf_edit_status/getLockingErfCreateAccountForm/{id}','AdminErfEditStatusController@getLockingErfCreateAcountFormView')->name('get-locking-erf-create-account-form'); //new
+    Route::get('/admin/erf_edit_status/getLockingForm/{id}','AdminErfEditStatusController@getLockingFormView')->name('get-locking-form'); 
+    Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/deleteLockform','AdminErfEditStatusController@lockDeleteForm')->name('delete-locking-form'); 
+    Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/lockformcreateaccount','AdminErfEditStatusController@lockFormCreateAccount')->name('locking-form-create-account'); 
+    Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/deleteLockformCreateAccount','AdminErfEditStatusController@createAccountlockDelete')->name('delete-locking-create-account'); 
+    Route::get('/admin/erf_edit_status/getLockingErfCreateAccountForm/{id}','AdminErfEditStatusController@getLockingErfCreateAcountFormView')->name('get-locking-erf-create-account-form'); 
 
-    Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/getLockingErfSetOnboardingDate','AdminErfEditStatusController@lockFormOnboardingDate')->name('locking-form-onboarding-date'); //new
-    Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/deleteLockformOnboardingDate','AdminErfEditStatusController@onboardingDatelockDelete')->name('delete-locking-onboarding-date'); //new
-    Route::get('/admin/erf_edit_status/getLockingErfSetOnboardingDate/{id}','AdminErfEditStatusController@getLockingErfOnboardingDateFormView')->name('get-locking-erf-onboarding-date-form'); //new
+    Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/getLockingErfSetOnboardingDate','AdminErfEditStatusController@lockFormOnboardingDate')->name('locking-form-onboarding-date'); 
+    Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/deleteLockformOnboardingDate','AdminErfEditStatusController@onboardingDatelockDelete')->name('delete-locking-onboarding-date'); 
+    Route::get('/admin/erf_edit_status/getErfSetOnboardingDate/{id}','AdminErfEditStatusController@getErfSetOnboardingDate')->name('set-onboarding-erf'); 
    
+    //ERF closed request
+    Route::get('/admin/erf_edit_status/getErfCloseRequest/{id}','AdminErfEditStatusController@getRequestClose')->name('close-request'); //new
+    Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/getLockingCloseRequest','AdminErfEditStatusController@lockFormCloseRequest')->name('locking-form-close-request'); //new
+    Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/deleteLockformCloseRequest','AdminErfEditStatusController@closeRequestlockDelete')->name('delete-locking-close-request'); //new
+    Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/setCloseRequest','AdminErfEditStatusController@setRequestClose')->name('set-close-request'); // new
+    Route::get('/admin/erf_edit_status/getLockingErfCloseRequest/{id}','AdminErfEditStatusController@getLockingCloseErfFormView')->name('get-locking-erf-close-form');
+
+    //get position route api erf
+    Route::post(config('crudbooster.ADMIN_PATH').'/erf_header_request/get-positions','AdminHrRequisitionController@positions')->name('get-positions'); // new
+
     //Applicant Moduel
     Route::get('/admin/applicant_module/getEditApplicant/{id}','AdminApplicantModuleController@getEditApplicant')->name('edit-applicant');
     Route::get('/admin/applicant_module/getDetailApplicant/{id}','AdminApplicantModuleController@getDetailApplicant')->name('applicant-detail');

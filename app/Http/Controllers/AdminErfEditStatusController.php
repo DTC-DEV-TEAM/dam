@@ -27,7 +27,8 @@
 		private $verified;  
 		private $jo_done;    
 		private $onboarding;   
-		private $closed;  
+		private $closed; 
+		private $onboarded;  
 
 		public function __construct() {
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
@@ -38,7 +39,8 @@
 			$this->verified         =  30;  
 			$this->jo_done          =  31;    
 			$this->onboarding       =  33;   
-			$this->closed           =  13;  
+			$this->closed           =  13;
+			$this->onboarded        =  43;  
 		}
 	    public function cbInit() {
 
@@ -75,6 +77,7 @@
 			$this->col[] = ["label"=>"Locking","name"=>"locking_edit","visible"=>false];
 			$this->col[] = ["label"=>"Locking Create Account","name"=>"locking_create_account","visible"=>false];
 			$this->col[] = ["label"=>"Locking Onboarding Date","name"=>"locking_onboarding_date","visible"=>false];
+			$this->col[] = ["label"=>"Locking Close","name"=>"locking_close","visible"=>false];
 			# END COLUMNS DO NOT REMOVE THIS LINE
 
 			# START FORM DO NOT REMOVE THIS LINE
@@ -110,9 +113,10 @@
 	        */
 	        $this->addaction = array();
 			if(CRUDBooster::isUpdate()) {
-				$for_verification =  29;
-				$jo_done =  31;
-				$for_onboarding = 33; 
+				$for_verification = 29;
+				$jo_done          = 31;
+				$for_onboarding   = 33; 
+				$onboarded        = 43; 
                 $id = CRUDBooster::myId();
 
 				//locking in edit for verification
@@ -127,8 +131,12 @@
 				$this->addaction[] = ['title'=>'Set Onboarding Date','url'=>CRUDBooster::mainpath('getErfSetOnboardingDate/[id]'),'icon'=>'fa fa-pencil', "showIf"=>"[status_id] == $for_onboarding && [locking_onboarding_date] == null || [locking_onboarding_date] == $id"];
 				$this->addaction[] = ['title'=>'Locking Onboarding Date','url'=>CRUDBooster::mainpath('getLockingErfSetOnboardingDate/[id]'),'icon'=>'fa fa-pencil', "showIf"=>"[status_id] == $for_onboarding && [locking_onboarding_date] != null && [locking_onboarding_date] != $id"];
 				
+				//Closed Request
+				$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::mainpath('getErfCloseRequest/[id]'),'icon'=>'fa fa-pencil', "showIf"=>"[status_id] == $onboarded && [locking_close] == null || [locking_close] == $id"];
+				$this->addaction[] = ['title'=>'Locking Close Request','url'=>CRUDBooster::mainpath('getLockingErfCloseRequest/[id]'),'icon'=>'fa fa-pencil', "showIf"=>"[status_id] == $onboarded && [locking_close] != null && [locking_close] != $id"];
 				
-				$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailErf/[id]'),'icon'=>'fa fa-eye', "showIf"=>"[status_id] != $for_verification && [status_id] != $for_onboarding"];
+				
+				$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailErf/[id]'),'icon'=>'fa fa-eye', "showIf"=>"[status_id] != $for_verification && [status_id] != $for_onboarding && [status_id] != $onboarded"];
 				
 			}
 
@@ -312,6 +320,43 @@
 					});
                    
 				});
+
+				//CLOSE REQUEST LOCKING
+				$('a[title=\"Close Request\"]').click(function(e){
+					var id = $(this).attr('href').split('/').pop();
+					$.ajaxSetup({
+						headers: {
+									'X-CSRF-TOKEN': $('meta[name=\"csrf-token\"]').attr('content')
+								}
+					});
+					$.ajax({
+						type: 'POST',
+						url: '".route('locking-form-close-request')."',
+						dataType: 'json',
+						data: {
+							'header_request_id': id
+						},
+						success: function(response) {
+							if (response.status == \"success\") {
+								swal({
+									type: response.status,
+									title: response.message,
+								});
+
+								window.location.replace(response.redirect_url);
+								} else if (response.status == \"error\") {
+								swal({
+									type: response.status,
+									title: response.message,
+								});
+								}
+						},
+						error: function(e) {
+							console.log(e);
+						}
+					});
+                   
+				});
 			});
 			";
 
@@ -402,7 +447,7 @@
 			if(CRUDBooster::isSuperadmin()){
 				$query->whereNull('erf_header_request.deleted_at')->orderBy('erf_header_request.status_id', 'DESC')->orderBy('erf_header_request.id', 'DESC');
 			}else{
-				$query->whereNull('erf_header_request.deleted_at')->whereIn('status_id',[13,29,30,31,33])->orderBy('erf_header_request.id', 'DESC');
+				$query->whereNull('erf_header_request.deleted_at')->whereIn('status_id',[13,29,30,31,33,43])->orderBy('erf_header_request.id', 'DESC');
 			}
 	            
 	            
@@ -421,7 +466,8 @@
 			$for_verification =  DB::table('statuses')->where('id', $this->for_verification)->value('status_description');  
 			$verified         =  DB::table('statuses')->where('id', $this->verified)->value('status_description');  
 			$jo_done          =  DB::table('statuses')->where('id', $this->jo_done)->value('status_description');    
-			$onboarding       =  DB::table('statuses')->where('id', $this->onboarding)->value('status_description');   
+			$onboarding       =  DB::table('statuses')->where('id', $this->onboarding)->value('status_description'); 
+			$onboarded        =  DB::table('statuses')->where('id', $this->onboarded)->value('status_description');   
 			$closed           =  DB::table('statuses')->where('id', $this->closed)->value('status_description');   
 			if($column_index == 1){
 				if($column_value == $pending){
@@ -436,6 +482,8 @@
 					$column_value = '<span class="label label-info">'.$jo_done.'</span>';
 				}else if($column_value == $onboarding){
 					$column_value = '<span class="label label-info">'.$onboarding.'</span>';
+				}else if($column_value == $onboarded){
+					$column_value = '<span class="label label-info">'.$onboarded.'</span>';
 				}else if($column_value == $closed){
 					$column_value = '<span class="label label-success">'.$closed.'</span>';
 				}else if($column_value == $cancelled){
@@ -1166,7 +1214,7 @@
 			$fields = Request::all();
 			erfHeaderRequest::where(['id' => $fields['id']])
 					->update([
-							'status_id' => $this->closed, 
+							'status_id' => $this->onboarded, 
 							'onboarding_date' => $fields['date'],
 							'locking_onboarding_date' => NULL,
 							]);
@@ -1271,5 +1319,107 @@
 			$data = [];
 			$data['user'] = DB::table('erf_header_request')->leftjoin('cms_users as currentUser', 'erf_header_request.locking_onboarding_date', '=', 'currentUser.id')->select('currentUser.name as current_user')->where('erf_header_request.id',$id)->first();
 			return response()->view('errors.form-used-erf-onboarding-date-page',$data);
+		}
+
+		//CLOSE REQUEST
+		public function getRequestClose($id){
+			
+			$this->cbLoader();
+            if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
+                CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+            }
+
+			$data = array();
+
+			$data['page_title'] = 'Close Request';
+
+			$data['Header'] = ErfHeaderRequest::
+				leftjoin('companies', 'erf_header_request.company', '=', 'companies.id')
+				->leftjoin('departments', 'erf_header_request.department', '=', 'departments.id')
+				->leftjoin('cms_users as currentUser', 'erf_header_request.locking_close', '=', 'currentUser.id')
+				->leftJoin('applicant_table', function($join) 
+				{
+					$join->on('erf_header_request.reference_number', '=', 'applicant_table.erf_number')
+					->where('applicant_table.status',$this->jo_done);
+				})
+				->select(
+						'erf_header_request.*',
+						'erf_header_request.id as requestid',
+						'departments.department_name as department',
+						'currentUser.name as current_user',
+						'applicant_table.*'
+						)
+				->where('erf_header_request.id', $id)->first();
+		
+			$res_req = explode(",",$data['Header']->required_exams);
+			$interact_with = explode(",",$data['Header']->employee_interaction);
+			$asset_usage = explode(",",$data['Header']->asset_usage);
+			$application = explode(",",$data['Header']->application);
+			$required_system = explode(",",$data['Header']->required_system);
+			$data['res_req'] = array_map('trim', $res_req);
+			$data['interaction'] = array_map('trim', $interact_with);
+			$data['asset_usage_array'] = array_map('trim', $asset_usage);
+			$data['application'] = $application;
+			$data['required_system_array'] = array_map('trim', $required_system);
+			$data['Body'] = ErfBodyRequest::
+				select(
+				  'erf_body_request.*'
+				)
+				->where('erf_body_request.header_request_id', $id)
+				->get();
+			$data['erf_header_documents'] = ErfHeaderDocuments::select(
+					'erf_header_documents.*'
+				  )
+				  ->where('erf_header_documents.header_id', $id)
+				  ->get();
+			$data['schedule'] = DB::table('sub_masterfile_schedule')->where('status', 'ACTIVE')->get();
+			$data['allow_wfh'] = DB::table('sub_masterfile_allow_wfh')->where('status', 'ACTIVE')->get();
+			$data['manpower'] = DB::table('sub_masterfile_manpower')->where('status', 'ACTIVE')->get();
+			$data['manpower_type'] = DB::table('sub_masterfile_manpower_type')->where('status', 'ACTIVE')->get();
+			$data['required_exams'] = DB::table('sub_masterfile_required_exams')->where('status', 'ACTIVE')->get();
+			$data['asset_usage'] = DB::table('sub_masterfile_asset_usage')->where('status', 'ACTIVE')->get();
+			$data['shared_files'] = DB::table('sub_masterfile_shared_files')->where('status', 'ACTIVE')->get();
+			$data['interact_with'] = DB::table('sub_masterfile_interact_with')->where('status', 'ACTIVE')->get();
+			$data['email_domain'] = DB::table('sub_masterfile_email_domain')->where('status', 'ACTIVE')->get();
+			$data['required_system'] = DB::table('sub_masterfile_required_system')->where('status', 'ACTIVE')->get();
+			return $this->view("erf.erf-close-request", $data);
+		}
+
+		//LOCKING CLOSE REQUEST
+		public function lockFormCloseRequest(Request $request) {	
+			$fields = Request::all();
+			$check = DB::table('erf_header_request')->where('id',$fields['header_request_id'])->whereNull('locking_onboarding_date')->count();
+			if($check == 1){
+				erfHeaderRequest::where(['id' => $fields['header_request_id']])
+				->update([
+						'locking_close' => CRUDBooster::myId(),
+						]);
+			}
+		}
+
+		public function closeRequestlockDelete(Request $request) {	
+			$fields = Request::all();
+			erfHeaderRequest::where(['id' => $fields['header_request_id']])
+					->update([
+							'locking_close' => NULL,
+							]);
+		}
+
+		public function setRequestClose(Request $request) {	
+			$fields = Request::all();
+			erfHeaderRequest::where(['id' => $fields['id']])
+					->update([
+							'status_id'     => $this->closed, 
+							'regular_date'  => $fields['date'],
+							'locking_close' => NULL,
+							]);
+			$message = ['status'=>'success', 'message' => 'Closed Successfully!'];
+			echo json_encode($message);
+		}
+
+		public function getLockingCloseErfFormView($id) {	
+			$data = [];
+			$data['user'] = DB::table('erf_header_request')->leftjoin('cms_users as currentUser', 'erf_header_request.locking_close', '=', 'currentUser.id')->select('currentUser.name as current_user')->where('erf_header_request.id',$id)->first();
+			return response()->view('errors.form-used-page',$data);
 		}
 	}

@@ -224,7 +224,7 @@
 					$this->index_button[] = ["label"=>"Consolidation","icon"=>"fa fa-download",'url'=>"javascript:showConsoExport()"];
 					$this->index_button[] = ["label"=>"Upload PO","icon"=>"fa fa-upload","url"=>CRUDBooster::adminpath('for_purchasing/po-upload'),'color'=>'success'];
 				}
-				if(in_array(CRUDBooster::myPrivilegeId(), [1,5,9])){
+				if(in_array(CRUDBooster::myPrivilegeId(), [1,5,9,17])){
 					$this->index_button[] = ["label"=>"MO Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-mo'),"color"=>"success"];
 					$this->index_button[] = ["title"=>"Export","label"=>"Export","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('GetExtractMO').'?'.urldecode(http_build_query(@$_GET))];
 				}

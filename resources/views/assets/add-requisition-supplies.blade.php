@@ -785,6 +785,7 @@
                                             '</tr>';
                                             $(newrow).insertBefore($('table tr#tr-table1:last'));
                                             $(this).val('');
+                                            $("#quantity_total").val(calculateTotalQuantity());
                                             return false;
                                          
                                         }else{
@@ -803,13 +804,15 @@
                 
                                         }
                                     },
-
+                                 
                                     minLength: 1,
                                     autoFocus: true
                                     });
 
+                                   
+                                
                         });
-
+                        
         
         $('#employee_name').change(function() {
     

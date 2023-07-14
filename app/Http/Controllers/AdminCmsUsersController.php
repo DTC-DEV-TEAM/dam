@@ -66,8 +66,8 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 			$this->form[] = ["label"=>"Bill To (Company Name)","name"=>"bill_to","type"=>"text","validation"=>"required|min:1|max:255",'width'=>'col-sm-5','placeholder'=>'Bill To (Company Name)','readonly'=>true];
 			$this->form[] = ["label"=>"Customer/Location Name","name"=>"customer_location_name","type"=>"text","validation"=>"required|min:1|max:255",'width'=>'col-sm-5','placeholder'=>'Customer/Location Name','readonly'=>true];
 			$this->form[] = ['label'=>'Company Name','name'=>'company_name_id','validation'=>'required|min:0','width'=>'col-sm-5','value' => 'DIGITS','readonly'=>true];
-			$this->form[] = ['label'=>'Department','name'=>'department_id','type'=>'select','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'departments,department_name','datatable_where'=>"status = 'ACTIVE'",'width'=>'col-sm-5'];
-			$this->form[] = ['label'=>'Sub Department','name'=>'sub_department_id','type'=>'select','validation'=>'integer|min:0','width'=>'col-sm-5','datatable'=>'sub_department,sub_department_name','parent_select'=>'department_id','width'=>'col-sm-5'];
+			$this->form[] = ['label'=>'Department','name'=>'department_id','type'=>'select2-department','validation'=>'required','width'=>'col-sm-5','datatable'=>'departments,department_name','datatable_where'=>"status = 'ACTIVE'",'width'=>'col-sm-5'];
+			$this->form[] = ['label'=>'Sub Department','name'=>'sub_department_id','type'=>'select2-sub-department','width'=>'col-sm-5','datatable'=>'sub_department,sub_department_name','parent_select'=>'department_id','width'=>'col-sm-5'];
 			$this->form[] = ["label"=>"Position","name"=>"position_id","type"=>"text","validation"=>"required|min:1|max:255",'width'=>'col-sm-5','placeholder'=>'Position'];
 
 		}else{
@@ -324,6 +324,28 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 
 				$('#form-group-erf_id').hide();
 				$('#erf_id').removeAttr('required');
+
+				var a = department_id.split(',').length;
+				var b = department_id.split(',');
+				var selectedValues = new Array();
+
+				for (let i = 0; i < a; i++) {
+				
+					selectedValues[i] = b[i];
+
+					$('#department_id').val(selectedValues);
+				}
+
+				var c  = 	sub_department_id.split(',').length;
+				var d = 	sub_department_id.split(',');
+				var subDeptSelectedValues = new Array();
+
+				for (let j = 0; j < c; j++) {
+				
+					subDeptSelectedValues[j] = d[j];
+
+					$('#sub_department_id').val(subDeptSelectedValues);
+				}
 
 				$('#id_cms_privileges').change(function() {
 					if($(this).val() == 1){
@@ -651,16 +673,39 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 			$postdata['approver_id_executive'] = NULL;
 		}
 	
-
+		//LOCATION
 		$locationToPickData1 = array();
-    		$locationToPick = json_encode($postdata['location_to_pick'], true);
-    		$locationToPickArray1 = explode(",", $locationToPick);
-    
-    		foreach ($locationToPickArray1 as $key => $value) {
-    			$locationToPickData1[$key] = preg_replace("/[^0-9]/","",$value);
-    		}
-    
-    		$postdata['location_to_pick'] = implode(",", $locationToPickData1);
+		$locationToPick = json_encode($postdata['location_to_pick'], true);
+		$locationToPickArray1 = explode(",", $locationToPick);
+
+		foreach ($locationToPickArray1 as $key => $value) {
+			$locationToPickData1[$key] = preg_replace("/[^0-9]/","",$value);
+		}
+
+		$postdata['location_to_pick'] = implode(",", $locationToPickData1);
+
+        //DEPARTMENT
+		$departmentIds = array();
+		$department = json_encode($postdata['department_id'], true);
+		$departmentArray1 = explode(",", $department);
+
+		foreach ($departmentArray1 as $key => $value) {
+			$departmentIds[$key] = preg_replace("/[^0-9]/","",$value);
+		}
+
+		$postdata['department_id'] = implode(",", $departmentIds);
+
+		 //SUB DEPARTMENT
+		 $subDepartmentIds = array();
+		 $subDepartment = json_encode($postdata['sub_department_id'], true);
+		 $subDepartmentArray1 = explode(",", $subDepartment);
+ 
+		 foreach ($subDepartmentArray1 as $key => $subValue) {
+			 $subDepartmentIds[$key] = preg_replace("/[^0-9]/","",$subValue);
+		 }
+ 
+		 $postdata['sub_department_id'] = implode(",", $subDepartmentIds);
+
 	}
 
 	public function hook_after_add($id) {        
@@ -710,6 +755,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 				$postdata['approver_id_executive'] = NULL;
 			}
 
+			//LOCATION
 			$locationToPickData1 = array();
     		$locationToPick = json_encode($postdata['location_to_pick'], true);
     		$locationToPickArray1 = explode(",", $locationToPick);
@@ -719,6 +765,28 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
     		}
     
     		$postdata['location_to_pick'] = implode(",", $locationToPickData1);
+
+			//DEPARTMENT
+			$departmentIds = array();
+			$department = json_encode($postdata['department_id'], true);
+			$departmentArray1 = explode(",", $department);
+
+			foreach ($departmentArray1 as $key => $value) {
+				$departmentIds[$key] = preg_replace("/[^0-9]/","",$value);
+			}
+
+			$postdata['department_id'] = implode(",", $departmentIds);
+
+			//SUB DEPARTMENT
+			$subDepartmentIds = array();
+			$subDepartment = json_encode($postdata['sub_department_id'], true);
+			$subDepartmentArray1 = explode(",", $subDepartment);
+	
+			foreach ($subDepartmentArray1 as $key => $subValue) {
+				$subDepartmentIds[$key] = preg_replace("/[^0-9]/","",$subValue);
+			}
+	
+			$postdata['sub_department_id'] = implode(",", $subDepartmentIds);
 
     	    $postdata['updated_by']=CRUDBooster::myId();
     	    $postdata['id']=$id;
