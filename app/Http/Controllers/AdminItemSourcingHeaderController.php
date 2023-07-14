@@ -441,8 +441,9 @@
 			$header_ref              = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);			
 			$reference_number	     = "NIS-".$header_ref;
 			$employees               = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-			$approver               = DB::table('cms_users')->where('id', $employees->approver_id)->first();
-			$departmentsUsers        = DB::table('cms_users')->where('department_id', $employees->department_id)->where('id_cms_privileges','!=',1)->where('id','!=',CRUDBooster::myId())->get();
+			$approver                = DB::table('cms_users')->where('id', $employees->approver_id)->first();
+			$departmentList          = array_map('intval',explode(",",$employees->department_id));
+			$departmentsUsers        = DB::table('cms_users')->whereIn('department_id',$departmentList)->where('id_cms_privileges','!=',1)->where('id','!=',CRUDBooster::myId())->get();
 			$eachDepartmentsIds      = [];
 			foreach($departmentsUsers as $value){
 				array_push($eachDepartmentsIds, CRUDBooster::myId());
@@ -451,7 +452,7 @@
 			}
 			
 			$saveDepartment = implode(",",array_unique($eachDepartmentsIds));
-	
+	 
 			$pending                 = DB::table('statuses')->where('id', 1)->value('id');
 			$approved                = DB::table('statuses')->where('id', 4)->value('id');
 

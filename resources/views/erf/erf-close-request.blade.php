@@ -471,7 +471,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                        <label class="control-label">Regular Date</i></label>
+                        <label class="control-label">Regularization Date</i></label>
                             <input type="hidden" class="form-control finput" id="requesid" value="{{$Header->requestid}}" aria-describedby="basic-addon1" >             
                             <input type="text" class="form-control finput date" name="regular_date" id="regular_date"  aria-describedby="basic-addon1">             
                         </div>
@@ -533,7 +533,6 @@
     }
 
     $(".date").datetimepicker({
-            minDate: moment().millisecond(0).second(0).minute(0).hour(0),
             viewMode: "days",
             format: "YYYY-MM-DD",
             dayViewHeaderFormat: "MMMM YYYY",
@@ -544,16 +543,16 @@
         var id = $('#requesid').val();
         var date = $('#regular_date').val();
         event.preventDefault();
-        if($('#regular_date').val() === "" ){
-            swal({  
-                type: 'error',
-                title: 'Regular Date Required!',
-                icon: 'error',
-                confirmButtonColor: "#367fa9",
-            });
-            event.preventDefault();
-            return false;
-        }else{
+        // if($('#regular_date').val() === "" ){
+        //     swal({  
+        //         type: 'error',
+        //         title: 'Regular Date Required!',
+        //         icon: 'error',
+        //         confirmButtonColor: "#367fa9",
+        //     });
+        //     event.preventDefault();
+        //     return false;
+        // }else{
             swal({
                 title: "Are you sure?",
                 type: "warning",
@@ -593,7 +592,7 @@
                         }
                     });                 
             });
-        }
+        //}
             
     });
 
