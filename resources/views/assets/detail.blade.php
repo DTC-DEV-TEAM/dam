@@ -487,7 +487,11 @@
                             <tbody id="footer">
                                 <tr>
                                     <th class="control-label col-md-2">{{ trans('message.form-label.mo_by') }}:</th>
-                                    <td class="col-md-4">{{$Header->mo_by}} / {{$Header->mo_at}}</td>     
+                                    @if(in_array($Header->request_type_id,[1,5]))
+                                      <td class="col-md-4">{{$Header->mo_by}} / {{$Header->mo_at}}</td>    
+                                    @else
+                                      <td class="col-md-4">{{$Header->processedby}} / {{$Header->purchased2_at}}</td> 
+                                    @endif 
                                 </tr>
                                 @if($Header->ac_comments != null)
                                     <tr>
