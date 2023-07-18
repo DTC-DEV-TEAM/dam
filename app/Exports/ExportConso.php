@@ -109,7 +109,8 @@ class ExportConso implements FromQuery, WithHeadings, WithMapping
           'header_request.created_at as requested_at'
         )
         //->where('header_request.request_type_id',7)
-        ->whereNull('body_request.deleted_at');
+        ->whereNull('body_request.deleted_at')
+        ->groupBy('body_request.id');
         //dd($this->from, $this->to);
         if($this->from && $this->to){
             $data->whereBetween('header_request.approved_at',[$this->from,$this->to]);

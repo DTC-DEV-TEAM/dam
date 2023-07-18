@@ -10,6 +10,7 @@
 	use App\StatusMatrix;
 	use App\GeneratedAssetsHistories;
 	use App\AssetsInventoryHeader;
+	use App\AssetsInventoryHeaderForApproval;
 	use App\AssetsHeaderImages;
 	use App\AssetsInventoryBody;
 	use App\Models\AssetsSuppliesInventory;
@@ -1393,10 +1394,10 @@
 						}
 		
 						//get Inventory per asset items per header
-						$inventoryData = AssetsInventoryHeader::leftjoin('cms_users', 'assets_inventory_header.created_by', '=', 'cms_users.id')
-						->leftjoin('assets_inventory_body', 'assets_inventory_header.id', '=', 'assets_inventory_body.header_id')
+						$inventoryData = AssetsInventoryHeaderForApproval::leftjoin('cms_users', 'assets_inventory_header_for_approval.created_by', '=', 'cms_users.id')
+						->leftjoin('assets_inventory_body', 'assets_inventory_header_for_approval.id', '=', 'assets_inventory_body.header_id')
 						->select(
-								'assets_inventory_header.*',
+								'assets_inventory_header_for_approval.*',
 								'assets_inventory_body.*',
 								'cms_users.*'
 						)

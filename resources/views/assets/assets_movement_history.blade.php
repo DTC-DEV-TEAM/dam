@@ -1,9 +1,21 @@
 @extends('crudbooster::admin_template')
     @push('head')
-    
         <style type="text/css">   
             table.dataTable td.dataTables_empty {
                 text-align: center;    
+            }
+            .select2-selection__choice{
+                    font-size:14px !important;
+                    color:black !important;
+            }
+            .select2-selection__rendered {
+                line-height: 31px !important;
+            }
+            .select2-container .select2-selection--single {
+                height: 35px !important;
+            }
+            .select2-selection__arrow {
+                height: 34px !important;
             }
         </style>
     @endpush
@@ -93,11 +105,11 @@
        var table;
        $(document).ready(function() {
             $("#table_dashboard").DataTable({
-                pageLength:10000,
-                pagingType: "simple",
-                bPaginate: false,
-                paging: false,
-                info: false,
+                pageLength:25,
+                lengthMenu: [
+                    [10, 25, 50, 100, -1],
+                    [10, 25, 50, 100, "All"],
+                    ],
                 dom : '<"pull-left"f><"pull-right"l>tip',
                 language: {
                     searchPlaceholder: "Search"
