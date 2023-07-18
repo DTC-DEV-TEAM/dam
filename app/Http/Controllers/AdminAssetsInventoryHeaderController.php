@@ -160,9 +160,9 @@
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
 				$this->index_button[] = ["label"=>"Export","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('export'),"color"=>"primary"];
-				if(CRUDBooster::myPrivilegeId() == 5 || CRUDBooster::isSuperadmin() || CRUDBooster::myPrivilegeId() == 6){ 
-				    $this->index_button[] = ["label"=>"Add Inventory","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-inventory'),"color"=>"success"];
-				}
+				// if(CRUDBooster::myPrivilegeId() == 5 || CRUDBooster::isSuperadmin() || CRUDBooster::myPrivilegeId() == 6){ 
+				//     $this->index_button[] = ["label"=>"Add Inventory","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-inventory'),"color"=>"success"];
+				// }
 			}
 
 	        /* 
@@ -688,24 +688,20 @@
 
 		}
 		//customize index
-		// public function getIndex() {
-		// 	//First, Add an auth
-		// 	 if(!CRUDBooster::isView()) CRUDBooster::redirect(CRUDBooster::adminPath(),trans('crudbooster.denied_access'));
+		public function getIndex() {
+			//First, Add an auth
+			 if(!CRUDBooster::isView()) CRUDBooster::redirect(CRUDBooster::adminPath(),trans('crudbooster.denied_access'));
 			 
-		// 	 //Create your own query 
-		// 	 $data = [];
-		// 	 $data['page_title'] = 'Assets Movement History';
-		// 	 $data['result'] = DB::table('assets_inventory_body')
-		// 	 ->join('assets_inventory_header', 'assets_inventory_body.header_id', '=', 'assets_inventory_header.id')
-		// 	 ->join('statuses', 'assets_inventory_body.statuses_id', '=', 'statuses.id')
-		// 	 ->orderby('assets_inventory_body.id','ASC')
-		// 	 ->get();
-		// 	 $data['history'] = GeneratedAssetsHistories::all();
+			 //Create your own query 
+			 $data = [];
+			 $data['page_title'] = 'Assets Movement History';
+			 $data['result']  = AssetsInventoryBody::all();
+			 $data['history'] = GeneratedAssetsHistories::all();
 
-		// 	 //dd($data['history']);
-		// 	 //Create a view. Please use `view` method instead of view method from laravel.
-		// 	 return $this->view('assets.assets_movement_history',$data);
-		//   }
+			 //dd($data['history']);
+			 //Create a view. Please use `view` method instead of view method from laravel.
+			 return $this->view('assets.assets_movement_history',$data);
+		  }
 
         //Get Invetory List
 		public function getDetail($id){
@@ -1335,7 +1331,7 @@
 				
 			//put asset code per based on  item category IT ASSETS
 			$finalItAssetsArr = [];
-			$DatabaseCounterIt = DB::table('assets_inventory_body')->where('item_category',$getItAssets)->count();
+			$DatabaseCounterIt = DB::table('assets_inventory_body')->where('item_category','IT ASSETS')->count();
 			foreach((array)$ItAssetsArr as $finalItkey => $finalItvalue) {
 					$finalItvalue['asset_code'] = "A1".str_pad ($DatabaseCounterIt + 1, 6, '0', STR_PAD_LEFT);
 					$DatabaseCounterIt++; // or any rule you want.	
@@ -1345,7 +1341,7 @@
 	
 			//put asset code per based on  item category FIXED ASSETS
 			$finalFixAssetsArr = [];
-			$DatabaseCounterFixAsset = DB::table('assets_inventory_body')->where('item_category',$getFaAssets)->count();
+			$DatabaseCounterFixAsset = DB::table('assets_inventory_body')->where('item_category','FIXED ASSETS')->count();
 			foreach((array)$FixAssetsArr as $finalfakey => $finalfavalue) {
 					$finalfavalue['asset_code'] = "A2".str_pad ($DatabaseCounterFixAsset + 1, 6, '0', STR_PAD_LEFT);
 					$DatabaseCounterFixAsset++; // or any rule you want.	
