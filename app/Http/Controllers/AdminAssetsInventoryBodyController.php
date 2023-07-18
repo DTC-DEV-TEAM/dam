@@ -119,9 +119,9 @@
 	        | @showIf 	   = If condition when action show. Use field alias. e.g : [id] == 1
 	        | 
 	        */
-	        $this->addaction = array(
-				$this->addaction[] = ['url'=>CRUDBooster::mainpath('generate-barcode-single/[id]'),'icon'=>'fa fa-barcode','color'=>'default']
-			);
+	        // $this->addaction = array(
+			// 	$this->addaction[] = ['url'=>CRUDBooster::mainpath('generate-barcode-single/[id]'),'icon'=>'fa fa-barcode','color'=>'default']
+			// );
 
 
 	        /* 

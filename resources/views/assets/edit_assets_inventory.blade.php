@@ -89,50 +89,93 @@
             </div>
          </div>
         </div>
-        @if(in_array($Body->statuses_id,[6,23,28,44]))
-           <div class="row">
-             <div class="col-md-12">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label class="control-label">Item Condition</label>
-                        <select required selected data-placeholder="-- Please Select Item Condition --" id="item_condition" name="item_condition" class="form-select select2" style="width:100%;">
-                        
-                        <option <?php if ($Body->item_condition == 'Good') echo 'selected'; ?>>Good</option>
-                        <option <?php if ($Body->item_condition == 'Defective') echo 'selected'; ?>>Defective</option>
-                        <option <?php if ($Body->item_condition == 'Not Available') echo 'selected'; ?>>Not Available</option>
-                        <option <?php if ($Body->item_condition == 'For Investigation') echo 'selected'; ?>>For Investigation</option>
-                            <!-- <option value="{{ $key }}" {{$suggestions_datas[0]->categories_id == $key ? "selected" : "" }}>{{ $value->item_condition }}</option> -->
-                        
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label class="control-label">Quantity</label>
-                        <input type="text" class="form-control" name="quantity" id="quantity" value="{{$Body->quantity}}" readonly>
-                    </div>
-                </div>
-             </div>
-            </div>
-        @else
+        @if(CRUDBooster::isSuperadmin())
+            @if(in_array($Body->statuses_id,[6,23,28,44]))
             <div class="row">
                 <div class="col-md-12">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label class="control-label">Item Condition</label>
-                        <input type="text" class="form-control" name="item_condition" id="item_condition" value="{{$Body->item_condition}}" readonly>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Item Condition</label>
+                            <select required selected data-placeholder="-- Please Select Item Condition --" id="item_condition" name="item_condition" class="form-select select2" style="width:100%;">
+                            
+                            <option <?php if ($Body->item_condition == 'Good') echo 'selected'; ?>>Good</option>
+                            <option <?php if ($Body->item_condition == 'Defective') echo 'selected'; ?>>Defective</option>
+                            <option <?php if ($Body->item_condition == 'Not Available') echo 'selected'; ?>>Not Available</option>
+                            <option <?php if ($Body->item_condition == 'For Investigation') echo 'selected'; ?>>For Investigation</option>
+                                <!-- <option value="{{ $key }}" {{$suggestions_datas[0]->categories_id == $key ? "selected" : "" }}>{{ $value->item_condition }}</option> -->
+                            
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Quantity</label>
+                            <input type="text" class="form-control" name="quantity" id="quantity" value="{{$Body->quantity}}" readonly>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label class="control-label">Quantity</label>
-                        <input type="text" class="form-control" name="quantity" id="quantity" value="{{$Body->quantity}}" readonly>
+                </div>
+            @else
+                <div class="row">
+                    <div class="col-md-12">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Item Condition</label>
+                            <input type="text" class="form-control" name="item_condition" id="item_condition" value="{{$Body->item_condition}}" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Quantity</label>
+                            <input type="text" class="form-control" name="quantity" id="quantity" value="{{$Body->quantity}}" readonly>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            @endif 
+        @else
+            @if(in_array($Body->statuses_id,[6,23]))
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Item Condition</label>
+                            <select required selected data-placeholder="-- Please Select Item Condition --" id="item_condition" name="item_condition" class="form-select select2" style="width:100%;">
+                            
+                            <option <?php if ($Body->item_condition == 'Good') echo 'selected'; ?>>Good</option>
+                            <option <?php if ($Body->item_condition == 'Defective') echo 'selected'; ?>>Defective</option>
+                                <!-- <option value="{{ $key }}" {{$suggestions_datas[0]->categories_id == $key ? "selected" : "" }}>{{ $value->item_condition }}</option> -->
+                            
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Quantity</label>
+                            <input type="text" class="form-control" name="quantity" id="quantity" value="{{$Body->quantity}}" readonly>
+                        </div>
                     </div>
                 </div>
                 </div>
-            </div>
-        @endif 
-           
+            @else
+                <div class="row">
+                    <div class="col-md-12">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Item Condition</label>
+                            <input type="text" class="form-control" name="item_condition" id="item_condition" value="{{$Body->item_condition}}" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Quantity</label>
+                            <input type="text" class="form-control" name="quantity" id="quantity" value="{{$Body->quantity}}" readonly>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            @endif 
+        @endif
             <br>
             <!-- Comment Section -->
             <div class="row">  
