@@ -396,16 +396,19 @@
 			$item_condition =  $fields['item_condition'];
 			$comments =  $fields['comments'];
 			$other_comment =  $fields['other_comment'];
-			$quantity =  $fields['quantity'];
 			$statuses_id =  $fields['statuses_id'];
-			if($item_condition === "Good" && $quantity != 0){
-               $status = 6;
-			}else if($item_condition === "Not Available" && $quantity == 0){
-               $status = 28;
-			}else if($item_condition === "For Investigation" && $quantity == 0){
-				$status = 44;
+			if($item_condition === "Good"){
+               $status    = 6;
+			   $quantity  =  1;
+			}else if($item_condition === "Not Available"){
+               $status    = 28;
+			   $quantity  =  0;
+			}else if($item_condition === "For Investigation"){
+				$status   = 44;
+				$quantity =  0;
 			 }else{
-				$status = 23;
+				$status   = 23;
+				$quantity =  0;
 			}
 	
 			DB::table('assets_inventory_body')->where('id', $id)

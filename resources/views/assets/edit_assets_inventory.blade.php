@@ -109,7 +109,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label">Quantity</label>
-                        <input type="text" class="form-control" name="quantity" id="quantity" value="{{$Body->quantity}}">
+                        <input type="text" class="form-control" name="quantity" id="quantity" value="{{$Body->quantity}}" readonly>
                     </div>
                 </div>
              </div>
