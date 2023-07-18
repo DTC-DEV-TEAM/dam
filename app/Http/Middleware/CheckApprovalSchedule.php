@@ -21,9 +21,15 @@ class CheckApprovalSchedule
     {
         $current_date = Carbon::now();
         $current_schedule = OrderSchedule::where('status','ACTIVE')->orderBy('id','desc')->first();
-        
+        $approver_list = array_map('intval',explode(",",$current_schedule->approver_id));
         if($current_date->between(Carbon::parse($current_schedule->start_date), Carbon::parse($current_schedule->end_date))){
-            return $next($request);
+            if(in_array(CRUDBooster::myId(), $approver_list)) { //additional code 20200624
+                return $next($request);
+            }
+            else {
+                return response()->view('errors.page-approval-expired');
+            }
+            
         }
         
         //update order schedule

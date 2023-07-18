@@ -302,7 +302,26 @@
 			}else{
 				$postdata['schedule_code'] = Str::random(10);
 				if(count((array)$postdata['privilege_id']) > 0) {
-					// additional code 20200227
+
+					// Approval Ids
+					$approval_array = array();
+					foreach($postdata['privilege_id'] as $priv){
+						array_push($approval_array, $priv);
+					}
+					$approval_string = implode(",",$approval_array);
+					$userslist = array_map('intval',explode(",",$approval_string));
+		
+					$approverList = DB::table('cms_users')->whereIn('id_cms_privileges',$userslist)->where('status', 'ACTIVE')->get();
+		
+					$approverIds      = [];
+					foreach($approverList as $value){
+						array_push($approverIds, $value->approver_id);
+					}
+					
+					$saveApprover = implode(",",array_unique($approverIds));
+					$postdata['approver_id'] = $saveApprover;
+
+					// Privilege ids
 					$privData = array();
 					$privList = json_encode($postdata['privilege_id'], true);
 					$privArray = explode(",", $privList);
@@ -312,9 +331,10 @@
 					}
 					
 					$postdata['privilege_id'] = implode(",", $privData);
-					// end-additional code 20200227
+					// end-Privilege ids
 				}
 				else{
+					$postdata['approver_id'] = 0;
 					$postdata['privilege_id'] = 0;
 				}
 			}
@@ -355,7 +375,25 @@
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
 			if(count((array)$postdata['privilege_id']) > 0) {
-				// additional code 20200227
+				// Approval Ids
+				$approval_array = array();
+				foreach($postdata['privilege_id'] as $priv){
+					array_push($approval_array, $priv);
+				}
+				$approval_string = implode(",",$approval_array);
+				$userslist = array_map('intval',explode(",",$approval_string));
+	
+				$approverList = DB::table('cms_users')->whereIn('id_cms_privileges',$userslist)->where('status', 'ACTIVE')->get();
+	
+				$approverIds      = [];
+				foreach($approverList as $value){
+					array_push($approverIds, $value->approver_id);
+				}
+				
+				$saveApprover = implode(",",array_unique($approverIds));
+				$postdata['approver_id'] = $saveApprover;
+
+				// Privilege Ids
 				$privilegeData = array();
 				$privilegeList = json_encode($postdata['privilege_id'], true);
 				$privilegeArray = explode(",", $privilegeList);
@@ -365,9 +403,10 @@
 				}
 				//dd($privilegeData);
 				$postdata['privilege_id'] = implode(",", $privilegeData);
-				// end-additional code 20200227
+				// end-Privilege Ids
 			}
 			else{
+				$postdata['approver_id'] = 0;
 				$postdata['privilege_id'] = 0;
 			}
 	    }

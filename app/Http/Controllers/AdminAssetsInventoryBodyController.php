@@ -9,6 +9,7 @@
 	use App\AssetsInventoryBody;
 	use App\CommentsGoodDefect;
 	use App\GoodDefectLists;
+	use App\Statuses;
 	use App\Exports\ExportMultipleSheet;
 	use Maatwebsite\Excel\Facades\Excel;
 	use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -311,14 +312,15 @@
 	    */    
 	    public function hook_row_index($column_index,&$column_value) {	        
 	    	//Your code here
-			$for_approval  =    DB::table('statuses')->where('id', 20)->value('status_description');
-			$available  =  		DB::table('statuses')->where('id', 6)->value('status_description');
-			$reserved  =  		DB::table('statuses')->where('id', 2)->value('status_description');
-			$deployed  =  		DB::table('statuses')->where('id', 3)->value('status_description');
-			$defective  =  		DB::table('statuses')->where('id', 23)->value('status_description');
-			$forReturn =  		DB::table('statuses')->where('id', 26)->value('status_description');
-			$forTransfer =  		DB::table('statuses')->where('id', 27)->value('status_description');
-			$notAvailabe =  		DB::table('statuses')->where('id', 28)->value('status_description');
+			$for_approval     = DB::table('statuses')->where('id', 20)->value('status_description');
+			$available        = DB::table('statuses')->where('id', 6)->value('status_description');
+			$reserved         = DB::table('statuses')->where('id', 2)->value('status_description');
+			$deployed         = DB::table('statuses')->where('id', 3)->value('status_description');
+			$defective        = DB::table('statuses')->where('id', 23)->value('status_description');
+			$forReturn        = DB::table('statuses')->where('id', 26)->value('status_description');
+			$forTransfer      = DB::table('statuses')->where('id', 27)->value('status_description');
+			$notAvailabe      = DB::table('statuses')->where('id', 28)->value('status_description');
+			$forInvestigation = DB::table('statuses')->where('id', 44)->value('status_description');
 			if($column_index == 4){
 				if($column_value == $for_approval){
 					$column_value = '<span class="label label-success">'.$for_approval.'</span>';
@@ -336,6 +338,8 @@
 					$column_value = '<span class="label label-info">'.$forTransfer.'</span>';
 				}else if($column_value == $notAvailabe){
 					$column_value = '<span class="label label-warning change-color">'.$notAvailabe.'</span>';
+				}else if($column_value == $forInvestigation){
+					$column_value = '<span class="label label-warning change-color">'.$forInvestigation.'</span>';
 				}
 			}
 
@@ -344,6 +348,10 @@
 					$column_value = '<span class="label label-success">GOOD</span>';
 				}else if($column_value == "Defective"){
 					$column_value = '<span class="label label-danger">DEFECTIVE</span>';
+				}else if($column_value == "Not Available"){
+					$column_value = '<span class="label label-danger change-color">NOT AVAILABLE</span>';
+				}else if($column_value == "For Investigation"){
+					$column_value = '<span class="label label-danger change-color">FOR INVESTIGATION</span>';
 				}
 			}
 	    }
@@ -392,9 +400,11 @@
 			$statuses_id =  $fields['statuses_id'];
 			if($item_condition === "Good" && $quantity != 0){
                $status = 6;
-			}else if($quantity == 0){
+			}else if($item_condition === "Not Available" && $quantity == 0){
                $status = 28;
-			}else{
+			}else if($item_condition === "For Investigation" && $quantity == 0){
+				$status = 44;
+			 }else{
 				$status = 23;
 			}
 	
@@ -513,6 +523,7 @@
 			$data['comments'] = $mergeData;
 			
 			$data['good_defect_lists'] = GoodDefectLists::all();
+		
             //dd($data['comments']);
 			  return $this->view("assets.edit_assets_inventory", $data);
 		}
