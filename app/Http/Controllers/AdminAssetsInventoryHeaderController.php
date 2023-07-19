@@ -1362,7 +1362,7 @@
 				$saveContainerData['location']              = $frData['location'];
 				$saveContainerData['digits_code']           = $frData['digits_code'];
 				$saveContainerData['item_description']      = $frData['item_description'];
-				$saveContainerData['value']                 = $frData['value'];
+				$saveContainerData['value']                 = str_replace(',', '', $frData['value']);
 				$saveContainerData['quantity']              = 1;	
 				$saveContainerData['serial_no']             = $frData['serial_no'];
 				$saveContainerData['warranty_coverage']     = $frData['warranty_coverage'];
