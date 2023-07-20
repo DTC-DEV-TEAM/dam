@@ -12,6 +12,7 @@ use App\Employees;
 use App\ApprovalMatrix;
 use App\Models\ErfHeaderRequest;
 use App\HeaderRequest;
+use App\Department;
 use App\Imports\UserImport;
 use App\Exports\ExportUsersList;
 use Illuminate\Http\Request;
@@ -46,7 +47,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 		$this->col[] = array("label"=>"Name","name"=>"name");
 		$this->col[] = array("label"=>"Email","name"=>"email");
 		$this->col[] = array("label"=>"Privilege","name"=>"id_cms_privileges","join"=>"cms_privileges,name");
-		// $this->col[] = array("label"=>"Channel","name"=>"channels_id", "join"=>"channels,channel_name");
+		$this->col[] = array("label"=>"Department","name"=>"department_id");
 		//$this->col[] = array("label"=>"Store Name","name"=>"stores_id", "join"=>"stores,store_name");
 		$this->col[] = array("label"=>"Photo","name"=>"photo","image"=>1);
 		$this->col[] = array("label"=>"Status","name"=>"status");
@@ -336,17 +337,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 					$('#department_id').val(selectedValues);
 				}
 
-				var c  = 	sub_department_id.split(',').length;
-				var d = 	sub_department_id.split(',');
-				var subDeptSelectedValues = new Array();
-
-				for (let j = 0; j < c; j++) {
-				
-					subDeptSelectedValues[j] = d[j];
-
-					$('#sub_department_id').val(subDeptSelectedValues);
-				}
-
+			
 				$('#id_cms_privileges').change(function() {
 					if($(this).val() == 1){
 						$('#form-group-approver_id_manager').hide();
@@ -643,8 +634,14 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 	}
 
 	public function hook_row_index($column_index,&$column_value) {	        
-		//Your code here
-	
+		if($column_index == 5){
+			$departmentLists = $this->departmentListing($column_value);
+			
+			foreach ($departmentLists as $value) {
+				$col_values .= '<span stye="display: block;" class="label label-info">'.$value.'</span><br>';
+			}
+			$column_value = $col_values;
+		}
 	}
 
 	public function hook_before_add(&$postdata) {        
@@ -939,6 +936,11 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 	public function userListing($ids) {
 		$users = explode(",", $ids);
 		return Users::whereIn('id', $users)->pluck('name');
+	}
+
+	public function departmentListing($ids) {
+		$department = explode(",", $ids);
+		return Department::whereIn('id', $department)->pluck('department_name');
 	}
 	
 	public function uploadUserAccountTemplate() {

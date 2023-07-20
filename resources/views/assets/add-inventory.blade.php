@@ -841,6 +841,24 @@
                             }
                         
                         }
+
+                        //Value
+                        var cost = $("input[name^='value']").length;
+                        var valueCost = $("input[name^='value']");
+                        for(i=0;i<cost;i++){
+                            if(valueCost.eq(i).val() == ""){
+                                swal({
+                                        type: 'error',
+                                        title: 'Value required!',
+                                        icon: 'error',
+                                        confirmButtonColor: "#367fa9",
+                                    });
+                                    event.preventDefault();
+                                    return false;
+                            }
+                        
+                        }
+
                         //not allowed duplicate
                         var finalDuplicateData = checkRowForNa;
                         var dupArrData = finalDuplicateData.sort(); 
@@ -1111,7 +1129,7 @@
                                                 '<td><input class="form-control text-center ginput" type="text" name="item_description[]" readonly value="' + e.value + '"></td>' +
                                                 '<td><input class="form-control text-center ginput amount" placeholder="Value" type="text" readonly value="' + e.category_description + '"></td>' +
                                                 '<td><input class="form-control text-center ginput text-center add_quantity" placeholder="Quantity" type="text" value="1" readonly name="add_quantity[]" id="add_quantity' + e.id  + '" data-id="' + e.id  + '"  min="0" max="9999999999" step="1" onkeypress="return event.charCode >= 48 && event.charCode <= 57" oninput="validity.valid||(value=1);"></td>' +               
-                                                '<td><input class="form-control ginput text-center" placeholder="Value" type="text" name="value[]" id="value" required min="1" min="0" max="9999999999"  value="' + e.item_cost + '"></td>' +                                           
+                                                '<td><input class="form-control ginput text-center" placeholder="' + e.item_cost + '" type="text" name="value[]" id="value" required min="1" min="0" max="9999999999"></td>' +                                           
                                                 '<td><input class="form-control finput serial_no" type="text" placeholder="Serial No." name="serial_no[]" value="" data-index="1"></td>' + 
                                                 '<td><input class="form-control finput text-center" type="text" placeholder="(Month)" name="warranty_coverage[]" id="warranty_coverage" min="1" max="9999999999" step="1" onkeypress="return event.charCode <= 57" value="0"></td>' +                                                                                                                                       
                                                 '<td><input class="form-control upc_code finput" type="text" placeholder="UPC Code" name="upc_code[]" style="width:100%" data-index="1"></td>' + 

@@ -30,9 +30,9 @@ class InventoryUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
         $DatabaseCounterFixAsset = DB::table('assets_inventory_body')->where('item_category','FIXED ASSETS')->count();
         foreach ($rows->toArray() as $row) {
             $name_id     = DB::table('cms_users')->where('id','!=',1)->where(DB::raw('LOWER(TRIM(email))'),strtolower(trim($row['email'])))->value('id');
-            $name     = DB::table('cms_users')->where('id','!=',1)->where(DB::raw('LOWER(TRIM(email))'),strtolower(trim($row['email'])))->value('name');
-            $item_id 	 = DB::table('assets')->where(['digits_code' => $row['digits_code']])->first();
-            $location_id 	 = DB::table('warehouse_location_model')->where(DB::raw('LOWER(TRIM(location))'),strtolower(trim($row['location'])))->first();
+            $name        = DB::table('cms_users')->where('id','!=',1)->where(DB::raw('LOWER(TRIM(email))'),strtolower(trim($row['email'])))->value('name');
+            $item_id 	 = DB::table('assets')->where(['digits_code' => trim($row['digits_code'])])->first();
+            $location_id = DB::table('warehouse_location_model')->where(DB::raw('LOWER(TRIM(location))'),strtolower(trim($row['location'])))->first();
         
             if(strtolower($row['status']) == "working" && empty($row['email'])){
 				$statuses = 6;
