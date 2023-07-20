@@ -59,7 +59,7 @@
 			$this->col[] = ["label"=>"Location","name"=>"location","join"=>"warehouse_location_model,location"];
 			$this->col[] = ["label"=>"Item Condition","name"=>"item_condition"];
 			$this->col[] = ["label"=>"Item Description","name"=>"item_description"];
-			$this->col[] = ["label"=>"Value","name"=>"value","callback_php"=>'number_format($row->value)'];
+			$this->col[] = ["label"=>"Value","name"=>"value","callback_php"=>'number_format($row->value, 2, ".", ",")'];
 			$this->col[] = ["label"=>"RR Date","name"=>"header_id","join"=>"assets_inventory_header,rr_date","visible" => false];
 			$this->col[] = ["label"=>"Quantity","name"=>"quantity"];
 			$this->col[] = ["label"=>"Date Created","name"=>"created_at"];
