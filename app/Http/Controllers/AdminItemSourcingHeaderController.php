@@ -347,6 +347,19 @@
 					  ->orderBy('item_sourcing_header.status_id', 'ASC')
 					  ->orderBy('item_sourcing_header.id', 'DESC');
 
+			}else if(CRUDBooster::myPrivilegeId() == 8){
+				$res = $query->select('item_sourcing_header.*')->get();
+				$user = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
+    
+				$query->where(function($sub_query){
+					$sub_query->where('item_sourcing_header.created_by', CRUDBooster::myId())
+							->whereNull('item_sourcing_header.deleted_at')
+							->orderBy('item_sourcing_header.reference_number', 'ASC')
+							->orderBy('item_sourcing_header.id', 'DESC');
+							
+				});
+				$query->orderBy('item_sourcing_header.status_id', 'ASC')->orderBy('item_sourcing_header.id', 'DESC');
+					
 			}else{
 				$res = $query->select('item_sourcing_header.*')->get();
 				$user = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
@@ -480,10 +493,15 @@
 			$postdata['total'] 						= $total;
 			
 			if($request_type_id == 6){
-				$postdata['created_by']  		    = $saveDepartment;
+				if(CRUDBooster::myPrivilegeId() == 8){
+					$postdata['created_by'] 		= CRUDBooster::myId();
+				}else{
+					$postdata['created_by']  		= $saveDepartment;
+				}
 			}else{
 				$postdata['created_by'] 		    = CRUDBooster::myId();
 			}
+
 			$postdata['created_at'] 		    = date('Y-m-d H:i:s');
 			$postdata['request_type_id']		 	= $request_type_id;
 			$postdata['sampling']		 	        = $sampling;

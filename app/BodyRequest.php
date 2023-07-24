@@ -47,13 +47,17 @@ class BodyRequest extends Model
                  'statuses.status_description as status_description',
                  'body_request.item_description as body_description',
                  'body_request.digits_code as body_digits_code',
+                 'mo_body_request.digits_code as mo_digits_code',
+                 'mo_body_request.item_description as mo_item_description',
                  'body_request.quantity as body_quantity',
                  'mo_statuses.status_description as mo_statuses_description',
                  'body_statuses.status_description as body_statuses_description',
                  'body_request.category_id as body_category_id',
                  'mo_body_request.body_request_id as mo_body_request_id',
                  'body_request.mo_so_num as body_mo_so_num',
-                 )->orderBy('header_request.created_at','DESC')
+                 )
+                 ->whereNull('body_request.deleted_at')
+                 ->orderBy('header_request.created_at','DESC')
                  ->groupBy('body_request.id')
         ->get();
     }
@@ -66,7 +70,7 @@ class BodyRequest extends Model
     
        $query->orderby('body_request.id','asc')
             ->leftjoin('header_request', 'body_request.header_request_id', '=', 'header_request.id')
-			->leftjoin('mo_body_request', 'header_request.id', '=', 'mo_body_request.header_request_id')
+            ->leftjoin('mo_body_request', 'body_request.id', '=', 'mo_body_request.body_request_id')
 			->leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
 			->leftjoin('condition_type', 'header_request.conditions', '=', 'condition_type.id')
 			->leftjoin('employees', 'header_request.employee_name', '=', 'employees.id')
@@ -106,10 +110,12 @@ class BodyRequest extends Model
 					'body_statuses.status_description as body_statuses_description',
 					'body_request.category_id as body_category_id',
 					'mo_body_request.body_request_id as mo_body_request_id',
-					'mo_body_request.item_description as mo_item_description',
+                    'mo_body_request.digits_code as mo_digits_code',
+                    'mo_body_request.item_description as mo_item_description',
 					'body_request.mo_so_num as body_mo_so_num'
-					
-				    )->groupBy('body_request.id');
+				    ) 
+                    ->whereNull('body_request.deleted_at')
+                    ->groupBy('body_request.id');
                 if($from != '' && !is_null($from)){
                     $query->whereBetween('header_request.created_at',[$from,$to]);
                 }
