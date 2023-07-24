@@ -455,8 +455,8 @@
 					$suppliesMarketingCon['request_quantity'] = $smVal['body_quantity'];
 					$suppliesMarketingCon['request_type'] = $smVal['body_category_id'];
 					$suppliesMarketingCon['mo_reference'] = $smVal['mo_reference_number'];
-					$suppliesMarketingCon['mo_item_code'] = $smVal['digits_code'];
-					$suppliesMarketingCon['mo_item_description'] = $smVal['item_description'];
+					$suppliesMarketingCon['mo_item_code'] = $smVal['mo_digits_code'];
+					$suppliesMarketingCon['mo_item_description'] = $smVal['mo_item_description'];
 					$suppliesMarketingCon['mo_qty_serve_qty'] = $smVal['quantity'];
 				}
 				$suppliesMarketingCon['requested_date'] = $smVal['created_at'];

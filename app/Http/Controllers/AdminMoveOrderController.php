@@ -2117,8 +2117,11 @@
 			}
 		
 			$sql_query = "	SELECT  
+			                statuses.status_description,
 						 	mo_body_request.mo_reference_number,
 							header_request.reference_number,
+							cms_users.bill_to,
+							departments.department_name,
 							mo_body_request.digits_code,
 							mo_body_request.asset_code,
 							mo_body_request.item_description,
@@ -2131,7 +2134,10 @@
 						 ";
 
 			$sql_query .= "FROM `mo_body_request` 
-				INNER JOIN `header_request` ON `mo_body_request`.header_request_id = `header_request`.id";
+				INNER JOIN `header_request` ON `mo_body_request`.header_request_id = `header_request`.id
+				LEFT JOIN `cms_users` ON `header_request`.created_by = `cms_users`.id
+				LEFT JOIN `departments` ON `header_request`.department = `departments`.id
+				LEFT JOIN `statuses` ON `mo_body_request`.status_id = `statuses`.id";
 
 
             $sql_query .= "	WHERE `mo_body_request`.deleted_at is null";
@@ -2199,8 +2205,11 @@
 			//while ($header = mysqli_fetch_field($resultset)) {
 			//    echo $header->name."\t";
 			//}
+			echo "Status"."\t"; 				// 0-product id
 			echo "MO#"."\t"; 				// 0-product id
 			echo "ARF#"."\t"; 				// 1-product name
+			echo "Employee Name"."\t"; 				// 0-product id
+			echo "Department"."\t"; 
 			echo "DIGITS CODE"."\t";              // 7-standard cost per pc
 			echo "ASSET CODE"."\t"; 				// 8-list price per pc
 			echo "ITEM DESCRIPTION"."\t";               // 9-generic name
@@ -2227,6 +2236,9 @@
 				$schema_insert .= "$row[8]".$delimiter; 
 				$schema_insert .= "$row[9]".$delimiter; 
 				$schema_insert .= "$row[10]".$delimiter; 
+				$schema_insert .= "$row[11]".$delimiter; 
+				$schema_insert .= "$row[12]".$delimiter; 
+				$schema_insert .= "$row[13]".$delimiter; 
 
 		        $schema_insert = str_replace($delimiter."$", "", $schema_insert);
 		        $schema_insert = preg_replace("/\r\n|\n\r|\n|\r/", " ", $schema_insert);
