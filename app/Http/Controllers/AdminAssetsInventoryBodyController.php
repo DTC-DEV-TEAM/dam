@@ -321,6 +321,8 @@
 			$forTransfer      = DB::table('statuses')->where('id', 27)->value('status_description');
 			$notAvailabe      = DB::table('statuses')->where('id', 28)->value('status_description');
 			$forInvestigation = DB::table('statuses')->where('id', 44)->value('status_description');
+			$forDisposal      = DB::table('statuses')->where('id', 45)->value('status_description');
+			$disposed         = DB::table('statuses')->where('id', 46)->value('status_description');
 			if($column_index == 4){
 				if($column_value == $for_approval){
 					$column_value = '<span class="label label-success">'.$for_approval.'</span>';
@@ -340,6 +342,10 @@
 					$column_value = '<span class="label label-warning change-color">'.$notAvailabe.'</span>';
 				}else if($column_value == $forInvestigation){
 					$column_value = '<span class="label label-warning change-color">'.$forInvestigation.'</span>';
+				}else if($column_value == $forDisposal){
+					$column_value = '<span class="label label-warning change-color">'.$forDisposal.'</span>';
+				}else if($column_value == $disposed){
+					$column_value = '<span class="label label-warning change-color">'.$disposed.'</span>';
 				}
 			}
 
@@ -352,6 +358,10 @@
 					$column_value = '<span class="label label-danger change-color">NOT AVAILABLE</span>';
 				}else if($column_value == "For Investigation"){
 					$column_value = '<span class="label label-danger change-color">FOR INVESTIGATION</span>';
+				}else if($column_value == "For Disposal"){
+					$column_value = '<span class="label label-danger change-color">FOR DISPOSAL</span>';
+				}else if($column_value == "Disposed"){
+					$column_value = '<span class="label label-danger change-color">DISPOSED</span>';
 				}
 			}
 	    }
@@ -406,7 +416,13 @@
 			}else if($item_condition === "For Investigation"){
 				$status   = 44;
 				$quantity =  0;
-			 }else{
+			}else if($item_condition === "For Disposal"){
+				$status   = 45;
+				$quantity =  0;
+			}else if($item_condition === "Disposed"){
+				$status   = 46;
+				$quantity =  0;
+			}else{
 				$status   = 23;
 				$quantity =  0;
 			}

@@ -90,7 +90,7 @@
          </div>
         </div>
         @if(CRUDBooster::isSuperadmin())
-            @if(in_array($Body->statuses_id,[6,23,28,44]))
+            @if(in_array($Body->statuses_id,[6,23,28,44,45,46]))
             <div class="row">
                 <div class="col-md-12">
                     <div class="col-md-6">
@@ -102,6 +102,8 @@
                             <option <?php if ($Body->item_condition == 'Defective') echo 'selected'; ?>>Defective</option>
                             <option <?php if ($Body->item_condition == 'Not Available') echo 'selected'; ?>>Not Available</option>
                             <option <?php if ($Body->item_condition == 'For Investigation') echo 'selected'; ?>>For Investigation</option>
+                            <option <?php if ($Body->item_condition == 'For Disposal') echo 'selected'; ?>>For Disposal</option>
+                            <option <?php if ($Body->item_condition == 'Disposed') echo 'selected'; ?>>Disposed</option>
                                 <!-- <option value="{{ $key }}" {{$suggestions_datas[0]->categories_id == $key ? "selected" : "" }}>{{ $value->item_condition }}</option> -->
                             
                             </select>

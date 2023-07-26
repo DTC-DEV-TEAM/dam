@@ -168,6 +168,10 @@
                     background-color: #3c8dbc;
                     /* border: px solid #367fa9; */
                 }
+                /* .select2-container--default .select2-selection--multiple .select2-selection__choice{color:black;}
+                .select2-results .select2-disabled {
+                    display:none;
+                } */
         </style>
     @endpush
 @section('content')
@@ -296,7 +300,7 @@
                                                 <th width="5%" class="text-center">UPC Code</th>     
                                                 <th width="6%" class="text-center" >Brand</th>
                                                 <th width="7%" class="text-center" >Specs <span style="font-style: italic; font-size:12px; color:red"><br>(Ex: ADM Ryzen 5 3rd Gen/8 GB DDR4 RAM 512 GB SSD)</span></th>    
-                                                <th width="5%" class="text-center">For Re Order Items(Optional)</th>
+                                                <th width="10%" class="text-center">For Re Order ARF Number Items<span style="font-style: italic; font-size:12px; color:red"> <br>(Please check if item is assign to ARF)</span></th>
                                                 <th width="3%" class="text-center">Action</th>
                                             </tr>
                                     
@@ -1140,7 +1144,7 @@
                                                     '<select selected data-placeholder="RO items(Optional)" class="form-control arf_tag" name="arf_tag[]" data-id="' +  e.id + '" id="arf_tag' + e.id + '" required style="width:100%">' +
                                                     '  <option value=""></option>' +
                                                     '         @foreach($reserved_assets as $reserve)'+
-                                                                '<option value="{{$reserve->served_id}}" data-code="{{$reserve->digits_code}}">{{$reserve->reference_number}} | {{$reserve->digits_code}}</option> '+
+                                                                '<option value="{{$reserve->served_id}}" data-code="{{$reserve->digits_code}}">{{$reserve->reference_number}} | {{$reserve->digits_code}} | {{$reserve->served_id}}</option> '+
                                                     '         @endforeach'+
                                                     '</select>'+
                                                 '</td>' +
@@ -1166,34 +1170,36 @@
                                     //     );
                                     //     return $state;
                                     // };
-                                    $('.arf_tag').select2({
-                                        allowClear:true,
-                                    });
+                                    $('.arf_tag').select2({allowClear: true});
+                                    // var searchfield = $(this).find('.select2-search--inline');
+                                    // var selection = $(this).find('.select2-selection__rendered');
+                                    // $(this).find('.select2-search__field').html("");
+                                    // selection.prepend(searchfield);
 
-                                    var $selects = $('.arf_tag');
-                                    $selects.select2();
-                                    $('.arf_tag').change(function () {
-                                        $('option:hidden', $selects).each(function () {
-                                            var self = this,
-                                                toShow = true;
-                                            $selects.not($(this).parent()).each(function () {
-                                                if (self.value == this.value) toShow = false;
-                                            })
-                                            if (toShow) {
-                                                $(this).removeAttr('disabled');
-                                                $(this).parent().select2();
-                                            }
-                                        });
-                                        if (this.value != "") {
-                                            //$selects.not(this).children('option[value=' + this.value + ']').attr('disabled', 'disabled');
-                                            $selects.not(this).children('option[value=' + this.value + ']').remove();
-                                            $selects.select2({
-                                                allowClear:true,
+                                    $(document).ready(function () {
+                                        var $selects = $('select');
+                                        $selects.select2();
+                                        $('.arf_tag').change(function () {
+                                            $('option:hidden', $selects).each(function () {
+                                                var self = this,
+                                                    toShow = true;
+                                                $selects.not($(this).parent()).each(function () {
+                                                    if (self.value == this.value) toShow = false;
+                                                })
+                                                if (toShow) {
+                                                    $(this).removeAttr('disabled');
+                                                    $(this).parent().select2();
+                                                }
                                             });
-                                        }
-                                    });
-                    
-                                                                   
+                                            if (this.value != "") {
+                                                //$selects.not(this).children('option[value=' + this.value + ']').attr('disabled', 'disabled');
+                                                $selects.not(this).children('option[value=' + this.value + ']').remove();
+                                                $selects.select2();
+                                            }
+                                
+                                        });
+                                    })
+                                                           
                                     $(document).on('click', '#delete_item' + e.id, function () {
                                         var parentTR = $(this).parents('tr');  
                                         $(parentTR).remove();
@@ -1240,25 +1246,27 @@
                                      $("#quantity_total").val(calculateTotalQuantity());
                                     $(document).ready(function() {
                                       
-                                      
-                                        // $('#item_type' + e.id).change(function() {
-                                        // var parentTR = $(this).parents('tr');   
-                                        // var item_type = $('#item_type' + e.id).val().toLowerCase().replace(/\s/g, '');
-                                        //     if(item_type == "serial"){
-                                        //         $(parentTR).find(".serial_no").prop('readonly', false);
-                                        //         $(parentTR).find(".serial_no").attr("required", true);
-                                        //     }
-                                        //     if(item_type != "serial"){
-                                        //         $(parentTR).find(".serial_no").prop('readonly', true);
-                                        //         $(parentTR).find(".serial_no").attr("required", false);
-                                        //         $(parentTR).find(".serial_no").val("");
-                                        //     }
-                                        // });
-                                        // add serial per line
-                                        // if(e.category_description == "SUPPLIES"){
-                                        //     $("#add_quantity"+ e.id).prop('readonly', false);
-                                        //     $("#add_quantity"+ e.id).val("");   
-                                        // }
+                                        var $selects = $('select');
+                                        $selects.select2();
+                                        $('.arf_tag').change(function () {
+                                            $('option:hidden', $selects).each(function () {
+                                                var self = this,
+                                                    toShow = true;
+                                                $selects.not($(this).parent()).each(function () {
+                                                    if (self.value == this.value) toShow = false;
+                                                })
+                                                if (toShow) {
+                                                    $(this).removeAttr('disabled');
+                                                    $(this).parent().select2();
+                                                }
+                                            });
+                                            if (this.value != "") {
+                                                //$selects.not(this).children('option[value=' + this.value + ']').attr('disabled', 'disabled');
+                                                $selects.not(this).children('option[value=' + this.value + ']').remove();
+                                                $selects.select2();
+                                            }
+                                
+                                        });
 
                                         // adding serial fields per quantity
                                         $("#add_quantity"+ e.id).on("input", function(){
@@ -1398,9 +1406,33 @@
                 
                 });
             });
-          
-           
+
         });
+
+        $(document).ready(function () {
+            var $selects = $('select');
+            $selects.select2();
+            $('.arf_tag').change(function () {
+                $('option:hidden', $selects).each(function () {
+                    var self = this,
+                        toShow = true;
+                    $selects.not($(this).parent()).each(function () {
+                        if (self.value == this.value) toShow = false;
+                    })
+                    if (toShow) {
+                        $(this).removeAttr('disabled');
+                        $(this).parent().select2();
+                    }
+                });
+                if (this.value != "") {
+                    //$selects.not(this).children('option[value=' + this.value + ']').attr('disabled', 'disabled');
+                    $selects.not(this).children('option[value=' + this.value + ']').remove();
+                    $selects.select2();
+                }
+    
+            });
+        })
+       
 
         $(document).on('keyup', '.add_quantity', function(ev) {
             $("#quantity_total").val(calculateTotalQuantity());
