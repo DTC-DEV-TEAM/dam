@@ -385,13 +385,8 @@
                 </div>
                 @if($Header->application_others != "")
                 <div class="col-md-6">
-                    <div class="row">
                         <label class="require control-label">*{{ trans('message.form-label.application_others') }}</label>
-                        <div class="col-md-6">
                         <p>{{$Header->application_others}}</p>   
-                        </div>
-                    </div>
-                    <hr/>
                 </div>
                 @endif
             </div>
