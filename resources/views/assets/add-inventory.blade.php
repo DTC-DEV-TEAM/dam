@@ -966,6 +966,7 @@
                                     event.preventDefault();
                                     return false;
                             }else{
+                                $('.arf_tag').attr('disabled',false);
                                 swal({
                                     title: "Are you sure?",
                                     type: "warning",
@@ -1183,6 +1184,7 @@
                                                      
                                     $('#arf_tag'+tableRow).change(function () {
                                         arf_array.push(parseInt(this.value));
+                                        $(this).attr('disabled','disabled');
                                         var $selects = $('select');
                                         console.log(arf_array);
                                         $selects.select2({allowClear: true});
@@ -1234,6 +1236,13 @@
                                                                      
                                     $(document).on('click', '#delete_item' + e.id, function () {
                                         var parentTR = $(this).parents('tr');  
+
+                                        var removeItem =  $(this).parents('tr').find('select').val();
+
+                                        arf_array = jQuery.grep(arf_array, function(value) {
+                                          return value != removeItem;
+                                        });
+                        
                                         $(parentTR).remove();
                                         $(".nr"+e.id).remove();
                                         $(".serial_qty"+e.id).val('');
