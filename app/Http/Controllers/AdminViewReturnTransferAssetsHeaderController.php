@@ -4,6 +4,11 @@
 	use Request;
 	use DB;
 	use CRUDBooster;
+	use App\Models\Requests;
+	use App\Models\ReturnTransferAssets;
+	use App\Models\ReturnTransferAssetsHeader;
+	use App\MoveOrder;
+	use App\Users;
 
 	class AdminViewReturnTransferAssetsHeaderController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -333,9 +338,50 @@
 
 	    }
 
+		public function getDetail($id){
+			$this->cbLoader();
+            if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
+                CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+            }
 
+			$data = array();
 
-	    //By the way, you can still create your own method in here... :) 
+			$data['page_title'] = 'View Return Request';
+			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
+			$data['Header'] = ReturnTransferAssetsHeader::leftjoin('cms_users as employees', 'return_transfer_assets_header.requestor_name', '=', 'employees.id')
+			->leftjoin('requests', 'return_transfer_assets_header.request_type_id', '=', 'requests.id')
+			->leftjoin('departments', 'employees.department_id', '=', 'departments.id')
+			->leftjoin('cms_users as approved', 'return_transfer_assets_header.approved_by','=', 'approved.id')
+			->leftjoin('cms_users as received', 'return_transfer_assets_header.transacted_by','=', 'received.id')
+			->leftjoin('cms_users as closed', 'return_transfer_assets_header.close_by','=', 'closed.id')
+			->leftjoin('locations', 'return_transfer_assets_header.store_branch', '=', 'locations.id')
+			->select(
+					'return_transfer_assets_header.*',
+					'return_transfer_assets_header.id as requestid',
+					'requests.request_name as request_name',
+					'employees.name as employee_name',
+					'employees.company_name_id as company',
+					'employees.position_id as position',
+					'departments.department_name as department_name',
+					'approved.name as approvedby',
+					'received.name as receivedby',
+					'closed.name as closedby',
+					'locations.store_name as store_branch'
+					)
+			->where('return_transfer_assets_header.id', $id)->first();
+	   
+			$data['return_body'] = ReturnTransferAssets::
+					leftjoin('statuses', 'return_transfer_assets.status', '=', 'statuses.id')
+				
+				->select(
+					'return_transfer_assets.*',
+					'statuses.*',
+					)
+					->where('return_transfer_assets.return_header_id', $id)->get();	
+			$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
+
+			return $this->view("assets.view-return-details", $data);
+		}
 
 
 	}

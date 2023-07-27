@@ -300,7 +300,7 @@
                                                 <th width="5%" class="text-center">UPC Code</th>     
                                                 <th width="6%" class="text-center" >Brand</th>
                                                 <th width="7%" class="text-center" >Specs <span style="font-style: italic; font-size:12px; color:red"><br>(Ex: ADM Ryzen 5 3rd Gen/8 GB DDR4 RAM 512 GB SSD)</span></th>    
-                                                <th width="10%" class="text-center">For Re Order ARF Number Items<span style="font-style: italic; font-size:12px; color:red"> <br>(Please check if item is assign to ARF)</span></th>
+                                                <th width="10%" class="text-center">For Re Order Items(ARF Number)<span style="font-style: italic; font-size:12px; color:red"> <br>(Please check if item is assign to ARF)</span></th>
                                                 <th width="3%" class="text-center">Action</th>
                                             </tr>
                                     
@@ -360,10 +360,7 @@
         });
         //preview image before save
         $(function() {
-        $('.arf_tag').select2({
-            allowClear:true,
-            tags: true
-        });
+     
         // Multiple images preview in browser
         var imagesPreview = function(input, placeToInsertImagePreview) {
 
@@ -1037,9 +1034,9 @@
 
         var stack = [];
         var token = $("#token").val();
-
+        
         $(document).ready(function(){
-            selectRefresh();
+            //selectRefresh();
             $(function(){
                 $("#search").autocomplete({
 
@@ -1059,8 +1056,7 @@
                                 type: 'error',
                                 title: 'Item not Found!',
                                 icon: 'error',
-                                width: 450,
-                                height: 200
+                                confirmButtonColor: "#367fa9",
                                });
                             }else{                              
                             var rowCount = $('#asset-items tr').length;
@@ -1109,7 +1105,26 @@
                     
                 },
                 select: function (event, ui) {
-                        var e = ui.item;               
+                        var e = ui.item;  
+                        $.ajax({
+                            url: "{{ route('check-reserve-digits-code') }}",
+                            dataType: "json",
+                            type: "POST",
+                            data: {
+                                "_token": token,
+                                "search": e.digits_code
+                            },
+                            success: function (data) {
+                                if(data.items != 0){
+                                    swal({
+                                    type: 'info',
+                                    title: 'Digits code has ARF reserve. Please tag the ARF!',
+                                    icon: 'info',
+                                });
+                                }
+                               
+                            }
+                        })
                         if (e.id) {   
                            // if (!in_array(e.id, stack)) {
                                 if (!stack.includes(e.id)) {            
@@ -1144,7 +1159,7 @@
                                                     '<select selected data-placeholder="RO items(Optional)" class="form-control arf_tag" name="arf_tag[]" data-id="' +  e.id + '" id="arf_tag' + e.id + '" required style="width:100%">' +
                                                     '  <option value=""></option>' +
                                                     '         @foreach($reserved_assets as $reserve)'+
-                                                                '<option value="{{$reserve->served_id}}" data-code="{{$reserve->digits_code}}">{{$reserve->reference_number}} | {{$reserve->digits_code}} | {{$reserve->served_id}}</option> '+
+                                                                '<option value="{{$reserve->served_id}}" data-code="{{$reserve->digits_code}}">{{$reserve->reference_number}} | {{$reserve->digits_code}} | id: {{$reserve->served_id}}</option> '+
                                                     '         @endforeach'+
                                                     '</select>'+
                                                 '</td>' +
@@ -1157,49 +1172,35 @@
                                                 '</tr>';
                                         //alert($reserved_assets);
                                         //}
-                         
+                                    
                                     //$(new_row).insertAfter($('table tr.dynamicRows:last'));
-                                    $("table tbody").append(new_row);
-                                    // function formatState (state) {
-                                    //     if (!state.id) {
-                                    //         return state.text;
-                                    //     }
-                                      
-                                    //     var $state = $(
-                                    //         '<span style="background-color:#41B314">' + state.text + '</span>'
-                                    //     );
-                                    //     return $state;
-                                    // };
-                                    $('.arf_tag').select2({allowClear: true});
-                                    // var searchfield = $(this).find('.select2-search--inline');
-                                    // var selection = $(this).find('.select2-selection__rendered');
-                                    // $(this).find('.select2-search__field').html("");
-                                    // selection.prepend(searchfield);
+                                  
 
-                                    $(document).ready(function () {
-                                        var $selects = $('select');
-                                        $selects.select2();
-                                        $('.arf_tag').change(function () {
-                                            $('option:hidden', $selects).each(function () {
-                                                var self = this,
-                                                    toShow = true;
-                                                $selects.not($(this).parent()).each(function () {
-                                                    if (self.value == this.value) toShow = false;
-                                                })
-                                                if (toShow) {
-                                                    $(this).removeAttr('disabled');
-                                                    $(this).parent().select2();
-                                                }
-                                            });
-                                            if (this.value != "") {
-                                                //$selects.not(this).children('option[value=' + this.value + ']').attr('disabled', 'disabled');
-                                                $selects.not(this).children('option[value=' + this.value + ']').remove();
-                                                $selects.select2();
+                                    $("table tbody").append(new_row);
+
+                                    //$('.arf_tag').select2({allowClear: true});
+  
+                                    var $selects = $('.arf_tag');
+                                    $selects.select2({allowClear: true});
+                                    $('.arf_tag').change(function () {
+                                        $('option:hidden', $selects).each(function () {
+                                            var self = this,
+                                                toShow = true;
+                                            $selects.not($(this).parent()).each(function () {
+                                                if (self.value == this.value) toShow = false;
+                                            })
+                                            if (toShow) {
+                                                $(this).removeAttr('disabled');
+                                                $(this).parent().select2({allowClear: true});
                                             }
-                                
                                         });
-                                    })
-                                                           
+                                        if (this.value != "") {
+                                            //$selects.not(this).children('option[value=' + this.value + ']').attr('disabled', 'disabled');
+                                            $selects.not(this).children('option[value=' + this.value + ']').remove();
+                                            $selects.select2({allowClear: true});
+                                        }
+                                    });
+                                                         
                                     $(document).on('click', '#delete_item' + e.id, function () {
                                         var parentTR = $(this).parents('tr');  
                                         $(parentTR).remove();
@@ -1245,9 +1246,9 @@
                                      });
                                      $("#quantity_total").val(calculateTotalQuantity());
                                     $(document).ready(function() {
-                                      
-                                        var $selects = $('select');
-                                        $selects.select2();
+                                       
+                                        var $selects = $('.arf_tag');
+                                        $selects.select2({allowClear: true});
                                         $('.arf_tag').change(function () {
                                             $('option:hidden', $selects).each(function () {
                                                 var self = this,
@@ -1257,16 +1258,32 @@
                                                 })
                                                 if (toShow) {
                                                     $(this).removeAttr('disabled');
-                                                    $(this).parent().select2();
+                                                    $(this).parent().select2({allowClear: true});
                                                 }
                                             });
                                             if (this.value != "") {
                                                 //$selects.not(this).children('option[value=' + this.value + ']').attr('disabled', 'disabled');
                                                 $selects.not(this).children('option[value=' + this.value + ']').remove();
-                                                $selects.select2();
+                                                $selects.select2({allowClear: true});
                                             }
-                                
                                         });
+                                        $('option:hidden', $selects).each(function () {
+                                            var self = this,
+                                                toShow = true;
+                                            $selects.not($(this).parent()).each(function () {
+                                                if (self.value == this.value) toShow = false;
+                                            })
+                                            if (toShow) {
+                                                $(this).removeAttr('disabled');
+                                                $(this).parent().select2({allowClear: true});
+                                            }
+                                        });
+                                        if (this.value != "") {
+                                            //$selects.not(this).children('option[value=' + this.value + ']').attr('disabled', 'disabled');
+                                            $selects.not(this).children('option[value=' + this.value + ']').remove();
+                                            $selects.select2({allowClear: true});
+                                        }
+                                       
 
                                         // adding serial fields per quantity
                                         $("#add_quantity"+ e.id).on("input", function(){
@@ -1399,40 +1416,14 @@
                         }
                     
                 },
-          
-              
+                        
                 minLength: 1,
                 autoFocus: true
                 
                 });
             });
 
-        });
-
-        $(document).ready(function () {
-            var $selects = $('select');
-            $selects.select2();
-            $('.arf_tag').change(function () {
-                $('option:hidden', $selects).each(function () {
-                    var self = this,
-                        toShow = true;
-                    $selects.not($(this).parent()).each(function () {
-                        if (self.value == this.value) toShow = false;
-                    })
-                    if (toShow) {
-                        $(this).removeAttr('disabled');
-                        $(this).parent().select2();
-                    }
-                });
-                if (this.value != "") {
-                    //$selects.not(this).children('option[value=' + this.value + ']').attr('disabled', 'disabled');
-                    $selects.not(this).children('option[value=' + this.value + ']').remove();
-                    $selects.select2();
-                }
-    
-            });
-        })
-       
+        }); 
 
         $(document).on('keyup', '.add_quantity', function(ev) {
             $("#quantity_total").val(calculateTotalQuantity());

@@ -1192,5 +1192,19 @@
 			}
 		}
 
+		//Check reserved digits code
+		public function checkDigitsCode(Request $request) {
+			$fields = Request::all();
+			$search = $fields['search'];
+			$data = array();
+			$data['status_no'] = 0;
+			$data['message']   ='No Item Found!';
+			$data['items'] = array();
+			$data['items'] =  DB::table('assets_inventory_reserved')->where('digits_code',$search)->whereNotNull('for_po')->count();
+			
+			echo json_encode($data);
+			exit;  
+		}
+
 	}
 	?>
