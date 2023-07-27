@@ -1205,6 +1205,20 @@
 			echo json_encode($data);
 			exit;  
 		}
+        //selection digits code
+		public function selectionDigitsCode(Request $request){
+			$data = Request::all();	
+			$digits_code = $data['digits_code'];
+		
+			$selectdititscode = DB::table('assets_inventory_reserved')
+							->select('assets_inventory_reserved.*',
+							         'assets_inventory_reserved.id as served_id',)
+							->where('digits_code', $digits_code)
+							->whereNotNull('for_po')
+							->get();
+	
+			return($selectdititscode);
+		}
 
 	}
 	?>
