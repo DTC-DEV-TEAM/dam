@@ -803,4 +803,26 @@
 			CRUDBooster::redirect(CRUDBooster::adminpath('assets_inventory_body'), $errors[0], 'danger');
 		}
 
+		public function updateDigitsCodeTemplate() {
+
+			$filename = "update-digits-code-template"."-".date("Ymd").".csv";
+		
+				header("Content-Disposition: attachment; filename=\"$filename\"");
+				header("Content-Type: text/csv; charset=UTF-16LE");
+		
+				$out = fopen("php://output", 'w');
+				$flag = false;
+	
+				if(!$flag) {
+					// display field/column names as first row
+					fputcsv($out, array('asset_code', 'digits_code'));
+					$flag = true;
+				}
+				
+				fputcsv($out, array('A1000001', '40000769'));
+				fclose($out);
+				
+				exit;
+		}
+
 	}
