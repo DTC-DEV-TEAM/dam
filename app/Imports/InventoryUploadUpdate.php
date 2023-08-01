@@ -25,15 +25,13 @@ class InventoryUploadUpdate implements ToCollection, WithHeadingRow
     {
         foreach ($rows->toArray() as $row){
             $item_id = DB::table('assets')->where(['digits_code' => trim($row['digits_code'])])->first();
-            AssetsInventoryBody::where('digits_code', $row['digits_code'])
-                ->update([
-                    'item_id'           => $item_id->id
+            AssetsInventoryBody::where('asset_code', $row['asset_code'])
+                ->update([ 
+                    'item_id'               => $item_id->id,
+                    'digits_code'           => $row['digits_code'], 
+                    'item_description'      => $item_id->item_description,
+                    'value'                 => $item_id->item_cost
                 ]);
-            // AssetsInventoryBody::where('asset_code', $row['asset_code'])
-            //     ->update([
-            //         'digits_code'           => $row['digits_code'], 
-            //         'item_description'      => $row['item_description']
-            //     ]);
         }
     }
 }

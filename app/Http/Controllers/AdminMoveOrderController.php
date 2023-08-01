@@ -54,7 +54,7 @@
 
 			$this->col[] = ["label"=>"Request Type","name"=>"header_request_id","join"=>"header_request,request_type_id"];
 
-			$this->col[] = ["label"=>"Employee Name","name"=>"header_request_id","join"=>"header_request,employee_name"];
+			$this->col[] = ["label"=>"Employee Name","name"=>"request_created_by","join"=>"cms_users,bill_to"];
 			$this->col[] = ["label"=>"Department","name"=>"header_request_id","join"=>"header_request,department"];
 
 			$this->col[] = ["label"=>"MO By","name"=>"header_request_id","join"=>"header_request,mo_by"];

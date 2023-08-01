@@ -150,7 +150,11 @@
                         <select class="js-example-basic-single" data-placeholder="** Please a Asset Request"  style="width: 100%;" name="header_request_id" id="header_request_id">
                             <option value=""></option>
                             @foreach($AssetRequest as $value)
+                               @if($value->if_from_erf !== NULL)
+                                <option value="{{$value->id}}">{{$value->reference_number}} | {{$value->if_from_erf}}</option>
+                               @else
                                 <option value="{{$value->id}}">{{$value->reference_number}}</option>
+                               @endif
                             @endforeach
                         </select>
                     </div>

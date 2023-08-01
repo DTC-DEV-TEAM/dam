@@ -154,7 +154,7 @@ Route::group(['middleware' => ['web']], function() {
     //inventory update
     Route::get('/admin/assets_inventory_body/upload-inventory-update','AdminAssetsInventoryBodyController@uploadInventoryUpdate');
     Route::post('/admin/assets_inventory_body/inventory-upload-update','AdminAssetsInventoryBodyController@inventoryUploadUpdate')->name('upload-inventory-update');
-    Route::get('/admin/assets_inventory_body/restriction-page','AdminAssetsInventoryBodyController@restrictionPage');
+    Route::get('/admin/assets_inventory_body/update-digits-code-template','AdminAssetsInventoryBodyController@updateDigitsCodeTemplate');
 
     //Deployed Assets
     Route::get('/admin/deployed_asset/Detail/{id}','AdminDeployedAssetsController@Detail')->name('deployed-asset');
