@@ -1,6 +1,7 @@
 @extends('crudbooster::admin_template')
 @push('head')
         <style type="text/css">   
+      
             .comment_div {
                 box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
                 background: #f5f5f5;
@@ -115,14 +116,15 @@
             <table  class='table table-striped table-bordered'>
                 <thead>
                     <tr>
+                        <th width="10%" class="text-center">Item to Receive <br> <span>Check All <br> <input type="checkbox" id="check_all"> </span></th> 
                         <th width="5%" class="text-center">Good</th> 
                         <th width="5%" class="text-center">Defective</th>
                         <th width="10%" class="text-center">Reference No</th>
-                        <th width="10%" class="text-center">Asset Code</th>
-                        <th width="10%" class="text-center">Digits Code</th>
+                        <th width="7%" class="text-center">Asset Code</th>
+                        <th width="7%" class="text-center">Digits Code</th>
                         <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
                         <th width="10%" class="text-center">Asset Type</th>                                                         
-                        <th width="10%">Comments</th>
+                        <th width="12%" class="text-center">Comments</th>
                         @if(CRUDBooster::myPrivilegeId() == 6)
                         <th width="10%">Location</th>
                         @endif
@@ -135,6 +137,9 @@
                     <?php $tableRow1++; ?>
                     <?Php $item_count++; ?>
                         <tr>
+                            <td style="text-align:center" height="10">
+                                <input type="checkbox" name="item_to_receive_id[]" id="item_to_receive_id{{$tableRow1}}" class="item_to_receive_id" required data-id="{{$tableRow1}}" value="{{$rowresult->body_id}}"/>
+                            </td>
                             <td style="text-align:center" height="10">
                             <input type="hidden" value="{{$rowresult->id}}" name="item_id[]">
                             <input type="hidden" value="{{$rowresult->mo_id}}" name="mo_id[]">
@@ -153,8 +158,8 @@
                             <td style="text-align:center" height="10">{{$rowresult->digits_code}}</td>
                             <td style="text-align:center" height="10">{{$rowresult->description}}</td>
                             <td style="text-align:center" height="10">{{$rowresult->asset_type}}</td>
-                            <td>
-                                <select required selected data-placeholder="-- Select Comments --" id="comments{{$tableRow1}}" data-id="{{$tableRow1}}" name="comments[]" class="form-select select2 comments" style="width:100%;" multiple="multiple">
+                            <td style="text-align:center" height="10">
+                                <select required selected data-placeholder="Select Comments" id="comments{{$tableRow1}}" data-id="{{$tableRow1}}" name="comments[]" class="form-select select2 comments" style="width:100%;" multiple="multiple">
                                     @foreach($good_defect_lists as $good_defect_list)
                                         <option value=""></option>
                                         <option value="{{ $rowresult->asset_code. '|' .$rowresult->digits_code. '|' .$good_defect_list->defect_description }}">{{ $good_defect_list->defect_description }}</option>
@@ -200,15 +205,29 @@
 @endsection
 @push('bottom')
 <script type="text/javascript">
- $('.select2').select2({
-    placeholder_text_single : "-- Select --",
-    multiple: true});
-    $('.location').select2({
-    placeholder_text_single : "-- Select --"});
-    var searchfield = $(this).find('.select2-search--inline');
-    var selection = $(this).find('.select2-selection__rendered');
-    $(this).find('.select2-search__field').html("");
-    selection.prepend(searchfield);
+    $(function(){
+        $('body').addClass("sidebar-collapse");
+    });
+    $('.select2').select2({multiple: true});
+
+    $('#check_all').change(function() {
+        if(this.checked) {
+            $(".item_to_receive_id").prop("checked", true);
+            $('.good').attr("disabled", false);
+            $('.defective').attr("disabled", false);
+            $('.comments').attr("disabled", false);
+        }
+        else{
+            $('#btnSubmit').attr("disabled", true);
+            $(".item_to_receive_id").prop("checked", false);
+            $('.good').attr("disabled", true);
+            $('.good').prop("checked", false);
+            $('.defective').attr("disabled", true);
+            $('.defective').prop("checked", false);
+            $('.comments').attr("disabled", true);
+        }
+    });
+
     function preventBack() {
         window.history.forward();
     }
@@ -220,7 +239,40 @@
     setTimeout("preventBack()", 0);
 
     $('#btnSubmit').attr("disabled", true);
+    $('.good').attr("disabled", true);
+    $('.defective').attr("disabled", true);
+    $('.comments').attr("disabled", true);
     var count_pick = 0;
+    //ITEM TO SELECT
+    $('.item_to_receive_id').change(function() {
+        var asset_code = $(this).val();
+        var id = $(this).attr("data-id");
+        $("#defective_text"+id).val("0");
+        var ischecked= $(this).is(':checked');
+        if(ischecked == false){
+            count_pick--;
+            if(count_pick == 0){
+                //$('#btnSubmit').attr("disabled", true);
+            } 
+            $('#good'+id).attr("disabled", true);
+            $('#good'+id).not(this).prop('checked', false); 
+            $("#good_text"+id).val("0");
+
+            $('#defective'+id).attr("disabled", true);
+            $('#defective'+id).not(this).prop('checked', false); 
+            $("#defective_text"+id).val("0");
+
+            $('#comments'+id).attr("disabled", true);
+                    
+        }else{
+            count_pick++;
+            //$('#btnSubmit').attr("disabled", false);
+            $('#good'+id).removeAttr("disabled");
+            $('#defective'+id).removeAttr("disabled");
+            $('#comments'+id).removeAttr("disabled");
+        }
+
+    });
 
     var a = 0;
     var alreadyAdded = [];
@@ -235,7 +287,8 @@
             count_pick--;
             if(count_pick == 0){
                 $('#btnSubmit').attr("disabled", true);
-            }                
+            }   
+            $('#btnSubmit').attr("disabled", true);             
         }else{
             $("#good_text"+id).val("1");
             $('#defective'+id).not(this).prop('checked', false); 
@@ -288,8 +341,7 @@
                 if(count_pick == 0){
                     $('#btnSubmit').attr("disabled", true);
                 }
-
-                    
+                $('#btnSubmit').attr("disabled", true);         
             }else{
                 $("#defective_text"+id).val("1");
                 $('#good'+id).not(this).prop('checked', false); 

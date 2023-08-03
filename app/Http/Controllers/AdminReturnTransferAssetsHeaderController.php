@@ -248,7 +248,7 @@
 	        |
 	        */
 	        $this->load_css = array();
-	        
+	        $this->load_css[] = asset("css/font-family.css");
 	        
 	    }
 
@@ -437,9 +437,11 @@
 				
 				->select(
 					'return_transfer_assets.*',
+					'return_transfer_assets.status as body_status',
 					'statuses.*',
 					)
 					->where('return_transfer_assets.return_header_id', $id)->get();	
+					
 			$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
 
 			return $this->view("assets.view-return-details", $data);
@@ -888,7 +890,8 @@
 					'mo_body_request.*',
 					'statuses.*',
 					)
-					->where('return_transfer_assets.return_header_id', $id)->get();	;
+					->where('return_transfer_assets.return_header_id', $id)->get();	
+		
 			$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
 			
 			return $this->view("assets.print-request-trf", $data);

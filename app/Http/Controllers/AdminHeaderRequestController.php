@@ -1687,8 +1687,8 @@
 				//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
 	
 				$item = DB::table('assets')
-				->where('assets.digits_code','LIKE','%'.$search.'%')->whereIn('assets.category_id',[1,4,7,8])->where('assets.status','!=','INACTIVE')
-				->orWhere('assets.item_description','LIKE','%'.$search.'%')->whereIn('assets.category_id',[1,4,7,8])->where('assets.status','!=','INACTIVE')
+				->where('assets.digits_code','LIKE','%'.$search.'%')->whereIn('assets.category_id',[1,4,7,8])->whereNotIn('assets.status',['EOL-DIGITS','INACTIVE'])
+				->orWhere('assets.item_description','LIKE','%'.$search.'%')->whereIn('assets.category_id',[1,4,7,8])->whereNotIn('assets.status',['EOL-DIGITS','INACTIVE'])
 				->join('category', 'assets.category_id','=', 'category.id')
 				
 				//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
@@ -1856,8 +1856,8 @@
 					//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
 		
 					$items = DB::table('assets')
-					->where('assets.digits_code','LIKE','%'.$search.'%')->whereIn('assets.category_id',[2,9])->where('assets.status','!=','INACTIVE')
-					->orWhere('assets.item_description','LIKE','%'.$search.'%')->whereIn('assets.category_id',[2,9])->where('assets.status','!=','INACTIVE')
+					->where('assets.digits_code','LIKE','%'.$search.'%')->whereIn('assets.category_id',[2,9])->whereNotIn('assets.status',['EOL-DIGITS','INACTIVE'])
+					->orWhere('assets.item_description','LIKE','%'.$search.'%')->whereIn('assets.category_id',[2,9])->whereNotIn('assets.status',['EOL-DIGITS','INACTIVE'])
 					
 						->join('category', 'assets.category_id','=', 'category.id')
 						->join('class', 'assets.class_id','=', 'class.id')
