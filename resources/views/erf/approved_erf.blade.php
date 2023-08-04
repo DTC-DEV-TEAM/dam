@@ -237,7 +237,7 @@
                         @foreach($required_exams as $res)
                             <div class="col-md-6">
                                 <label class="checkbox-inline control-label col-md-12" ><br>
-                                    <input type="checkbox" class="required_exams" name="required_exams[]" value="{{$res->description}}" {{ in_array($res->description, $res_req) ? 'checked' : '' }} aria-describedby="basic-addon1">{{$res->description}} 
+                                    <input type="checkbox" class="required_exams" name="required_exams[]" id="{{$res->description}}" value="{{$res->description}}" {{ in_array($res->description, $res_req) ? 'checked' : '' }} aria-describedby="basic-addon1">{{$res->description}} 
                                 </label>
                             </div>                                                                                    
                         @endforeach
@@ -521,10 +521,14 @@ $(function(){
 
      //other Required Exam
       //checkbox validations
-      $(".required_exams").change(function() {
-        var rep = $(this);
-        if(rep.val() === "OTHERS" && rep.is(':checked')){
+      $("#OTHERS").change(function() {
+        var ischecked= $(this).is(':checked');
+        if(ischecked == false){
+            $("#other_required_exams_div").hide();
+            $("#other_required_exams").removeAttr('required');
+        }else{
             $("#other_required_exams_div").show();
+            $("#other_required_exams").attr('required', 'required');
         }
     });
 
