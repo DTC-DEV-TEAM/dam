@@ -216,6 +216,18 @@
             $('.good').attr("disabled", false);
             $('.defective').attr("disabled", false);
             $('.comments').attr("disabled", false);
+            
+            if ($('.item_to_receive_id:checked').length == $('.item_to_receive_id').length) {
+                if ($('.good:checked').length == $('.good').length) {
+                    $('#btnSubmit').attr("disabled", false);
+                }else if($('.item_to_receive_id:checked').length == $('.good:checked').length + $('.defective:checked').length){
+                    $('#btnSubmit').attr("disabled", false);
+                }if ($('.good:checked').length == 0 || $('.defective:checked').length == 0) {
+                    $('#btnSubmit').attr("disabled", true);
+                }else{
+                    $('#btnSubmit').attr("disabled", true);  
+                }
+            }
         }
         else{
             $('#btnSubmit').attr("disabled", true);
@@ -276,6 +288,12 @@
                 $('#btnSubmit').attr("disabled", false);
             }
 
+            if ($('.good:checked').length == 0 || $('.defective:checked').length == 0) {
+                $('#btnSubmit').attr("disabled", true); 
+            }else{
+                $('#btnSubmit').attr("disabled", false);
+            }
+
             $('#good'+id).attr("disabled", true);
             $('#good'+id).not(this).prop('checked', false); 
 
@@ -301,6 +319,7 @@
                     $('#btnSubmit').attr("disabled", true);  
                 }
             }
+            
          
             $('#good'+id).removeAttr("disabled");
             $('#defective'+id).removeAttr("disabled");
