@@ -143,14 +143,14 @@
                             <td style="text-align:center" height="10">
                             <input type="hidden" value="{{$rowresult->id}}" name="item_id[]">
                             <input type="hidden" value="{{$rowresult->mo_id}}" name="mo_id[]">
-                            <input type="hidden" name="good_text[]" id="good_text{{$tableRow1}}" value="0" />
+                            <input type="hidden" name="good_text[]" id="good_text{{$tableRow1}}" />
                             <input type="checkbox" name="good[]" id="good{{$tableRow1}}" class="good" required data-id="{{$tableRow1}}" value="{{$rowresult->asset_code}}"/>
                             <input type="hidden" name="arf_number[]" id="arf_number[]" value="{{$rowresult->reference_no}}" />
                             <input type="hidden" name="digits_code[]" id="digits_code{{$tableRow1}}" value="{{$rowresult->digits_code}}" />
                             <input type="hidden" name="asset_code[]" id="asset_code{{$tableRow1}}" value="{{$rowresult->asset_code}}" />
                             </td>
                             <td style="text-align:center" height="10">
-                            <input type="hidden" name="defective_text[]" id="defective_text{{$tableRow1}}" value="0" />
+                            <input type="hidden" name="defective_text[]" id="defective_text{{$tableRow1}}" />
                             <input type="checkbox" name="defective[]" id="defective{{$tableRow1}}" class="defective" required data-id="{{$tableRow1}}"  value="{{$rowresult->asset_code}}"/>
                             </td>
                             <td style="text-align:center" height="10">{{$rowresult->reference_no}}</td>
@@ -251,22 +251,57 @@
         var ischecked= $(this).is(':checked');
         if(ischecked == false){
             count_pick--;
-            if(count_pick == 0){
-                //$('#btnSubmit').attr("disabled", true);
-            } 
+           
+            if ($('.item_to_receive_id:checked').length == $('.item_to_receive_id').length) {
+                if ($('.good:checked').length == $('.good').length) {
+                    $('#btnSubmit').attr("disabled", false);
+                }else if($('.item_to_receive_id:checked').length == $('.good:checked').length + $('.defective:checked').length){
+                    $('#btnSubmit').attr("disabled", false);
+                }else{
+                    $('#btnSubmit').attr("disabled", true);  
+                }
+            }
+
+            if ($('#good'+id).is(':checked')) {
+                $('#btnSubmit').attr("disabled", false);
+            }else if ($('#defective'+id).is(':checked')) {
+                $('#btnSubmit').attr("disabled", false);
+            }else{
+                $('#btnSubmit').attr("disabled", true);  
+            }
+
+            if ($('.item_to_receive_id:checked').length == 0) {
+                $('#btnSubmit').attr("disabled", true); 
+            }else{
+                $('#btnSubmit').attr("disabled", false);
+            }
+
             $('#good'+id).attr("disabled", true);
             $('#good'+id).not(this).prop('checked', false); 
-            $("#good_text"+id).val("0");
 
             $('#defective'+id).attr("disabled", true);
             $('#defective'+id).not(this).prop('checked', false); 
-            $("#defective_text"+id).val("0");
-
+           
             $('#comments'+id).attr("disabled", true);
                     
         }else{
             count_pick++;
-            //$('#btnSubmit').attr("disabled", false);
+            if ($('.item_to_receive_id:checked').length == $('.item_to_receive_id').length) {
+                if ($('.good:checked').length == $('.good').length) {
+                    $('#btnSubmit').attr("disabled", false);
+                }else if($('.item_to_receive_id:checked').length == $('.good:checked').length + $('.defective:checked').length){
+                    $('#btnSubmit').attr("disabled", false);
+                }else{
+                    $('#btnSubmit').attr("disabled", true);  
+                }
+            }else{
+                if ($('#good'+id).is(':checked').length) {
+                    $('#btnSubmit').attr("disabled", false);
+                }else{
+                    $('#btnSubmit').attr("disabled", true);  
+                }
+            }
+         
             $('#good'+id).removeAttr("disabled");
             $('#defective'+id).removeAttr("disabled");
             $('#comments'+id).removeAttr("disabled");
@@ -285,10 +320,22 @@
             $(".comment_div").html("");
             $("#good_text"+id).val("0");
             count_pick--;
-            if(count_pick == 0){
-                $('#btnSubmit').attr("disabled", true);
-            }   
-            $('#btnSubmit').attr("disabled", true);             
+
+            if ($('.item_to_receive_id:checked').length == $('.item_to_receive_id').length) {
+                if ($('.good:checked').length == $('.good').length) {
+                    $('#btnSubmit').attr("disabled", false);
+                }else if($('.item_to_receive_id:checked').length == $('.good:checked').length + $('.defective:checked').length){
+                    $('#btnSubmit').attr("disabled", false);
+                }else{
+                    $('#btnSubmit').attr("disabled", true);  
+                }
+            }else{
+                if(count_pick == 0){
+                    $('#btnSubmit').attr("disabled", true);
+                }   
+                $('#btnSubmit').attr("disabled", true);  
+            }
+             
         }else{
             $("#good_text"+id).val("1");
             $('#defective'+id).not(this).prop('checked', false); 
@@ -320,7 +367,26 @@
             $("#good_text"+id).val("1");
             //$("#defective"+id).val("1");
             count_pick++;
-            $('#btnSubmit').attr("disabled", false);
+            if ($('.item_to_receive_id:checked').length == $('.item_to_receive_id').length) {
+                if ($('.good:checked').length == $('.good').length) {
+                    $('#btnSubmit').attr("disabled", false);
+                }else if($('.item_to_receive_id:checked').length == $('.good:checked').length + $('.defective:checked').length){
+                    $('#btnSubmit').attr("disabled", false);
+                }else{
+                    $('#btnSubmit').attr("disabled", true);  
+                }
+            }else{
+                if ($('.good:checked').length == $('.good').length) {
+                    $('#btnSubmit').attr("disabled", false);
+                }else if($('.item_to_receive_id:checked').length == $('.good:checked').length + $('.defective:checked').length){
+                    $('#btnSubmit').attr("disabled", false);
+                }else{
+                    $('#btnSubmit').attr("disabled", true);  
+                } 
+            }
+            //$('#btnSubmit').attr("disabled", false);
+            
+            
         }
 
     });
@@ -338,10 +404,21 @@
                 $("#defective_text"+id).val("0");
                 count_pick--;
 
-                if(count_pick == 0){
-                    $('#btnSubmit').attr("disabled", true);
-                }
-                $('#btnSubmit').attr("disabled", true);         
+                if ($('.item_to_receive_id:checked').length == $('.item_to_receive_id').length) {
+                    if ($('.defective:checked').length == $('.defective').length) {
+                        $('#btnSubmit').attr("disabled", false);
+                    }else if($('.item_to_receive_id:checked').length == $('.defective:checked').length + $('.good:checked').length){
+                        $('#btnSubmit').attr("disabled", false);
+                    }else{
+                        $('#btnSubmit').attr("disabled", true);  
+                    }
+                }else{
+                    if(count_pick == 0){
+                        $('#btnSubmit').attr("disabled", true);
+                    }   
+                    $('#btnSubmit').attr("disabled", true);  
+                }    
+        
             }else{
                 $("#defective_text"+id).val("1");
                 $('#good'+id).not(this).prop('checked', false); 
@@ -376,7 +453,25 @@
 
                 count_pick++;
 
-                $('#btnSubmit').attr("disabled", false);
+                if ($('.item_to_receive_id:checked').length == $('.item_to_receive_id').length) {
+                    if ($('.defective:checked').length == $('.defective').length) {
+                        $('#btnSubmit').attr("disabled", false);
+                    }else if($('.item_to_receive_id:checked').length == $('.defective:checked').length + $('.good:checked').length){
+                        $('#btnSubmit').attr("disabled", false);
+                    }else{
+                        $('#btnSubmit').attr("disabled", true);  
+                    }
+                }else{ 
+                    if ($('.good:checked').length == $('.good').length) {
+                        $('#btnSubmit').attr("disabled", false);
+                    }else if($('.item_to_receive_id:checked').length == $('.defective:checked').length + $('.good:checked').length){
+                        $('#btnSubmit').attr("disabled", false);
+                    }else{
+                        $('#btnSubmit').attr("disabled", true);  
+                    } 
+                }    
+                
+                
             }
 
     });
@@ -411,19 +506,31 @@
 
     $('#btnSubmit').click(function(event) {
             event.preventDefault();
-            swal({
-                title: "Are you sure?",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#41B314",
-                cancelButtonColor: "#F9354C",
-                confirmButtonText: "Yes, receive it!",
-                width: 450,
-                height: 200
-                }, function () {
-                    $(this).attr('disabled','disabled');
-                    $('#myform').submit();                                                  
-            });
+            // if(!$(".item_to_receive_id").is(':checked')){
+            //     swal({
+            //         type: 'error',
+            //         title: 'Please select item to receive!',
+            //         icon: 'error',
+            //         confirmButtonColor: "#367fa9",
+            //     }); 
+            //     event.preventDefault(); // cancel default behavior
+            //     return false;
+            // }else{
+                swal({
+                    title: "Are you sure?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#41B314",
+                    cancelButtonColor: "#F9354C",
+                    confirmButtonText: "Yes, receive it!",
+                    width: 450,
+                    height: 200
+                    }, function () {
+                        $(this).attr('disabled','disabled');
+                        $('#myform').submit();                                                  
+                });
+           // }
+           
         });
 
 

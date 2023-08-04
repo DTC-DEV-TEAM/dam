@@ -374,9 +374,11 @@
 				array_push($asset_code, $selectItem->asset_code);
 			}
 			
-			$good_text 					= $fields['good_text'];
-			$defective_text 			= $fields['defective_text'];
- 
+			$filter_good_text 		    = array_filter($fields['good_text'], fn($value) => !is_null($value) && $value !== '');
+			$good_text                  = array_values($filter_good_text);
+			$filter_defective_text 		= array_filter($fields['defective_text'], fn($value) => !is_null($value) && $value !== '');
+			$defective_text             = array_values($filter_defective_text);
+       
 			//good and defect value
 			$comments = $fields['comments'];
 			$other_comment = $fields['other_comment'];
@@ -499,7 +501,7 @@
 			$container = [];
 			$containerSave = [];
 			foreach((array)$comments as $key => $val){
-				$container['arf_number'] = $arf_number ? $arf_number : NULL;
+				$container['arf_number'] = $arf_number[$key] ? $arf_number[$key] : NULL;
 				$container['digits_code'] = explode("|",$val)[1];
 				$container['asset_code'] = explode("|",$val)[0];
 				$container['comments'] = explode("|",$val)[2];
