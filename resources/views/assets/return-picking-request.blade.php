@@ -284,14 +284,6 @@
 
             if ($('.item_to_receive_id:checked').length == 0) {
                 $('#btnSubmit').attr("disabled", true); 
-            }else{
-                $('#btnSubmit').attr("disabled", false);
-            }
-
-            if ($('.good:checked').length == 0 || $('.defective:checked').length == 0) {
-                $('#btnSubmit').attr("disabled", true); 
-            }else{
-                $('#btnSubmit').attr("disabled", false);
             }
 
             $('#good'+id).attr("disabled", true);
@@ -319,7 +311,6 @@
                     $('#btnSubmit').attr("disabled", true);  
                 }
             }
-            
          
             $('#good'+id).removeAttr("disabled");
             $('#defective'+id).removeAttr("disabled");
