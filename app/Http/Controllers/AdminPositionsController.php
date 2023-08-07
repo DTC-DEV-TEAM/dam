@@ -8,6 +8,7 @@
 	use App\Models\PositionsModel;
 	use App\Imports\PositionsImport;
 	use App\Department;
+	use App\Models\CmsPrivileges;
 	use PhpOffice\PhpSpreadsheet\Spreadsheet;
 	use PhpOffice\PhpSpreadsheet\Reader\Exception;
 	use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -48,6 +49,7 @@
 			$this->col[] = ["label"=>"Departments","name"=>"department_id"];
 			
 			$this->col[] = ["label"=>"Position Description","name"=>"position_description"];
+			$this->col[] = ["label"=>"Privilege","name"=>"privilege_id"];
 			$this->col[] = ["label"=>"Status","name"=>"status"];
 			$this->col[] = ["label" => "Created By", "name" => "created_by", "join" => "cms_users,name"];
 			$this->col[] = ["label" => "Created At", "name" => "created_at"];
@@ -61,7 +63,8 @@
 			$this->form[] = ['label'=>'Department','name'=>'department_id','type'=>'select2-new','width'=>'col-sm-5','datatable'=>'departments,department_name','datatable_where'=>"status = 'ACTIVE'"];
 
 			$this->form[] = ['label'=>'Position Description','name'=>'position_description','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
-			
+
+			$this->form[] = ['label'=>'Privilege','name'=>'privilege_id','type'=>'select2','width'=>'col-sm-5','datatable'=>'cms_privileges,name'];
 			
 			if(CRUDBooster::getCurrentMethod() == 'getEdit' || CRUDBooster::getCurrentMethod() == 'postEditSave' || CRUDBooster::getCurrentMethod() == 'getDetail') {
 				$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE'];
@@ -318,6 +321,14 @@
 				}
 				$column_value = $col_values;
 			}
+			if($column_index == 4){
+				$privilegeLists = $this->privilegeListing($column_value);
+				
+				foreach ($privilegeLists as $value) {
+					$col_values .= '<span stye="display: block;" class="label label-info">'.$value.'</span><br>';
+				}
+				$column_value = $col_values;
+			}
 	    }
 
 	    /*
@@ -430,6 +441,11 @@
 		public function departmentListing($ids) {
     		$departmentIds = explode(",", $ids);
     		return Department::whereIn('id', $departmentIds)->pluck('department_name');
+    	}
+
+		public function privilegeListing($ids) {
+    		$privilegeIds = explode(",", $ids);
+    		return CmsPrivileges::whereIn('id', $privilegeIds)->pluck('name');
     	}
 
 	}
