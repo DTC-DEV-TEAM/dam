@@ -129,7 +129,7 @@
 
 				//Locking onboarding date
 				$this->addaction[] = ['title'=>'Set Onboarding Date','url'=>CRUDBooster::mainpath('getErfSetOnboardingDate/[id]'),'icon'=>'fa fa-pencil', "showIf"=>"[status_id] == $for_onboarding && [locking_onboarding_date] == null || [locking_onboarding_date] == $id"];
-				$this->addaction[] = ['title'=>'Locking Onboarding Date','url'=>CRUDBooster::mainpath('getLockingErfSetOnboardingDate/[id]'),'icon'=>'fa fa-pencil', "showIf"=>"[status_id] == $for_onboarding && [locking_onboarding_date] != null && [locking_onboarding_date] != $id"];
+				$this->addaction[] = ['title'=>'Locking Onboarding Date','url'=>CRUDBooster::mainpath('getLockingErfSetOnboardingDateForm/[id]'),'icon'=>'fa fa-pencil', "showIf"=>"[status_id] == $for_onboarding && [locking_onboarding_date] != null && [locking_onboarding_date] != $id"];
 				
 				//Closed Request
 				$this->addaction[] = ['title'=>'Close Request','url'=>CRUDBooster::mainpath('getErfCloseRequest/[id]'),'icon'=>'fa fa-pencil', "showIf"=>"[status_id] == $onboarded && [locking_close] == null || [locking_close] == $id"];
