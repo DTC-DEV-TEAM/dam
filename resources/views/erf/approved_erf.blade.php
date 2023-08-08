@@ -318,18 +318,18 @@
                         @endif    
                                                                                                
                     </div>
-                    @if($Header->required_system != "" || $Header->required_system != NULL)
-                        <div class="col-md-6">
-                            <label class="require control-label"> Required System</label><br>
-                            @foreach($required_system as $res)   
-                                <div class="col-md-6">
-                                    <label class="checkbox-inline control-label col-md-12" ><br>
-                                        <input type="checkbox" name="required_system[]" value="{{$res->description}}" {{ in_array($res->description, $required_system_array) ? 'checked' : '' }} aria-describedby="basic-addon1">{{$res->description}} 
-                                    </label>
-                                </div>                                                                                                                                                                 
-                            @endforeach
-                        </div>
-                    @endif
+            
+                    <div class="col-md-6">
+                        <label class="require control-label"> Required System</label><br>
+                        @foreach($required_system as $res)   
+                            <div class="col-md-6">
+                                <label class="checkbox-inline control-label col-md-12" ><br>
+                                    <input type="checkbox" name="required_system[]" value="{{$res->description}}" {{ in_array($res->description, $required_system_array) ? 'checked' : '' }} aria-describedby="basic-addon1">{{$res->description}} 
+                                </label>
+                            </div>                                                                                                                                                                 
+                        @endforeach
+                    </div>
+                 
                 </div>
                
             </div>

@@ -541,7 +541,7 @@
 
      //other Required Exam
       //checkbox validations
-      $("#OTHERS").change(function() {
+      $("#Others").change(function() {
         var ischecked= $(this).is(':checked');
         if(ischecked == false){
             $("#other_required_exams_div").hide();
