@@ -1273,9 +1273,7 @@
 			return($subcategories);
 		}
 
-		public function RemoveItem(Request $request)
-		{
-	       
+		public function RemoveItem(Request $request){
 			$data = 				Request::all();	
 			$headerID = 			$data['headerID'];
 			$bodyID = 				$data['bodyID'];
@@ -1310,406 +1308,556 @@
 		}
 
 
-				//Get Assets Hitory tru modal
-				public function getHistory(Request $request) {
+		//Get Assets Hitory tru modal
+		public function getHistory(Request $request) {
 
-					$data = array();
-					$data['status_no'] = 0;
-					$data['message']   ='No Item Found!';
-					$data['items'] = array();
-		
-					$items = DB::table('assets_movement_histories')
-						->where('assets_movement_histories.body_id', $request->id)
-						//->whereNull('assets_movement_histories.archived')
-						->join('assets_inventory_body', 'assets_movement_histories.body_id','=','assets_inventory_body.id')
-						->join('assets_inventory_header', 'assets_movement_histories.header_id','=','assets_inventory_header.id')
-						//->join('cms_users', 'assets_movement_histories.updated_by', '=', 'cms_users.id')
-						->select(	'assets_movement_histories.*',
-									'assets_inventory_body.*',
-									'assets_inventory_body.location as location_per_item',
-									'assets_inventory_header.*',
-									'assets_inventory_header.location as location_all_item',
-									'assets_movement_histories.deployed_to as history_deployed_to',
-									'assets_movement_histories.location as history_location'
-									//'cms_users.*'
-								)
-						->get();
-		
-					if($items){
-							$data['id'] = $request->id;
-							$data['status'] = 1;
-							$data['problem']  = 1;
-							$data['status_no'] = 1;
-							$data['message']   ='Item Found';
-							$i = 0;
-							foreach ($items as $key => $value) {
-		
-								$return_data[$i]['id']          = 		$value->id;
-								$return_data[$i]['assets_code'] = 		$value->asset_code;
-								$return_data[$i]['digits_code'] = 		$value->digits_code;
-								$return_data[$i]['serial_no']   = 		$value->serial_no;
-								$return_data[$i]['date_update'] = 		$value->date_update;
-								$return_data[$i]['updated_by'] = 		$value->history_updated_by;
-								$return_data[$i]['description'] = 		$value->description;
-								$return_data[$i]['deployed_to'] = 		$value->history_deployed_to ? $value->history_deployed_to : "";
-								$return_data[$i]['remarks']     = 	    $value->remarks;
-								$return_data[$i]['location']     = 	    $value->history_location ? $value->history_location : "";
-								$i++;
-			
-							}
-							$data['items'] = $return_data;
-						}	
-					echo json_encode($data);
-					exit;  
-				}
-		
-				//Check Data
-				public function getCheckData(Request $request) {
-				  $data = GeneratedAssetsHistories::all();
-				  echo json_encode(["count"=>count($data)]);
-				}
-		
-				//Display data by search
-				
-				public function getHistories(Request $request) {	
-					$fields = Request::all();
-					
-					ini_set('memory_limit', '-1');
-					ini_set('max_execution_time', 3000);
-		
-					$asset_code = $fields['asset_code'];
-					$date_from = $fields['date_from'];
-					$date_to = $fields['date_to'];
-					$overwrite = $fields['Overwrite'];
-		
-					if($date_from > $date_to){
-						$data = ['status'=>'error', 'message'=>'Invalid Selected Date Range!'];
-		
-					}else if(empty($date_from) && empty($date_to)){
-						$data = ['status'=>'error', 'message'=>'Please Select Date Range!'];
-					}else{
-						$date=date('Y-m-d');
-						if($overwrite == "true"){
-							GeneratedAssetsHistories::truncate(); 
-						}
-		
-						//get Inventory per asset items per header
-						$inventoryData = AssetsInventoryHeaderForApproval::leftjoin('cms_users', 'assets_inventory_header_for_approval.created_by', '=', 'cms_users.id')
-						->leftjoin('assets_inventory_body', 'assets_inventory_header_for_approval.id', '=', 'assets_inventory_body.header_id')
-						->select(
-								'assets_inventory_header_for_approval.*',
-								'assets_inventory_body.*',
-								'cms_users.*'
+			$data = array();
+			$data['status_no'] = 0;
+			$data['message']   ='No Item Found!';
+			$data['items'] = array();
+
+			$items = DB::table('assets_movement_histories')
+				->where('assets_movement_histories.body_id', $request->id)
+				//->whereNull('assets_movement_histories.archived')
+				->join('assets_inventory_body', 'assets_movement_histories.body_id','=','assets_inventory_body.id')
+				->join('assets_inventory_header', 'assets_movement_histories.header_id','=','assets_inventory_header.id')
+				//->join('cms_users', 'assets_movement_histories.updated_by', '=', 'cms_users.id')
+				->select(	'assets_movement_histories.*',
+							'assets_inventory_body.*',
+							'assets_inventory_body.location as location_per_item',
+							'assets_inventory_header.*',
+							'assets_inventory_header.location as location_all_item',
+							'assets_movement_histories.deployed_to as history_deployed_to',
+							'assets_movement_histories.location as history_location'
+							//'cms_users.*'
 						)
-						->groupBy('assets_inventory_body.header_id');
-						
-						if (!empty($date_from) && !empty($date_to)) {
-							$inventoryData->whereDate('assets_inventory_body.created_at','>=' ,$date_from)->whereDate('assets_inventory_body.created_at','<=' ,$date_to);
-						}
-						if (!empty($asset_code)) {
-							$inventoryData->where('assets_inventory_body.asset_code','LIKE','%'.$asset_code.'%');
-						}
-						$result = $inventoryData->get()->toArray();
-		
-						//get data that we need
-						$containerData = [];
-						$insertData = [];
-						foreach($result as $key => $val){
-							$containerData['header_id'] = $val['header_id'];
-							$containerData['body_id'] = (int) "";
-							$containerData['transaction_type'] = $val['transaction_per_asset'];
-							$containerData['reference_no'] = "";
-							$containerData['po_no'] = $val['po_no'];
-							$containerData['invoice_no'] = $val['invoice_no'];
-							$containerData['invoice_date'] = $val['invoice_date'];
-							$containerData['rr_date'] = $val['rr_date'];
-							$containerData['start_date'] = $date_from;
-							$containerData['end_date'] = $date_to;
-							$insertData[] = $containerData;
-						}
-						//get Deployed asset 
-						$deployedData = $data['Header'] = HeaderRequest::
-						leftjoin('mo_body_request', 'header_request.id', '=', 'mo_body_request.header_request_id')
-						->leftjoin('statuses', 'mo_body_request.status_id', '=', 'statuses.id')
-						->select(
-								'header_request.*',
-								'mo_body_request.*',
-								'statuses.*'
-								)
+				->get();
 
-						->groupBy('mo_body_request.header_request_id');
-						
-						if (!empty($date_from) && !empty($date_to)) {
-							$deployedData->whereDate('mo_body_request.created_at','>=' ,$date_from)
-							->whereDate('mo_body_request.created_at','<=' ,$date_to)
-							->whereIn('mo_body_request.status_id', array(16, 13, 19))
-							->where('mo_body_request.asset_code','LIKE','%'.$asset_code.'%');
-						}
+			if($items){
+					$data['id'] = $request->id;
+					$data['status'] = 1;
+					$data['problem']  = 1;
+					$data['status_no'] = 1;
+					$data['message']   ='Item Found';
+					$i = 0;
+					foreach ($items as $key => $value) {
 
-						$result2 = $deployedData->get()->toArray();
-
-						foreach($result2 as $key => $val){
-							$containerData['header_id'] = $val['header_request_id'];
-							$containerData['body_id'] = (int) "";
-							$containerData['transaction_type'] = "Deployed";
-							$containerData['reference_no'] = $val['mo_reference_number'];
-							$containerData['po_no'] = NULL;
-							$containerData['invoice_no'] = NULL;
-							$containerData['invoice_date'] = NULL;
-							$containerData['rr_date'] = NULL;
-							$containerData['start_date'] = $date_from;
-							$containerData['end_date'] = $date_to;
-							$insertData[] = $containerData;
-						}
-						//dd($insertData);
-						if($insertData){
-							GeneratedAssetsHistories::insert($insertData);
-						}
-						if($insertData){
-							$data = ['status'=>'success', 'message'=>'History Search!'];
-						}else{
-							$data = ['status'=>'error', 'message'=>'Nothing Selected or No Data within Selected Filter!!!'];
-						}
-						
+						$return_data[$i]['id']          = 		$value->id;
+						$return_data[$i]['assets_code'] = 		$value->asset_code;
+						$return_data[$i]['digits_code'] = 		$value->digits_code;
+						$return_data[$i]['serial_no']   = 		$value->serial_no;
+						$return_data[$i]['date_update'] = 		$value->date_update;
+						$return_data[$i]['updated_by'] = 		$value->history_updated_by;
+						$return_data[$i]['description'] = 		$value->description;
+						$return_data[$i]['deployed_to'] = 		$value->history_deployed_to ? $value->history_deployed_to : "";
+						$return_data[$i]['remarks']     = 	    $value->remarks;
+						$return_data[$i]['location']     = 	    $value->history_location ? $value->history_location : "";
+						$i++;
+	
 					}
-					//dd($insertData);
-					echo json_encode($data);
-				}
+					$data['items'] = $return_data;
+				}	
+			echo json_encode($data);
+			exit;  
+		}
 		
-				//get item description
-				public function getassetDescription(Request $request) {
-					$fields = Request::all();
-					$asset_code = $fields['asset_code'];
-					$data = AssetsInventoryBody::select(
-						'assets_inventory_body.item_description as description'
-					  )
-					  ->where('assets_inventory_body.asset_code', $asset_code)
-					  ->get()->toArray();
-					echo json_encode($data);
-				 }
+		//Check Data
+		public function getCheckData(Request $request) {
+			$data = GeneratedAssetsHistories::all();
+			echo json_encode(["count"=>count($data)]);
+		}
 
-				 //Get Assets Hitory tru modal
-				public function getComments(Request $request) {
-					$fields = Request::all();
-					$data = array();
-					$data['status_no'] = 0;
-					$data['message']   ='No Item Found!';
-					$data['items'] = array();
-					$asset_code = $fields['asset_code'];
-					$comment = DB::table('comments_good_defect_tbl')
-						->where('comments_good_defect_tbl.asset_code', $asset_code)	
-						->where('comments_good_defect_tbl.comments', '!=' ,'OTHERS')
-						->join('cms_users', 'comments_good_defect_tbl.users', '=', 'cms_users.id')
-						->select(	'comments_good_defect_tbl.*',
-									'cms_users.*'
-								)
-						->get();
-					$other_comment = DB::table('comments_good_defect_tbl')
-						->where('comments_good_defect_tbl.asset_code', $asset_code)	
-						->where('comments_good_defect_tbl.comments', '=' ,'OTHERS')
-						->join('cms_users', 'comments_good_defect_tbl.users', '=', 'cms_users.id')
-						->select(DB::raw("CONCAT(comments_good_defect_tbl.comments ,'/', comments_good_defect_tbl.other_comment) AS comments, comments_good_defect_tbl.asset_code, cms_users.name, comments_good_defect_tbl.created_at as created_at")
-								)
-						->get();
-					$items = $comment->toBase()->merge($other_comment);
-
-					if($items){
-							$data['id'] = $request->id;
-							$data['status'] = 1;
-							$data['problem']  = 1;
-							$data['status_no'] = 1;
-							$data['message']   ='Item Found';
-							$i = 0;
-							foreach ($items as $key => $value) {
+		//Display data by search
 		
-								$return_data[$i]['id']          = 		$value->id;
-								$return_data[$i]['asset_code'] = 		$value->asset_code;
-								$return_data[$i]['comments'] = 		$value->comments;
-								$return_data[$i]['name'] = 		$value->name;
-								$return_data[$i]['created_at'] = 		$value->created_at;
-								$i++;
+		public function getHistories(Request $request) {	
+			$fields = Request::all();
 			
-							}
-							$data['items'] = $return_data;
-						}	
-					echo json_encode($data);
-					exit;  
+			ini_set('memory_limit', '-1');
+			ini_set('max_execution_time', 3000);
+
+			$asset_code = $fields['asset_code'];
+			$date_from = $fields['date_from'];
+			$date_to = $fields['date_to'];
+			$overwrite = $fields['Overwrite'];
+
+			if($date_from > $date_to){
+				$data = ['status'=>'error', 'message'=>'Invalid Selected Date Range!'];
+
+			}else if(empty($date_from) && empty($date_to)){
+				$data = ['status'=>'error', 'message'=>'Please Select Date Range!'];
+			}else{
+				$date=date('Y-m-d');
+				if($overwrite == "true"){
+					GeneratedAssetsHistories::truncate(); 
 				}
 
-				function getSupplies(Request $request){
-					$fields = Request::all();
-					$search = $fields['query'];
-					if($search){
-						$data = DB::table('assets')
-							->where('item_description', 'LIKE', "%{$search}%")
-							->where('category_id', 2)
-							->get();
-						$output = '<ul class="dropdown-menu" style="display:block; position:relative;width:100%;height:auto;">';
-						foreach($data as $row)
-						{
-							$output .= '
-							<li><a class="dropdown-item" href="#">'.$row->item_description. " - " .$row->digits_code.'</a></li>
-							';
-		
-						}
-						$output .= '</ul>';
-						
-						echo $output;
-					}
-				}
-
-				public function itemITSearch(Request $request) {
-
-					$request = Request::all();
-		
-					$cont = (new static)->apiContext;
-		
-					$search 		= $request['search'];
-		
-					$data = array();
-		
-					$data['status_no'] = 0;
-					$data['message']   ='No Item Found!';
-					$data['items'] = array();
-		
-					//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
-		
-					$item = DB::table('assets')
-					->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',6)->whereNotIn('assets.status',['EOL-DIGITS','INACTIVE'])
-					->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',6)->whereNotIn('assets.status',['EOL-DIGITS','INACTIVE'])
-					->join('category', 'assets.category_id','=', 'category.id')
-					->leftjoin('new_sub_category', 'assets.sub_category_id','=', 'new_sub_category.id')
-			        ->leftjoin('class','assets.class_id','class.id')
-					//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
-					->select(	'assets.*',
-								'assets.id as assetID',
-								'category.category_description as category_description',
-								'new_sub_category.sub_category_description as sub_category_description',
-				                'class.class_description as class_type'
-							)->take(10)->get();
-
-					$arraySearch = DB::table('assets_inventory_body')->select('digits_code as digits_code',DB::raw('SUM(quantity) as wh_qty'))->where('statuses_id',6)->groupBy('digits_code')->get()->toArray();
-					$items = [];
-					foreach($item as $itemKey => $itemVal){
-						$i = array_search($itemVal->digits_code, array_column($arraySearch,'digits_code'));
-						if($i !== false){
-							$itemVal->inv_value = $arraySearch[$i];
-							$items[] = $itemVal;
-						}else{
-							$itemVal->inv_value = "";
-							$items[] = $itemVal;
-						}
-					}
-
-					$arraySearchUnservedQty = DB::table('body_request')->select('digits_code as digits_code',DB::raw('SUM(unserved_qty) as unserved_qty'))->where('body_request.created_by',CRUDBooster::myId())->groupBy('digits_code')->get()->toArray();
-					$finalItems = [];
-					foreach($items as $itemsKey => $itemsVal){
-						$i = array_search($itemsVal->digits_code, array_column($arraySearchUnservedQty,'digits_code'));
-						if($i !== false){
-							$itemsVal->unserved_qty = $arraySearchUnservedQty[$i];
-							$finalItems[] = $itemsVal;
-						}else{
-							$itemsVal->unserved_qty = "";
-							$finalItems[] = $itemsVal;
-						}
-					}
-
-					//get reserved qty
-					$reservedList = DB::table('assets_inventory_reserved')->select('digits_code as digits_code',DB::raw('SUM(approved_qty) as reserved_qty'))->whereNotNull('reserved')->groupBy('digits_code')->get()->toArray();
-					$resultInventory = [];
-					foreach($finalItems as $invKey => $invVal){
-						$i = array_search($invVal->digits_code, array_column($reservedList,'digits_code'));
-						if($i !== false){
-							$invVal->reserved_value = $reservedList[$i];
-							$resultInventory[] = $invVal;
-						}else{
-							$invVal->reserved_value = "";
-							$resultInventory[] = $invVal;
-						}
-					}
-					//get the final available qty
-					$finalInventory = [];
-					foreach($resultInventory as $fKey => $fVal){
-						$fVal->available_qty = max($fVal->inv_value->wh_qty - $fVal->reserved_value->reserved_qty,0);
-						$finalInventory[] = $fVal;
-					}
-
-					if($finalInventory){
-						$data['status'] = 1;
-						$data['problem']  = 1;
-						$data['status_no'] = 1;
-						$data['message']   ='Item Found';
-						$i = 0;
-						foreach ($finalInventory as $key => $value) {
-		
-							$return_data[$i]['id']                   = 	$value->assetID;
-							$return_data[$i]['asset_code']           = 	$value->asset_code;
-							$return_data[$i]['digits_code']          = 	$value->digits_code;
-							$return_data[$i]['asset_tag']            = 	$value->asset_tag;
-							$return_data[$i]['serial_no']            = 	$value->serial_no;
-							$return_data[$i]['item_description']     = 	$value->item_description;
-							$return_data[$i]['category_description'] = 	$value->category_description;
-							$return_data[$i]['class_description']    =  $value->sub_category_description;
-					        $return_data[$i]['class_type']           =  $value->class_type;
-							$return_data[$i]['item_cost']            = 	$value->item_cost;
-							$return_data[$i]['item_type']            = 	$value->item_type;
-							$return_data[$i]['image']                = 	$value->image;
-							$return_data[$i]['quantity']             = 	$value->quantity;
-							$return_data[$i]['total_quantity']       = 	$value->total_quantity;
-							$return_data[$i]['wh_qty']               =  $value->available_qty  ? $value->available_qty : 0;
-							$return_data[$i]['unserved_qty']         =  $value->unserved_qty->unserved_qty  ? $value->unserved_qty->unserved_qty : 0;
-
-							$i++;
-		
-						}
-						$data['items'] = $return_data;
-					}
-		
-		
-					echo json_encode($data);
-					exit;  
-				}
-
-			public function itemFASearch(Request $request) {
-
-				$request = Request::all();
-	
-				$cont = (new static)->apiContext;
-	
-				$search 		= $request['search'];
-	
-				$data = array();
-	
-				$data['status_no'] = 0;
-				$data['message']   ='No Item Found!';
-				$data['items'] = array();
-	
-				//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
-	
-				$item = DB::table('assets')
-				->where('assets.digits_code','LIKE','%'.$search.'%')->whereIn('assets.category_id',[1,4,7,8])->whereNotIn('assets.status',['EOL-DIGITS','INACTIVE'])
-				->orWhere('assets.item_description','LIKE','%'.$search.'%')->whereIn('assets.category_id',[1,4,7,8])->whereNotIn('assets.status',['EOL-DIGITS','INACTIVE'])
-				->join('category', 'assets.category_id','=', 'category.id')
+				//get Inventory per asset items per header
+				$inventoryData = AssetsInventoryHeaderForApproval::leftjoin('cms_users', 'assets_inventory_header_for_approval.created_by', '=', 'cms_users.id')
+				->leftjoin('assets_inventory_body', 'assets_inventory_header_for_approval.id', '=', 'assets_inventory_body.header_id')
+				->select(
+						'assets_inventory_header_for_approval.*',
+						'assets_inventory_body.*',
+						'cms_users.*'
+				)
+				->groupBy('assets_inventory_body.header_id');
 				
+				if (!empty($date_from) && !empty($date_to)) {
+					$inventoryData->whereDate('assets_inventory_body.created_at','>=' ,$date_from)->whereDate('assets_inventory_body.created_at','<=' ,$date_to);
+				}
+				if (!empty($asset_code)) {
+					$inventoryData->where('assets_inventory_body.asset_code','LIKE','%'.$asset_code.'%');
+				}
+				$result = $inventoryData->get()->toArray();
+
+				//get data that we need
+				$containerData = [];
+				$insertData = [];
+				foreach($result as $key => $val){
+					$containerData['header_id'] = $val['header_id'];
+					$containerData['body_id'] = (int) "";
+					$containerData['transaction_type'] = $val['transaction_per_asset'];
+					$containerData['reference_no'] = "";
+					$containerData['po_no'] = $val['po_no'];
+					$containerData['invoice_no'] = $val['invoice_no'];
+					$containerData['invoice_date'] = $val['invoice_date'];
+					$containerData['rr_date'] = $val['rr_date'];
+					$containerData['start_date'] = $date_from;
+					$containerData['end_date'] = $date_to;
+					$insertData[] = $containerData;
+				}
+				//get Deployed asset 
+				$deployedData = $data['Header'] = HeaderRequest::
+				leftjoin('mo_body_request', 'header_request.id', '=', 'mo_body_request.header_request_id')
+				->leftjoin('statuses', 'mo_body_request.status_id', '=', 'statuses.id')
+				->select(
+						'header_request.*',
+						'mo_body_request.*',
+						'statuses.*'
+						)
+
+				->groupBy('mo_body_request.header_request_id');
+				
+				if (!empty($date_from) && !empty($date_to)) {
+					$deployedData->whereDate('mo_body_request.created_at','>=' ,$date_from)
+					->whereDate('mo_body_request.created_at','<=' ,$date_to)
+					->whereIn('mo_body_request.status_id', array(16, 13, 19))
+					->where('mo_body_request.asset_code','LIKE','%'.$asset_code.'%');
+				}
+
+				$result2 = $deployedData->get()->toArray();
+
+				foreach($result2 as $key => $val){
+					$containerData['header_id'] = $val['header_request_id'];
+					$containerData['body_id'] = (int) "";
+					$containerData['transaction_type'] = "Deployed";
+					$containerData['reference_no'] = $val['mo_reference_number'];
+					$containerData['po_no'] = NULL;
+					$containerData['invoice_no'] = NULL;
+					$containerData['invoice_date'] = NULL;
+					$containerData['rr_date'] = NULL;
+					$containerData['start_date'] = $date_from;
+					$containerData['end_date'] = $date_to;
+					$insertData[] = $containerData;
+				}
+				//dd($insertData);
+				if($insertData){
+					GeneratedAssetsHistories::insert($insertData);
+				}
+				if($insertData){
+					$data = ['status'=>'success', 'message'=>'History Search!'];
+				}else{
+					$data = ['status'=>'error', 'message'=>'Nothing Selected or No Data within Selected Filter!!!'];
+				}
+				
+			}
+			//dd($insertData);
+			echo json_encode($data);
+		}
+
+		//get item description
+		public function getassetDescription(Request $request) {
+			$fields = Request::all();
+			$asset_code = $fields['asset_code'];
+			$data = AssetsInventoryBody::select(
+				'assets_inventory_body.item_description as description'
+				)
+				->where('assets_inventory_body.asset_code', $asset_code)
+				->get()->toArray();
+			echo json_encode($data);
+			}
+
+			//Get Assets Hitory tru modal
+		public function getComments(Request $request) {
+			$fields = Request::all();
+			$data = array();
+			$data['status_no'] = 0;
+			$data['message']   ='No Item Found!';
+			$data['items'] = array();
+			$asset_code = $fields['asset_code'];
+			$comment = DB::table('comments_good_defect_tbl')
+				->where('comments_good_defect_tbl.asset_code', $asset_code)	
+				->where('comments_good_defect_tbl.comments', '!=' ,'OTHERS')
+				->join('cms_users', 'comments_good_defect_tbl.users', '=', 'cms_users.id')
+				->select(	'comments_good_defect_tbl.*',
+							'cms_users.*'
+						)
+				->get();
+			$other_comment = DB::table('comments_good_defect_tbl')
+				->where('comments_good_defect_tbl.asset_code', $asset_code)	
+				->where('comments_good_defect_tbl.comments', '=' ,'OTHERS')
+				->join('cms_users', 'comments_good_defect_tbl.users', '=', 'cms_users.id')
+				->select(DB::raw("CONCAT(comments_good_defect_tbl.comments ,'/', comments_good_defect_tbl.other_comment) AS comments, comments_good_defect_tbl.asset_code, cms_users.name, comments_good_defect_tbl.created_at as created_at")
+						)
+				->get();
+			$items = $comment->toBase()->merge($other_comment);
+
+			if($items){
+					$data['id'] = $request->id;
+					$data['status'] = 1;
+					$data['problem']  = 1;
+					$data['status_no'] = 1;
+					$data['message']   ='Item Found';
+					$i = 0;
+					foreach ($items as $key => $value) {
+
+						$return_data[$i]['id']          = 		$value->id;
+						$return_data[$i]['asset_code'] = 		$value->asset_code;
+						$return_data[$i]['comments'] = 		$value->comments;
+						$return_data[$i]['name'] = 		$value->name;
+						$return_data[$i]['created_at'] = 		$value->created_at;
+						$i++;
+	
+					}
+					$data['items'] = $return_data;
+				}	
+			echo json_encode($data);
+			exit;  
+		}
+
+		function getSupplies(Request $request){
+			$fields = Request::all();
+			$search = $fields['query'];
+			if($search){
+				$data = DB::table('assets')
+					->where('item_description', 'LIKE', "%{$search}%")
+					->where('category_id', 2)
+					->get();
+				$output = '<ul class="dropdown-menu" style="display:block; position:relative;width:100%;height:auto;">';
+				foreach($data as $row)
+				{
+					$output .= '
+					<li><a class="dropdown-item" href="#">'.$row->item_description. " - " .$row->digits_code.'</a></li>
+					';
+
+				}
+				$output .= '</ul>';
+				
+				echo $output;
+			}
+		}
+
+		public function itemITSearch(Request $request) {
+			$request = Request::all();
+			$cont = (new static)->apiContext;
+			$search 		= $request['search'];
+			$data = array();
+			$data['status_no'] = 0;
+			$data['message']   ='No Item Found!';
+			$data['items'] = array();
+
+			//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
+
+			$item = DB::table('assets')
+			->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',6)->whereNotIn('assets.status',['EOL-DIGITS','INACTIVE'])
+			->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',6)->whereNotIn('assets.status',['EOL-DIGITS','INACTIVE'])
+			->join('category', 'assets.category_id','=', 'category.id')
+			->leftjoin('new_sub_category', 'assets.sub_category_id','=', 'new_sub_category.id')
+			->leftjoin('class','assets.class_id','class.id')
+			//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
+			->select(	'assets.*',
+						'assets.id as assetID',
+						'category.category_description as category_description',
+						'new_sub_category.sub_category_description as sub_category_description',
+						'class.class_description as class_type'
+					)->take(10)->get();
+
+			$arraySearch = DB::table('assets_inventory_body')->select('digits_code as digits_code',DB::raw('SUM(quantity) as wh_qty'))->where('statuses_id',6)->groupBy('digits_code')->get()->toArray();
+			$items = [];
+			foreach($item as $itemKey => $itemVal){
+				$i = array_search($itemVal->digits_code, array_column($arraySearch,'digits_code'));
+				if($i !== false){
+					$itemVal->inv_value = $arraySearch[$i];
+					$items[] = $itemVal;
+				}else{
+					$itemVal->inv_value = "";
+					$items[] = $itemVal;
+				}
+			}
+
+			$arraySearchUnservedQty = DB::table('body_request')->select('digits_code as digits_code',DB::raw('SUM(unserved_qty) as unserved_qty'))->where('body_request.created_by',CRUDBooster::myId())->groupBy('digits_code')->get()->toArray();
+			$finalItems = [];
+			foreach($items as $itemsKey => $itemsVal){
+				$i = array_search($itemsVal->digits_code, array_column($arraySearchUnservedQty,'digits_code'));
+				if($i !== false){
+					$itemsVal->unserved_qty = $arraySearchUnservedQty[$i];
+					$finalItems[] = $itemsVal;
+				}else{
+					$itemsVal->unserved_qty = "";
+					$finalItems[] = $itemsVal;
+				}
+			}
+
+			//get reserved qty
+			$reservedList = DB::table('assets_inventory_reserved')->select('digits_code as digits_code',DB::raw('SUM(approved_qty) as reserved_qty'))->whereNotNull('reserved')->groupBy('digits_code')->get()->toArray();
+			$resultInventory = [];
+			foreach($finalItems as $invKey => $invVal){
+				$i = array_search($invVal->digits_code, array_column($reservedList,'digits_code'));
+				if($i !== false){
+					$invVal->reserved_value = $reservedList[$i];
+					$resultInventory[] = $invVal;
+				}else{
+					$invVal->reserved_value = "";
+					$resultInventory[] = $invVal;
+				}
+			}
+			//get the final available qty
+			$finalInventory = [];
+			foreach($resultInventory as $fKey => $fVal){
+				$fVal->available_qty = max($fVal->inv_value->wh_qty - $fVal->reserved_value->reserved_qty,0);
+				$finalInventory[] = $fVal;
+			}
+
+			if($finalInventory){
+				$data['status'] = 1;
+				$data['problem']  = 1;
+				$data['status_no'] = 1;
+				$data['message']   ='Item Found';
+				$i = 0;
+				foreach ($finalInventory as $key => $value) {
+
+					$return_data[$i]['id']                   = 	$value->assetID;
+					$return_data[$i]['asset_code']           = 	$value->asset_code;
+					$return_data[$i]['digits_code']          = 	$value->digits_code;
+					$return_data[$i]['asset_tag']            = 	$value->asset_tag;
+					$return_data[$i]['serial_no']            = 	$value->serial_no;
+					$return_data[$i]['item_description']     = 	$value->item_description;
+					$return_data[$i]['category_description'] = 	$value->category_description;
+					$return_data[$i]['class_description']    =  $value->sub_category_description;
+					$return_data[$i]['class_type']           =  $value->class_type;
+					$return_data[$i]['item_cost']            = 	$value->item_cost;
+					$return_data[$i]['item_type']            = 	$value->item_type;
+					$return_data[$i]['image']                = 	$value->image;
+					$return_data[$i]['quantity']             = 	$value->quantity;
+					$return_data[$i]['total_quantity']       = 	$value->total_quantity;
+					$return_data[$i]['wh_qty']               =  $value->available_qty  ? $value->available_qty : 0;
+					$return_data[$i]['unserved_qty']         =  $value->unserved_qty->unserved_qty  ? $value->unserved_qty->unserved_qty : 0;
+
+					$i++;
+
+				}
+				$data['items'] = $return_data;
+			}
+
+
+			echo json_encode($data);
+			exit;  
+		}
+
+		public function itemFASearch(Request $request) {
+			$request = Request::all();
+			$cont = (new static)->apiContext;
+			$search 		= $request['search'];
+			$data = array();
+			$data['status_no'] = 0;
+			$data['message']   ='No Item Found!';
+			$data['items'] = array();
+
+			//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
+
+			$item = DB::table('assets')
+			->where('assets.digits_code','LIKE','%'.$search.'%')->whereIn('assets.category_id',[1,4,7,8])->whereNotIn('assets.status',['EOL-DIGITS','INACTIVE'])
+			->orWhere('assets.item_description','LIKE','%'.$search.'%')->whereIn('assets.category_id',[1,4,7,8])->whereNotIn('assets.status',['EOL-DIGITS','INACTIVE'])
+			->join('category', 'assets.category_id','=', 'category.id')
+			
+			//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
+			->select(	'assets.*',
+						'assets.id as assetID',
+						//'digits_imfs.digits_code as dcode',
+						'category.category_description as category_description'
+					)->take(10)->get();
+			$arraySearch = DB::table('assets_inventory_body')->select('digits_code as digits_code',DB::raw('SUM(quantity) as wh_qty'))->where('statuses_id',6)->groupBy('digits_code')->get()->toArray();
+			$items = [];
+			foreach($item as $itemKey => $itemVal){
+				$i = array_search($itemVal->digits_code, array_column($arraySearch,'digits_code'));
+				if($i !== false){
+					$itemVal->inv_value = $arraySearch[$i];
+					$items[] = $itemVal;
+				}else{
+					$itemVal->inv_value = "";
+					$items[] = $itemVal;
+				}
+			}
+
+			$arraySearchUnservedQty = DB::table('body_request')->select('digits_code as digits_code',DB::raw('SUM(unserved_qty) as unserved_qty'))->where('body_request.created_by',CRUDBooster::myId())->groupBy('digits_code')->get()->toArray();
+			$finalItems = [];
+			foreach($items as $itemsKey => $itemsVal){
+				$i = array_search($itemsVal->digits_code, array_column($arraySearchUnservedQty,'digits_code'));
+				if($i !== false){
+					$itemsVal->unserved_qty = $arraySearchUnservedQty[$i];
+					$finalItems[] = $itemsVal;
+				}else{
+					$itemsVal->unserved_qty = "";
+					$finalItems[] = $itemsVal;
+				}
+			}
+
+			//get reserved qty
+			$reservedList = DB::table('assets_inventory_reserved')->select('digits_code as digits_code',DB::raw('SUM(approved_qty) as reserved_qty'))->whereNotNull('reserved')->groupBy('digits_code')->get()->toArray();
+			$resultInventory = [];
+			foreach($finalItems as $invKey => $invVal){
+				$i = array_search($invVal->digits_code, array_column($reservedList,'digits_code'));
+				if($i !== false){
+					$invVal->reserved_value = $reservedList[$i];
+					$resultInventory[] = $invVal;
+				}else{
+					$invVal->reserved_value = "";
+					$resultInventory[] = $invVal;
+				}
+			}
+			//get the final available qty
+			$finalInventory = [];
+			foreach($resultInventory as $fKey => $fVal){
+				$fVal->available_qty = max($fVal->inv_value->wh_qty - $fVal->reserved_value->reserved_qty,0);
+				$finalInventory[] = $fVal;
+			}
+
+			if($finalInventory){
+				$data['status'] = 1;
+				$data['problem']  = 1;
+				$data['status_no'] = 1;
+				$data['message']   ='Item Found';
+				$i = 0;
+				foreach ($finalInventory as $key => $value) {
+
+					$return_data[$i]['id']                   = 	$value->assetID;
+					$return_data[$i]['asset_code']           = 	$value->asset_code;
+					$return_data[$i]['digits_code']          = 	$value->digits_code;
+					$return_data[$i]['asset_tag']            = 	$value->asset_tag;
+					$return_data[$i]['serial_no']            = 	$value->serial_no;
+					$return_data[$i]['item_description']     = 	$value->item_description;
+					$return_data[$i]['category_description'] = 	$value->category_description;
+					$return_data[$i]['item_cost']            = 	$value->item_cost;
+					$return_data[$i]['item_type']            = 	$value->item_type;
+					$return_data[$i]['image']                = 	$value->image;
+					$return_data[$i]['quantity']             = 	$value->quantity;
+					$return_data[$i]['total_quantity']       = 	$value->total_quantity;
+					$return_data[$i]['wh_qty']               =  $value->wh_qty  ? $value->wh_qty : 0;
+					$return_data[$i]['unserved_qty']         =  $value->unserved_qty  ? $value->unserved_qty : 0;
+					$return_data[$i]['wh_qty']               =  $value->available_qty  ? $value->available_qty : 0;
+					$return_data[$i]['unserved_qty']         =  $value->unserved_qty->unserved_qty  ? $value->unserved_qty->unserved_qty : 0;
+
+					$i++;
+
+				}
+				$data['items'] = $return_data;
+			}
+
+
+			echo json_encode($data);
+			exit;  
+		}
+
+		public function itemMarketingSearch(Request $request) {
+
+			$request = Request::all();
+
+			$cont = (new static)->apiContext;
+
+			$search 		= $request['search'];
+
+			$data = array();
+
+			$data['status_no'] = 0;
+			$data['message']   ='No Item Found!';
+			$data['items'] = array();
+
+			//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
+
+			$items = DB::table('assets')
+			->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',4)->where('assets.status','!=','INACTIVE')
+			->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',4)->where('assets.status','!=','INACTIVE')
+			
+				->join('category', 'assets.category_id','=', 'category.id')
 				//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
 				->select(	'assets.*',
 							'assets.id as assetID',
 							//'digits_imfs.digits_code as dcode',
 							'category.category_description as category_description'
 						)->take(10)->get();
-				$arraySearch = DB::table('assets_inventory_body')->select('digits_code as digits_code',DB::raw('SUM(quantity) as wh_qty'))->where('statuses_id',6)->groupBy('digits_code')->get()->toArray();
-				$items = [];
-				foreach($item as $itemKey => $itemVal){
-					$i = array_search($itemVal->digits_code, array_column($arraySearch,'digits_code'));
-					if($i !== false){
-						$itemVal->inv_value = $arraySearch[$i];
-						$items[] = $itemVal;
-					}else{
-						$itemVal->inv_value = "";
-						$items[] = $itemVal;
-					}
-				}
+			
+			if($items){
+				$data['status'] = 1;
+				$data['problem']  = 1;
+				$data['status_no'] = 1;
+				$data['message']   ='Item Found';
+				$i = 0;
+				foreach ($items as $key => $value) {
 
+					$return_data[$i]['id'] = 				$value->assetID;
+					$return_data[$i]['asset_code'] = 		$value->asset_code;
+					$return_data[$i]['digits_code'] = 		$value->digits_code;
+					$return_data[$i]['asset_tag'] = 		$value->asset_tag;
+					$return_data[$i]['serial_no'] = 		$value->serial_no;
+					$return_data[$i]['item_description'] = 	$value->item_description;
+					$return_data[$i]['category_description'] = 		$value->category_description;
+					$return_data[$i]['item_cost'] = 				$value->item_cost;
+					$return_data[$i]['item_type'] = 				$value->item_type;
+					$return_data[$i]['image'] = 				$value->image;
+					$return_data[$i]['quantity'] = 				$value->quantity;
+					$return_data[$i]['total_quantity'] = 				$value->total_quantity;
+
+					$i++;
+
+				}
+				$data['items'] = $return_data;
+			}
+
+
+			echo json_encode($data);
+			exit;  
+		}
+
+		public function itemSuppliesSearch(Request $request) {
+				$request = Request::all();
+				$cont = (new static)->apiContext;
+				$search 		= $request['search'];
+				$data = array();
+				$data['status_no'] = 0;
+				$data['message']   ='No Item Found!';
+				$data['items'] = array();
+	
+				//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
+	
+				$items = DB::table('assets')
+				->where('assets.digits_code','LIKE','%'.$search.'%')->whereIn('assets.category_id',[2,9])->whereNotIn('assets.status',['EOL-DIGITS','INACTIVE'])
+				->orWhere('assets.item_description','LIKE','%'.$search.'%')->whereIn('assets.category_id',[2,9])->whereNotIn('assets.status',['EOL-DIGITS','INACTIVE'])
+					->join('category', 'assets.category_id','=', 'category.id')
+					->join('class', 'assets.class_id','=', 'class.id')
+					// ->leftjoin('new_category', 'assets.aimfs_category','=', 'new_category.id')
+					->leftjoin('new_sub_category', 'assets.sub_category_id','=', 'new_sub_category.id')
+					->leftjoin('assets_supplies_inventory', 'assets.digits_code','=', 'assets_supplies_inventory.digits_code')
+
+					//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
+					->select(	'assets.*',
+								'assets.id as assetID',
+								'assets_supplies_inventory.quantity as wh_qty',
+		
+								//'digits_imfs.digits_code as dcode',
+								'category.category_description as category_description',
+								'class.class_description as class_description',
+								// 'new_category.category_description as aimfs_category_description',
+								'new_sub_category.sub_category_description as sub_category_description',
+							)->take(10)->get();
 				$arraySearchUnservedQty = DB::table('body_request')->select('digits_code as digits_code',DB::raw('SUM(unserved_qty) as unserved_qty'))->where('body_request.created_by',CRUDBooster::myId())->groupBy('digits_code')->get()->toArray();
 				$finalItems = [];
 				foreach($items as $itemsKey => $itemsVal){
@@ -1722,52 +1870,31 @@
 						$finalItems[] = $itemsVal;
 					}
 				}
-
-				//get reserved qty
-				$reservedList = DB::table('assets_inventory_reserved')->select('digits_code as digits_code',DB::raw('SUM(approved_qty) as reserved_qty'))->whereNotNull('reserved')->groupBy('digits_code')->get()->toArray();
-				$resultInventory = [];
-				foreach($finalItems as $invKey => $invVal){
-					$i = array_search($invVal->digits_code, array_column($reservedList,'digits_code'));
-					if($i !== false){
-						$invVal->reserved_value = $reservedList[$i];
-						$resultInventory[] = $invVal;
-					}else{
-						$invVal->reserved_value = "";
-						$resultInventory[] = $invVal;
-					}
-				}
-				//get the final available qty
-				$finalInventory = [];
-				foreach($resultInventory as $fKey => $fVal){
-					$fVal->available_qty = max($fVal->inv_value->wh_qty - $fVal->reserved_value->reserved_qty,0);
-					$finalInventory[] = $fVal;
-				}
-	
-				if($finalInventory){
+				if($finalItems){
 					$data['status'] = 1;
 					$data['problem']  = 1;
 					$data['status_no'] = 1;
 					$data['message']   ='Item Found';
 					$i = 0;
-					foreach ($finalInventory as $key => $value) {
+					foreach ($finalItems as $key => $value) {
 	
-						$return_data[$i]['id']                   = 	$value->assetID;
-						$return_data[$i]['asset_code']           = 	$value->asset_code;
-						$return_data[$i]['digits_code']          = 	$value->digits_code;
-						$return_data[$i]['asset_tag']            = 	$value->asset_tag;
-						$return_data[$i]['serial_no']            = 	$value->serial_no;
-						$return_data[$i]['item_description']     = 	$value->item_description;
-						$return_data[$i]['category_description'] = 	$value->category_description;
-						$return_data[$i]['item_cost']            = 	$value->item_cost;
-						$return_data[$i]['item_type']            = 	$value->item_type;
-						$return_data[$i]['image']                = 	$value->image;
-						$return_data[$i]['quantity']             = 	$value->quantity;
-						$return_data[$i]['total_quantity']       = 	$value->total_quantity;
-						$return_data[$i]['wh_qty']               =  $value->wh_qty  ? $value->wh_qty : 0;
-						$return_data[$i]['unserved_qty']         =  $value->unserved_qty  ? $value->unserved_qty : 0;
-						$return_data[$i]['wh_qty']               =  $value->available_qty  ? $value->available_qty : 0;
-						$return_data[$i]['unserved_qty']         =  $value->unserved_qty->unserved_qty  ? $value->unserved_qty->unserved_qty : 0;
-	
+						$return_data[$i]['id']                   = $value->assetID;
+						$return_data[$i]['asset_code']           = $value->asset_code;
+						$return_data[$i]['digits_code']          = $value->digits_code;
+						$return_data[$i]['asset_tag']            = $value->asset_tag;
+						$return_data[$i]['serial_no']            = $value->serial_no;
+						$return_data[$i]['item_description']     = $value->item_description;
+						// $return_data[$i]['category_description'] = $value->aimfs_category_description;
+						// $return_data[$i]['class_description']    = $value->aimfs_sub_category_description;
+						$return_data[$i]['category_description'] = $value->category_description;
+						$return_data[$i]['class_description']    = $value->sub_category_description;
+						$return_data[$i]['item_cost']            = $value->item_cost;
+						$return_data[$i]['item_type']            = $value->item_type;
+						$return_data[$i]['image']                = $value->image;
+						$return_data[$i]['quantity']             = $value->quantity;
+						$return_data[$i]['total_quantity']       = $value->total_quantity;
+						$return_data[$i]['wh_qty']               = $value->wh_qty  ? $value->wh_qty : 0;
+						$return_data[$i]['unserved_qty']         = $value->unserved_qty->unserved_qty  ? $value->unserved_qty->unserved_qty : 0;
 						$i++;
 	
 					}
@@ -1777,152 +1904,7 @@
 	
 				echo json_encode($data);
 				exit;  
-			}
-
-			public function itemMarketingSearch(Request $request) {
-
-				$request = Request::all();
-	
-				$cont = (new static)->apiContext;
-	
-				$search 		= $request['search'];
-	
-				$data = array();
-	
-				$data['status_no'] = 0;
-				$data['message']   ='No Item Found!';
-				$data['items'] = array();
-	
-				//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
-	
-				$items = DB::table('assets')
-				->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',4)->where('assets.status','!=','INACTIVE')
-				->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',4)->where('assets.status','!=','INACTIVE')
-				
-					->join('category', 'assets.category_id','=', 'category.id')
-					//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
-					->select(	'assets.*',
-								'assets.id as assetID',
-								//'digits_imfs.digits_code as dcode',
-								'category.category_description as category_description'
-							)->take(10)->get();
-				
-				if($items){
-					$data['status'] = 1;
-					$data['problem']  = 1;
-					$data['status_no'] = 1;
-					$data['message']   ='Item Found';
-					$i = 0;
-					foreach ($items as $key => $value) {
-	
-						$return_data[$i]['id'] = 				$value->assetID;
-						$return_data[$i]['asset_code'] = 		$value->asset_code;
-						$return_data[$i]['digits_code'] = 		$value->digits_code;
-						$return_data[$i]['asset_tag'] = 		$value->asset_tag;
-						$return_data[$i]['serial_no'] = 		$value->serial_no;
-						$return_data[$i]['item_description'] = 	$value->item_description;
-						$return_data[$i]['category_description'] = 		$value->category_description;
-						$return_data[$i]['item_cost'] = 				$value->item_cost;
-						$return_data[$i]['item_type'] = 				$value->item_type;
-						$return_data[$i]['image'] = 				$value->image;
-						$return_data[$i]['quantity'] = 				$value->quantity;
-						$return_data[$i]['total_quantity'] = 				$value->total_quantity;
-	
-						$i++;
-	
-					}
-					$data['items'] = $return_data;
-				}
-	
-	
-				echo json_encode($data);
-				exit;  
-			}
-
-			public function itemSuppliesSearch(Request $request) {
-
-					$request = Request::all();
-		
-					$cont = (new static)->apiContext;
-		
-					$search 		= $request['search'];
-		
-					$data = array();
-		
-					$data['status_no'] = 0;
-					$data['message']   ='No Item Found!';
-					$data['items'] = array();
-		
-					//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
-		
-					$items = DB::table('assets')
-					->where('assets.digits_code','LIKE','%'.$search.'%')->whereIn('assets.category_id',[2,9])->whereNotIn('assets.status',['EOL-DIGITS','INACTIVE'])
-					->orWhere('assets.item_description','LIKE','%'.$search.'%')->whereIn('assets.category_id',[2,9])->whereNotIn('assets.status',['EOL-DIGITS','INACTIVE'])
-					
-						->join('category', 'assets.category_id','=', 'category.id')
-						->join('class', 'assets.class_id','=', 'class.id')
-						// ->leftjoin('new_category', 'assets.aimfs_category','=', 'new_category.id')
-						->leftjoin('new_sub_category', 'assets.sub_category_id','=', 'new_sub_category.id')
-						->leftjoin('assets_supplies_inventory', 'assets.digits_code','=', 'assets_supplies_inventory.digits_code')
-	
-						//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
-						->select(	'assets.*',
-									'assets.id as assetID',
-									'assets_supplies_inventory.quantity as wh_qty',
-			
-									//'digits_imfs.digits_code as dcode',
-									'category.category_description as category_description',
-									'class.class_description as class_description',
-									// 'new_category.category_description as aimfs_category_description',
-									'new_sub_category.sub_category_description as sub_category_description',
-								)->take(10)->get();
-					$arraySearchUnservedQty = DB::table('body_request')->select('digits_code as digits_code',DB::raw('SUM(unserved_qty) as unserved_qty'))->where('body_request.created_by',CRUDBooster::myId())->groupBy('digits_code')->get()->toArray();
-					$finalItems = [];
-					foreach($items as $itemsKey => $itemsVal){
-						$i = array_search($itemsVal->digits_code, array_column($arraySearchUnservedQty,'digits_code'));
-						if($i !== false){
-							$itemsVal->unserved_qty = $arraySearchUnservedQty[$i];
-							$finalItems[] = $itemsVal;
-						}else{
-							$itemsVal->unserved_qty = "";
-							$finalItems[] = $itemsVal;
-						}
-					}
-					if($finalItems){
-						$data['status'] = 1;
-						$data['problem']  = 1;
-						$data['status_no'] = 1;
-						$data['message']   ='Item Found';
-						$i = 0;
-						foreach ($finalItems as $key => $value) {
-		
-							$return_data[$i]['id']                   = $value->assetID;
-							$return_data[$i]['asset_code']           = $value->asset_code;
-							$return_data[$i]['digits_code']          = $value->digits_code;
-							$return_data[$i]['asset_tag']            = $value->asset_tag;
-							$return_data[$i]['serial_no']            = $value->serial_no;
-							$return_data[$i]['item_description']     = $value->item_description;
-							// $return_data[$i]['category_description'] = $value->aimfs_category_description;
-							// $return_data[$i]['class_description']    = $value->aimfs_sub_category_description;
-							$return_data[$i]['category_description'] = $value->category_description;
-							$return_data[$i]['class_description']    = $value->sub_category_description;
-							$return_data[$i]['item_cost']            = $value->item_cost;
-							$return_data[$i]['item_type']            = $value->item_type;
-							$return_data[$i]['image']                = $value->image;
-							$return_data[$i]['quantity']             = $value->quantity;
-							$return_data[$i]['total_quantity']       = $value->total_quantity;
-							$return_data[$i]['wh_qty']               = $value->wh_qty  ? $value->wh_qty : 0;
-							$return_data[$i]['unserved_qty']         = $value->unserved_qty->unserved_qty  ? $value->unserved_qty->unserved_qty : 0;
-							$i++;
-		
-						}
-						$data['items'] = $return_data;
-					}
-		
-		
-					echo json_encode($data);
-					exit;  
-		    }
+		}
 
 		public function UploadStatus() {
 			$data['page_title']= 'Update Status';
@@ -1943,6 +1925,76 @@
 			}else{
 				return Response::download($file, $getFile->file_name);
 			}
+		}
+
+		public function cancelArfRequest(Request $request){
+			$data = Request::all();	
+			$id   = $data['id'];
+			$remarks = $data['remarks'];
+			
+			HeaderRequest::where('id', $id)
+			->update([
+				'status_id'=> 8,
+				'to_mo'    => 0
+			]);	
+
+			BodyRequest::where('header_request_id', $id)
+			->update([
+				'unserved_rep_qty' => 0, 
+				'unserved_ro_qty'  => 0,
+				'serve_qty'        => 0,
+				'unserved_qty'     => 0, 
+				'cancelled_qty'    => 1, 
+				'reason_to_cancel' => $remarks,
+				'deleted_at'       => date('Y-m-d H:i:s'),
+				'deleted_by'       => CRUDBooster::myId()
+			]);	
+
+			$arf_number = HeaderRequest::where('id',$id)->first();
+
+			DB::table('assets_inventory_reserved')->where('reference_number', $arf_number->reference_number)->delete();
+
+			$message = ['status'=>'success', 'message' => 'Cancelled Successfully!'];
+			echo json_encode($message);
+			
+		}
+
+		public function cancelArfMoPerLineRequest(Request $request){
+			$data     = Request::all();	
+			$id       = $data['id'];
+			$body_ids = $data['Ids'];
+			$remarks  = $data['remarks'];
+			
+			for($x=0; $x < count((array)$body_ids); $x++) {
+				BodyRequest::where('id', $body_ids[$x])
+				->update([
+					'unserved_rep_qty' => 0, 
+					'unserved_ro_qty'  => 0,
+					'serve_qty'        => 0,
+					'unserved_qty'     => 0, 
+					'cancelled_qty'    => 1, 
+					'reason_to_cancel' => $remarks,
+					'deleted_at'       => date('Y-m-d H:i:s'),
+					'deleted_by'       => CRUDBooster::myId()
+				]);	
+
+				DB::table('assets_inventory_reserved')->where('body_id', $body_ids[$x])->delete();
+			}
+
+			$bodyCountAll     = DB::table('body_request')->where('header_request_id',$id)->count();
+			$bodyCountDeleted = DB::table('body_request')->where('header_request_id',$id)->whereNotNull('deleted_at')->count();
+			$bodyCountMo      = DB::table('mo_body_request')->where('header_request_id',$id)->whereNull('deleted_at')->count();
+
+			if($bodyCountAll == ($bodyCountMo + $bodyCountDeleted)){
+				HeaderRequest::where('id', $id)
+				->update([
+					'to_mo'    => 0
+				]);	
+			}
+	
+			$message = ['status'=>'success', 'message' => 'Cancelled Successfully!'];
+			echo json_encode($message);
+			
 		}
 
 	}

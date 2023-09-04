@@ -761,7 +761,7 @@
                                                     '<input type="text" onkeyup="this.value = this.value.toUpperCase();" class="form-control text-center digits_code sinput" data-id="'+ tableRow +'" id="digits_code'+ tableRow +'"  name="digits_code[]" value="'+e.digits_code+'"  maxlength="100" readonly>' +
                                                 '</td>' +
                                                 '<td style="display:none">' + 
-                                                    '<input type="hidden" class="form-control cost" data-id="'+ tableRow +'" id="cost'+ tableRow +'"  name="supplies_cost[]"   maxlength="100" readonly>' +
+                                                    '<input type="hidden" class="form-control cost" data-id="'+ tableRow +'" id="cost'+ tableRow +'"  name="supplies_cost[]" value="'+e.item_cost+'"  maxlength="100" readonly>' +
                                                     '<input type="hidden" onkeyup="this.value = this.value.toUpperCase();" class="form-control fixed_description sinput" data-id="'+ tableRow +'" id="fixed_description'+ tableRow +'"  name="fixed_description[]" value="'+e.value+'"  maxlength="100" readonly>' +
                                                 '</td>' +
 

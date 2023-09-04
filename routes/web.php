@@ -65,6 +65,10 @@ Route::group(['middleware' => ['web']], function() {
     Route::get(config('crudbooster.ADMIN_PATH').'/header_request/add-requisition-supplies', 'AdminHeaderRequestController@getAddRequisitionsupplies')->name('assets.add.requisition.supplies'); 
     Route::get('admin/header_request/subcategories/{id}','AdminHeaderRequestController@SubCategories');
     Route::get('admin/header_request/RemoveItem','AdminHeaderRequestController@RemoveItem');
+    //Cancel Request
+    Route::post(config('crudbooster.ADMIN_PATH').'/header_request/cancel-arf-request','AdminHeaderRequestController@cancelArfRequest')->name('cancel-arf-request');
+    Route::post(config('crudbooster.ADMIN_PATH').'/header_request/cancel-arf-mo-perline-request','AdminHeaderRequestController@cancelArfMoPerLineRequest')->name('cancel-arf-mo-perline-request');
+
     //Temporary Update Status
     Route::get('/admin/header_request/status-update-upload','AdminHeaderRequestController@UploadStatus');
     Route::post('/admin/admin_import/upload-status-update','AdminImportController@updateStatusUpload')->name('upload-status-update');
