@@ -1690,10 +1690,11 @@
 						<input type="hidden"  class="form-control"  name="remove_btn[]" id="remove_btn'.$tableRow.'"  required  value="'.$tableRow.'">
 						<input type="hidden"  class="form-control"  name="remove_btn[]" id="category"  required  value="'.$data['Header']->request_type_id.'">
 				';
-				if(CRUDBooster::isSuperadmin()){
-				  $data['ARFBody'] .='<td style="text-align:center" height="10"><input type="checkbox" name="body_id_to_cancel[]" id="body_id_to_cancel'.$tableRow.'" class="body_id_to_cancel" required data-id="'.$tableRow.'" value="'.$rowresult->body_id.'"/></td>';
-				}
+				
 			    if($rowresult->reserved != null || $rowresult->reserved != ""){ 
+					if(CRUDBooster::isSuperadmin()){
+						$data['ARFBody'] .='<td style="text-align:center" height="10"><input type="checkbox" name="body_id_to_cancel[]" id="body_id_to_cancel'.$tableRow.'" class="body_id_to_cancel" required data-id="'.$tableRow.'" value="'.$rowresult->body_id.'"/></td>';
+					}
 					$data['ARFBody'] .='
 					   <td style="text-align:center" height="10">
 					        <input type="hidden"  class="form-control"  name="body_request_id[]" id="body_request_id'.$tableRow.'"  required  value="'.$rowresult->id.'">                                                                               
@@ -1734,8 +1735,13 @@
 						'. ($rowresult->unit_cost * $rowresult->serve_qty) .'
 						</td>
 						<td style="text-align:center"><i data-toggle="tooltip" data-placement="right" title="reserved" class="fa fa-check-circle text-success"></i></td>
+						</tr>
 					';
 				}else{
+					$data['ARFBody'] .='<tr>';
+					if(CRUDBooster::isSuperadmin()){
+						$data['ARFBody'] .='<td style="text-align:center" height="10"><input type="checkbox" name="body_id_to_cancel[]" id="body_id_to_cancel'.$tableRow.'" class="body_id_to_cancel" required data-id="'.$tableRow.'" value="'.$rowresult->body_id.'"/></td>';
+					}
 					$data['ARFBody'] .='
 					   <td style="text-align:center" height="10">
 							'.$rowresult->digits_code.'                                                                            
