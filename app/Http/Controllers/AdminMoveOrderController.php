@@ -1588,6 +1588,7 @@
 			$data['Body'] = BodyRequest::leftjoin('assets_inventory_reserved', 'body_request.id', '=', 'assets_inventory_reserved.body_id')
 								->select(
 								  'body_request.*',
+								  'body_request.id as body_id',
 								  'assets_inventory_reserved.reserved as reserved'
 								)
 								->where('body_request.header_request_id', $search)
@@ -1677,21 +1678,21 @@
 			$tableRow = 1;
 
 			$total = 0;
-
+		
 			foreach($data['Body'] as $rowresult){
 
 				$tableRow++;
-
 				$total++;
 
 				$data['ARFBody'] .='
-
 					<tr style="background-color: #d4edda; color:#155724">
 						<input type="hidden"  class="form-control text-center finput"  name="item_description[]" id="item_description'.$tableRow.'"  required  value="'.$rowresult->item_description.'">
 						<input type="hidden"  class="form-control"  name="remove_btn[]" id="remove_btn'.$tableRow.'"  required  value="'.$tableRow.'">
 						<input type="hidden"  class="form-control"  name="remove_btn[]" id="category"  required  value="'.$data['Header']->request_type_id.'">
-					
 				';
+				if(CRUDBooster::isSuperadmin()){
+				  $data['ARFBody'] .='<td style="text-align:center" height="10"><input type="checkbox" name="body_id_to_cancel[]" id="body_id_to_cancel'.$tableRow.'" class="body_id_to_cancel" required data-id="'.$tableRow.'" value="'.$rowresult->body_id.'"/></td>';
+				}
 			    if($rowresult->reserved != null || $rowresult->reserved != ""){ 
 					$data['ARFBody'] .='
 					   <td style="text-align:center" height="10">
@@ -1736,7 +1737,6 @@
 					';
 				}else{
 					$data['ARFBody'] .='
-					<tr >
 					   <td style="text-align:center" height="10">
 							'.$rowresult->digits_code.'                                                                            
 						</td>
@@ -1794,6 +1794,10 @@
 
 			}
 
+			if(CRUDBooster::isSuperadmin()){
+				$data['checkBoxHeader'] .= '<th width="3%" class="text-center">Cancel</th>';
+			}
+
 			$data['ARFBodyTable'] .= '
 				<hr/>
 				<div class="col-md-12">
@@ -1807,6 +1811,7 @@
 								<table id="asset-items1">
 									<tbody id="bodyTable">
 										<tr class="tbl_header_color dynamicRows">
+										    '.$data['checkBoxHeader'].'
 											<th width="9%" class="text-center">Digits Code</th>
 											<th width="20%" class="text-center">Item Description</th>
 											<th width="9%" class="text-center">Category</th>                                                         
@@ -2073,13 +2078,7 @@
 				->update([
 					'to_print'=> 	0
 				]);	
-				
-				$item_string = implode(",",$itemID);
 
-				$itemList = array_map('intval',explode(",",$item_string));
-
-				$items = MoveOrder::wherein('id',$id)->get();
-				
 				$infos['assign_to'] = $employee_name->bill_to;
 				$infos['reference_number'] = $arf_header->reference_number;
 				//if(app()->environment('production')) {
@@ -2100,6 +2099,12 @@
 				//CRUDBooster::sendEmail(['to'=>$employee_name->email,'data'=>$infos,'template'=>'assets_confirmation','attachments'=>$files]);
 				CRUDBooster::sendEmail(['to'=>'marvinmosico@digits.ph','data'=>$infos,'template'=>'assets_confirmation','attachments'=>$files]);
 
+				
+				$item_string = implode(",",$itemID);
+				$itemList = array_map('intval',explode(",",$item_string));
+				$items = MoveOrder::wherein('id',$id)->get();
+				
+				
 		}
 
 
