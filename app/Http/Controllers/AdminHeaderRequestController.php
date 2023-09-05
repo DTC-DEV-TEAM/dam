@@ -1954,7 +1954,7 @@
 
 			DB::table('assets_inventory_reserved')->where('reference_number', $arf_number->reference_number)->delete();
 
-			$message = ['status'=>'success', 'message' => 'Cancelled Successfully!'];
+			$message = ['status'=>'success', 'message' => 'Cancelled Successfully!','redirect_url'=>CRUDBooster::mainpath()];
 			echo json_encode($message);
 			
 		}
@@ -1981,18 +1981,27 @@
 				DB::table('assets_inventory_reserved')->where('body_id', $body_ids[$x])->delete();
 			}
 
+			$header           = DB::table('header_request')->where('id',$id)->first();
 			$bodyCountAll     = DB::table('body_request')->where('header_request_id',$id)->count();
 			$bodyCountDeleted = DB::table('body_request')->where('header_request_id',$id)->whereNotNull('deleted_at')->count();
 			$bodyCountMo      = DB::table('mo_body_request')->where('header_request_id',$id)->whereNull('deleted_at')->count();
 
 			if($bodyCountAll == ($bodyCountMo + $bodyCountDeleted)){
-				HeaderRequest::where('id', $id)
-				->update([
-					'to_mo'    => 0
-				]);	
+				if($header->status_id == 14){
+					HeaderRequest::where('id', $id)
+					->update([
+						'status_id' => 8,
+						'to_mo'     => 0
+					]);	
+				}else{
+					HeaderRequest::where('id', $id)
+					->update([
+						'to_mo'    => 0
+					]);	
+				}
 			}
 	
-			$message = ['status'=>'success', 'message' => 'Cancelled Successfully!'];
+			$message = ['status'=>'success', 'message' => 'Cancelled Successfully!','redirect_url'=>CRUDBooster::mainpath()];
 			echo json_encode($message);
 			
 		}

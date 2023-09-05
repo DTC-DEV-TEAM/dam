@@ -535,9 +535,11 @@
 
             <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.back') }}</a>
             @if(CRUDBooster::isSuperadmin())
+              @if(in_array($Header->request_type_id, [1,5]))
                 @if(in_array($Header->status_id, [1,14]))
                     <button class="btn btn-danger pull-right" value="cancelRequest" type="button" id="btnCancelRequest"><i class="fa fa-times-circle" ></i> Cancel</button>
                 @endif
+              @endif
             @endif
         </div>
 
