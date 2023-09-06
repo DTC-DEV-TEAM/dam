@@ -675,17 +675,23 @@
 			]);	
 
 			if($arf_header->picked_by == null){
-
 				HeaderRequest::where('id', $arf_header->id)
 				->update([
-					'status_id'=> 	$for_receiving,
 					'picked_by'=> 	CRUDBooster::myId(),
 					'picked_at'=> 	date('Y-m-d H:i:s')
 				]);	
-
 			}
 
-            
+			$body_request = BodyRequest::where(['header_request_id' => $arf_header->id])->whereNull('deleted_at')->count();
+			$mo_request   = MoveOrder::where(['header_request_id' => $arf_header->id])->where('status_id', '!=', 8)->count();
+
+			if($body_request == $mo_request){
+				HeaderRequest::where('id',$arf_header->id)
+				->update([
+					'status_id'      => $for_receiving,
+				]);	
+			}
+
 			//save defect and good comments
 			// $invACode = array();
 			// foreach($item_id as $code){

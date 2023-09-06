@@ -504,30 +504,22 @@
 
 
 			if($arf_header->closed_by == null){
-
 				HeaderRequest::where('id', $arf_header->id)
 				->update([
-					//'status_id'=> 	 	$closed,
 					'closed_by'=> 	CRUDBooster::myId(),
 					'closed_at'=> 	date('Y-m-d H:i:s')
 				]);	
-
 			}
 
 			$cancelled  = 		DB::table('statuses')->where('id', 8)->value('id');
-
 			$body_request 		= BodyRequest::where(['header_request_id' => $arf_header->id])->count();
-
 			$mo_request 		= MoveOrder::where(['header_request_id' => $arf_header->id])->where('status_id',$closed)->count();
-
 			if($body_request == $mo_request){
-
 				HeaderRequest::where('id', $arf_header->id)
 				->update([
 					'closing_plug'=> 	1,
 					'status_id'=> 	 	$closed
 				]);	
-
 			}
 
 			/*

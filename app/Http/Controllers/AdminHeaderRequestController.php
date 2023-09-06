@@ -1984,7 +1984,8 @@
 			$header           = DB::table('header_request')->where('id',$id)->first();
 			$bodyCountAll     = DB::table('body_request')->where('header_request_id',$id)->count();
 			$bodyCountDeleted = DB::table('body_request')->where('header_request_id',$id)->whereNotNull('deleted_at')->count();
-			$bodyCountMo      = DB::table('mo_body_request')->where('header_request_id',$id)->whereNull('deleted_at')->count();
+			$bodyCountMo      = DB::table('mo_body_request')->where('header_request_id',$id)->where('status_id', '!=', 8)->count();
+			$getStatus        = DB::table('mo_body_request')->where('header_request_id',$id)->where('status_id', '!=', 8)->first();
 
 			if($bodyCountAll == ($bodyCountMo + $bodyCountDeleted)){
 				if($header->status_id == 14){
@@ -1996,6 +1997,7 @@
 				}else{
 					HeaderRequest::where('id', $id)
 					->update([
+						'status_id' => $getStatus->status_id,
 						'to_mo'    => 0
 					]);	
 				}
