@@ -1987,14 +1987,16 @@
 			$bodyCountMo      = DB::table('mo_body_request')->where('header_request_id',$id)->where('status_id', '!=', 8)->count();
 			$getStatus        = DB::table('mo_body_request')->where('header_request_id',$id)->where('status_id', '!=', 8)->first();
 
-			if($bodyCountAll == ($bodyCountMo + $bodyCountDeleted)){
-				if($header->status_id == 14){
+			if($bodyCountMo == 0){
+				if($bodyCountAll ==  $bodyCountDeleted){
 					HeaderRequest::where('id', $id)
 					->update([
 						'status_id' => 8,
 						'to_mo'     => 0
 					]);	
-				}else{
+				}
+			}else{
+				if($bodyCountAll ==  ($bodyCountDeleted + $bodyCountMo)){
 					HeaderRequest::where('id', $id)
 					->update([
 						'status_id' => $getStatus->status_id,
@@ -2002,7 +2004,7 @@
 					]);	
 				}
 			}
-	
+
 			$message = ['status'=>'success', 'message' => 'Cancelled Successfully!','redirect_url'=>CRUDBooster::mainpath()];
 			echo json_encode($message);
 			
