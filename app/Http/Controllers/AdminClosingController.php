@@ -512,7 +512,7 @@
 			}
 
 			$cancelled  = 		DB::table('statuses')->where('id', 8)->value('id');
-			$body_request 		= BodyRequest::where(['header_request_id' => $arf_header->id])->count();
+			$body_request 		= BodyRequest::where(['header_request_id' => $arf_header->id])->whereNull('deleted_at')->count();
 			$mo_request 		= MoveOrder::where(['header_request_id' => $arf_header->id])->where('status_id',$closed)->count();
 			if($body_request == $mo_request){
 				HeaderRequest::where('id', $arf_header->id)
