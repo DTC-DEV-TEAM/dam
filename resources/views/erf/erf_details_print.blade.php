@@ -1,7 +1,21 @@
 @extends('crudbooster::admin_template')
     @push('head')
         <style type="text/css">   
- 
+            * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            }
+            /* CSS styling for before/after/avoid. */
+            .before {
+            page-break-before: always;
+            }
+            .after {
+            page-break-after: always;
+            }
+            .avoid {
+            page-break-inside: avoid;
+            }
             .firstRow {
                 border: 1px solid rgba(39, 38, 38, 0.5);
                 padding: 10px;
@@ -56,16 +70,11 @@
         </style>
     @endpush
 @section('content')
-@if(g('return_url'))
-	<p class="noprint"><a title='Return' href='{{g("return_url")}}'><i class='fa fa-chevron-circle-left '></i> &nbsp; {{trans("crudbooster.form_back_to_list",['module'=>CRUDBooster::getCurrentModule()->name])}}</a></p>       
-@else
-	<p class="noprint"><a title='Main Module' href='{{CRUDBooster::mainpath()}}'><i class='fa fa-chevron-circle-left '></i> &nbsp; {{trans("crudbooster.form_back_to_list",['module'=>CRUDBooster::getCurrentModule()->name])}}</a></p>       
-@endif
 
     <div class='panel-heading' id="print-pdf">
-        ERF Details
-    </div>
-
+        <span style="font-weight: bold; font-size:15px">ERF DETAILS</span>
+        <button id="print" class="btn btn-success btn-sm pull-right" data-html2canvas-ignore="true"><i class="fa fa-print"></i> Download as PDF</button>      
+        <br><br>
         <div class='card'>
             <div class="row">
                 <div class="col-md-6">
@@ -76,8 +85,8 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label class="control-label"> Requested Date</label>
-                        <input type="text" class="form-control finput" value="{{$Header->date_requested}}" aria-describedby="basic-addon1" readonly>             
+                    <label class="control-label">ERF Number</i></label>
+                            <input type="text" class="form-control finput" value="{{$Header->reference_number}}" id="reference_no" aria-describedby="basic-addon1" readonly>             
                     </div>
                 </div>
             </div>
@@ -85,34 +94,38 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
+                        <label class="control-label"> Requested Date</label>
+                        <input type="text" class="form-control finput" value="{{$Header->date_requested}}" aria-describedby="basic-addon1" readonly>             
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
                       <label class="control-label"> Department</label>
                       <input type="text" class="form-control finput" value="{{$Header->department}}" aria-describedby="basic-addon1" readonly>             
                     </div>
                 </div>
+            </div>
+            <div class="row"> 
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label"> Date Needed</label>
                         <input type="text" class="form-control finput" value="{{$Header->date_needed}}" aria-describedby="basic-addon1" readonly>             
                     </div>
                 </div>
-               
-            </div>
-            <div class="row"> 
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label"> Position</label>
                         <input type="text" class="form-control finput" value="{{$Header->position}}" aria-describedby="basic-addon1" readonly>                                                      
                     </div>
-                </div>
+                </div>        
+            </div>
+            <div class="row"> 
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label"> Work Location</label>
                         <input type="text" class="form-control finput" value="{{$Header->work_location}}" aria-describedby="basic-addon1" readonly>                                                                                    
                     </div>
                 </div>
-                
-            </div>
-            <div class="row"> 
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label"> Salary Range</label>
@@ -205,7 +218,7 @@
             
         </div>
         <!-- 3rd row -->
-        <div class="card">
+        <div class="card after1">
             <div class="row"> 
                 <div class="col-md-6">
                     <label class="require control-label"> Required Exams</label><br>
@@ -238,7 +251,7 @@
             </div>
             @endif
         </div>
-        <div class="card">
+        <div class="card before" style="margin-top: 10px">
             <div class="row">
                 <div class="col-md-6">
                     <label class="require control-label"> Who will the employee interact with?</label><br>
@@ -298,7 +311,8 @@
                 @endif
             </div>
         </div>
-        <div class="card">
+
+        <div class="card after2">
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group">
@@ -324,7 +338,8 @@
                 </div>
             </div>
         </div>
-        <div class="card">
+
+        <div class="card before">
             <div class="row">
                 <div class="col-md-12">
                     <div class="box-header text-center">
@@ -458,7 +473,7 @@
                         <tbody>
                             <tr>
                                 <th class="control-label col-md-2">{{ trans('message.form-label.approved_by') }}:</th>
-                                <td class="col-md-4">{{$Header->approved_head_by}} / {{$Header->approved_immediate_head_at}}</td>     
+                                <td class="col-md-4">{{$Header->approved_head_by}} / {{ date('Y-m-d', strtotime($Header->approved_immediate_head_at))}}</td>     
                             </tr>
                             @if($Header->approver_comments != NULL)
                             <tr>
@@ -477,7 +492,7 @@
                         <tbody>
                             <tr>
                                 <th class="control-label col-md-2">Verified By:</th>
-                                <td class="col-md-4">{{$Header->verified_by}} / {{$Header->approved_hr_at}}</td>     
+                                <td class="col-md-4">{{$Header->verified_by}} / {{date('Y-m-d', strtotime($Header->approved_hr_at))}}</td>     
                             </tr>
                             @if($Header->hr_comments != NULL)
                             <tr>
@@ -501,7 +516,7 @@
                             </tr>
                             <tr>
                                 <th class="control-label col-md-2">On Boarding Date:</th>
-                                <td class="col-md-4">{{$Header->onboarding_date}}</td>
+                                <td class="col-md-4">{{date('Y-m-d', strtotime($Header->onboarding_date))}}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -510,8 +525,8 @@
             </div>
         </div>
         @endif
-    
-<button id="download-button">Download as PDF</button>            
+    </div>
+      
                 
 @endsection
 @push('bottom')
@@ -522,15 +537,19 @@
 
     $("input:checkbox").click(function() { return false; });
 
-    const button = document.getElementById('download-button');
+    const button = document.getElementById('print');
 
     function generatePDF() {
-        // Choose the element that your content will be rendered to.
-        const element = document.getElementById('print-pdf');
-        // Choose the element and save the PDF for your user.
-        html2pdf().from(element).save();
+        var reference_no = $('#reference_no').val();
+        const element =  document.getElementById('print-pdf');
+        const opt = {
+            filename: reference_no + '.pdf',
+            pagebreak: { before: '.before', after: ['#after1', '#after2'], avoid: 'img' },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(element).save();
     }
-
+    
     button.addEventListener('click', generatePDF);
 
     var tds = document
