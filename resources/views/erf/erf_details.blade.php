@@ -510,9 +510,7 @@
             </div>
         </div>
         @endif
-    
-<button id="download-button">Download as PDF</button>            
-                
+                    
 @endsection
 @push('bottom')
 <script type="text/javascript">

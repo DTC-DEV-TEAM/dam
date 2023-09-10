@@ -333,7 +333,7 @@
                 <div class="col-md-6">                        
                 <label class="control-label">Attached Documents</label>
                 @foreach($erf_header_documents as $erf_header_document)                                    
-                    <a href='{{CRUDBooster::mainpath("download/".$erf_header_document->id)."?return_url=".urlencode(Request::fullUrl())}}' class="form-control finput">{{$erf_header_document->file_name}} <i style="color:#007bff" class="fa fa-download"></i></a>                                       
+                    <a class="form-control finput">{{$erf_header_document->file_name}} <i style="color:#007bff" class="fa fa-download"></i></a>                                       
                 @endforeach
                 </div>
             </div>

@@ -52,125 +52,7 @@
             padding: 8px;
             border-radius: 5px 0 0 5px;
             }
-
-             /* loading spinner */
-             .loading {
-                /* z-index: 20;
-                position: absolute;
-                top: 0;
-                bottom:0;
-                left:0;
-                width: 100%;
-                height: 1500px;
-                background-color: rgba(0,0,0,0.4); */
-                position: relative;
-                width: 54px;
-                height: 54px;
-                border-radius: 10px;
-                left: 50%;
-                transform: translateX(-50%);
-
-            }
-            .loading div {
-                /* position: absolute;
-                border: 16px solid #f3f3f3; 
-                border-top: 16px solid #3498db; 
-                border-radius: 50%;
-                width: 50px;
-                height: 50px;
-                top: 40%;
-                left:50%;
-                bottom:0;
-                animation: spin 2s linear infinite; */
-                width: 8%;
-                height: 24%;
-                background: rgb(128, 128, 128);
-                position: absolute;
-                left: 50%;
-                top: 30%;
-                opacity: 0;
-                border-radius: 50px;
-                box-shadow: 0 0 3px rgba(0,0,0,0.2);
-                animation: fade458 1s linear infinite;
-
-            }
-            
-            /* @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            } */
-
-            @keyframes fade458 {
-            from {
-                opacity: 1;
-            }
-
-            to {
-                opacity: 0.25;
-            }
-            }
-
-            .loading .bar1 {
-                transform: rotate(0deg) translate(0, -130%);
-                animation-delay: 0s;
-            }
-
-            .loading .bar2 {
-                transform: rotate(30deg) translate(0, -130%);
-                animation-delay: -1.1s;
-            }
-
-            .loading .bar3 {
-                transform: rotate(60deg) translate(0, -130%);
-                animation-delay: -1s;
-            }
-
-            .loading .bar4 {
-                transform: rotate(90deg) translate(0, -130%);
-                animation-delay: -0.9s;
-            }
-
-            .loading .bar5 {
-                transform: rotate(120deg) translate(0, -130%);
-                animation-delay: -0.8s;
-            }
-
-            .loading .bar6 {
-                transform: rotate(150deg) translate(0, -130%);
-                animation-delay: -0.7s;
-            }
-
-            .loading .bar7 {
-                transform: rotate(180deg) translate(0, -130%);
-                animation-delay: -0.6s;
-            }
-
-            .loading .bar8 {
-                transform: rotate(210deg) translate(0, -130%);
-                animation-delay: -0.5s;
-            }
-
-            .loading .bar9 {
-                transform: rotate(240deg) translate(0, -130%);
-                animation-delay: -0.4s;
-            }
-
-            .loading .bar10 {
-                transform: rotate(270deg) translate(0, -130%);
-                animation-delay: -0.3s;
-            }
-
-            .loading .bar11 {
-                transform: rotate(300deg) translate(0, -130%);
-                animation-delay: -0.2s;
-            }
-
-            .loading .bar12 {
-                transform: rotate(330deg) translate(0, -130%);
-                animation-delay: -0.1s;
-            }
-
-           
+       
         </style>
     @endpush
 @section('content')
@@ -183,26 +65,6 @@
     <div class='panel-heading'>
         Close Form @if($Header->locking_close !== CRUDBooster::myId()) <span style="color: red">(This form request currently used by {{$Header->current_user}}!)</span> @endif
     </div>
-
-    {{-- <section id="loading">
-        <div id="loading-content"></div>
-    </section> --}}
-    <div class="loading">
-        <div class="bar1"></div>
-        <div class="bar2"></div>
-        <div class="bar3"></div>
-        <div class="bar4"></div>
-        <div class="bar5"></div>
-        <div class="bar6"></div>
-        <div class="bar7"></div>
-        <div class="bar8"></div>
-        <div class="bar9"></div>
-        <div class="bar10"></div>
-        <div class="bar11"></div>
-        <div class="bar12"></div>
-        <span></span>
-    </div>
-    
 
     <form method='post' id="myform" action='{{CRUDBooster::mainpath('edit-save/'.$Header->requestid)}}'>
         <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
@@ -641,8 +503,6 @@
     
     $("input:checkbox").click(function() { return false; });
 
-    showLoading();
-
     if($('#locking').val() === $('#current_user').val()){
         const pageHideListener = (event) => {
             var id = $('#id').val();
@@ -696,14 +556,17 @@
             swal({
                 title: "Are you sure?",
                 type: "warning",
+                confirmButtonClass: "show-loading-icon",
+                cancelButtonClass: "show-loading-icon-delete",
                 showCancelButton: true,
                 confirmButtonColor: "#41B314",
                 cancelButtonColor: "#F9354C",
                 confirmButtonText: "Yes, close it!",
                 width: 450,
-                height: 200
+                height: 200,
+                closeOnConfirm: false,
+                showLoaderOnConfirm: true
                 }, function () {
-                  
                     $.ajax({
                         url: "{{ route('set-close-request') }}",
                         type: "POST",
