@@ -1490,12 +1490,12 @@
 
 		public function setRequestClose(Request $request) {	
 			$fields = Request::all();
-			// erfHeaderRequest::where(['id' => $fields['id']])
-			// 		->update([
-			// 				'status_id'     => $this->closed, 
-			// 				'regular_date'  => $fields['date'],
-			// 				'locking_close' => NULL,
-			// 				]);
+			erfHeaderRequest::where(['id' => $fields['id']])
+					->update([
+							'status_id'     => $this->closed, 
+							'regular_date'  => $fields['date'],
+							'locking_close' => NULL,
+							]);
 
 			$header = erfHeaderRequest::where('id', $fields['id'])->first();
 			//$hr_email = "HR@digits.ph";

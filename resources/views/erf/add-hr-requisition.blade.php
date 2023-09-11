@@ -389,7 +389,7 @@
             </div>
 
             <div class='panel-heading text-center'>
-                <h4>Required Assets</h4>
+                <h4> Assets</h4>
             </div>
             <div class="card8">
                 <div class="row">
@@ -966,16 +966,7 @@
         var countRow = $('#asset-items tfoot tr').length - 1;
         var reg = /^0/gi;
         // var value = $('.vvalue').val();
-        if($("#requested_date").val() === ""){
-            swal({
-                type: 'error',
-                title: 'Please select Requested Date!',
-                icon: 'error',
-                confirmButtonColor: "#367fa9",
-            }); 
-            event.preventDefault(); // cancel default behavior
-            return false;
-        }else if($("#department").val() === ""){
+        if($("#department").val() === ""){
             swal({
                 type: 'error',
                 title: 'Please select Department!',
