@@ -240,6 +240,7 @@
 	        $this->load_css = array();
 			$this->load_css[] = asset("datetimepicker/bootstrap-datetimepicker.min.css");
 			$this->load_css[] = asset("css/font-family.css");
+			$this->load_js[] = asset("html2pdf/dist/html2pdf.bundle.min.js");
 	    }
 
 
@@ -360,9 +361,19 @@
 			$required_system           = $fields['required_system'];
 			$count_header              = DB::table('erf_header_request')->count();
 			$header_ref                = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);			
-			$reference_number	       = "ERF-".$header_ref;
+	
+			if($manpower_type === "AGENCY"){
+				$reference_number	       = "ERF-".$header_ref."-A";
+			}elseif($manpower_type === "DIRECT"){
+				$reference_number	       = "ERF-".$header_ref."-D";
+			}elseif($manpower_type === "PROJECT-BASED"){
+				$reference_number	       = "ERF-".$header_ref."-P";
+			}else{
+				$reference_number	       = "ERF-".$header_ref."-S";
+			}
+
 			$category_id 		       = $fields['category_id'];
-			//dd($fields);
+	
 			$postdata['reference_number']		 	= $reference_number;
 			if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15])){ 
 			    $postdata['status_id']                          = 29;

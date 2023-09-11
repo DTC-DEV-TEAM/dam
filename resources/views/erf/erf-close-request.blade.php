@@ -52,7 +52,7 @@
             padding: 8px;
             border-radius: 5px 0 0 5px;
             }
-           
+       
         </style>
     @endpush
 @section('content')
@@ -556,12 +556,16 @@
             swal({
                 title: "Are you sure?",
                 type: "warning",
+                confirmButtonClass: "show-loading-icon",
+                cancelButtonClass: "show-loading-icon-delete",
                 showCancelButton: true,
                 confirmButtonColor: "#41B314",
                 cancelButtonColor: "#F9354C",
                 confirmButtonText: "Yes, close it!",
                 width: 450,
-                height: 200
+                height: 200,
+                closeOnConfirm: false,
+                showLoaderOnConfirm: true
                 }, function () {
                     $.ajax({
                         url: "{{ route('set-close-request') }}",
@@ -573,6 +577,7 @@
                         dataType: 'json',
                         success: function (data) {
                             if (data.status == "success") {
+                              
                                 swal({
                                     type: data.status,
                                     title: data.message,
@@ -580,6 +585,7 @@
                                 setTimeout(function(){
                                     window.location.replace(document.referrer);
                                 }, 2000); 
+                              
                                 } else if (data.status == "error") {
                                 swal({
                                     type: data.status,
