@@ -339,7 +339,7 @@
             </div>
         </div>
 
-        <div class="card before">
+        {{-- <div class="card">
             <div class="row">
                 <div class="col-md-12">
                     <div class="box-header text-center">
@@ -405,9 +405,9 @@
                 @endif
             </div>
         </div>
-        @endif
+        @endif --}}
 
-        <div class="card">
+        <div class="card before">
             <div class="row">
                 <div class="col-md-12">
                     <div class="box-header text-center">
