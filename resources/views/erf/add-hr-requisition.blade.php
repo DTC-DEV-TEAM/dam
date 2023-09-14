@@ -154,17 +154,23 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label require"> Company</label>
-                            <input type="text" class="form-control finput"  id="company" name="company" value="Digits Trading Corp."  required readonly>
+                            <select required selected data-placeholder="-- Please choose company --" id="company" name="company" class="form-select" style="width:100%;">
+                                @foreach($companies as $company)
+                                    <option value=""></option>
+                                    <option value="{{ $company->company_name }}">{{ $company->company_name }}</option>
+                                @endforeach
+                            </select>
+                            {{-- <input type="text" class="form-control finput"  id="company" name="company" value="Digits Trading Corp."  required readonly> --}}
                         </div>
                     </div>
                     <div class="col-md-6">
                     <div class="form-group">
                             <label class="control-label"><span style="color:red">*</span> Department</label>
-                            <select required selected data-placeholder="-- Please choose department --" id="department" name="department" class="form-select select2" style="width:100%;">
-                            @foreach($departments as $res)
-                                <option value=""></option>
-                                <option value="{{ $res->id }}">{{ $res->department_name }}</option>
-                            @endforeach
+                            <select required selected data-placeholder="-- Please choose department --" id="department" name="department" class="form-select" style="width:100%;">
+                                @foreach($departments as $res)
+                                    <option value=""></option>
+                                    <option value="{{ $res->id }}">{{ $res->department_name }}</option>
+                                @endforeach
                             </select>
                             {{-- <input type="text" class="form-control finput"  id="department" name="department" value="{{$employeeinfos->department_name}}"  required readonly> --}}
                         </div>
@@ -176,7 +182,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label"><span style="color:red">*</span> Date Needed</label>
-                            <input class="form-control finput date" type="text" placeholder="Select Needed Date" name="date_needed" id="date_needed">
+                            <input class="form-control finput date" autocomplete="off" type="text" placeholder="Select Needed Date" name="date_needed" id="date_needed">
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -272,7 +278,7 @@
             <div class="card4">
                 <div class="row"> 
                     <div class="col-md-6">
-                        <label class="require control-label"> Required Exams</label><br>
+                        <label class="require control-label"> Exams</label><br>
                             @foreach($required_exams as $data)
                             <div class="col-md-6">
                                 <label class="checkbox-inline control-label col-md-12" ><br>
@@ -338,7 +344,7 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <label class="require control-label"> Required System</label><br>
+                        <label class="require control-label"> System</label><br>
                         @foreach($required_system as $data)
                         <div class="col-md-3">
                             <label class="checkbox-inline control-label col-md-3" ><br>
@@ -470,6 +476,8 @@
 <script type="text/javascript">
     $(function(){
         $('body').addClass("sidebar-collapse");
+        $('input').blur();
+        $(".date").val('');
     });
     function preventBack() {
         window.history.forward();
@@ -480,7 +488,7 @@
     setTimeout("preventBack()", 0);
 
     var tableRow = 1;
-    $('#department').select2({})
+    $('#department,#company').select2({})
     $('#position').select2({})
     $("#application_div").hide();
     $("#application_others_div").hide();
@@ -494,6 +502,8 @@
         format: "YYYY-MM-DD",
         dayViewHeaderFormat: "MMMM YYYY",
     });
+
+   
 
     $('#OTHERS').change(function() {
         var ischecked= $(this).is(':checked');

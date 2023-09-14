@@ -170,9 +170,9 @@
 	        $this->script_js = NULL;
 			$this->script_js = "
 					$(document).ready(function() {
-						$('#department_name').keyup(function() {
-							this.value = this.value.toLocaleUpperCase();
-						});
+						// $('#department_name').keyup(function() {
+						// 	this.value = this.value.toLocaleUpperCase();
+						// });
 					});
 			";
 
