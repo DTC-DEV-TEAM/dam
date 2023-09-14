@@ -172,7 +172,7 @@
 			$this->script_js = "
 			$(document).ready(function() {
 				$('#company_name').keyup(function() {
-					this.value = this.value.toLocaleUpperCase();
+					//this.value = this.value.toLocaleUpperCase();
 				});
 			});
 			";

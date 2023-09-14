@@ -211,9 +211,9 @@
 					}
 				}
 				
-				$('#position_description').keyup(function() {
-					this.value = this.value.toLocaleUpperCase();
-				});
+				// $('#position_description').keyup(function() {
+				// 	this.value = this.value.toLocaleUpperCase();
+				// });
 			});
 			";
 
