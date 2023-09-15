@@ -976,7 +976,16 @@
         var countRow = $('#asset-items tfoot tr').length - 1;
         var reg = /^0/gi;
         // var value = $('.vvalue').val();
-        if($("#department").val() === ""){
+        if($("#company").val() === ""){
+            swal({
+                type: 'error',
+                title: 'Please select Company!',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            }); 
+            event.preventDefault(); // cancel default behavior
+            return false;
+        }else if($("#department").val() === ""){
             swal({
                 type: 'error',
                 title: 'Please select Department!',
