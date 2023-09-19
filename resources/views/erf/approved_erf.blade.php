@@ -140,7 +140,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label"> Salary Range</label>
-                            <input type="text" class="form-control finput" value="{{number_format(Crypt::decryptString($Header->salary_range_from)) .' - '. number_format(Crypt::decryptString($Header->salary_range_to))}}" aria-describedby="basic-addon1" id="salary_range" name="salary_range">                                                                                         
+                            <input type="text" class="form-control finput" value="{{number_format((int) Crypt::decryptString($Header->salary_range_from)) .' - '. number_format((int) Crypt::decryptString($Header->salary_range_to))}}" aria-describedby="basic-addon1" id="salary_range" name="salary_range">                                                                                         
   
                         </div>
                     </div> 
