@@ -300,6 +300,7 @@
 			$verified         =  DB::table('statuses')->where('id', 30)->value('status_description');  
 			$jo_done          =  DB::table('statuses')->where('id', 31)->value('status_description');    
 			$onboarding       =  DB::table('statuses')->where('id', 33)->value('status_description');   
+			$onboarded        =  DB::table('statuses')->where('id', 43)->value('status_description'); 
 			$closed           =  DB::table('statuses')->where('id', 13)->value('status_description'); 
 			if($column_index == 1){
 				if($column_value == $pending){
@@ -314,6 +315,8 @@
 					$column_value = '<span class="label label-info">'.$jo_done.'</span>';
 				}else if($column_value == $onboarding){
 					$column_value = '<span class="label label-info">'.$onboarding.'</span>';
+				}else if($column_value == $onboarded){
+					$column_value = '<span class="label label-info">'.$onboarded.'</span>';
 				}else if($column_value == $cancelled){
 					$column_value = '<span class="label label-danger">'.$cancelled.'</span>';
 				}else if($column_value == $closed){
