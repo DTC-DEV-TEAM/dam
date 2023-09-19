@@ -312,7 +312,7 @@
             </div>
         </div>
 
-        <div class="card after2">
+        <div class="card before">
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group">
@@ -407,7 +407,7 @@
         </div>
         @endif --}}
 
-        <div class="card before">
+        <div class="card after2">
             <div class="row">
                 <div class="col-md-12">
                     <div class="box-header text-center">

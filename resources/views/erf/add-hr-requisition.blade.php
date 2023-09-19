@@ -153,7 +153,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="control-label require"> Company</label>
+                            <label class="control-label require"><span style="color:red">*</span> Company</label>
                             <select required selected data-placeholder="-- Please choose company --" id="company" name="company" class="form-select" style="width:100%;">
                                 @foreach($companies as $company)
                                     <option value=""></option>
@@ -316,7 +316,7 @@
                         @endforeach
                     </div>
                     <div class="col-md-6">
-                        <label class="require control-label"><span style="color:red">*</span> What will you be using the PC for?</label><br>
+                        <label class="require control-label"> What will you be using the PC for?</label><br>
                         @foreach($asset_usage as $data)
                         <div class="col-md-6">
                             <label class="checkbox-inline control-label col-md-12" ><br>
@@ -330,7 +330,7 @@
              <div class="card6">
                 <div class="row">
                     <div class="col-md-6">
-                        <label class="require control-label"><span style="color:red">*</span> Email Domain</label><br>
+                        <label class="require control-label"> Email Domain</label><br>
                         @foreach($email_domain as $data)
                         <div class="col-md-6">
                             <label class="checkbox-inline control-label col-md-6" ><br>
@@ -1093,25 +1093,28 @@
                 }); 
                 event.preventDefault(); // cancel default behavior
                 return false;
-        }else if(!$(".asset_usage").is(':checked')){
-                swal({
-                    type: 'error',
-                    title: 'Please choose what will you be using the PC for!',
-                    icon: 'error',
-                    confirmButtonColor: "#367fa9",
-                }); 
-                event.preventDefault(); // cancel default behavior
-                return false;
-        }else if(!$(".email_domain").is(':checked')){
-                swal({
-                    type: 'error',
-                    title: 'Please choose Email Domain!',
-                    icon: 'error',
-                    confirmButtonColor: "#367fa9",
-                }); 
-                event.preventDefault(); // cancel default behavior
-                return false;
-        }else if($('#qualifications').val() === ""){
+        }
+        // else if(!$(".asset_usage").is(':checked')){
+        //         swal({
+        //             type: 'error',
+        //             title: 'Please choose what will you be using the PC for!',
+        //             icon: 'error',
+        //             confirmButtonColor: "#367fa9",
+        //         }); 
+        //         event.preventDefault(); // cancel default behavior
+        //         return false;
+        // }
+        // else if(!$(".email_domain").is(':checked')){
+        //         swal({
+        //             type: 'error',
+        //             title: 'Please choose Email Domain!',
+        //             icon: 'error',
+        //             confirmButtonColor: "#367fa9",
+        //         }); 
+        //         event.preventDefault(); // cancel default behavior
+        //         return false;
+        // }
+        else if($('#qualifications').val() === ""){
             swal({
                 type: 'error',
                 title: 'Qualifications required!',

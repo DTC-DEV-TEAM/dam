@@ -34,7 +34,7 @@
 			$this->button_action_style = "button_icon";
 			$this->button_add = false;
 			$this->button_edit = false;
-			$this->button_delete = true;
+			$this->button_delete = false;
 			$this->button_detail = false;
 			$this->button_show = true;
 			$this->button_filter = true;
