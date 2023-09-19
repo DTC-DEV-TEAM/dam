@@ -242,8 +242,7 @@
                         </div>
                     </div>
             </div>
-
-            
+ 
             <div class="card3">
                     <div class="row"> 
                         <div class="col-md-6">
@@ -301,7 +300,7 @@
                         @endforeach
                     </div>
                 </div>
-             </div>
+            </div>
          
             <div class="card5">
                 <div class="row">
@@ -355,6 +354,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="card7">
                 <div class="row">
                     <div class="col-md-12">
@@ -468,9 +468,6 @@
             </div>  
     </form>
    
-                       
-
-
 @endsection
 @push('bottom')
 <script type="text/javascript">
@@ -502,8 +499,6 @@
         format: "YYYY-MM-DD",
         dayViewHeaderFormat: "MMMM YYYY",
     });
-
-   
 
     $('#OTHERS').change(function() {
         var ischecked= $(this).is(':checked');
@@ -567,7 +562,7 @@
 
     //other email domain
       //checkbox validations
-      $(".email_domain").change(function() {
+    $(".email_domain").change(function() {
         var rep = $(this);;
         if(rep.val() === "OTHERS" && rep.is(':checked')){
             $("#other_email_domain").show();
@@ -579,7 +574,7 @@
 
      //other Required Exam
       //checkbox validations
-      $("#Others").change(function() {
+    $("#Others").change(function() {
         var ischecked= $(this).is(':checked');
         if(ischecked == false){
             $("#other_required_exams_div").hide();
@@ -626,8 +621,6 @@
         });
     });
     
-
-
     $(document).ready(function() {
         const fruits = [];
         $("#add-Row").click(function() {
@@ -900,35 +893,28 @@
 
     });
 
-
     $(document).on('keyup', '.quantity_item', function(ev) {
-
         $("#quantity_total").val(calculateTotalQuantity());
-
     });
 
     $(document).on('keyup', '.cost_item', function(ev) {
-            var id = $(this).attr("data-id");
-            var rate = parseFloat($(this).val());
-
-            var qty = $("#quantity" + id).val();
-            var price = calculatePrice(qty, rate).toFixed(2); // this is for total Value in row
-
-            $("#total_unit_cost" + id).val(price);
-            $("#quantity_total").val(calculateTotalQuantity());
-            $("#cost_total").val(calculateTotalValue());
-            $("#total").val(calculateTotalValue2());
-
-            var total_checker = $("#total").val();
-
+        var id = $(this).attr("data-id");
+        var rate = parseFloat($(this).val());
+        var qty = $("#quantity" + id).val();
+        var price = calculatePrice(qty, rate).toFixed(2); // this is for total Value in row
+        $("#total_unit_cost" + id).val(price);
+        $("#quantity_total").val(calculateTotalQuantity());
+        $("#cost_total").val(calculateTotalValue());
+        $("#total").val(calculateTotalValue2());
+        var total_checker = $("#total").val();
     });
 
     function calculatePrice(qty, rate) {
         if (qty != 0) {
-        var price = (qty * rate);
-        return price;
+            var price = (qty * rate);
+            return price;
         } else {
-        return '0';
+            return '0';
         }
     }
 
@@ -973,6 +959,9 @@
     //SUBMIT REQUEST
     $("#btnSubmit").click(function(event) {
         event.preventDefault();
+        var splitData = $("#salary_range").val().split('-');
+        var salary_1 = splitData[0];
+        var salary_2 = splitData[1];
         var countRow = $('#asset-items tfoot tr').length - 1;
         var reg = /^0/gi;
         // var value = $('.vvalue').val();
@@ -1034,6 +1023,15 @@
             swal({
                 type: 'error',
                 title: 'Invalid Salary Range! please refer to the ff(xx,xxx-xx,xxx).',
+                icon: 'error',
+                confirmButtonColor: "#367fa9",
+            }); 
+            event.preventDefault(); // cancel default behavior
+            return false;
+        }else if(salary_1 == 0 || salary_2 == 0){
+            swal({
+                type: 'error',
+                title: 'Salary range cannot be zero! please refer to the ff(xx,xxx-xx,xxx).',
                 icon: 'error',
                 confirmButtonColor: "#367fa9",
             }); 
