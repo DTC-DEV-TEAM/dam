@@ -114,7 +114,7 @@
                                                     </td>
                                                     <td height="10">{{$rowresult->description}}</td>
                                                     <td height="10">{{$rowresult->serial_no}}</td>
-                                                    <td height="10">{{$rowresult->quantity}}</td>
+                                                    <td height="10" class="qty">{{$rowresult->quantity}}</td>
                                                     <td height="10" class="cost">{{$rowresult->unit_cost}}</td>
                                                 @endif
                                             </tr>
@@ -280,14 +280,28 @@
         var sumqty = 0;
         var sumcost = 0;
         for (var i = 0; i < tds.length; i++) {
-        if (tds[i].className == "cost") {
+        if (tds[i].className == "qty") {
+            sumqty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+        }else if (tds[i].className == "cost") {
             sumcost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
         }
         }
         document.getElementById("total").innerHTML +=
-        "<tr><td colspan='4' style='text-align:right'><strong>TOTAL</strong></td><td><strong>" +
-        sumcost.toFixed(2) +
-        "</strong></td></tr>";
+        "<tr>" +
+            "<td colspan='4' style='text-align:right'>" +
+                "<strong>TOTAL</strong>" +
+            "</td>" +
+            "<td>" +
+                    "<strong>" +
+                        sumqty +
+                    "</strong>" +
+                "</td>" +
+                "<td>" +
+                    "<strong>" +
+                        sumcost.toFixed(2) +
+                    "</strong>" +
+                "</td>" +
+        "</tr>";
 
     </script>
 @endpush
