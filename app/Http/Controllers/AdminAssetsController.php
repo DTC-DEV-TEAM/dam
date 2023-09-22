@@ -857,8 +857,8 @@
 								'add_quantity'        => 0,
 								'total_quantity'      => 0,
 								'status'              => $status,
-								'created_by'          => CRUDBooster::myId(),
-								'created_at'          => date('Y-m-d H:i:s')
+								'updated_by'          => CRUDBooster::myId(),
+								'updated_at'          => date('Y-m-d H:i:s')
 							]);
 							DB::commit();
 						} catch (\Exception $e) {
