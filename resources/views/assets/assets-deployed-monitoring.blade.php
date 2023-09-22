@@ -36,12 +36,12 @@
                         <th width="auto">Arf NO.</th>
                         <th width="auto">MO Reference</th>
                         <th width="auto">Request Type</th>
-                        <th width="auto">Requested By</th>
+                        <th width="auto">Employee Name</th>
                         <th width="auto">Digits Code</th>
                         <th width="auto">Asset Code</th>
                         <th width="auto">Item Description</th>
                         <th width="auto">Serial No</th>
-                        <th width="auto">Quantity</th>
+                        <th width="auto">Qty</th>
                         <th width="auto">Item Cost</th>
                         <th width="auto">Requested Date</th>
                         <th width="auto">Received Date</th>
