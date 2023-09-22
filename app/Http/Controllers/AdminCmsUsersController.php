@@ -194,7 +194,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 				$('#erf_id').removeAttr('required');
 
 				$('#id_cms_privileges').change(function() {
-					if($(this).val() == 1){
+					if($(this).val() == 1 || $(this).val() == 22){
 						$('#form-group-approver_id_manager').hide();
 						$('#approver_id_manager').removeAttr('required');
 
@@ -343,7 +343,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 
 			
 				$('#id_cms_privileges').change(function() {
-					if($(this).val() == 1){
+					if($(this).val() == 1 || $(this).val() == 22){
 						$('#form-group-approver_id_manager').hide();
 						$('#approver_id_manager').removeAttr('required');
 
@@ -473,7 +473,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 				});
 
 
-				if($('#id_cms_privileges').val() == 1){
+				if($('#id_cms_privileges').val() == 1 || $('#id_cms_privileges').val() == 1){
 					$('#form-group-approver_id_manager').hide();
 					$('#approver_id_manager').removeAttr('required');
 
