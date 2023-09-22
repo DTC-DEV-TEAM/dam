@@ -333,7 +333,7 @@
         public function getIndex() {
 			if(!CRUDBooster::isView()) CRUDBooster::redirect(CRUDBooster::adminPath(),trans('crudbooster.denied_access'));
 			$data = [];
-			$data['page_title'] = 'Assets Deployed Monitoring';
+			$data['page_title'] = 'Asset Deployed Monitoring';
 			$closed      =  DB::table('statuses')->where('id', 13)->value('id');
 		    $for_closing =  DB::table('statuses')->where('id', 19)->value('id');
 			$data['result'] = MoveOrder::arraymo($closed, $for_closing);

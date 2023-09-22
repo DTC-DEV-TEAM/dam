@@ -17,7 +17,7 @@
 
 <div class='panel panel-default'>
     <div class='panel-heading'>
-    Request Assets Reports
+    Lists of Deployed Asset
     </div>
 
         <div class='panel-body' style="overflow-x: scroll">
@@ -25,7 +25,7 @@
            
         <div class="row" style="margin:5px">   
             <button type="button" id="btn-export" class="btn btn-primary btn-sm btn-export" style="margin-bottom:10px"><i class="fa fa-download"></i>
-                <span>Export Data</span>
+                <span>Download Excel</span>
             </button>
             
             <table class='table table-hover table-striped table-bordered' id="table_dashboard">
@@ -33,7 +33,7 @@
                 <thead>
                     <tr class="active">
                         <!-- <th width="auto">Action</th> -->
-                        <th width="auto">Arf NO.</th>
+                        <th width="auto">ARF Reference</th>
                         <th width="auto">MO Reference</th>
                         <th width="auto">Request Type</th>
                         <th width="auto">Employee Name</th>
@@ -98,7 +98,7 @@
        $(document).ready(function() {
            table = $("#table_dashboard").DataTable({
                 ordering:false,
-                pageLength:100,
+                pageLength:25,
                 language: {
                     searchPlaceholder: "Search"
                 },
@@ -109,7 +109,7 @@
                 buttons: [
                     {
                         extend: "excel",
-                        title: "Assets Deployed Monitoring",
+                        title: "Asset Deployed Monitoring",
                         exportOptions: {
                         columns: ":not(.not-export-column)",
                         columns: ":gt(0)",
