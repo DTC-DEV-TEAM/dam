@@ -4,6 +4,7 @@
 	use Request;
 	use DB;
 	use CRUDBooster;
+	use App\Models\SubClasses;
 
 	class AdminItemSourceSubClassController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -325,9 +326,142 @@
 
 	    }
 
+		public function getSubClassCreatedDataApi(Request $request) {
+			$secretKey = "1f9653c84409990a899f5bd63f719771"; 
+            $uniqueString = time(); 
+            $userAgent = $_SERVER['HTTP_USER_AGENT']; 
+            $userAgent = $_SERVER['HTTP_USER_AGENT']; 
+            if($userAgent == '' || is_null($userAgent)){
+                $userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36';    
+            }
+            $xAuthorizationToken = md5( $secretKey . $uniqueString . $userAgent);
+            $xAuthorizationTime = $uniqueString;
+            $vars = [
+                "your_param"=>1
+            ];
+    
+            //https://stackoverflow.com/questions/8115683/php-curl-custom-headers
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL,"https://aimfs.digitstrading.ph/public/api/aimfs_sub_class_created");
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+            curl_setopt($ch, CURLOPT_POST, FALSE);
+            curl_setopt($ch, CURLOPT_POSTFIELDS,null);
+            curl_setopt($ch, CURLOPT_HTTPGET, TRUE);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 300);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT , 30);
+    
+            $headers = [
+            'X-Authorization-Token: ' . $xAuthorizationToken,
+            'X-Authorization-Time: ' . $xAuthorizationTime,
+            'User-Agent: '.$userAgent
+            ];
+    
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            $server_output = curl_exec ($ch);
+            curl_close ($ch);
+    
+            $response = json_decode($server_output, true);
+			// dd($response);
+            $data = [];
+            $count = 0;
+            if(!empty($response["data"])) {
+				foreach ($response["data"] as $key => $value) {
+					
+					$count++;
+						DB::beginTransaction();
+						try {
+							SubClasses::updateOrcreate([
+								'id'                      => $value['id'] 
+							],
+							[
+								'id'                         => $value['id'],
+								'class_id'                   => $value['class_id'],
+								'sub_class_description'      => $value['subclass_description'],
+								'sub_class_status'           => $value['subclass_status'],
+								'created_by'                 => CRUDBooster::myId(),
+								'created_at'                 => date('Y-m-d H:i:s')
+							]);
+							DB::commit();
+						} catch (\Exception $e) {
+							\Log::debug($e);
+							DB::rollback();
+						}
+					
+				}
+            }
+            \Log::info('Item Create: executed! items');
+		}
 
-
-	    //By the way, you can still create your own method in here... :) 
-
+		public function getSubClassUpdatedDataApi(Request $request) {
+			$secretKey = "1f9653c84409990a899f5bd63f719771"; 
+            $uniqueString = time(); 
+            $userAgent = $_SERVER['HTTP_USER_AGENT']; 
+            $userAgent = $_SERVER['HTTP_USER_AGENT']; 
+            if($userAgent == '' || is_null($userAgent)){
+                $userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36';    
+            }
+            $xAuthorizationToken = md5( $secretKey . $uniqueString . $userAgent);
+            $xAuthorizationTime = $uniqueString;
+            $vars = [
+                "your_param"=>1
+            ];
+    
+            //https://stackoverflow.com/questions/8115683/php-curl-custom-headers
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL,"https://aimfs.digitstrading.ph/public/api/aimfs_sub_class_updated");
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+            curl_setopt($ch, CURLOPT_POST, FALSE);
+            curl_setopt($ch, CURLOPT_POSTFIELDS,null);
+            curl_setopt($ch, CURLOPT_HTTPGET, TRUE);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 300);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT , 30);
+    
+            $headers = [
+            'X-Authorization-Token: ' . $xAuthorizationToken,
+            'X-Authorization-Time: ' . $xAuthorizationTime,
+            'User-Agent: '.$userAgent
+            ];
+    
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            $server_output = curl_exec ($ch);
+            curl_close ($ch);
+    
+            $response = json_decode($server_output, true);
+			// dd($response);
+            $data = [];
+            $count = 0;
+            if(!empty($response["data"])) {
+				foreach ($response["data"] as $key => $value) {
+					
+					$count++;
+						DB::beginTransaction();
+						try {
+							SubClasses::updateOrcreate([
+								'id'                      => $value['id'] 
+							],
+							[
+								'id'                         => $value['id'],
+								'class_id'                   => $value['class_id'],
+								'sub_class_description'      => $value['subclass_description'],
+								'sub_class_status'           => $value['subclass_status'],
+								'updated_by'                 => CRUDBooster::myId(),
+								'updated_at'                 => date('Y-m-d H:i:s')
+							]);
+							DB::commit();
+						} catch (\Exception $e) {
+							\Log::debug($e);
+							DB::rollback();
+						}
+					
+				}
+            }
+            \Log::info('Item Create: executed! items');
+		}
 
 	}

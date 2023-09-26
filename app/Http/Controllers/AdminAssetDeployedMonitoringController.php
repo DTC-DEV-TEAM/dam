@@ -339,6 +339,4 @@
 			$data['result'] = MoveOrder::arraymo($closed, $for_closing);
 			return $this->view('assets.assets-deployed-monitoring',$data);
 		}
-
-
 	}
