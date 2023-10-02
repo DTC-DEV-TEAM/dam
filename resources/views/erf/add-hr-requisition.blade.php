@@ -133,6 +133,12 @@
                 border: 1px solid rgba(000, 0, 0, .5);
                 padding: 8px;
             }
+            .ui-state-focus {
+                background: none !important;
+                background-color: #367fa9 !important;
+                border: 1px solid rgb(255, 254, 254) !important;
+                color: #fff !important;
+            }
         </style>
     @endpush
 @section('content')
@@ -615,7 +621,7 @@
                     var j = i + 1;
                     showData[j] = "<option value='"+result[i].position_description+"'>"+result[i].position_description+"</option>";
                 }
-                $('#position').attr('disabled', false);
+                //$('#position').attr('disabled', false);
                 jQuery('#position').html(showData);        
             }
         });
@@ -864,31 +870,44 @@
         
         //deleteRow
         $(document).on('click', '.removeRow', function() {
+            var laptopDesktop = [];
             // $("#application_div").hide();
             // $("#application_others_div").hide();
             // $(".application").prop('checked', false);
             // $(".application_others").prop('checked', false);
             // $("#application_others").removeAttr('required');
             var id_data = $(this).attr("data-id");
-            if($.inArray($("#class_type"+id_data).val().toLowerCase().replace(/\s/g, ''), ['laptop','desktop','macbook']) > -1){
+            if ($('#asset-items tbody tr').length != 1) { //check if not the first row then delete the other rows
+                tableRow--;
+                $(this).closest('tr').remove();
+                $("#quantity_total").val(calculateTotalQuantity());
+            }
+            // if($.inArray($("#class_type"+id_data).val().toLowerCase().replace(/\s/g, ''), ['laptop','desktop','macbook']) > -1){
+            //     $("#application_div").hide();
+            //     $("#application_div").val("");
+            //     $(".application").prop('checked', false);
+            //     $(".application_others").prop('checked', false);
+            //     $("#application_others_div").hide();
+            //     $("#application_others").removeAttr('required');
+
+            // }
+            $(".sub_category_id").each(function() {
+                if($.inArray(this.value.toLowerCase().replace(/\s/g, ''), ['laptop','desktop','macbook','computerequipment']) > -1){
+                    laptopDesktop.push(this.value);
+                }
+            });
+
+            if(laptopDesktop.length === 0){
                 $("#application_div").hide();
                 $("#application_div").val("");
                 $(".application").prop('checked', false);
                 $(".application_others").prop('checked', false);
                 $("#application_others_div").hide();
                 $("#application_others").removeAttr('required');
-
             }
+            return false;
 
-            if ($('#asset-items tbody tr').length != 1) { //check if not the first row then delete the other rows
-                tableRow--;
-
-                $(this).closest('tr').remove();
-
-                $("#quantity_total").val(calculateTotalQuantity());
-
-                return false;
-            }
+           
         });
 
     });
@@ -1250,7 +1269,7 @@
                     var sub_cat_value = $("input[name^='class_type']");
                     for(i=0;i<sub_cat;i++){
                         var val = sub_cat_value.eq(i).val() || '';
-                        if(app_count == 0 && $.inArray((sub_cat_value.eq(i).val() || '').toLowerCase().replace(/\s/g, ''),['laptop','desktop','macbook']) > -1){
+                        if(app_count == 0 && $.inArray((sub_cat_value.eq(i).val() || '').toLowerCase().replace(/\s/g, ''),['laptop','desktop','macbook','computerequipment']) > -1){
                             swal({  
                                     type: 'error',
                                     title: 'Please choose an Application!',

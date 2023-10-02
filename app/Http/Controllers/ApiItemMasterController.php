@@ -20,7 +20,7 @@
 		    }
 
 		    public function hook_query(&$query) {
-				$query->where('assets.category_id','=',6)->whereNotIn('assets.status',['EOL-DIGITS','INACTIVE']);
+				$query->whereIn('assets.category_id',[1,6,7,8])->whereNotIn('assets.status',['EOL-DIGITS','INACTIVE']);
 		    }
 
 		    public function hook_after($postdata,&$result) {

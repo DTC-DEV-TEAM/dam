@@ -24,12 +24,25 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+        /** Item Master */
         $schedule->call('\App\Http\Controllers\AdminAssetsController@getItemMasterDataApi')->hourly()->between('9:00', '23:00');
         $schedule->call('\App\Http\Controllers\AdminAssetsController@getItemMasterUpdatedDataApi')->hourly()->between('9:00', '23:00');
-        //$schedule->call('\App\Http\Controllers\AdminCategoriesController@getCategoriesDataApi')->hourly()->between('9:00', '21:00');
-        //$schedule->call('\App\Http\Controllers\AdminCategoriesController@getCategoriesUpdatedDataApi')->hourly()->between('9:00', '21:00');
+        /** Categories */
+        $schedule->call('\App\Http\Controllers\AdminCategoriesController@getCategoriesDataApi')->hourly()->between('9:00', '21:00');
+        $schedule->call('\App\Http\Controllers\AdminCategoriesController@getCategoriesUpdatedDataApi')->hourly()->between('9:00', '21:00');
+       
+        /** Sub Category */
+        $schedule->call('\App\Http\Controllers\AdminItemSourceSubCategoryController@getSubCategoryCreatedDataApi')->hourly()->between('9:00', '21:00');
+        $schedule->call('\App\Http\Controllers\AdminItemSourceSubCategoryController@getSubCategoryUpdatedDataApi')->hourly()->between('9:00', '21:00');
+
+        /** Class */
+        $schedule->call('\App\Http\Controllers\AdminClassesController@getClassCreatedDataApi')->hourly()->between('9:00', '21:00');
+        $schedule->call('\App\Http\Controllers\AdminClassesController@getClassUpdatedDataApi')->hourly()->between('9:00', '21:00');
         
-        //$schedule->call('\App\Http\Controllers\AdminClassesController@getClassCreatedDataApi')->everyMinute();
+        /** Sub Class */
+        $schedule->call('\App\Http\Controllers\AdminItemSourceSubClassController@getSubClassCreatedDataApi')->hourly()->between('9:00', '21:00');
+        $schedule->call('\App\Http\Controllers\AdminItemSourceSubClassController@getSubClassUpdatedDataApi')->hourly()->between('9:00', '21:00');
+        
        
         $schedule->call('\App\Http\Controllers\AdminOrderSchedulesController@deactivateSchedule')->hourly(); //->dailyAt('04:00');
         
