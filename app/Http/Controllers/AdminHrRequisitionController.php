@@ -764,7 +764,7 @@
 					$return_data[$i]['serial_no']            = $value->serial_no;
 					$return_data[$i]['item_description']     = $value->item_description;
 					$return_data[$i]['category_description'] = $value->category_description;
-					$return_data[$i]['class_description']    = $value->sub_category_description;
+					$return_data[$i]['class_description']    = $value->class_type;
 					$return_data[$i]['class_type']           = $value->class_type;
 					$return_data[$i]['item_cost']            = $value->item_cost;
 					$return_data[$i]['item_type']            = $value->item_type;

@@ -54,6 +54,13 @@
             font-style: italic; 
             }
 
+            .ui-state-focus {
+                background: none !important;
+                background-color: #367fa9 !important;
+                border: 1px solid rgb(255, 254, 254) !important;
+                color: #fff !important;
+            }
+
         </style>
     @endpush
 @section('content')
