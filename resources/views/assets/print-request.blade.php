@@ -78,10 +78,10 @@
 
                         <tr>
                             <td colspan="4">
-                                <table border="1" width="100%" style="text-align:center;border-collapse: collapse; table-layout: fixed; font-size: 13px;">
+                                <table border="1" width="100%" style="text-align:center;border-collapse: collapse; table-layout: fixed; font-size: 13px;" id="total">
                                     
                                     <thead>
-                                        <tr><th colspan="5"><h4 align="center" ><strong>Item Details</strong></h4></th></tr>
+                                        <tr><th colspan="6"><h4 align="center" ><strong>Item Details</strong></h4></th></tr>
                                         <tr>
                                             <th style="text-align:center" height="10">Asset Code</th>
                                             <th style="text-align:center" height="10">Digits Code</th>
@@ -103,30 +103,26 @@
                                                 @if($rowresult->digits_code != null)
                                                 <td height="10">{{$rowresult->asset_code}}</td>
                                                     <td height="10">
-
                                                         <input type="hidden" value="{{$rowresult->id}}" name="mo_id[]">
-                                                       
                                                         <input type="hidden" value="{{$rowresult->inventory_id}}" name="inventory_id[]">
-
                                                         <input type="hidden" value="{{$rowresult->item_id}}" name="item_id[]">
-
                                                         {{$rowresult->digits_code}}
-
                                                     </td>
                                                     <td height="10">{{$rowresult->item_description}}</td>
                                                     <td height="10">{{$rowresult->serial_no}}</td>
-                                                    <td height="10">{{$rowresult->quantity}}</td>
-                                                    <td height="10">{{$rowresult->unit_cost}}</td>
+                                                    <td height="10" class="qty">{{$rowresult->quantity}}</td>
+                                                    <td height="10" class="cost">{{$rowresult->unit_cost}}</td>
                                                 @endif
                                             </tr>
 
                                             <?Php $cost_total = $rowresult->total_unit_cost; ?>
                                             
+                                            
                                         @endforeach
                                 
                                     </tbody>
 
-                                    <tr>
+                                    {{-- <tr>
                                         <td colspan="5" style="text-align:right">
                                             <label>Total:</label>
                                         </td>
@@ -139,7 +135,7 @@
                                             @endif
                                         </td>
 
-                                    </tr>
+                                    </tr> --}}
 
                                 </table> 
                             </td>
@@ -313,6 +309,39 @@
                   return false;
         });
 
+        function thousands_separators(num) {
+        var num_parts = num.toString().split(".");
+        num_parts[0] = num_parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return num_parts.join(".");
+        }
+        var tds = document
+        .getElementById("total")
+        .getElementsByTagName("td");
+        var sumqty = 0;
+        var sumcost = 0;
+        for (var i = 0; i < tds.length; i++) {
+        if (tds[i].className == "qty") {
+            sumqty += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+        }else if (tds[i].className == "cost") {
+            sumcost += isNaN(tds[i].innerHTML) ? 0 : parseFloat(tds[i].innerHTML);
+        }
+        }
+        document.getElementById("total").innerHTML +=
+        "<tr>" +
+            "<td colspan='4' style='text-align:center'>" +
+                "<strong>TOTAL</strong>" +
+            "</td>" +
+            "<td>" +
+                    "<strong>" +
+                        sumqty +
+                    "</strong>" +
+                "</td>" +
+                "<td>" +
+                    "<strong>" +
+                        sumcost.toFixed(2) +
+                    "</strong>" +
+                "</td>" +
+        "</tr>";
         
 
     </script>
