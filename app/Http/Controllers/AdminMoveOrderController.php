@@ -468,60 +468,36 @@
 	        //Your code here
 
 			$for_printing_adf = DB::table('statuses')->where('id', 18)->value('id');
-			
 			$cancelled  = 		DB::table('statuses')->where('id', 8)->value('id');
-
 			$List = MoveOrder::whereNull('closed_at')->whereNotNull('mo_reference_number')->whereNotNull('header_request_id')->orderby('mo_body_request.status_id', 'asc')->orderby('mo_body_request.id', 'asc')->get();
-
+			
 			$list_array = array();
-
 			$id_array = array();
 
 			foreach($List as $matrix){
-
 				if($matrix->status_id == $cancelled){
-
 					$mo_count_cancelled = MoveOrder::
 										  where(['mo_reference_number' => $matrix->mo_reference_number])
 										  ->where(['status_id' => $cancelled])
 										  ->count();
 
-
 					if($mo_count_cancelled == 1){
-
 						//if(! in_array($matrix->mo_reference_number,$list_array)){
-
 							//array_push($list_array, $matrix->mo_reference_number);
-
 							array_push($id_array, $matrix->id);
-
 						//}
-
 					}else{
-
 						if(! in_array($matrix->mo_reference_number,$list_array)){
-
 							array_push($list_array, $matrix->mo_reference_number);
-	
 							array_push($id_array, $matrix->id);
-	
 						}
-
 					}
-
 				}else{
-
 					if(! in_array($matrix->mo_reference_number,$list_array)){
-
 						array_push($list_array, $matrix->mo_reference_number);
-
 						array_push($id_array, $matrix->id);
-
 					}
-
 				}
-					
-
 			}
 
 			$list_string = implode(",",$id_array);
@@ -556,27 +532,16 @@
 			$cancelled  = 		DB::table('statuses')->where('id', 8)->value('status_description');
 
 			if($column_index == 2){
-
 				if($column_value == $for_move_order){
-
 					$column_value = '<span class="label label-info">'.$for_move_order.'</span>';
-
 				}elseif($column_value == $for_printing){
-
 					$column_value = '<span class="label label-info">'.$for_printing.'</span>';
-
 				}elseif($column_value == $for_picking){
-
 					$column_value = '<span class="label label-info">'.$for_picking.'</span>';
-
 				}elseif($column_value == $for_receiving){
-
 					$column_value = '<span class="label label-info">'.$for_receiving.'</span>';
-
 				}elseif($column_value == $for_printing_adf){
-
 					$column_value = '<span class="label label-info">'.$for_printing_adf.'</span>';
-
 				}elseif($column_value == $for_closing){
 					$column_value = '<span class="label label-info">'.$for_closing.'</span>';
 				}else if($column_value == $closed){
@@ -588,73 +553,42 @@
 			}
 
 			if($column_index == 4){
-
 				$request_type = 			DB::table('requests')->where(['id' => $column_value])->first();
-				
 				if($column_value == $request_type->id){
-
 					$column_value = $request_type->request_name;
-
 				}
-
-
 			}
 
 			if($column_index == 5){
-
 				$request_type = 			DB::table('cms_users')->where(['id' => $column_value])->first();
-				
 				if($column_value == $request_type->id){
-
 					$column_value = $request_type->bill_to;
-
 				}
-
-
 			}
 
 
 			if($column_index == 6){
-
 				$request_type = 			DB::table('departments')->where(['id' => $column_value])->first();
-				
 				if($column_value == $request_type->id){
-
 					$column_value = $request_type->department_name;
-
 				}
-
-
 			}
 
 
 			if($column_index == 7){
-
 				$request_type = 			DB::table('cms_users')->where(['id' => $column_value])->first();
-				
 				if($column_value == $request_type->id){
-
 					$column_value = $request_type->name;
-
 				}
-
-
 			}
 
 
 			if($column_index == 9){
-
 				$arf_header 				= HeaderRequest::where(['id' => $column_value])->first();
-				
 				if($column_value == $arf_header->id){
-
 					$column_value = $arf_header->to_print;
-
 				}
-
-
 			}
-
 	    }
 
 	    /*
@@ -716,8 +650,8 @@
 
             //dd($body_request_id, $body_request_id);
 			for($x=0; $x < count((array)$item_description); $x++) {
-				$inventory_info = 	DB::table('assets_inventory_body')->where('digits_code', $digits_code[$x])->where('statuses_id',6)->first();
-				$ref_inventory   =  		str_pad($inventory_info->location, 2, '0', STR_PAD_LEFT);	
+				$inventory_info = DB::table('assets_inventory_body')->where('digits_code', $digits_code[$x])->where('statuses_id',6)->first();
+				$ref_inventory  = str_pad($inventory_info->location, 2, '0', STR_PAD_LEFT);	
 					if(count((array)$digits_code) != $body_request){
 						if($body_request_id[$x] == "" || $body_request_id[$x] == null){
 							$count_header++;
