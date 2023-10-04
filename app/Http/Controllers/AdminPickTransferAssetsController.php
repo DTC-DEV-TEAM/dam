@@ -273,12 +273,17 @@
 			$approval_string = implode(",",$approval_array);
 			$locationList = array_map('intval',explode(",",$approval_string));
 
-			$query->where('return_transfer_assets_header.transfer_to', $locationList)
-			        ->whereIn('return_transfer_assets_header.status', [24,25,13]) 
-					->whereNotNull('return_transfer_assets_header.transfer_to')
-					->orderBy('return_transfer_assets_header.id', 'ASC');
-
-	            
+			if(CRUDBooster::isSuperadmin()){
+				$query->whereIn('return_transfer_assets_header.status', [24]) 
+				->whereNotNull('return_transfer_assets_header.transfer_to')
+				->orderBy('return_transfer_assets_header.id', 'ASC');
+			}else{
+				$query->where('return_transfer_assets_header.transfer_to', $locationList)
+				->whereIn('return_transfer_assets_header.status', [24,25,13]) 
+				->whereNotNull('return_transfer_assets_header.transfer_to')
+				->orderBy('return_transfer_assets_header.id', 'ASC');
+			}
+         
 	    }
 
 	    /*
