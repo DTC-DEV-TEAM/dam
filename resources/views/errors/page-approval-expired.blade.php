@@ -35,10 +35,11 @@
           <div class="row">
             <div class="col-lg-8 col-12 col-sm-10 offset-lg-2 offset-sm-1">
               <img src="{{asset('img/stop-order.gif')}}" alt="Warning" class="text-center" width="200" height="200">
-              <h4>Supplies Approval Expired - DAM</h4>
-              <p><span class="text-info">Supplies</span> approval period <span class="text-info">expired</span>. Please wait for the <span class="text-info">next supplies approval to open.</span></p>
+              <h4>Supplies Approval Closed - DAM</h4>
+              <p><span class="text-info">Supplies</span> <span class="text-dark">approval are now</span> <span class="text-info">closed</span>. <span class="text-dark">Please wait for the</span> <span class="text-info">next supplies approval to open.</span></p>
               <p><span class="text-info">Thank you for understanding.</span></p>
             </div>
+            <p><span class="text-dark" style="font-weight: bold"> Open on:</span> <span class="text-dark" style="font-size: 15px; font-weight:bold"> {{$open_date}}</span></p>
           </div>
         </div>
       </div>

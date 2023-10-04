@@ -19,13 +19,16 @@ class CheckOrderSchedule
      */
     public function handle($request, Closure $next)
     {
+        $data = [];
         $current_date = Carbon::now();
         $end_schedule = Carbon::now();
         $current_schedule = OrderSchedule::where('status','ACTIVE')->orderBy('id','desc')->first();
+        $latest_inactive_date = OrderSchedule::where('status','INACTIVE')->orderBy('id','desc')->first();
         //$current_schedule = OrderSchedule::where('status','ACTIVE')->whereDate('start_date','<=',$current_date)->whereDate('end_date','>=',$current_date)->orderBy('id','desc')->first();
-        
+        $open_date = date('Y-m-d g:i a', strtotime($latest_inactive_date->end_date. ' + 4 days + 18 hours + 5 minutes'));
+        $data['open_date'] = $open_date;
         $privileges_list = array_map('intval',explode(",",$current_schedule->privilege_id)); //additional code 20200624
-        
+
         if($current_date->lte($current_schedule->end_date)) {
 		    if($current_schedule->period == "HOUR") {
 		        $end_schedule = Carbon::parse($current_schedule->end_date)->subHours($current_schedule->time_unit);
@@ -43,7 +46,7 @@ class CheckOrderSchedule
                     return $next($request);
                 }
                 else {
-                    return response()->view('errors.add-service-unavailable');
+                    return response()->view('errors.add-service-unavailable',$data);
                 }
             }
         }
@@ -54,7 +57,7 @@ class CheckOrderSchedule
         //     return response()->view('assets.add-service-unavailable');
         // }
 
-        return response()->view('errors.add-service-unavailable');
+        return response()->view('errors.add-service-unavailable',$data);
         
     }
 }
