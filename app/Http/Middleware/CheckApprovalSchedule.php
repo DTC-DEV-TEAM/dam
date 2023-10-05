@@ -30,7 +30,7 @@ class CheckApprovalSchedule
         $approver_list = array_map('intval',explode(",",$current_schedule->approver_id));
 
         $latest_inactive_date = OrderSchedule::where('status','INACTIVE')->orderBy('id','desc')->first();
-        $open_date = date('Y-m-d g:i a', strtotime($latest_inactive_date->end_date. ' + 4 days + 18 hours + 5 minutes'));
+        $open_date = strtoupper(date('F d, Y g:i A', strtotime($latest_inactive_date->end_date. ' + 4 days + 18 hours + 5 minutes')));
         $data['open_date'] = $open_date;
 
         if($current_date->between(Carbon::parse($current_schedule->start_date), Carbon::parse($current_schedule->end_date))){
