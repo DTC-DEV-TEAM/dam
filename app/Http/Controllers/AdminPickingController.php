@@ -836,6 +836,7 @@
 				->whereIn('mo_body_request.location_id', $locationList)
 				->leftjoin('statuses', 'mo_body_request.status_id', '=', 'statuses.id')
 				->orderby('mo_body_request.id', 'desc')
+				->whereNull('mo_body_request.deleted_at')
 				->get();	
 			$arrayDigitsCode = [];
             foreach($data['MoveOrder'] as $codes) {
