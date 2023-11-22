@@ -1051,6 +1051,12 @@
                 CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
             }
 
+			$item = DB::table('header_request')->where('id', $id)->first();
+		
+			if($item->created_by != CRUDBooster::myId() && !CRUDBooster::isSuperAdmin()){
+				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+			}
+
 			$data = array();
 
 			$data['page_title'] = 'View Request';
