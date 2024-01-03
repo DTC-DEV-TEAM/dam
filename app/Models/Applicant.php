@@ -21,6 +21,11 @@ class Applicant extends Model
         'created_at	',
         'updated_by',
         'updated_at	',
-        'app_id'
+        'first_interview',
+        'final_interview',
+        'job_offer',
+        'for_comparison',
+        'cancelled',
+        'rejected'
     ];
 }

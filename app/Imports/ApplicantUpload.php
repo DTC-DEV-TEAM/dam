@@ -68,21 +68,22 @@ class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
             }else{
                 $status = $getStatus;
             }
+
+           
             //dd($checkIfApplicantExist, $row['screen_date']);
             $screen_date = isset($row['screen_date']) ? Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['screen_date'])) : NULL;
             $save = Applicant::updateOrcreate([
-                'full_name'   => strtolower(str_replace(' ', '', trim($row['first_name']))).''.strtolower(str_replace(' ', '', trim($row['last_name']))),
-                'erf_number'  => trim($row['erf_number'])
+                'full_name'       => strtolower(str_replace(' ', '', trim($row['first_name']))).''.strtolower(str_replace(' ', '', trim($row['last_name']))),
+                'erf_number'      => trim($row['erf_number'])
             ],
             [
-                'erf_number'  => trim($row['erf_number']),
-                'status'      => trim($status),
-                'first_name'  => trim($row['first_name']),
-                'last_name'   => trim($row['last_name']),
-                'job_portal'  => trim($row['job_portal']),
-                //'remarks'     => $row['remarks'],
-                'full_name'   => strtolower(str_replace(' ', '', trim($row['first_name']))).''.strtolower(str_replace(' ', '', trim($row['last_name']))),
-              
+                'erf_number'      => trim($row['erf_number']),
+                'status'          => trim($status),
+                'first_name'      => trim($row['first_name']),
+                'last_name'       => trim($row['last_name']),
+                'job_portal'      => trim($row['job_portal']),
+                //'remarks'       => $row['remarks'],
+                'full_name'       => strtolower(str_replace(' ', '', trim($row['first_name']))).''.strtolower(str_replace(' ', '', trim($row['last_name'])))
             ]);
             if ($save->wasRecentlyCreated) {
                 $save->created_by     = CRUDBooster::myId();
@@ -91,9 +92,24 @@ class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
                 $save->screen_date    = $screen_date;
                 $save->remarks        = $row['remarks'];
             }else{
+                
                 $save->updated_by     = CRUDBooster::myId();
                 $save->updated_at     = date('Y-m-d H:i:s');
                 $save->update_remarks = $row['remarks'];
+                 //dates historical
+                if($getStatus == 34){
+                    $save->first_interview = date('Y-m-d H:i:s');   
+                }else if($getStatus == 35){
+                    $save->final_interview = date('Y-m-d H:i:s'); 
+                }else if($getStatus == 36){
+                    $save->job_offer       = date('Y-m-d H:i:s'); 
+                }else if($getStatus == 42){
+                    $save->for_comparison  = date('Y-m-d H:i:s'); 
+                }else if($getStatus == 8){
+                    $save->cancelled       = date('Y-m-d H:i:s'); 
+                }else if($getStatus == 5){
+                    $save->rejected        = date('Y-m-d H:i:s'); 
+                }
 
             }
             $save->save();
@@ -104,7 +120,7 @@ class ApplicantUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
     {
         //Statuses
         $data['status_exist']['check'] = false;
-        $checkRowDb = DB::table('statuses')->select(DB::raw("LOWER(TRIM(REPLACE(`status_description`,' ',''))) AS status"))->whereIn('id', [5,8,34,35,36,42])->get()->toArray();
+        $checkRowDb = DB::table('statuses')->select(DB::raw("LOWER(TRIM(REPLACE(`status_description`,' ',''))) AS status"))->whereIn('id', [5,8,34,35,36,42,47])->get()->toArray();
         $checkRowDbColumn = array_column($checkRowDb, 'status');
 
         if(!empty($data['status'])){

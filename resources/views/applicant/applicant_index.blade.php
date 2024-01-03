@@ -15,86 +15,107 @@
                 -moz-border-radius: 3px !important;
                 border-radius: 3px !important; 
             }
+
+            #table_dashboards th, td {
+                border: 1px solid rgba(000, 0, 0, .4);
+                padding: 8px;
+            }
         </style>
     @endpush
 @section('content')
 
 <div class='panel panel-default'>
-   
 
         <div class='panel-body'>
-        <div class="row" style="margin:5px">   
-
-        <!-- <button type="button" id="btn-export" class="btn btn-primary btn-sm btn-export" data-toggle="modal" data-target="#myModal" style="margin-bottom:10px"><i class="fa fa-download"></i>
-            <span>Export Filter</span>
-        </button> -->
-        <button type="button" id="btn-export" class="btn btn-primary btn-sm btn-export" style="margin-bottom:10px"><i class="fa fa-download"></i>
-            <span>Export Data</span>
-        </button>
-            <table class='table table-hover table-striped table-bordered' id="table_dashboard">
-                <thead>
-                    <tr class="active">
-                        <th width="auto">Action</th>
-                        <th width="auto">Status</th>
-                        <th width="auto">Erf Number</th>
-                        <th width="auto">First Name</th>
-                        <th width="auto">Last Name</th>
-                        <th width="auto">Screen Date</th>
-                        <th width="auto">Created By</th>
-                        <th width="auto">Created At</th>
-                        <th width="auto">Updated By</th>
-                        <th width="auto">Updated At</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @foreach($getData as $val)
-                <tr>
-                    <td style="text-align:center">   
-                    @if(!in_array($val->status, [5,8,31]))     
-                    <a data-toggle="tooltip" data-placement="right" title="Edit" class='btn btn-xs btn-success' href='{{CRUDBooster::mainpath("edit-applicant/".$val->apid)."?return_url=".urlencode(Request::fullUrl())}}'><i class='fa fa-pencil'></i></a>                                         
-                    @else
-                    <a data-toggle="tooltip" data-placement="right" title="View" class='btn btn-xs btn-primary' href='{{CRUDBooster::mainpath("detail-applicant/".$val->apid)."?return_url=".urlencode(Request::fullUrl())}}'><i class='fa fa-eye'></i></a>   
-                    @endif
-                    </td>  
-                    @if($val['status'] == 8)
-                    <td style="text-align:center">
-                     <label class="label label-danger" style="align:center; font-size:10px">{{$val['status_description']}}</label>
-                    </td>
-                    @elseif($val['status'] == 5)
-                    <td style="text-align:center">
-                     <label class="label label-danger" style="align:center; font-size:10px">{{$val['status_description']}}</label>
-                    </td>
-                    @elseif($val['status'] == 34)
-                    <td style="text-align:center">
-                     <label class="label label-info" style="align:center; font-size:10px">{{$val['status_description']}}</label>
-                    </td>
-                    @elseif($val['status'] == 35)
-                    <td style="text-align:center">
-                     <label class="label label-info" style="align:center; font-size:10px">{{$val['status_description']}}</label>
-                    </td>
-                    @elseif($val['status'] == 42)
-                    <td style="text-align:center">
-                     <label class="label label-info" style="align:center; font-size:10px">{{$val['status_description']}}</label>
-                    </td>
-                    @else
-                    <td style="text-align:center">
-                     <label class="label label-success" style="align:center; font-size:10px">{{$val['status_description']}}</label>
-                    </td>
-                    @endif 
-                    <td>{{$val->erf_number}}</td>
-                    <td>{{$val->first_name}}</td>  
-                    <td>{{$val->last_name}}</td>
-                    <td>{{$val->screen_date}}</td>     
-                    <td>{{$val->created_name}}</td>   
-                    <td>{{$val->created_at}}</td>                                                                
-                    <td>{{$val->updated_by}}</td>  
-                    <td>{{$val->updated_at}}</td>  
-                </tr>
-                    
-                @endforeach
-                </tbody>
-            </table>
-        </div>   
+            <div class="row">   
+                <div class="col-md-12" style="overflow-x: scroll">
+                    <!-- <button type="button" id="btn-export" class="btn btn-primary btn-sm btn-export" data-toggle="modal" data-target="#myModal" style="margin-bottom:10px"><i class="fa fa-download"></i>
+                        <span>Export Filter</span>
+                    </button> -->
+                    <button type="button" id="btn-export" class="btn btn-primary btn-sm btn-export" style="margin-bottom:10px"><i class="fa fa-download"></i>
+                        <span>Export Data</span>
+                    </button>
+                    <table width="150%" id="table_dashboards" style="overflow-x: scroll">
+                        <thead style="background-color: #F5F5F5; color:#3c8dbc">
+                            <tr class="active">
+                                <th style="width:2%">Action</th>
+                                <th style="width:6%">Status</th>
+                                <th style="width:8%">Erf Number</th>
+                                <th style="width:8%">First Name</th>
+                                <th style="width:8%">Last Name</th>
+                                <th style="width:10%">Screen Date</th>
+                                <th style="width:8%">Created By</th>
+                                <th style="width:10%">Created At</th>
+                                <th style="width:8%">Updated By</th>
+                                <th style="width:8%">Updated At</th>
+                                <th style="width:8%">First Interview</th>
+                                <th style="width:8%">Final Interview</th>
+                                <th style="width:8%">Job Offer</th>
+                                <th style="width:8%">For Comparison</th>
+                                <th style="width:8%">Cancelled</th>
+                                <th style="width:10%">Rejected</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach($getData as $val)
+                        <tr>
+                            <td style="text-align:center">   
+                            @if(!in_array($val->status, [5,8,31]))     
+                            <a data-toggle="tooltip" data-placement="right" title="Edit" class='btn btn-xs btn-success' href='{{CRUDBooster::mainpath("edit-applicant/".$val->apid)."?return_url=".urlencode(Request::fullUrl())}}'><i class='fa fa-pencil'></i></a>                                         
+                            @else
+                            <a data-toggle="tooltip" data-placement="right" title="View" class='btn btn-xs btn-primary' href='{{CRUDBooster::mainpath("detail-applicant/".$val->apid)."?return_url=".urlencode(Request::fullUrl())}}'><i class='fa fa-eye'></i></a>   
+                            @endif
+                            </td>  
+                            @if($val['status'] == 8)
+                            <td style="text-align:center">
+                            <label class="label label-danger" style="align:center; font-size:10px">{{$val['status_description']}}</label>
+                            </td>
+                            @elseif($val['status'] == 5)
+                            <td style="text-align:center">
+                            <label class="label label-danger" style="align:center; font-size:10px">{{$val['status_description']}}</label>
+                            </td>
+                            @elseif($val['status'] == 34)
+                            <td style="text-align:center">
+                            <label class="label label-info" style="align:center; font-size:10px">{{$val['status_description']}}</label>
+                            </td>
+                            @elseif($val['status'] == 35)
+                            <td style="text-align:center">
+                            <label class="label label-info" style="align:center; font-size:10px">{{$val['status_description']}}</label>
+                            </td>
+                            @elseif($val['status'] == 42)
+                            <td style="text-align:center">
+                            <label class="label label-info" style="align:center; font-size:10px">{{$val['status_description']}}</label>
+                            </td>
+                            @elseif($val['status'] == 47)
+                            <td style="text-align:center">
+                            <label class="label label-info" style="align:center; font-size:10px">{{$val['status_description']}}</label>
+                            </td>
+                            @else
+                            <td style="text-align:center">
+                            <label class="label label-success" style="align:center; font-size:10px">{{$val['status_description']}}</label>
+                            </td>
+                            @endif 
+                            <td>{{$val->erf_number}}</td>
+                            <td>{{$val->first_name}}</td>  
+                            <td>{{$val->last_name}}</td>
+                            <td>{{$val->screen_date}}</td>     
+                            <td>{{$val->created_name}}</td>   
+                            <td>{{$val->created_at}}</td>                                                                
+                            <td>{{$val->updated_by}}</td>  
+                            <td>{{$val->updated_at}}</td>  
+                            <td>{{$val->first_interview}}</td>  
+                            <td>{{$val->final_interview}}</td>  
+                            <td>{{$val->job_offer}}</td>  
+                            <td>{{$val->for_comparison}}</td> 
+                            <td>{{$val->Cancelled}}</td>   
+                            <td>{{$val->rejected}}</td>  
+                        </tr>
+                            
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>   
         </div>
 
          <!-- Modal Edit Start-->
@@ -173,7 +194,7 @@
     <script type="text/javascript">
        var table;
        $(document).ready(function() {
-            table = $("#table_dashboard").DataTable({
+            table = $("#table_dashboards").DataTable({
                 ordering:false,
                 pageLength:25,
                 language: {
