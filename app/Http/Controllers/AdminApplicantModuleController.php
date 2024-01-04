@@ -26,6 +26,7 @@
 		private $final_interview;
 		private $job_offer;
 		private $jo_done;
+		private $new_applicant;
 		
 		public function __construct() {
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
@@ -34,7 +35,8 @@
 			$this->first_interview  =  34;  
 			$this->final_interview  =  35;  
 			$this->job_offer        =  36;    
-			$this->jo_done          =  31;   
+			$this->jo_done          =  31; 
+			$this->new_applicant    =  47;   
 		}
 	    public function cbInit() {
 
@@ -239,9 +241,12 @@
 			$first_interview  =  DB::table('statuses')->where('id', $this->first_interview)->value('status_description');  
 			$final_interview  =  DB::table('statuses')->where('id', $this->final_interview)->value('status_description');  
 			$job_offer        =  DB::table('statuses')->where('id', $this->job_offer)->value('status_description');    
-			$jo_done          =  DB::table('statuses')->where('id', $this->jo_done)->value('status_description');   
+			$jo_done          =  DB::table('statuses')->where('id', $this->jo_done)->value('status_description'); 
+			$new_applicant    =  DB::table('statuses')->where('id', $this->new_applicant)->value('status_description');   
 			if($column_index == 1){
-				if($column_value == $first_interview){
+				if($column_value == $new_applicant){
+					$column_value = '<span class="label label-info">'.$new_applicant.'</span>';
+				}else if($column_value == $first_interview){
 					$column_value = '<span class="label label-info">'.$first_interview.'</span>';
 				}else if($column_value == $final_interview){
 					$column_value = '<span class="label label-info">'.$final_interview.'</span>';
@@ -279,7 +284,7 @@
 			if (in_array(strtolower(str_replace(' ', '', trim($first_name))).''.strtolower(str_replace(' ', '', trim($last_name))), $checkRowDbColumnJoDone)) {
 				return CRUDBooster::redirect(CRUDBooster::mainpath("add-applicant"),"Applicant Already Exist in this ERF!","danger");
 			}else{
-				$postdata['status']      = 34;
+				$postdata['status']      = $this->new_applicant;
 				$postdata['erf_number']  = $erf_number;
 				$postdata['screen_date'] = $screen_date;
 				$postdata['first_name']  = $first_name;
@@ -340,6 +345,20 @@
 					$postdata['status']              = $status;
 					$postdata['update_remarks']      = $update_remarks;
 				}
+
+				if($status == 34){
+					$postdata['first_interview'] = date('Y-m-d H:i:s');   
+				}else if($status == 35){
+					$postdata['final_interview'] = date('Y-m-d H:i:s'); 
+				}else if($status == 36){
+					$postdata['job_offer']       = date('Y-m-d H:i:s'); 
+				}else if($status == 42){
+					$postdata['for_comparison']  = date('Y-m-d H:i:s'); 
+				}else if($status == 8){
+					$postdata['cancelled']       = date('Y-m-d H:i:s'); 
+				}else if($status == 5){
+					$postdata['rejected']        = date('Y-m-d H:i:s'); 
+				}
 				
 				$postdata['updated_by']  = CRUDBooster::myId();
 			}
@@ -382,13 +401,13 @@
 				'created.name as created_name',
 				'updated_by.name as updated_by'
 				)
-				->orderByRaw('FIELD( applicant_table.status, 34,35,31,8)')
+				->orderByRaw('FIELD( applicant_table.status, 47,34,35,31,8,42,5)')
 				->get();
 			$data['erf_number'] = DB::table('erf_header_request')->get();
 			$data['statuses'] = Statuses::select(
 				'statuses.*'
 			  )
-			  ->whereIn('id', [34,35,36,8])
+			  ->whereIn('id', [47,34,35,36,8,42,5])
 			  ->get();
 			 return $this->view('applicant.applicant_index',$data);
 		  }
@@ -421,7 +440,7 @@
 			$data['statuses'] = Statuses::select(
 					'statuses.*'
 				  )
-				  ->whereIn('id', [5,34,35,36,8,42])
+				  ->whereIn('id', [5,34,35,36,8,42,47])
 				  ->get();
 
 			return $this->view("applicant.edit_applicant_status", $data);

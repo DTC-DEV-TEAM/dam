@@ -87,6 +87,9 @@
                         <th width="auto">Requested By</th>
                         <th width="auto">Department</th>
                         <th width="auto">Store Branch</th>
+                        <th width="auto">Replenish Qty</th>
+                        <th width="auto">Re Order Qty</th>
+                        <th width="auto">Fulfilled Qty</th>
                         <th width="auto">MO Reference</th>
                         <th width="auto">MO Item Code</th>
                         <th width="auto">MO Item Description</th>
@@ -228,6 +231,9 @@
                         {data: 'requested_by'},     
                         {data: 'department'},                                                                
                         {data: 'store_branch'},  
+                        {data: 'replenish_qty'},  
+                        {data: 'reorder_qty'},  
+                        {data: 'fulfill_qty'},  
                         {data: 'mo_reference'},  
                         {data: 'mo_item_code'},  
                         {data: 'mo_item_description'},  
