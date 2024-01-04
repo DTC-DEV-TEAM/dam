@@ -465,7 +465,7 @@
 				$suppliesMarketingCon['transacted_by']           = $smVal['taggedby'];
 				$suppliesMarketingCon['replenish_qty']           = $smVal['replenish_qty'];
 				$suppliesMarketingCon['reorder_qty']             = $smVal['reorder_qty'];
-		
+				$suppliesMarketingCon['fulfill_qty']             = $smVal['serve_qty'];
 				$suppliesMarketingCon['transacted_date']         = $smVal['transacted_date'];
 				$suppliesMarketing[]                             = $suppliesMarketingCon;
 			}
@@ -493,7 +493,7 @@
 				$returnTransferCon['approved_at']                = $rtVal['approved_date'];
 				$returnTransferCon['replenish_qty']              = NULL;
 				$returnTransferCon['reorder_qty']                = NULL;
-				// $returnTransferCon['it_comments']         = NULL;
+				$returnTransferCon['fulfill_qty']                = NULL;
 				$returnTransferCon['transacted_by']              = $rtVal['receivedby'];
 				$returnTransferCon['transacted_date']            = $rtVal['transacted_date'];
 				$returnTransfer[]                                = $returnTransferCon;
@@ -523,7 +523,7 @@
 				$container['transacted_by']       = $val['transacted_by'];
 				$container['replenish_qty']       = $val['replenish_qty'];
 				$container['reorder_qty']         = $val['reorder_qty'];
-				// $container['it_comments']      = $val['it_comments'];
+				$container['fulfill_qty']         = $val['fulfill_qty'];
 				$container['transacted_date']     = $val['transacted_date'];
 				$insertData[] = $container;
 			}
@@ -591,6 +591,7 @@
 				$suppliesMarketingCon['requested_date']          = $smVal['created_at'];
 				$suppliesMarketingCon['replenish_qty']           = $smVal['replenish_qty'];
 				$suppliesMarketingCon['reorder_qty']             = $smVal['reorder_qty'];
+				$suppliesMarketingCon['fulfill_qty']             = $smVal['serve_qty'];
 				$suppliesMarketingCon['transacted_by']           = $smVal['taggedby'];
 				$suppliesMarketingCon['transacted_date']         = $smVal['transacted_date'];
 				$suppliesMarketing[] = $suppliesMarketingCon;
@@ -617,7 +618,7 @@
 				$returnTransferCon['requested_date']      = Carbon::parse($rtVal['requested_date']);
 				$returnTransferCon['replenish_qty']       = NULL;
 				$returnTransferCon['reorder_qty']         = NULL;
-				// $returnTransferCon['it_comments']         = NULL;
+				$returnTransferCon['fulfill_qty']         = NULL;
 				$returnTransferCon['transacted_by']       = $rtVal['receivedby'];
 				$returnTransferCon['transacted_date']     = $rtVal['transacted_date'];
 				$returnTransfer[] = $returnTransferCon;
