@@ -401,7 +401,7 @@
 				'created.name as created_name',
 				'updated_by.name as updated_by'
 				)
-				->orderByRaw('FIELD( applicant_table.status, 47,34,35,31,8,42,5)')
+				->orderByRaw('FIELD( applicant_table.status, 47,34,35,31,42,8,5)')
 				->get();
 			$data['erf_number'] = DB::table('erf_header_request')->get();
 			$data['statuses'] = Statuses::select(
