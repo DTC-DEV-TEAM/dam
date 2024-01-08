@@ -123,7 +123,8 @@
                         <th width="7%" class="text-center">Asset Code</th>
                         <th width="7%" class="text-center">Digits Code</th>
                         <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
-                        <th width="10%" class="text-center">Asset Type</th>                                                         
+                        <th width="10%" class="text-center">Asset Type</th>    
+                        <th width="10%" class="text-center">Serial No.</th>                                                       
                         <th width="12%" class="text-center">Comments</th>
                         @if(CRUDBooster::myPrivilegeId() == 6)
                         <th width="10%">Location</th>
@@ -158,6 +159,7 @@
                             <td style="text-align:center" height="10">{{$rowresult->digits_code}}</td>
                             <td style="text-align:center" height="10">{{$rowresult->description}}</td>
                             <td style="text-align:center" height="10">{{$rowresult->asset_type}}</td>
+                            <td style="text-align:center" height="10">{{$rowresult->serial_no}}</td>
                             <td style="text-align:center" height="10">
                                 <select required selected data-placeholder="Select Comments" id="comments{{$tableRow1}}" data-id="{{$tableRow1}}" name="comments[]" class="form-select select2 comments" style="width:100%;" multiple="multiple">
                                     @foreach($good_defect_lists as $good_defect_list)

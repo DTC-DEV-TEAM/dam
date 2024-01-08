@@ -74,12 +74,12 @@
                 <thead>
                     <tr>
                         <th width="10%" class="text-center">Line status</th>
-                        <th width="20%" class="text-center">Reference No</th>
+                        <th width="15%" class="text-center">Reference No</th>
                         <th width="10%" class="text-center">Asset Code</th>
                         <th width="10%" class="text-center">Digits Code</th>
-                        <th width="30%" class="text-center">{{ trans('message.table.item_description') }}</th>
-                        <th width="25%" class="text-center">Asset Type</th>                                                         
-                    <!-- <th width="13%" class="text-center">{{ trans('message.table.image') }}</th> -->
+                        <th width="25%" class="text-center">{{ trans('message.table.item_description') }}</th>
+                        <th width="15%" class="text-center">Asset Type</th>                                                         
+                        <th width="15%" class="text-center">Serial Number</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -119,6 +119,7 @@
                             <td style="text-align:center" height="10">{{$rowresult->digits_code}}</td>
                             <td style="text-align:center" height="10">{{$rowresult->description}}</td>
                             <td style="text-align:center" height="10">{{$rowresult->asset_type}}</td>
+                            <td style="text-align:center" height="10">{{$rowresult->serial_no}}</td>
                                                    
                         </tr>
                     @endforeach

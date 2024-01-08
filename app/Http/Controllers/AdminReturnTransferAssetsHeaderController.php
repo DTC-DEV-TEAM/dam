@@ -437,17 +437,18 @@
 			->where('return_transfer_assets_header.id', $id)->first();
 	   
 			$data['return_body'] = ReturnTransferAssets::
-					leftjoin('statuses', 'return_transfer_assets.status', '=', 'statuses.id')
+					leftjoin('mo_body_request', 'return_transfer_assets.mo_id', '=', 'mo_body_request.id')
+					->leftjoin('statuses', 'return_transfer_assets.status', '=', 'statuses.id')
 				
 				->select(
 					'return_transfer_assets.*',
 					'return_transfer_assets.status as body_status',
+					'mo_body_request.serial_no',
 					'statuses.*',
 					)
 					->where('return_transfer_assets.return_header_id', $id)->get();	
 					
 			$data['stores'] = DB::table('locations')->where('id', $data['user']->location_id)->first();
-
 			return $this->view("assets.view-return-details", $data);
 		}
 

@@ -46,7 +46,7 @@
                             <th>Digits Code</th>   
                             <th>Item Description</th>    
                             <th>Asset Type</th>                                                                                 
-                            
+                            <th>Serail Number</th>
                         </tr>
                         <?php   $tableRow1 = 0; ?>
                         <?Php   $item_count = 0; ?>
@@ -66,7 +66,8 @@
                             <td>{{$res->asset_code}}</td>
                             <td>{{$res->digits_code}}</td> 
                             <td>{{$res->item_description}}</td>   
-                            <td>{{$res->asset_type}}</td>                                                                                                                  
+                            <td>{{$res->asset_type}}</td>  
+                            <td>{{$res->serial_no}}</td>                                                                                                                  
                             </tr>
                         @endforeach
                     </tbody>
