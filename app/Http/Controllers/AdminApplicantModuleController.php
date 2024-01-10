@@ -394,12 +394,14 @@
 			   leftjoin('statuses', 'applicant_table.status', '=', 'statuses.id')
 			 ->leftjoin('cms_users as created', 'applicant_table.created_by', '=', 'created.id')
 			 ->leftjoin('cms_users as updated_by', 'applicant_table.updated_by', '=', 'updated_by.id')
+			 ->leftjoin('erf_header_request', 'applicant_table.erf_number', '=', 'erf_header_request.reference_number')
 			 ->select(
 				'applicant_table.*',
 				'applicant_table.id as apid',
 				'statuses.status_description as status_description',
 				'created.name as created_name',
-				'updated_by.name as updated_by'
+				'updated_by.name as updated_by',
+				'erf_header_request.approved_hr_at'
 				)
 				->orderByRaw('FIELD( applicant_table.status, 47,34,35,31,42,8,5)')
 				->get();
@@ -409,6 +411,7 @@
 			  )
 			  ->whereIn('id', [47,34,35,36,8,42,5])
 			  ->get();
+			  //dd($data['getData']);
 			 return $this->view('applicant.applicant_index',$data);
 		  }
 
