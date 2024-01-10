@@ -20,6 +20,23 @@
                 border: 1px solid rgba(000, 0, 0, .4);
                 padding: 8px;
             }
+            ::-webkit-scrollbar-track
+            {
+                /* -webkit-box-shadow: inset 0 0 6px rgba(32, 83, 178, 0.3); */
+                background-color: #F5F5F5;
+            }
+
+            ::-webkit-scrollbar
+            {
+                width: 10px;
+                background-color: #F5F5F5;
+            }
+
+            ::-webkit-scrollbar-thumb
+            {
+                background-color: #3c8dbc;
+                /* border: px solid #367fa9; */
+            }
         </style>
     @endpush
 @section('content')
@@ -41,6 +58,7 @@
                                 <th style="width:2%">Action</th>
                                 <th style="width:6%">Status</th>
                                 <th style="width:8%">Erf Number</th>
+                                <th style="width:8%">Verified Date</th>
                                 <th style="width:8%">First Name</th>
                                 <th style="width:8%">Last Name</th>
                                 <th style="width:10%">Screen Date</th>
@@ -96,6 +114,7 @@
                             </td>
                             @endif 
                             <td>{{$val->erf_number}}</td>
+                            <td>{{$val->approved_hr_at}}</td>
                             <td>{{$val->first_name}}</td>  
                             <td>{{$val->last_name}}</td>
                             <td>{{$val->screen_date}}</td>     
