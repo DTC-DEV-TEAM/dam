@@ -527,43 +527,36 @@
         });
     });
     $('#btnSubmit').click(function(event) {
-    
         event.preventDefault();
         //each value validation
-        $('.asset_code_tag').each(function() {
-            asset_code = $(this).val();
-            if (asset_code == null) {
-                swal({
-                    type: 'error',
-                    title: 'Asset Code Tagging Required',
-                    icon: 'error',
-                    confirmButtonColor: "#367fa9",
-                }); 
-                event.preventDefault(); // cancel default behavior
-            } else if (asset_code == "") {
-                swal({
-                    type: 'error',
-                    title: 'Asset Code Tagging Required',
-                    icon: 'error',
-                    confirmButtonColor: "#367fa9",
-                }); 
-                event.preventDefault(); // cancel default behavior
-            }else{
-                swal({
-                    title: "Are you sure?",
-                    type: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#41B314",
-                    cancelButtonColor: "#F9354C",
-                    confirmButtonText: "Yes, pick it!",
-                    width: 450,
-                    height: 200
-                    }, function () {
-                        $(this).attr('disabled','disabled');
-                        $('#myform').submit();                                                  
-                });
-            }
+        var asset_code = $(".asset_code_tag option").length;
+        var asset_code_value = $('.asset_code_tag').find(":selected");
+        for(i=0;i<asset_code;i++){
+            if(asset_code_value.eq(i).val() == ""){
+                swal({  
+                        type: 'error',
+                        title: 'Asset Code Tagging Required!',
+                        icon: 'error',
+                        confirmButtonColor: "#367fa9",
+                    });
+                    event.preventDefault();
+                    return false;
+            } 
+        } 
+        swal({
+            title: "Are you sure?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#41B314",
+            cancelButtonColor: "#F9354C",
+            confirmButtonText: "Yes, pick it!",
+            width: 450,
+            height: 200
+            }, function () {
+                $(this).attr('disabled','disabled');
+                $('#myform').submit();                                                  
         });
+    
     });
 
 </script>
