@@ -171,12 +171,12 @@
 	        */
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex') {
-			   if(CRUDBooster::myPrivilegeId() == 18 || CRUDBooster::myPrivilegeId() == 19){
+			   if(in_array(CRUDBooster::myPrivilegeId(), [18,19,24])){
 			     $this->index_button[] = ["label"=>"Upload Fulfillment","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('fulfillment-upload'),'color'=>'success'];
 			   }
 			   $this->index_button[] = ["label"=>"Consolidation","icon"=>"fa fa-download",'url'=>"javascript:showConsoExport()"];
 			   $this->index_button[] = ["label"=>"Upload PO","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('po-upload'),'color'=>'success'];
-			   if(CRUDBooster::myPrivilegeId() == 18 || CRUDBooster::myPrivilegeId() == 19){
+			   if(in_array(CRUDBooster::myPrivilegeId(), [18,19,24])){
 			     $this->index_button[] = ["label"=>"Cancellation","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('cancellation-upload'),'color'=>'warning'];
 			   }
 			}
@@ -501,7 +501,7 @@
 
 				$query->orderBy('header_request.status_id', 'asc')->orderBy('header_request.id', 'DESC');
 			
-			}else if(in_array(CRUDBooster::myPrivilegeId(),[18,19])){ 
+			}else if(in_array(CRUDBooster::myPrivilegeId(),[18,19,24])){ 
 				$query->where(function($sub_query){
 
 					$for_tagging    =  DB::table('statuses')->where('id', 7)->value('id');
