@@ -116,7 +116,7 @@
 
 				if(CRUDBooster::myPrivilegeId() == 14){
 					$this->addaction[] = ['title'=>'View','url'=>CRUDBooster::mainpath('getRequestPurchasingManagerView/[id]'),'icon'=>'fa fa-eye'];
-				}else if(CRUDBooster::myPrivilegeId() == 19 || CRUDBooster::myPrivilegeId() == 18){
+				}else if(CRUDBooster::myPrivilegeId() == 19 || CRUDBooster::myPrivilegeId() == 18 || CRUDBooster::myPrivilegeId() == 24){
 					//$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('getDetailPurchasing/[id]'),'icon'=>'fa fa-eye'];
 					//option 2
 					//$this->addaction[] = ['title'=>'Add MO/SO','url'=>CRUDBooster::adminpath('[id]'),'icon'=>'fa fa-plus-circle', "showIf"=>"[status_id] == $for_closing && [mo_so_num] == null"];

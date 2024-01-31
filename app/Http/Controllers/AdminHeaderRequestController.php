@@ -233,40 +233,25 @@
 	        */
 	        $this->script_js = NULL;
 			$this->script_js = "
-
 				$('.fa.fa-times').click(function(){
-
 					var strconfirm = confirm('Are you sure you want to cancel this request?');
-
 					if (strconfirm == true) {
-
 						return true;
-						
 					}else{
-						
 						return false;
 						window.stop();
-
 					}
-
 				});
 				
-				
 				$('.fa.fa-check').click(function(){
-
 					var strconfirm = confirm('Are you sure you want to close this request?');
-
 					if (strconfirm == true) {
-
 						return true;
-						
 					}else{
-						
 						return false;
 						window.stop();
 
 					}
-
 				});	
 				
 				$(document).ready(function() {
@@ -372,32 +357,22 @@
 	    */
 	    public function hook_query_index(&$query) {
 	        //Your code here
-
 			if(CRUDBooster::isSuperadmin()){
-
 				$released  = 		DB::table('statuses')->where('id', 12)->value('id');
-
 				$query->whereNull('header_request.deleted_at')
 					  ->orderBy('header_request.status_id', 'asc')
 					  ->orderBy('header_request.id', 'desc');
 
 			}else{
-
 				$user = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-
 				$query->where(function($sub_query){
-
 					$user = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-
 					$released  = 		DB::table('statuses')->where('id', 12)->value('id');
-
 					$sub_query->where('header_request.created_by', CRUDBooster::myId())
-	
 							  ->whereNull('header_request.deleted_at'); 
 					// $sub_query->orwhere('header_request.employee_name', $user->id)
 	
 					// 		  ->whereNull('header_request.deleted_at');
-
 				});
 
 				$query->orderBy('header_request.status_id', 'asc')->orderBy('header_request.id', 'DESC');
@@ -454,13 +429,9 @@
 				}else if($column_value == $for_move_order){
 					$column_value = '<span class="label label-info">'.$for_move_order.'</span>';
 				}elseif($column_value == $for_printing_adf){
-
 					$column_value = '<span class="label label-info">'.$for_printing_adf.'</span>';
-
 				}elseif($column_value == $for_closing){
-
 					$column_value = '<span class="label label-info">'.$for_closing.'</span>';
-
 				}else if($column_value == $for_printing){
 					$column_value = '<span class="label label-info">'.$for_printing.'</span>';
 				}
@@ -514,7 +485,7 @@
 			$approved           = DB::table('statuses')->where('id', 4)->value('id');
 
 	        $for_move_order     =  DB::table('statuses')->where('id', 14)->value('id');
-			if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15])){ 
+			if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15,24])){ 
 				$postdata['status_id']              = $for_move_order;
 				$postdata['approved_by'] 		    = CRUDBooster::myId();
 				$postdata['approved_at'] 		    = date('Y-m-d H:i:s');	
@@ -545,15 +516,11 @@
 			$postdata['requestor_comments'] 		= $requestor_comments;
 			$postdata['created_by'] 				= CRUDBooster::myId();
 			$postdata['created_at'] 				= date('Y-m-d H:i:s');
-
 			$postdata['request_type_id']		 	= $request_type_id;
-
 			$postdata['privilege_id']		 		= CRUDBooster::myPrivilegeId();
-
 			if(!empty($application)){
-				$postdata['application'] 				= implode(", ",$application);
-
-				$postdata['application_others'] 		= $application_others;
+				$postdata['application'] 		    = implode(", ",$application);
+				$postdata['application_others'] 	= $application_others;
 			}
 
 	    }
@@ -570,11 +537,8 @@
 	        //Your code here
 
 			$fields = Request::all();
-
 			$cont = (new static)->apiContext;
-
 			$dataLines = array();
-
 			$arf_header = DB::table('header_request')->where(['created_by' => CRUDBooster::myId()])->orderBy('id','desc')->first();
 
 			$digits_code 		= $fields['digits_code'];
@@ -603,7 +567,7 @@
 					$image[$x]->move('vendor/crudbooster/',$filename);
 				}
 
-				if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15])){ 
+				if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15,24])){ 
 					if($category_id[$x] == "IT ASSETS"){
 						HeaderRequest::where('id', $arf_header->id)->update([
 							'to_reco'=> 1
@@ -612,7 +576,6 @@
 					}
 					
 				}
-
 
 				$dataLines[$x]['header_request_id'] = $arf_header->id;
 				$dataLines[$x]['digits_code'] 	    = $digits_code[$x];
@@ -657,7 +620,7 @@
 			
 			    //manager replenishment
 				$arf_body = BodyRequest::where(['header_request_id' => $arf_header->id])->whereNull('deleted_at')->get();
-				if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15])){ 
+				if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15,24])){ 
 					if(in_array($request_type_id, [7])){
 						//Get the inventory value per digits code
 						$arraySearch = DB::table('assets_supplies_inventory')->select('*')->get()->toArray();
