@@ -469,7 +469,7 @@
 			$pending                 = DB::table('statuses')->where('id', 1)->value('id');
 			$approved                = DB::table('statuses')->where('id', 4)->value('id');
 
-			if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15])){ 
+			if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15,24])){ 
 				$postdata['status_id']		 			= 37;
 			}else{
 				$postdata['status_id']		 			= 1;

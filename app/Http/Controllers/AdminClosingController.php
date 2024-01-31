@@ -380,57 +380,32 @@
 			}
 
 			if($column_index == 4){
-
 				$request_type = 			DB::table('requests')->where(['id' => $column_value])->first();
-				
 				if($column_value == $request_type->id){
-
 					$column_value = $request_type->request_name;
-
 				}
-
-
 			}
 
 			if($column_index == 5){
-
 				$request_type = 			DB::table('cms_users')->where(['id' => $column_value])->first();
-				
 				if($column_value == $request_type->id){
-
 					$column_value = $request_type->bill_to;
-
 				}
-
-
 			}
 
 			if($column_index == 6){
-
 				$request_type = 			DB::table('departments')->where(['id' => $column_value])->first();
-				
 				if($column_value == $request_type->id){
-
 					$column_value = $request_type->department_name;
-
 				}
-
-
 			}
 
 			if($column_index == 7){
-
 				$request_type = 			DB::table('cms_users')->where(['id' => $column_value])->first();
-				
 				if($column_value == $request_type->id){
-
 					$column_value = $request_type->name;
-
 				}
-
-
 			}
-
 	    }
 
 	    /*

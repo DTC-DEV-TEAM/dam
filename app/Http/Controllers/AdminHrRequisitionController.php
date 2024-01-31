@@ -378,7 +378,7 @@
 			$category_id 		       = $fields['category_id'];
 	
 			$postdata['reference_number']		 	= $reference_number;
-			if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15])){ 
+			if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15,24])){ 
 			    $postdata['status_id']                          = 29;
 				$postdata['approved_immediate_head_by']         = CRUDBooster::myId();
 				$postdata['approved_immediate_head_at']         = date('Y-m-d H:i:s');
@@ -785,7 +785,8 @@
 		public function positions(Request $request){
 			$data = Request::all();	
 			$id = $data['id'];
-			$positions = DB::table('positions')->select('positions.*')->where('department_id', $id)->where('status', "ACTIVE")->orderby('position_description', 'ASC')->get();
+			//$positions = DB::table('positions')->select('positions.*')->where('department_id', $id)->where('status', "ACTIVE")->orderby('position_description', 'ASC')->get();
+			$positions = DB::table('positions')->select('positions.*')->where('department_id','LIKE', '%'.$id.'%')->where('status', "ACTIVE")->orderby('position_description', 'ASC')->get();
 			return($positions);
 		}
 
