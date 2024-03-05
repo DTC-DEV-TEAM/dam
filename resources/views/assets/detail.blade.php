@@ -176,14 +176,14 @@
             <hr/>                
             <div class="row">
                 <div class="col-md-12">
-                    <div class="box-header text-center">
-                        <h3 class="box-title"><b>Item Request</b></h3>
-                    </div>
                     <div class="box-body no-padding">
                         <div class="pic-container">
                             <div class="pic-row">
                                 <table id="asset-items1">
-                                    <tbody id="bodyTable">
+                                    <thead>
+                                        <tr style="background-color:#3c8dbc; border: 0.5px solid #000;">
+                                            <th style="text-align: center" colspan="16"><h4 class="box-title" style="color: #fff;"><b>{{ trans('message.form-label.asset_items') }}</b></h4></th>
+                                        </tr>
                                         <tr class="tbl_header_color dynamicRows">
                                             <th width="10%" class="text-center">{{ trans('message.table.digits_code') }}</th>
                                             <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
@@ -222,6 +222,9 @@
                                                 @endif
                                             @endif --}}
                                         </tr>
+                                    </thead>
+                                        
+                                    <tbody id="bodyTable">
                                         <tr id="tr-table">
                                             <?php   $tableRow = 1; ?>
                                             <tr>
@@ -399,14 +402,15 @@
             <hr>
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="box-header text-center">
-                            <h3 class="box-title"><b>Item Mo Details</b></h3>
-                        </div>
+            
                         <div class="box-body no-padding">
                             <div class="pic-container">
                                 <div class="pic-row">
-                                    <table id="asset-items">
-                                        <tbody>
+                                    <table id="asset-items1">
+                                        <thead>
+                                            <tr style="background-color:#3c8dbc; border: 0.5px solid #000;">
+                                                <th style="text-align: center" colspan="16"><h4 class="box-title" style="color: #fff;"><b>Item MO details</b></h4></th>
+                                            </tr>
                                             <tr class="tbl_header_color dynamicRows">
                                                 <th width="10%" class="text-center">{{ trans('message.table.mo_reference_number') }}</th>
                                                 <th width="13%" class="text-center">{{ trans('message.table.status_id') }}</th>
@@ -418,6 +422,9 @@
                                                 <th width="8%" class="text-center">{{ trans('message.table.item_cost') }}</th>
                                                 <th width="16%" class="text-center">{{ trans('message.table.item_total_cost') }}</th>         
                                             </tr>
+                                        </thead>
+                                           
+                                        <tbody id="bodyTable">
                                             <?php   $tableRow1 = 0; ?>
                                             @if( !empty($MoveOrder) )
                                                 @foreach($MoveOrder as $rowresult)

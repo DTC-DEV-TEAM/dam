@@ -1,4 +1,17 @@
 @extends('crudbooster::admin_template')
+@push('head')
+    <style type="text/css">   
+
+        #asset-items th, td {
+            border: 1px solid rgba(000, 0, 0, .5);
+            padding: 8px;
+        }
+        .finput {
+            border:none;
+            border-bottom: 1px solid rgba(18, 17, 17, 0.5);
+        }
+    </style>
+@endpush
 @section('content')
 
 @if(g('return_url'))
@@ -79,8 +92,11 @@
                 <h3 class="box-title"><b>{{ trans('message.form-label.asset_items') }}</b></h3>
             </div>
 
-            <table  class='table table-striped table-bordered'>
+            <table id="asset-items" style="width: 100%">
                 <thead>
+                    <tr style="background-color:#3c8dbc; border: 0.5px solid #000;">
+                        <th style="text-align: center" colspan="11"><h4 class="box-title" style="color: #fff;"><b>{{ trans('message.form-label.asset_items') }}</b></h4></th>
+                    </tr>
                     <tr>
                         <th width="15%" class="text-center">Reference No</th>
                         <th width="10%" class="text-center">Asset Code</th>
@@ -112,7 +128,7 @@
                 <div class="col-md-12">
                     <div class="form-group">
                         <label>{{ trans('message.table.comments') }}:</label>
-                        <textarea placeholder="{{ trans('message.table.comments') }} ..." rows="3" class="form-control" name="approver_comments">{{$Header->approver_comments}}</textarea>
+                        <textarea placeholder="{{ trans('message.table.comments') }} ..." rows="3" class="form-control finput" name="approver_comments">{{$Header->approver_comments}}</textarea>
                     </div>
                 </div>
             </div>

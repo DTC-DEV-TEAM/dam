@@ -1,6 +1,15 @@
 @extends('crudbooster::admin_template')
-@section('content')
+@push('head')
+<style type="text/css">   
 
+    #asset-items th, td {
+        border: 1px solid rgba(000, 0, 0, .5);
+        padding: 8px;
+    }
+
+</style>
+@endpush
+@section('content')
 @if(g('return_url'))
 	<p class="noprint"><a title='Return' href='{{g("return_url")}}'><i class='fa fa-chevron-circle-left '></i> &nbsp; {{trans("crudbooster.form_back_to_list",['module'=>CRUDBooster::getCurrentModule()->name])}}</a></p>       
 @else
@@ -65,69 +74,72 @@
             </div>
 
             <hr/>
-        
-            <div class="box-header text-center">
-                <h3 class="box-title"><b>{{ trans('message.form-label.asset_items') }}</b></h3>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="table-div" style="overflow-x:scroll">
+                        <table id="asset-items" style="width: 100%">
+                            <thead>
+                                <tr style="background-color:#3c8dbc; border: 0.5px solid #000;">
+                                    <th style="text-align: center" colspan="11"><h4 class="box-title" style="color: #fff;"><b>{{ trans('message.form-label.asset_items') }}</b></h4></th>
+                                </tr>
+                                <tr>
+                                    <th width="10%" class="text-center">Line status</th>
+                                    <th width="15%" class="text-center">Reference No</th>
+                                    <th width="10%" class="text-center">Asset Code</th>
+                                    <th width="10%" class="text-center">Digits Code</th>
+                                    <th width="25%" class="text-center">{{ trans('message.table.item_description') }}</th>
+                                    <th width="15%" class="text-center">Asset Type</th>                                                         
+                                    <th width="15%" class="text-center">Serial Number</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($return_body as $rowresult)
+                                    <tr>
+                                        @if($rowresult['body_status'] == 1)
+                                            <td style="text-align:center">
+                                            <label class="label label-warning" style="align:center; font-size:10px">{{$rowresult->status_description}}</label>
+                                            </td>
+                                        @elseif($rowresult['body_status'] == 5)
+                                            <td style="text-align:center">
+                                            <label class="label label-danger" style="align:center; font-size:10px">{{$rowresult->status_description}}</label>
+                                            </td>
+                                        @elseif($rowresult['body_status'] == 8)
+                                            <td style="text-align:center">
+                                            <label class="label label-danger" style="align:center; font-size:10px">{{$rowresult->status_description}}</label>
+                                            </td>
+                                        @elseif($rowresult['body_status'] == 24)
+                                            <td style="text-align:center">
+                                            <label class="label label-info" style="align:center; font-size:10px">{{$rowresult->status_description}}</label>
+                                            </td>
+                                        @elseif($rowresult['body_status'] == 26)
+                                            <td style="text-align:center">
+                                            <label class="label label-info" style="align:center; font-size:10px">{{$rowresult->status_description}}</label>
+                                            </td>
+                                        @elseif($rowresult['body_status'] == 27)
+                                            <td style="text-align:center">
+                                            <label class="label label-info" style="align:center; font-size:10px">{{$rowresult->status_description}}</label>
+                                            </td>
+                                        @else
+                                        <td style="text-align:center">
+                                            <label class="label label-success" style="align:center; font-size:10px">{{$rowresult->status_description}}</label>
+                                        </td>
+                                        @endif
+                                        <td style="text-align:center" height="10">{{$rowresult->reference_no}}</td>
+                                        <td style="text-align:center" height="10">{{$rowresult->asset_code}}</td>
+                                        <td style="text-align:center" height="10">{{$rowresult->digits_code}}</td>
+                                        <td style="text-align:center" height="10">{{$rowresult->description}}</td>
+                                        <td style="text-align:center" height="10">{{$rowresult->asset_type}}</td>
+                                        <td style="text-align:center" height="10">{{$rowresult->serial_no}}</td>
+                                                            
+                                    </tr>
+                                @endforeach
+    
+                            </tbody>
+                            
+                        </table> 
+                    </div>
+                </div>
             </div>
-
-            <table  class='table table-striped table-bordered'>
-                <thead>
-                    <tr>
-                        <th width="10%" class="text-center">Line status</th>
-                        <th width="15%" class="text-center">Reference No</th>
-                        <th width="10%" class="text-center">Asset Code</th>
-                        <th width="10%" class="text-center">Digits Code</th>
-                        <th width="25%" class="text-center">{{ trans('message.table.item_description') }}</th>
-                        <th width="15%" class="text-center">Asset Type</th>                                                         
-                        <th width="15%" class="text-center">Serial Number</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($return_body as $rowresult)
-                        <tr>
-                            @if($rowresult['body_status'] == 1)
-                                <td style="text-align:center">
-                                <label class="label label-warning" style="align:center; font-size:10px">{{$rowresult->status_description}}</label>
-                                </td>
-                            @elseif($rowresult['body_status'] == 5)
-                                <td style="text-align:center">
-                                <label class="label label-danger" style="align:center; font-size:10px">{{$rowresult->status_description}}</label>
-                                </td>
-                            @elseif($rowresult['body_status'] == 8)
-                                <td style="text-align:center">
-                                <label class="label label-danger" style="align:center; font-size:10px">{{$rowresult->status_description}}</label>
-                                </td>
-                            @elseif($rowresult['body_status'] == 24)
-                                <td style="text-align:center">
-                                <label class="label label-info" style="align:center; font-size:10px">{{$rowresult->status_description}}</label>
-                                </td>
-                            @elseif($rowresult['body_status'] == 26)
-                                <td style="text-align:center">
-                                <label class="label label-info" style="align:center; font-size:10px">{{$rowresult->status_description}}</label>
-                                </td>
-                            @elseif($rowresult['body_status'] == 27)
-                                <td style="text-align:center">
-                                <label class="label label-info" style="align:center; font-size:10px">{{$rowresult->status_description}}</label>
-                                </td>
-                            @else
-                               <td style="text-align:center">
-                                <label class="label label-success" style="align:center; font-size:10px">{{$rowresult->status_description}}</label>
-                               </td>
-                            @endif
-                            <td style="text-align:center" height="10">{{$rowresult->reference_no}}</td>
-                            <td style="text-align:center" height="10">{{$rowresult->asset_code}}</td>
-                            <td style="text-align:center" height="10">{{$rowresult->digits_code}}</td>
-                            <td style="text-align:center" height="10">{{$rowresult->description}}</td>
-                            <td style="text-align:center" height="10">{{$rowresult->asset_type}}</td>
-                            <td style="text-align:center" height="10">{{$rowresult->serial_no}}</td>
-                                                   
-                        </tr>
-                    @endforeach
-
-                </tbody>
-                
-            </table> 
-
             <hr/>
             @if($Header->approvedby != null || $Header->approvedby != "")
             <div class="row">                           

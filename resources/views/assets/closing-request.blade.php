@@ -151,15 +151,15 @@
             <hr/>                
             <div class="row">
                 <div class="col-md-12">
-                    <div class="box-header text-center">
-                        <h3 class="box-title"><b>Item Request</b></h3>
-                    </div>
                     <div class="box-body no-padding">
                         <div class="table-responsive">
                             <div class="pic-container">
                                 <div class="pic-row">
                                     <table id="asset-items1">
-                                        <tbody id="bodyTable">
+                                        <thead>
+                                            <tr style="background-color:#3c8dbc; border: 0.5px solid #000;">
+                                                <th style="text-align: center" colspan="15"><h4 class="box-title" style="color: #fff;"><b>Item Request</b></h4></th>
+                                            </tr>
                                             <tr class="tbl_header_color dynamicRows">
                                                 <th width="10%" class="text-center">{{ trans('message.table.digits_code') }}</th>
                                                 <th width="15%" class="text-center">{{ trans('message.table.item_description') }}</th>
@@ -186,8 +186,10 @@
                                                 @if($Header->approved_by == null || $Header->approved_by == "")
                                                  <th>Action</th>
                                                 @endif 
-                                             
                                             </tr>
+                                        </thead>
+                                           
+                                        <tbody id="bodyTable">
                                             <tr id="tr-table">
                                                 <?php   $tableRow = 1; ?>
                                                 <tr>
@@ -326,111 +328,106 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <div class="box-header text-center">
-                        <h3 class="box-title"><b>Item MO Details</b></h3>
-                    </div>
-                                <div class="box-body no-padding">
-                                    <div class="table-responsive">
-                                        <div class="pic-container">
-                                            <div class="pic-row">
-                                                <table id="asset-items">
-                                                    <tbody>
-                                                        <tr class="tbl_header_color dynamicRows">
-                                                            <th width="10%" class="text-center">{{ trans('message.table.mo_reference_number') }}</th>
-                                                            <th width="13%" class="text-center">{{ trans('message.table.status_id') }}</th>
-                                                            <th width="10%" class="text-center">{{ trans('message.table.digits_code') }}</th>
-                                                            <th width="10%" class="text-center">{{ trans('message.table.asset_tag') }}</th>
-                                                            <th width="26%" class="text-center">{{ trans('message.table.item_description') }}</th>
-                                                            <th width="13%" class="text-center">{{ trans('message.table.serial_no') }}</th>
-                                                            <th width="4%" class="text-center">{{ trans('message.table.item_quantity') }}</th>
-                                                            <th width="8%" class="text-center">{{ trans('message.table.item_cost') }}</th>
-                                                            <th width="16%" class="text-center">{{ trans('message.table.item_total_cost') }}</th>
+                    <div class="box-body no-padding">
+                        <div class="table-responsive">
+                            <div class="pic-container">
+                                <div class="pic-row">
+                                    <table id="asset-items">
+                                        <thead>
+                                            <tr style="background-color:#3c8dbc; border: 0.5px solid #000;">
+                                                <th style="text-align: center" colspan="15"><h4 class="box-title" style="color: #fff;"><b>Item MO Details</b></h4></th>
+                                            </tr>
+                                            <tr class="tbl_header_color dynamicRows">
+                                                <th width="10%" class="text-center">{{ trans('message.table.mo_reference_number') }}</th>
+                                                <th width="13%" class="text-center">{{ trans('message.table.status_id') }}</th>
+                                                <th width="10%" class="text-center">{{ trans('message.table.digits_code') }}</th>
+                                                <th width="10%" class="text-center">{{ trans('message.table.asset_tag') }}</th>
+                                                <th width="26%" class="text-center">{{ trans('message.table.item_description') }}</th>
+                                                <th width="13%" class="text-center">{{ trans('message.table.serial_no') }}</th>
+                                                <th width="4%" class="text-center">{{ trans('message.table.item_quantity') }}</th>
+                                                <th width="8%" class="text-center">{{ trans('message.table.item_cost') }}</th>
+                                                <th width="16%" class="text-center">{{ trans('message.table.item_total_cost') }}</th>
+                                                
+                                            </tr>
+                                        </thead>
+                                            
+                                        <tbody>
+                                            <?php   $tableRow1 = 0; ?>
+                                            @if( !empty($MoveOrder) )                                                        
+                                                @foreach($MoveOrder as $rowresult)
+                                                    <?php   $tableRow1++; ?>
+                                                    <tr>
+                                                        <td style="text-align:center" height="10">
+
+                                                            <input type="hidden" value="{{$rowresult->id}}" name="item_id[]">
+
+                                                            {{$rowresult->mo_reference_number}}
                                                             
-                                                        </tr>
+                                                        </td>
 
-                                                        <?php   $tableRow1 = 0; ?>
+                                                        <td style="text-align:center" height="10">
 
-                                                        @if( !empty($MoveOrder) )
+                                                            <label style="color: #3c8dbc;">
+                                                                {{$rowresult->status_description}}
+                                                            </label>
+                                                            
 
-                                                          
+                                                        </td>
 
-                                                            @foreach($MoveOrder as $rowresult)
+                                                        <td style="text-align:center" height="10">
+                                                            {{$rowresult->digits_code}}
+                                                        </td>
 
-                                                                <?php   $tableRow1++; ?>
+                                                        <td style="text-align:center" height="10">
+                                                            {{$rowresult->asset_code}}
+                                                        </td>
 
-                                                                <tr>
-                                                                    <td style="text-align:center" height="10">
+                                                        <td style="text-align:center" height="10">
+                                                            {{$rowresult->item_description}}
+                                                        </td>
 
-                                                                        <input type="hidden" value="{{$rowresult->id}}" name="item_id[]">
+                                                        <td style="text-align:center" height="10">
+                                                            {{$rowresult->serial_no}}
+                                                        </td>
 
-                                                                        {{$rowresult->mo_reference_number}}
-                                                                        
-                                                                    </td>
+                                                        <td style="text-align:center" height="10" class="qty">
+                                                            {{$rowresult->quantity}}
+                                                        </td>
 
-                                                                    <td style="text-align:center" height="10">
+                                                        <td style="text-align:center" height="10" class="unit_cost">
+                                                            {{$rowresult->unit_cost}}
+                                                        </td>
 
-                                                                        <label style="color: #3c8dbc;">
-                                                                            {{$rowresult->status_description}}
-                                                                        </label>
-                                                                       
+                                                        <td style="text-align:center" height="10" class="total_cost">
+                                                            {{$rowresult->total_unit_cost}}
+                                                        </td>
 
-                                                                    </td>
-
-                                                                    <td style="text-align:center" height="10">
-                                                                        {{$rowresult->digits_code}}
-                                                                    </td>
-
-                                                                    <td style="text-align:center" height="10">
-                                                                        {{$rowresult->asset_code}}
-                                                                    </td>
-
-                                                                    <td style="text-align:center" height="10">
-                                                                        {{$rowresult->item_description}}
-                                                                    </td>
-
-                                                                    <td style="text-align:center" height="10">
-                                                                        {{$rowresult->serial_no}}
-                                                                    </td>
-
-                                                                    <td style="text-align:center" height="10" class="qty">
-                                                                        {{$rowresult->quantity}}
-                                                                    </td>
-
-                                                                    <td style="text-align:center" height="10" class="unit_cost">
-                                                                        {{$rowresult->unit_cost}}
-                                                                    </td>
-
-                                                                    <td style="text-align:center" height="10" class="total_cost">
-                                                                        {{$rowresult->total_unit_cost}}
-                                                                    </td>
-
-                                                                    
-
-                                                                </tr>
-
-
-                                                            @endforeach
-
-
-                                                        @endif
                                                         
-                                                        {{-- <tr class="tableInfo">
-                                                            <td colspan="8" align="right"><strong>{{ trans('message.table.total') }}</strong></td>
-                                                            <td align="center" colspan="1">
-                                                                <label>{{$Header->total}}</label>
-                                                            </td>
-                                                        </tr> --}}
-                                                    
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                
-                                    </div>
-                                    <br>
+
+                                                    </tr>
+
+
+                                                @endforeach
+
+
+                                            @endif
+                                            
+                                            {{-- <tr class="tableInfo">
+                                                <td colspan="8" align="right"><strong>{{ trans('message.table.total') }}</strong></td>
+                                                <td align="center" colspan="1">
+                                                    <label>{{$Header->total}}</label>
+                                                </td>
+                                            </tr> --}}
+                                        
+                                        </tbody>
+                                    </table>
                                 </div>
+                            </div>
+                    
+                        </div>
+                        <br>
+                    </div>
                 </div>
-          
             </div> 
 
             <br>
@@ -573,7 +570,7 @@
     }
     document.getElementById("asset-items1").innerHTML +=
     "<tr>"+
-        "<td colspan='4' style='text-align:right'>"+
+        "<td colspan='4' style='text-align:center'>"+
                 "<strong>TOTAL</strong>"+
             "</td>"+
             
@@ -631,7 +628,7 @@
     }
     document.getElementById("asset-items").innerHTML +=
     "<tr>"+
-        "<td colspan='6' style='text-align:right'>"+
+        "<td colspan='6' style='text-align:center'>"+
                 "<strong>TOTAL</strong>"+
             "</td>"+
             

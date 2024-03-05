@@ -11,6 +11,8 @@
 	use App\CommentsGoodDefect;
 	use App\WarehouseLocationModel;
 	use App\Models\OutAssets;
+	use App\Models\AssetsInventoryReserved;
+	use App\HeaderRequest;
 	class AdminReturnPickingController extends \crocodicstudio\crudbooster\controllers\CBController {
 
 	    public function cbInit() {
@@ -349,7 +351,8 @@
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
 	        $fields = Request::all();
-    
+	
+			$reserved_arf       = array_filter($fields['reserved_arf']);
 			$selectedItem       = $fields['item_to_receive_id'];
 			$selectedItem_array = array();
 			foreach($selectedItem as $select){
@@ -496,6 +499,24 @@
 		
 			}
 
+			//update reserved table
+			if($reserved_arf){
+				for ($t = 0; $t < count($reserved_arf); $t++) {
+					AssetsInventoryReserved::where(['id' => $reserved_arf[$t]])
+					   ->update([
+							   'reserved' => 1,
+							   'for_po'   => NULL
+							   ]);
+					$arfNumber = AssetsInventoryReserved::where(['id' => $reserved_arf[$t]])->groupBy('reference_number')->get();
+					foreach($arfNumber as $val){
+						HeaderRequest::where('reference_number',$val->reference_number)
+						->update([
+							'to_mo' => 1
+						]);
+					}
+				}
+				
+			}
 
 			//save defect and good comments
 			$container = [];
@@ -628,9 +649,16 @@
 						->where('return_transfer_assets.return_header_id', $id)
 						->where('return_transfer_assets.status', 24)
 						->get();	
-			// dd($data['return_body']);
+			$arrayDigitsCode = [];
+			foreach($data['return_body'] as $codes) {
+				$digits_code['digits_code'] = $codes['digits_code'];
+				$asset_code['asset_code'] = $codes['asset_code'];
+				array_push($arrayDigitsCode, $codes['digits_code']);
+			}
+			
 			$data['good_defect_lists'] = GoodDefectLists::all();
 			$data['warehouse_location'] = WarehouseLocationModel::where('id','!=',4)->get();
+			$data['reserved_assets'] = AssetsInventoryReserved::leftjoin('header_request','assets_inventory_reserved.reference_number','=','header_request.reference_number')->select('assets_inventory_reserved.*','header_request.*','assets_inventory_reserved.id as reserved_id')->whereIn('assets_inventory_reserved.digits_code', $arrayDigitsCode)->whereNotNull('for_po')->get();
 			return $this->view("assets.return-picking-request", $data);
 		}
 

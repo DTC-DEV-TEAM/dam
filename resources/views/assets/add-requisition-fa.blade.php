@@ -30,7 +30,7 @@
             }
 
             input.sinput:read-only {
-                background-color: #fff;
+                background-color: #eee;
             }
 
             input.addinput:read-only {
@@ -58,6 +58,10 @@
                 background-color: #367fa9 !important;
                 border: 1px solid rgb(255, 254, 254) !important;
                 color: #fff !important;
+            }
+            #asset-items th, td {
+                border: 1px solid rgba(000, 0, 0, .5);
+                padding: 8px;
             }
         </style>
     @endpush
@@ -149,54 +153,54 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <div class="box-header text-center">
-                        <h3 class="box-title"><b>{{ trans('message.form-label.asset_items') }}</b></h3>
-                    </div>
-                                <div class="box-body no-padding">
-                                    <div class="table-responsive">
-                                        <div class="pic-container">
-                                            <div class="pic-row">
-                                                <table class="table table-bordered" id="asset-items">
-                                                    <tbody id="bodyTable">
-                                                        <tr class="tbl_header_color dynamicRows">
-                                                            <th width="35%" class="text-center">*{{ trans('message.table.item_description') }}</th>
-                                                            <th width="20%" class="text-center">Digits Code</th>
-                                                            <th width="20%" class="text-center">{{ trans('message.table.category_id_text') }}</th>      
-                                                            <th width="20%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th>
-                                                            <th width="15%" class="text-center"> Wh Quantity</th>
-                                                            <th width="15%" class="text-center"> Unserved Quantity</th>  
-                                                            <th width="7%" class="text-center">*{{ trans('message.table.quantity_text') }}</th> 
-                                                            <th width="5%" class="text-center">{{ trans('message.table.action') }}</th>
-                                                        </tr>
-                
-                                                        <tr id="tr-table">
-                                                            <tr>
-                                            
-                                                            </tr>
-                                                        </tr>
-                                                    
-                                                    </tbody>
-
-                                                    <tfoot>
-
-                                                        <tr id="tr-table1" class="bottom">
-            
-                                                            <td colspan="6">
-                                                                <input type="button" id="add-Row" name="add-Row" class="btn btn-primary add" value='Add Item' />
-                                                            </td>
-                                                            <td align="left" colspan="1">
-                                                                <input type='number' name="quantity_total" class="form-control text-center" id="quantity_total" readonly>
-                                                            </td>
-                                                        </tr>
-                                                    </tfoot>
-
-                                                </table>
-                                            </div>
-                                        </div>
+                    <div class="box-body no-padding">
+                        <div class="table-responsive">
+                            <div class="pic-container">
+                                <div class="pic-row">
+                                    <table id="asset-items">
+                                        <tbody id="bodyTable">
+                                            <tr style="background-color:#3c8dbc; border: 0.5px solid #000;">
+                                                <th style="text-align: center" colspan="11"><h4 class="box-title" style="color: #fff;"><b>{{ trans('message.form-label.asset_items') }}</b></h4></th>
+                                            </tr>
+                                            <tr class="tbl_header_color dynamicRows">
+                                                <th width="35%" class="text-center">*{{ trans('message.table.item_description') }}</th>
+                                                <th width="20%" class="text-center">Digits Code</th>
+                                                <th width="20%" class="text-center">{{ trans('message.table.category_id_text') }}</th>      
+                                                <th width="20%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th>
+                                                <th width="15%" class="text-center"> Wh Quantity</th>
+                                                <th width="15%" class="text-center"> Unserved Quantity</th>  
+                                                <th width="7%" class="text-center">*{{ trans('message.table.quantity_text') }}</th> 
+                                                <th width="5%" class="text-center">{{ trans('message.table.action') }}</th>
+                                            </tr>
+    
+                                            <tr id="tr-table">
+                                                <tr>
                                 
-                                    </div>
-                                    <br>
+                                                </tr>
+                                            </tr>
+                                        
+                                        </tbody>
+
+                                        <tfoot>
+
+                                            <tr id="tr-table1" class="bottom">
+                                                <td colspan="6">
+                                                    <a type="button" id="add-Row" name="add-Row" class="btn btn-primary add"><i class="fa fa-plus-circle" ></i> Add Item</a>
+                                                </td>
+                                                <td align="left" colspan="1">
+                                                    <input type='number' name="quantity_total" class="form-control text-center" id="quantity_total" readonly>
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                        </tfoot>
+
+                                    </table>
                                 </div>
+                            </div>
+                    
+                        </div>
+                        <br>
+                    </div>
                 </div>
           
                 <div class="col-md-12">
@@ -214,7 +218,7 @@
 
             <a href="{{ CRUDBooster::mainpath() }}" class="btn btn-default">{{ trans('message.form.cancel') }}</a>
 
-            <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('message.form.save') }}</button>
+            <button class="btn btn-primary pull-right" type="submit" id="btnSubmit"> <i class="fa fa-save" ></i> {{ trans('message.form.create') }}</button>
 
         </div>
 
@@ -749,7 +753,7 @@
                             showCancelButton: true,
                             confirmButtonColor: "#41B314",
                             cancelButtonColor: "#F9354C",
-                            confirmButtonText: "Yes, send it!",
+                            confirmButtonText: "Yes, create it!",
                             width: 450,
                             height: 200
                             }, function () {

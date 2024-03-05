@@ -320,6 +320,7 @@
 			$forturnover  =      DB::table('statuses')->where('id', 24)->value('status_description');
 			$toClose      =      DB::table('statuses')->where('id', 25)->value('status_description');
 			$closed       =      DB::table('statuses')->where('id', 13)->value('status_description');
+			$rejected     =  	 DB::table('statuses')->where('id', 5)->value('status_description');
 			if($column_index == 1){
 				if($column_value == $pending){
 					$column_value = '<span class="label label-warning">'.$pending.'</span>';
@@ -331,6 +332,8 @@
 					$column_value = '<span class="label label-info">'.$toClose.'</span>';
 				}else if($column_value == $closed){
 					$column_value = '<span class="label label-success">'.$closed.'</span>';
+				}else if($column_value == $rejected){
+					$column_value = '<span class="label label-danger">'.$rejected.'</span>';
 				}
 			}
 	    }
