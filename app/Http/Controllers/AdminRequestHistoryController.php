@@ -14,8 +14,12 @@
 	use Illuminate\Support\Facades\Input;
 	use Illuminate\Support\Facades\Log;
 	use Illuminate\Support\Facades\Redirect;
-
 	use App\MoveOrder;
+	use Maatwebsite\Excel\Facades\Excel;
+	use PhpOffice\PhpSpreadsheet\Spreadsheet;
+	use PhpOffice\PhpSpreadsheet\Reader\Exception;
+	use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+	use PhpOffice\PhpSpreadsheet\IOFactory;
 
 	class AdminRequestHistoryController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -89,30 +93,6 @@
 			$this->form[] = ['label'=>'Approver Comments','name'=>'approver_comments','type'=>'textarea','validation'=>'required|string|min:5|max:5000','width'=>'col-sm-10'];
 			# END FORM DO NOT REMOVE THIS LINE
 
-			# OLD START FORM
-			//$this->form = [];
-			//$this->form[] = ["label"=>"Reference Number","name"=>"reference_number","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Status Id","name"=>"status_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"status,id"];
-			//$this->form[] = ["label"=>"Employee Name","name"=>"employee_name","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Company Name","name"=>"company_name","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Position","name"=>"position","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Department","name"=>"department","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Store Branch","name"=>"store_branch","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Purpose","name"=>"purpose","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Conditions","name"=>"conditions","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Quantity Total","name"=>"quantity_total","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Cost Total","name"=>"cost_total","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Total","name"=>"total","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Approved By","name"=>"approved_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Approved At","name"=>"approved_at","type"=>"datetime","required"=>TRUE,"validation"=>"required|date_format:Y-m-d H:i:s"];
-			//$this->form[] = ["label"=>"Created By","name"=>"created_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Updated By","name"=>"updated_by","type"=>"number","required"=>TRUE,"validation"=>"required|integer|min:0"];
-			//$this->form[] = ["label"=>"Rejected At","name"=>"rejected_at","type"=>"text","required"=>TRUE,"validation"=>"required|min:1|max:255"];
-			//$this->form[] = ["label"=>"Requestor Comments","name"=>"requestor_comments","type"=>"textarea","required"=>TRUE,"validation"=>"required|string|min:5|max:5000"];
-			//$this->form[] = ["label"=>"Request Type Id","name"=>"request_type_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"request_type,id"];
-			//$this->form[] = ["label"=>"Privilege Id","name"=>"privilege_id","type"=>"select2","required"=>TRUE,"validation"=>"required|integer|min:0","datatable"=>"privilege,id"];
-			//$this->form[] = ["label"=>"Approver Comments","name"=>"approver_comments","type"=>"textarea","required"=>TRUE,"validation"=>"required|string|min:5|max:5000"];
-			# OLD END FORM
 
 			/* 
 	        | ---------------------------------------------------------------------- 
@@ -188,8 +168,9 @@
 	        | @icon  = Icon from Awesome.
 	        | 
 	        */
+		
 	        $this->index_button = array();
-
+			$this->index_button[] = ["label"=>"Export Lists","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('export').'/'.$userslist,"color"=>"primary"];
 
 
 	        /* 
@@ -495,13 +476,7 @@
 
 	    }
 
-
-
-	    //By the way, you can still create your own method in here... :) 
-
 		public function getDetail($id){
-			
-
 			$this->cbLoader();
             if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
                 CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
@@ -592,8 +567,6 @@
 
 
 		public function getRequestPrintPickList($id){
-			
-
 			$this->cbLoader();
 			if(!CRUDBooster::isUpdate() && $this->global_privilege==FALSE) {    
 				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
@@ -655,4 +628,124 @@
 			return $this->view("assets.print-picklist", $data);
 		}
 
+		public function getExport(){
+			$approvalMatrix = Users::where('cms_users.approver_id', CRUDBooster::myId())->get();
+			$approval_array = array();
+			foreach($approvalMatrix as $matrix){
+				array_push($approval_array, $matrix->id);
+			}
+			$approval_string = implode(",",$approval_array);
+			$userslist = array_map('intval',explode(",",$approval_string));
+			$requests = BodyRequest::requestHistory($userslist);
+			$lists = [];
+			$listsCon = [];
+			foreach($requests as $item){
+				$listsCon['id']                 = $item['requestid'];
+				$listsCon['reference_number']   = $item['reference_number'];
+				$listsCon['requested_by']       = $item['requestedby'];
+				$listsCon['department']         = $item['department'] ? $item['department'] : $item['store_branch'];
+				$listsCon['store_branch']       = $item['store_branch'] ? $item['store_branch'] : $item['department'];
+				$bodyStatus = $item['body_statuses_description'] ? $item['body_statuses_description'] : $item['status_description'];
+				if(in_array($item['request_type_id'], [6,7])){
+					$listsCon['status']              = $item['status_description'];
+					$listsCon['body_digits_code']    = $item['body_digits_code'];
+					$listsCon['description']         = $item['body_description'];
+					$listsCon['request_quantity']    = $item['body_quantity'];
+					$listsCon['request_type']        = $item['body_category_id'];
+					$listsCon['mo_reference']        = $item['body_mo_so_num'];
+					$listsCon['mo_item_code']        = $item['body_digits_code'];
+					$listsCon['mo_item_description'] = $item['body_description'];
+					$listsCon['mo_qty_serve_qty']    = $item['serve_qty'];
+				}else{
+					$listsCon['status']              = isset($item['mo_reference_number']) ? $item['mo_statuses_description'] : $bodyStatus;
+					$listsCon['body_digits_code']    = $item['body_digits_code'];
+					$listsCon['description']         = $item['body_description'];
+					$listsCon['request_quantity']    = $item['body_quantity'];
+					$listsCon['request_type']        = $item['body_category_id'];
+					$listsCon['mo_reference']        = $item['mo_reference_number'];
+					$listsCon['mo_item_code']        = $item['mo_digits_code'];
+					$listsCon['mo_item_description'] = $item['mo_item_description'];
+					$listsCon['mo_qty_serve_qty']    = $item['quantity'];
+				}
+				$listsCon['requested_date']          = $item['created_at'];
+				$listsCon['approved_by']             = $item['approvedby'];
+				$listsCon['approved_at']             = $item['approved_at'];
+				$listsCon['transacted_by']           = $item['taggedby'];
+				$listsCon['replenish_qty']           = $item['replenish_qty'];
+				$listsCon['reorder_qty']             = $item['reorder_qty'];
+				$listsCon['fulfill_qty']             = $item['serve_qty'];
+				$listsCon['transacted_date']         = $item['transacted_date'];
+				$lists[]                          = $listsCon;
+			}
+			$dataExport[] = [
+							'Reference number',
+							'Requested by',
+							'Department',
+							'Store branch',
+							'Status',
+							'Digits node',
+							'Description',
+							'Request quantity',
+							'Request type',
+							'Mo reference',
+							'Mo item code',
+							'Mo item description',
+							'Mo qty fulfill',
+							'Requested date',
+							'Approved by',
+							'Approved at',
+							'Transacted by',
+							'Replenish qty',
+							'Reorder qty',
+							'Fulfill qty',
+							'Transacted date'
+							];
+			foreach($lists as $exportList){
+				$dataExport[]= [
+					'Reference number'       => $exportList['reference_number'],
+					'Requested by'           => $exportList['requested_by'],
+					'Department'             => $exportList['department'],
+					'Store branch'           => $exportList['store_branch'],
+					'Status'                 => $exportList['status'],
+					'Digits node'            => $exportList['body_digits_code'],
+					'Description'            => $exportList['description'],
+					'Request quantity'       => $exportList['request_quantity'],
+					'Request type'           => $exportList['request_type'],
+					'Mo reference'           => $exportList['mo_reference'],
+					'Mo item code'           => $exportList['mo_item_code'],
+					'Mo item description'    => $exportList['mo_item_description'],
+					'Mo qty fulfill'         => $exportList['mo_qty_serve_qty'],
+					'Requested date'         => $exportList['requested_date'],
+					'Approved by'            => $exportList['approved_by'],
+					'Approved at'            => $exportList['approved_at'],
+					'Transacted by'          => $exportList['transacted_by'],
+					'Replenish qty'          => $exportList['replenish_qty'],
+					'Reorder qty'            => $exportList['reorder_qty'],
+					'Fulfill qty'            => $exportList['fulfill_qty'],
+					'Transacted date'        => $exportList['transacted_date']
+				];
+			}
+
+			$this->ExportExcel($dataExport);
+	
+		}
+
+		public function ExportExcel($data){
+			ini_set('max_execution_time', 0);
+			ini_set('memory_limit', '4000M');
+			try {
+				$spreadSheet = new Spreadsheet();
+				$spreadSheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(20);
+				$spreadSheet->getActiveSheet()->fromArray($data);
+				$Excel_writer = new Xlsx($spreadSheet);
+				header('Content-Type: application/vnd.ms-excel');
+				header('Content-Disposition: attachment;filename="Request-hisory.xlsx"');
+				header('Cache-Control: max-age=0');
+				ob_end_clean();
+				$Excel_writer->save('php://output');
+				exit();
+			} catch (Exception $e) {
+				return;
+			}
+		}
 	}
