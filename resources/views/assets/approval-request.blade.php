@@ -95,74 +95,76 @@
 
             <hr/>                
             
-            <div class="box-header text-center">
-                <h3 class="box-title"><b>{{ trans('message.form-label.asset_items') }}</b></h3>
-            </div>
-
-            <table id="approval-table">
-                <thead>
-                    <tr>
-                        <th width="10%" class="text-center">{{ trans('message.table.digits_code') }}</th>
-                        <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
-                        <th width="10%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
-                        <th width="10%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
-                        
-                        <th width="5%" class="text-center">WH Qty</th>  
-                      
-                        <th width="5%" class="text-center">{{ trans('message.table.quantity_text') }}</th> 
-                           
-                        <th width="5%" class="text-center">For Replenish Qty</th> 
-                        <th width="5%" class="text-center">For Re Order Qty</th> 
-                        <th width="5%" class="text-center">Serve Qty</th> 
-                        <th width="5%" class="text-center">UnServe Qty</th> 
-                        <th width="7%" class="text-center">Item Cost</th> 
-                        <th width="7%" class="text-center">Total Cost</th>                                                                                                                                            
-                        <th width="10%" class="text-center">MO/SO</th>                                                  
-                       
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($Body as $rowresult)
+            <div id="table-div" style="overflow-x: scroll">
+                <table id="approval-table">
+                    <thead>
+                        <tr style="background-color:#3c8dbc; border: 0.5px solid #000;">
+                            <th style="text-align: center" colspan="15"><h4 class="box-title" style="color: #fff;"><b>{{ trans('message.form-label.asset_items') }}</b></h4></th>
+                        </tr>
                         <tr>
-                            <input type="hidden" value="{{$rowresult->id}}" name="body_ids[]">
-                            <input type="hidden" value="{{$rowresult->wh_qty}}" name="wh_qty[]">
-                            <input type="hidden" value="{{$rowresult->available_qty}}" name="it_wh_qty[]">
-                            <td style="text-align:center">{{$rowresult->digits_code}}</td>
-                            <td style="text-align:center">{{$rowresult->item_description}}</td>
-                            <td style="text-align:center">{{$rowresult->category_id}}</td>
-                            <td style="text-align:center">{{$rowresult->sub_category_id}}</td>
-
-                            @if(in_array($Header->request_type_id, [6,7]))  
-                                <td style="text-align:center" class="wh_qty">{{$rowresult->wh_qty ? $rowresult->wh_qty : 0}}</td>
-                            @else
-                                <td style="text-align:center" class="wh_qty">{{$rowresult->available_qty ? $rowresult->available_qty : 0}}</td>
-                            @endif 
-                            <td style="text-align:center" class="qty">{{$rowresult->quantity}}</td>
+                            <th width="10%" class="text-center">{{ trans('message.table.digits_code') }}</th>
+                            <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
+                            <th width="10%" class="text-center">{{ trans('message.table.category_id_text') }}</th>                                                         
+                            <th width="10%" class="text-center">{{ trans('message.table.sub_category_id_text') }}</th> 
                             
-                            <td style="text-align:center" class="rep_qty">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
-                            <td style="text-align:center" class="ro_qty">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                           
-                            <td style="text-align:center" class="served_qty">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>
-                            <td style="text-align:center" class="unserved_qty">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td>
-                            <td style="text-align:center" class="unit_cost">{{$rowresult->unit_cost ? $rowresult->unit_cost : 0}}</td>
-                            <td style="text-align:center" class="total_cost">{{$rowresult->unit_cost * $rowresult->serve_qty}}</td>
-                            <td style="text-align:center" height="10">{{$rowresult->mo_so_num}}</td>   
-                                
+                            <th width="5%" class="text-center">WH Qty</th>  
+                          
+                            <th width="5%" class="text-center">{{ trans('message.table.quantity_text') }}</th> 
+                               
+                            <th width="5%" class="text-center">For Replenish Qty</th> 
+                            <th width="5%" class="text-center">For Re Order Qty</th> 
+                            <th width="5%" class="text-center">Serve Qty</th> 
+                            <th width="5%" class="text-center">UnServe Qty</th> 
+                            <th width="7%" class="text-center">Item Cost</th> 
+                            <th width="7%" class="text-center">Total Cost</th>                                                                                                                                            
+                            <th width="10%" class="text-center">MO/SO</th>                                                  
                            
                         </tr>
-                    @endforeach
-
-                    {{-- <tr>
-                        <td colspan="5" style="text-align:right">
-                            <label>{{ trans('message.table.total_quantity') }}:</label>
-                        </td>
-
-                        <td style="text-align:center">
-                            <label>{{$Header->quantity_total}}</label>
-                        </td>
-                    </tr> --}}
-                </tbody>
-                
-            </table> 
+                    </thead>
+                    <tbody>
+                        @foreach($Body as $rowresult)
+                            <tr>
+                                <input type="hidden" value="{{$rowresult->id}}" name="body_ids[]">
+                                <input type="hidden" value="{{$rowresult->wh_qty}}" name="wh_qty[]">
+                                <input type="hidden" value="{{$rowresult->available_qty}}" name="it_wh_qty[]">
+                                <td style="text-align:center">{{$rowresult->digits_code}}</td>
+                                <td style="text-align:center">{{$rowresult->item_description}}</td>
+                                <td style="text-align:center">{{$rowresult->category_id}}</td>
+                                <td style="text-align:center">{{$rowresult->sub_category_id}}</td>
+    
+                                @if(in_array($Header->request_type_id, [6,7]))  
+                                    <td style="text-align:center" class="wh_qty">{{$rowresult->wh_qty ? $rowresult->wh_qty : 0}}</td>
+                                @else
+                                    <td style="text-align:center" class="wh_qty">{{$rowresult->available_qty ? $rowresult->available_qty : 0}}</td>
+                                @endif 
+                                <td style="text-align:center" class="qty">{{$rowresult->quantity}}</td>
+                                
+                                <td style="text-align:center" class="rep_qty">{{$rowresult->replenish_qty ? $rowresult->replenish_qty : 0}}</td>  
+                                <td style="text-align:center" class="ro_qty">{{$rowresult->reorder_qty ? $rowresult->reorder_qty : 0}}</td>                                                           
+                                <td style="text-align:center" class="served_qty">{{$rowresult->serve_qty ? $rowresult->serve_qty : 0}}</td>
+                                <td style="text-align:center" class="unserved_qty">{{$rowresult->unserved_qty ? $rowresult->unserved_qty : 0}}</td>
+                                <td style="text-align:center" class="unit_cost">{{$rowresult->unit_cost ? $rowresult->unit_cost : 0}}</td>
+                                <td style="text-align:center" class="total_cost">{{$rowresult->unit_cost * $rowresult->serve_qty}}</td>
+                                <td style="text-align:center" height="10">{{$rowresult->mo_so_num}}</td>   
+                                    
+                               
+                            </tr>
+                        @endforeach
+    
+                        {{-- <tr>
+                            <td colspan="5" style="text-align:right">
+                                <label>{{ trans('message.table.total_quantity') }}:</label>
+                            </td>
+    
+                            <td style="text-align:center">
+                                <label>{{$Header->quantity_total}}</label>
+                            </td>
+                        </tr> --}}
+                    </tbody>
+                    
+                </table> 
+            </div>
+            
             <br><hr>
 
             @if($Header->application != null || $Header->application != "")

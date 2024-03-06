@@ -124,7 +124,13 @@
 				$pending           = DB::table('statuses')->where('id', 1)->value('id');
 				$released  = 		DB::table('statuses')->where('id', 12)->value('id');
         
-				$this->addaction[] = ['title'=>'Cancel Request','url'=>CRUDBooster::mainpath('getRequestCancel/[id]'),'icon'=>'fa fa-times', "showIf"=>"[status_id] == $pending"];
+				$this->addaction[] = ['title'=>'Cancel Request',
+										'url'=>CRUDBooster::mainpath('getRequestCancel/[id]'),
+										'icon'=>'fa fa-times', 
+										"showIf"=>"[status_id] == $pending",
+										'confirmation'=>'yes',
+										'confirmation_title'=>'Confirm Voiding',
+										'confirmation_text'=>'Are you sure to VOID this request?'];
 			
 				//$this->addaction[] = ['title'=>'Receive Asset','url'=>CRUDBooster::mainpath('getRequestReceive/[id]'),'icon'=>'fa fa-check', "showIf"=>"[status_id] == $released"];
 			}
@@ -233,15 +239,6 @@
 	        */
 	        $this->script_js = NULL;
 			$this->script_js = "
-				$('.fa.fa-times').click(function(){
-					var strconfirm = confirm('Are you sure you want to cancel this request?');
-					if (strconfirm == true) {
-						return true;
-					}else{
-						return false;
-						window.stop();
-					}
-				});
 				
 				$('.fa.fa-check').click(function(){
 					var strconfirm = confirm('Are you sure you want to close this request?');

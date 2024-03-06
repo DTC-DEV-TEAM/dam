@@ -222,27 +222,20 @@ return [
 
     ],
     'form' => [
-        'cancel'    =>  'Cancel',
-        'submit'  =>  'Submit',
-        'approved'  =>  'Approve',
-        'save'  =>  'Send Request',
+        'cancel'      =>  'Cancel',
+        'submit'      =>  'Submit',
+        'approved'    =>  'Approve',
+        'save'        =>  'Send Request',
         'save_blank'  =>  'Send Blank Order',
-        'back'  =>  'Back',
-
-        'new'  =>  'Save',
-
-        'add'  =>  'Add',
-
-        'update'  =>  'Update',
-
-        'print'  =>  'Print',
-
-        'pick'  =>  'Pick',
-
-        'receive'  =>  'Receive',
-
-        'closing'  =>  'Close',
-
+        'back'        =>  'Back',
+        'new'         =>  'Save',
+        'add'         =>  'Add',
+        'update'      =>  'Update',
+        'print'       =>  'Print',
+        'pick'        =>  'Pick',
+        'receive'     =>  'Receive',
+        'closing'     =>  'Close',
+        'create'      =>  'Create Request',
     ]
 
 ];

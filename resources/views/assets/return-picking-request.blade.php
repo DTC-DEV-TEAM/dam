@@ -1,7 +1,19 @@
 @extends('crudbooster::admin_template')
 @push('head')
         <style type="text/css">   
-      
+            .select2-selection__choice{
+                    font-size:14px !important;
+                    color:black !important;
+            }
+            .select2-selection__rendered {
+                line-height: 31px !important;
+            }
+            .select2-container .select2-selection--single {
+                height: 35px !important;
+            }
+            .select2-selection__arrow {
+                height: 34px !important;
+            }
             .comment_div {
                 box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
                 background: #f5f5f5;
@@ -18,7 +30,11 @@
                 box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
                 margin-bottom:0;
             }
-            .select2-container--default .select2-selection--multiple .select2-selection__choice{color:black;}
+            #asset-items th, td {
+                border: 1px solid rgba(000, 0, 0, .5);
+                padding: 8px;
+            }
+
         </style>
     @endpush
 @section('content')
@@ -86,8 +102,8 @@
                 </div>                    
             </div>
 
-            <hr/>
             @if($Header->approvedby != null || $Header->approvedby != "")
+            <hr/>
             <div class="row">                           
                 <label class="control-label col-md-2">{{ trans('message.form-label.approved_by') }}:</label>
                 <div class="col-md-4">
@@ -108,87 +124,96 @@
                 </div>
             @endif 
             <hr>
-        
-            <div class="box-header text-center">
-                <h3 class="box-title"><b>{{ trans('message.form-label.asset_items') }}</b></h3>
-            </div>
-
-            <table  class='table table-striped table-bordered'>
-                <thead>
-                    <tr>
-                        <th width="10%" class="text-center">Item to Receive <br> <span>Check All <br> <input type="checkbox" id="check_all"> </span></th> 
-                        <th width="5%" class="text-center">Good</th> 
-                        <th width="5%" class="text-center">Defective</th>
-                        <th width="10%" class="text-center">Reference No</th>
-                        <th width="7%" class="text-center">Asset Code</th>
-                        <th width="7%" class="text-center">Digits Code</th>
-                        <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
-                        <th width="10%" class="text-center">Asset Type</th>    
-                        <th width="10%" class="text-center">Serial No.</th>                                                       
-                        <th width="12%" class="text-center">Comments</th>
-                        @if(CRUDBooster::myPrivilegeId() == 6)
-                        <th width="10%">Location</th>
-                        @endif
-                    </tr>
-                    <?php   $tableRow1 = 0; ?>
-                    <?Php   $item_count = 0; ?>
-                </thead>
-                <tbody>
-                    @foreach($return_body as $rowresult)
-                    <?php $tableRow1++; ?>
-                    <?Php $item_count++; ?>
+    
+            <div class="table-div" style="overflow-x: scroll">
+                <table  class='table' id="asset-items" >
+                    <thead>
+                        <tr style="background-color:#3c8dbc; border: 0.5px solid #000;">
+                            <th style="text-align: center" colspan="11"><h4 class="box-title" style="color: #fff;"><b>{{ trans('message.form-label.asset_items') }}</b></h4></th>
+                        </tr>
                         <tr>
-                            <td style="text-align:center" height="10">
-                                <input type="checkbox" name="item_to_receive_id[]" id="item_to_receive_id{{$tableRow1}}" class="item_to_receive_id" required data-id="{{$tableRow1}}" value="{{$rowresult->body_id}}"/>
-                            </td>
-                            <td style="text-align:center" height="10">
-                            <input type="hidden" value="{{$rowresult->id}}" name="item_id[]">
-                            <input type="hidden" value="{{$rowresult->mo_id}}" name="mo_id[]">
-                            <input type="hidden" name="good_text[]" id="good_text{{$tableRow1}}" />
-                            <input type="checkbox" name="good[]" id="good{{$tableRow1}}" class="good" required data-id="{{$tableRow1}}" value="{{$rowresult->asset_code}}"/>
-                            <input type="hidden" name="arf_number[]" id="arf_number[]" value="{{$rowresult->reference_no}}" />
-                            <input type="hidden" name="digits_code[]" id="digits_code{{$tableRow1}}" value="{{$rowresult->digits_code}}" />
-                            <input type="hidden" name="asset_code[]" id="asset_code{{$tableRow1}}" value="{{$rowresult->asset_code}}" />
-                            </td>
-                            <td style="text-align:center" height="10">
-                            <input type="hidden" name="defective_text[]" id="defective_text{{$tableRow1}}" />
-                            <input type="checkbox" name="defective[]" id="defective{{$tableRow1}}" class="defective" required data-id="{{$tableRow1}}"  value="{{$rowresult->asset_code}}"/>
-                            </td>
-                            <td style="text-align:center" height="10">{{$rowresult->reference_no}}</td>
-                            <td style="text-align:center" height="10">{{$rowresult->asset_code}}</td>
-                            <td style="text-align:center" height="10">{{$rowresult->digits_code}}</td>
-                            <td style="text-align:center" height="10">{{$rowresult->description}}</td>
-                            <td style="text-align:center" height="10">{{$rowresult->asset_type}}</td>
-                            <td style="text-align:center" height="10">{{$rowresult->serial_no}}</td>
-                            <td style="text-align:center" height="10">
-                                <select required selected data-placeholder="Select Comments" id="comments{{$tableRow1}}" data-id="{{$tableRow1}}" name="comments[]" class="form-select select2 comments" style="width:100%;" multiple="multiple">
-                                    @foreach($good_defect_lists as $good_defect_list)
-                                        <option value=""></option>
-                                        <option value="{{ $rowresult->asset_code. '|' .$rowresult->digits_code. '|' .$good_defect_list->defect_description }}">{{ $good_defect_list->defect_description }}</option>
-                                    @endforeach
-                                </select>
-                            </td>   
-                            <!-- @if(CRUDBooster::myPrivilegeId() == 9)
-                            <td>
-                                <select required selected data-placeholder="-- Select Location --" id="location{{$tableRow1}}" data-id="{{$tableRow1}}" name="location" class="form-select location" style="width:100%;">
-                                    @foreach($warehouse_location as $locations)
-                                        <option value=""></option>
-                                        <option value="{{ $locations->id}}">{{ $locations->location }}</option>
-                                    @endforeach
-                                </select>
-                            </td>   
-                            @endif      -->
+                            <th width="10%" class="text-center">Item to Receive <br> <span>Check All <br> <input type="checkbox" id="check_all"> </span></th> 
+                            <th width="5%" class="text-center">Good</th> 
+                            <th width="5%" class="text-center">Defective</th>
+                            <th width="8%" class="text-center">Reference No</th>
+                            <th width="7%" class="text-center">Asset Code</th>
+                            <th width="7%" class="text-center">Digits Code</th>
+                            <th width="20%" class="text-center">{{ trans('message.table.item_description') }}</th>
+                            <th width="8%" class="text-center">Asset Type</th>    
+                            <th width="8%" class="text-center">Serial No.</th>                                                       
+                            <th width="12%" class="text-center">Comments</th>
+                            <th width="12%" class="text-center">Arf Reservation</th>
+                            @if(CRUDBooster::myPrivilegeId() == 6)
+                            <th width="10%">Location</th>
+                            @endif
                         </tr>
-                        <tr id="others{{$tableRow1}}" style="display:none">
-                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                        <td><input type="text" class="form-control" placeholder="Please input other comments" id="inputValue{{$tableRow1}}" name="other_comment[]"></td>                                                   
-                        </tr>
-                    @endforeach
+                        <?php   $tableRow1 = 0; ?>
+                        <?Php   $item_count = 0; ?>
+                    </thead>
+                    <tbody>
+                        @foreach($return_body as $rowresult)
+                        <?php $tableRow1++; ?>
+                        <?Php $item_count++; ?>
+                            <tr>
+                                <td style="text-align:center" height="10">
+                                    <input type="checkbox" name="item_to_receive_id[]" id="item_to_receive_id{{$tableRow1}}" class="item_to_receive_id" required data-id="{{$tableRow1}}" value="{{$rowresult->body_id}}"/>
+                                </td>
+                                <td style="text-align:center" height="10">
+                                <input type="hidden" value="{{$rowresult->id}}" name="item_id[]">
+                                <input type="hidden" value="{{$rowresult->mo_id}}" name="mo_id[]">
+                                <input type="hidden" name="good_text[]" id="good_text{{$tableRow1}}" />
+                                <input type="checkbox" name="good[]" id="good{{$tableRow1}}" class="good" required data-id="{{$tableRow1}}" value="{{$rowresult->asset_code}}"/>
+                                <input type="hidden" name="arf_number[]" id="arf_number[]" value="{{$rowresult->reference_no}}" />
+                                <input type="hidden" name="digits_code[]" id="digits_code{{$tableRow1}}" value="{{$rowresult->digits_code}}" />
+                                <input type="hidden" name="asset_code[]" id="asset_code{{$tableRow1}}" value="{{$rowresult->asset_code}}" />
+                                </td>
+                                <td style="text-align:center" height="10">
+                                <input type="hidden" name="defective_text[]" id="defective_text{{$tableRow1}}" />
+                                <input type="checkbox" name="defective[]" id="defective{{$tableRow1}}" class="defective" required data-id="{{$tableRow1}}"  value="{{$rowresult->asset_code}}"/>
+                                </td>
+                                <td style="text-align:center" height="10">{{$rowresult->reference_no}}</td>
+                                <td style="text-align:center" height="10">{{$rowresult->asset_code}}</td>
+                                <td style="text-align:center" height="10">{{$rowresult->digits_code}}</td>
+                                <td style="text-align:center" height="10">{{$rowresult->description}}</td>
+                                <td style="text-align:center" height="10">{{$rowresult->asset_type}}</td>
+                                <td style="text-align:center" height="10">{{$rowresult->serial_no}}</td>
+                                <td style="text-align:center" height="10">
+                                    <select required selected data-placeholder="Select Comments" id="comments{{$tableRow1}}" data-id="{{$tableRow1}}" name="comments[]" class="form-select select2 comments" style="width:100%;" multiple="multiple">
+                                        @foreach($good_defect_lists as $good_defect_list)
+                                            <option value=""></option>
+                                            <option value="{{ $rowresult->asset_code. '|' .$rowresult->digits_code. '|' .$good_defect_list->defect_description }}">{{ $good_defect_list->defect_description }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>   
+                                <td style="text-align:center" height="10">
+                                    <select required selected data-placeholder="Reserve Arf" id="reserved_arf{{$tableRow1}}" data-id="{{$tableRow1}}" name="reserved_arf[]" class="form-select reserve_arf" style="width:100%;">
+                                        @foreach($reserved_assets as $reserved)
+                                            <option value=""></option>
+                                            <option value="{{ $reserved->reserved_id }}">{{ $reserved->reference_number }} | {{ $reserved->digits_code }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <!-- @if(CRUDBooster::myPrivilegeId() == 9)
+                                <td>
+                                    <select required selected data-placeholder="-- Select Location --" id="location{{$tableRow1}}" data-id="{{$tableRow1}}" name="location" class="form-select location" style="width:100%;">
+                                        @foreach($warehouse_location as $locations)
+                                            <option value=""></option>
+                                            <option value="{{ $locations->id}}">{{ $locations->location }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>   
+                                @endif      -->
+                            </tr>
+                            <tr id="others{{$tableRow1}}" style="display:none">
+                            <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                            <td><input type="text" class="form-control" placeholder="Please input other comments" id="inputValue{{$tableRow1}}" name="other_comment[]"></td>                                                   
+                            </tr>
+                        @endforeach
 
-                </tbody>
-                
-            </table> 
-
+                    </tbody>
+                    
+                </table> 
+            </div>
         </div>
 
 
@@ -211,6 +236,7 @@
         $('body').addClass("sidebar-collapse");
     });
     $('.select2').select2({multiple: true});
+    $('.reserve_arf').select2();
 
     $('#check_all').change(function() {
         if(this.checked) {
