@@ -67,7 +67,7 @@ class CancellationUpload implements ToCollection, WithHeadingRow
             if(empty($resData)){
                 HeaderRequest::where('id',$header->id)
 				->update([
-						'status_id'      => 19,
+						'status_id'      => 8,
                         'purchased2_by'	 => CRUDBooster::myId(),
 				        'purchased2_at'  => date('Y-m-d H:i:s')
 				]);	
