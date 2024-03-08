@@ -351,8 +351,28 @@
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
 	        $fields = Request::all();
+			
+			$reserved_arf  = array_filter($fields['reserved_arf'], fn($value) => !is_null($value) && $value !== '');
+			$filteredArf   = array_values($reserved_arf);
 	
-			$reserved_arf       = array_filter($fields['reserved_arf']);
+			//update reserved table
+			if($filteredArf){
+				for ($t = 0; $t < count($filteredArf); $t++) {
+					AssetsInventoryReserved::where(['id' => $filteredArf[$t]])
+					   ->update([
+							   'reserved' => 1,
+							   'for_po'   => NULL
+							   ]);
+					$arfNumber = AssetsInventoryReserved::where(['id' => $filteredArf[$t]])->groupBy('reference_number')->get();
+					foreach($arfNumber as $val){
+						HeaderRequest::where('reference_number',$val->reference_number)
+						->update([
+							'to_mo' => 1
+						]);
+					}
+				}
+				
+			}
 			$selectedItem       = $fields['item_to_receive_id'];
 			$selectedItem_array = array();
 			foreach($selectedItem as $select){
@@ -362,7 +382,7 @@
 			$selectedItemlist = array_map('intval',explode(",",$selectedItem_string));
 
 			$getSelectedItemList = DB::table('return_transfer_assets')->whereIn('id',$selectedItemlist)->get();
-
+	
 			//MO ID, Item ID
 			$mo_id       = [];
 			$item_id     = [];
@@ -497,25 +517,6 @@
 
 				}
 		
-			}
-
-			//update reserved table
-			if($reserved_arf){
-				for ($t = 0; $t < count($reserved_arf); $t++) {
-					AssetsInventoryReserved::where(['id' => $reserved_arf[$t]])
-					   ->update([
-							   'reserved' => 1,
-							   'for_po'   => NULL
-							   ]);
-					$arfNumber = AssetsInventoryReserved::where(['id' => $reserved_arf[$t]])->groupBy('reference_number')->get();
-					foreach($arfNumber as $val){
-						HeaderRequest::where('reference_number',$val->reference_number)
-						->update([
-							'to_mo' => 1
-						]);
-					}
-				}
-				
 			}
 
 			//save defect and good comments

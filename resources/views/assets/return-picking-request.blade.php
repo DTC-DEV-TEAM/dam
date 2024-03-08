@@ -236,7 +236,7 @@
         $('body').addClass("sidebar-collapse");
     });
     $('.select2').select2({multiple: true});
-    $('.reserve_arf').select2();
+    $('.reserve_arf').select2({allowClear: true});
 
     $('#check_all').change(function() {
         if(this.checked) {
@@ -571,6 +571,29 @@
            
         });
 
+        $(document).ready(function () {
+            var $selects = $('select');
+            $selects.select2();
+            $('.reserve_arf').change(function () {
+                $('option:hidden', $selects).each(function () {
+                    var self = this,
+                        toShow = true;
+                    $selects.not($(this).parent()).each(function () {
+                        if (self.value == this.value) toShow = false;
+                    })
+                    if (toShow) {
+                        $(this).removeAttr('disabled');
+                        $(this).parent().select2();
+                    }
+                });
+                if (this.value != "") {
+                    //$selects.not(this).children('option[value=' + this.value + ']').attr('disabled', 'disabled');
+                    $selects.not(this).children('option[value=' + this.value + ']').remove();
+                    $selects.select2();
+                }
+    
+            });
+        })
 
 </script>
 @endpush
