@@ -79,7 +79,7 @@
 
     <form action="{{ CRUDBooster::mainpath('add-save') }}" method="POST" id="AssetRequest" enctype="multipart/form-data">
         <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
-        <input type="hidden" value="9" name="request_type_id" id="request_type_id">
+        <input type="hidden" value="10" name="request_type_id" id="request_type_id">
 
         <div class='panel-body'>
             @include('item-sourcing.item-sourcing-view-header',['Header'=>$Header])
