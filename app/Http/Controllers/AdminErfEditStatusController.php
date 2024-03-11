@@ -20,6 +20,13 @@
 	use App\Mail\EmailErfClose;
 	use Illuminate\Support\Facades\Hash;
 	use Mail;
+	use Maatwebsite\Excel\Facades\Excel;
+	use PhpOffice\PhpSpreadsheet\Spreadsheet;
+	use PhpOffice\PhpSpreadsheet\Reader\Exception;
+	use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+	use PhpOffice\PhpSpreadsheet\IOFactory;
+	use Illuminate\Contracts\Encryption\DecryptException;
+	use Illuminate\Support\Facades\Crypt;
 
 	class AdminErfEditStatusController extends \crocodicstudio\crudbooster\controllers\CBController {
 		private $cancelled;  
@@ -178,8 +185,9 @@
 	        | 
 	        */
 	        $this->index_button = array();
-
-
+			if(CRUDBooster::isSuperadmin() || in_array(CRUDBooster::myPrivilegeId(),[15])){
+				$this->index_button[] = ["label"=>"Export Lists","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('export').'/'.$userslist,"color"=>"primary"];
+			}
 
 	        /* 
 	        | ---------------------------------------------------------------------- 
@@ -1517,5 +1525,69 @@
 			$data = [];
 			$data['user'] = DB::table('erf_header_request')->leftjoin('cms_users as currentUser', 'erf_header_request.locking_close', '=', 'currentUser.id')->select('currentUser.name as current_user')->where('erf_header_request.id',$id)->first();
 			return response()->view('errors.form-used-page',$data);
+		}
+
+		public function getExport(){
+			$erfRequests = ErfHeaderRequest::details();
+			$lists = [];
+			$listsCon = [];
+			foreach($erfRequests as $item){
+				$listsCon['reference_number']   = $item['reference_number'];
+				$listsCon['date_requested']     = $item['date_requested'];
+				$listsCon['department']         = $item['department'];
+				$listsCon['date_needed']        = $item['date_needed'];
+				$listsCon['position']           = $item['position'];
+				$listsCon['work_location']      = $item['work_location'];
+				$listsCon['salary_range']       = number_format((int) Crypt::decryptString($item['salary_range_from'])) .' - '. number_format((int) Crypt::decryptString($item['salary_range_to']));
+				$listsCon['qualifications']     = $item['qualifications'];
+				$listsCon['job_description']    = $item['job_description'];
+				$lists[]                        = $listsCon;
+			}
+			$dataExport[] = [
+							'Reference number',
+							'Date Requested',
+							'Department',
+							'Date Needed',
+							'Position',
+							'Work Location',
+							'Salary Range',
+							'Qualification',
+							'Job Description'
+							];
+			foreach($lists as $exportList){
+				$dataExport[]= [
+					'Reference number'  => $exportList['reference_number'],
+					'Date Requested'    => $exportList['date_requested'],
+					'Department'        => $exportList['department'],
+					'Date Needed'       => $exportList['date_needed'],
+					'Position'          => $exportList['position'],
+					'Work Location'     => $exportList['work_location'],
+					'Salary Range'      => $exportList['salary_range'],
+					'Qualification'     => $exportList['qualifications'],
+					'Job Description'   => $exportList['job_description']
+				];
+			}
+
+			$this->ExportExcel($dataExport);
+	
+		}
+
+		public function ExportExcel($data){
+			ini_set('max_execution_time', 0);
+			ini_set('memory_limit', '4000M');
+			try {
+				$spreadSheet = new Spreadsheet();
+				$spreadSheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(20);
+				$spreadSheet->getActiveSheet()->fromArray($data);
+				$Excel_writer = new Xlsx($spreadSheet);
+				header('Content-Type: application/vnd.ms-excel');
+				header('Content-Disposition: attachment;filename="erf-lists.xlsx"');
+				header('Cache-Control: max-age=0');
+				ob_end_clean();
+				$Excel_writer->save('php://output');
+				exit();
+			} catch (Exception $e) {
+				return;
+			}
 		}
 	}
