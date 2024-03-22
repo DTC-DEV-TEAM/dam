@@ -550,7 +550,10 @@
 	    */
 	    public function hook_before_add(&$postdata) {        
 	        //Your code here
-		
+			$usersLocation = DB::table('cms_users')->where('id',CRUDBooster::myId())->first();
+			if(!$usersLocation->location_to_pick){
+				return CRUDBooster::redirect(CRUDBooster::mainpath(),"No tag location to pick! Please contact administrator","danger");
+			}
 			$fields = Request::all();
 			//dd($fields);
 			$cont = (new static)->apiContext;
@@ -600,8 +603,9 @@
 
             //dd($body_request_id, $body_request_id);
 			for($x=0; $x < count((array)$item_description); $x++) {
-				$inventory_info = DB::table('assets_inventory_body')->where('digits_code', $digits_code[$x])->where('statuses_id',6)->first();
-				$ref_inventory  = str_pad($inventory_info->location, 2, '0', STR_PAD_LEFT);	
+				//$inventory_info = DB::table('assets_inventory_body')->where('digits_code', $digits_code[$x])->where('statuses_id',6)->first();
+				$inventory_info = $usersLocation->location_to_pick;
+				$ref_inventory  = str_pad($inventory_info, 2, '0', STR_PAD_LEFT);	
 					if(count((array)$digits_code) != $body_request){
 						if($body_request_id[$x] == "" || $body_request_id[$x] == null){
 							$count_header++;
@@ -638,12 +642,13 @@
 				$dataLines1[$x]['category_id'] 			= $category_id[$x];
 				$dataLines1[$x]['sub_category_id'] 		= $sub_category_id[$x];
 
-				$array_location = [1,2];
-				if(in_array($arf_header->request_type_id, [1, 5])){
-					$location 						= $inventory_info->location;
-				}else{
-					$location 						= implode(",",$array_location);
-				}
+				// $array_location = [1,2];
+				// if(in_array($arf_header->request_type_id, [1, 5])){
+				// 	$location 						= $inventory_info->location;
+				// }else{
+				// 	$location 						= implode(",",$array_location);
+				// }
+				$location 						        = $inventory_info;
 				//$dataLines1[$x]['serial_no'] 			= $serial_no[$x];
 				$dataLines1[$x]['quantity'] 			= $quantity[$x];
 				$dataLines1[$x]['unit_cost'] 			= $unit_cost[$x];
@@ -655,7 +660,7 @@
 				$dataLines1[$x]['request_created_by']   = $arf_header->created_by;
 				$dataLines1[$x]['request_type_id_mo']   = $arf_header->request_type_id;
 
-				array_push($locationArray, $inventory_info->location);
+				array_push($locationArray, $inventory_info);
 			
 				BodyRequest::where('id',$body_request_id[$x])
 				->update([
