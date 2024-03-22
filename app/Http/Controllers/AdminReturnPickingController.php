@@ -351,10 +351,11 @@
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
 	        $fields = Request::all();
+			if(is_array($fields['reserved_arf'])){
+				$reserved_arf  = array_filter($fields['reserved_arf'], fn($value) => !is_null($value) && $value !== '');
+				$filteredArf   = array_values($reserved_arf);
+			}
 			
-			$reserved_arf  = array_filter($fields['reserved_arf'], fn($value) => !is_null($value) && $value !== '');
-			$filteredArf   = array_values($reserved_arf);
-	
 			$selectedItem       = $fields['item_to_receive_id'];
 			$selectedItem_array = array();
 			foreach($selectedItem as $select){
