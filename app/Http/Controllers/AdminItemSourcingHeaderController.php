@@ -491,7 +491,7 @@
 			$postdata['quantity_total'] 			= $quantity_total;
 			$postdata['cost_total'] 				= $cost_total;
 			$postdata['total'] 						= $total;
-			$postdata['created_by'] 		        = CRUDBooster::myId();
+			
 			if($request_type_id == 6){
 				if(CRUDBooster::myPrivilegeId() == 8){
 					$postdata['created_by'] 		= CRUDBooster::myId();
@@ -499,7 +499,7 @@
 					$postdata['created_by']  		= $saveDepartment;
 				}
 			}
-			
+			$postdata['created_by'] 		        = CRUDBooster::myId();
 			$postdata['created_at'] 		        = date('Y-m-d H:i:s');
 			$postdata['request_type_id']		 	= $request_type_id;
 			$postdata['sampling']		 	        = $sampling;

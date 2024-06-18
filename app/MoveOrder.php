@@ -41,6 +41,7 @@ class MoveOrder extends Model
         ->leftjoin('cms_users as picked', 'header_request.picked_by','=', 'picked.id')
         ->leftjoin('cms_users as received', 'header_request.received_by','=', 'received.id')
         ->leftjoin('cms_users as closed', 'header_request.closed_by','=', 'closed.id')
+        ->leftjoin('departments as user_dept', 'requested.department_id','=', 'user_dept.id')
         ->leftjoin('statuses', 'mo_body_request.status_id', '=', 'statuses.id')
         ->select(
                 'header_request.*',
@@ -53,7 +54,7 @@ class MoveOrder extends Model
                 'requested.name as requestedby',
                 'employees.bill_to as employee_name',
                 'employees.company_name_id as company_name',
-                'departments.department_name as department',
+                DB::raw('IF(departments.department_name IS NULL, user_dept.department_name, departments.department_name) as u_dept'),
                 'locations.store_name as store_branch',
                 'approved.name as approvedby',
                 'recommended.name as recommendedby',

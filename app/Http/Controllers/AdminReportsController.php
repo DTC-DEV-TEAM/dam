@@ -467,6 +467,8 @@
 				$suppliesMarketingCon['reorder_qty']             = $smVal['reorder_qty'];
 				$suppliesMarketingCon['fulfill_qty']             = $smVal['serve_qty'];
 				$suppliesMarketingCon['transacted_date']         = $smVal['transacted_date'];
+				$suppliesMarketingCon['received_by']             = $smVal['received_by'];
+				$suppliesMarketingCon['received_at']             = $smVal['received_at'];
 				$suppliesMarketing[]                             = $suppliesMarketingCon;
 			}
 
@@ -525,6 +527,8 @@
 				$container['reorder_qty']         = $val['reorder_qty'];
 				$container['fulfill_qty']         = $val['fulfill_qty'];
 				$container['transacted_date']     = $val['transacted_date'];
+				$container['received_by']         = $val['received_by'];
+				$container['received_at']         = $val['received_at'];
 				$insertData[] = $container;
 			}
 
@@ -594,6 +598,8 @@
 				$suppliesMarketingCon['fulfill_qty']             = $smVal['serve_qty'];
 				$suppliesMarketingCon['transacted_by']           = $smVal['taggedby'];
 				$suppliesMarketingCon['transacted_date']         = $smVal['transacted_date'];
+				$suppliesMarketingCon['received_by']             = $smVal['received_by'];
+				$suppliesMarketingCon['received_at']             = $smVal['received_at'];
 				$suppliesMarketing[] = $suppliesMarketingCon;
 			}
 
@@ -621,6 +627,8 @@
 				$returnTransferCon['fulfill_qty']         = NULL;
 				$returnTransferCon['transacted_by']       = $rtVal['receivedby'];
 				$returnTransferCon['transacted_date']     = $rtVal['transacted_date'];
+				$returnTransferCon['received_by']         = $rtVal['received_by'];
+				$returnTransferCon['received_at']         = $rtVal['received_at'];
 				$returnTransfer[] = $returnTransferCon;
 			}
 

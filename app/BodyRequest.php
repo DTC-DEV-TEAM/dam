@@ -24,6 +24,7 @@ class BodyRequest extends Model
         ->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
         ->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
         ->leftjoin('cms_users as tagged', 'header_request.purchased2_by','=', 'tagged.id')
+        ->leftjoin('cms_users as receiver', 'header_request.received_by','=', 'receiver.id')
         ->leftjoin('statuses', 'header_request.status_id', '=', 'statuses.id')
         ->leftjoin('statuses as body_statuses', 'body_request.line_status_id', '=', 'body_statuses.id')
         ->leftjoin('statuses as mo_statuses', 'mo_body_request.status_id', '=', 'mo_statuses.id')
@@ -55,6 +56,7 @@ class BodyRequest extends Model
                  'body_request.category_id as body_category_id',
                  'mo_body_request.body_request_id as mo_body_request_id',
                  'body_request.mo_so_num as body_mo_so_num',
+                 'receiver.name as received_by'
                  )
                  ->whereNull('body_request.deleted_at')
                  ->orderBy('header_request.created_at','DESC')
@@ -82,6 +84,7 @@ class BodyRequest extends Model
 			->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
 			->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
 			->leftjoin('cms_users as tagged', 'header_request.purchased2_by','=', 'tagged.id')
+            ->leftjoin('cms_users as receiver', 'header_request.received_by','=', 'receiver.id')
 			->leftjoin('statuses', 'header_request.status_id', '=', 'statuses.id')
 			->leftjoin('statuses as body_statuses', 'body_request.line_status_id', '=', 'body_statuses.id')
 			->leftjoin('statuses as mo_statuses', 'mo_body_request.status_id', '=', 'mo_statuses.id')
@@ -112,7 +115,8 @@ class BodyRequest extends Model
 					'mo_body_request.body_request_id as mo_body_request_id',
                     'mo_body_request.digits_code as mo_digits_code',
                     'mo_body_request.item_description as mo_item_description',
-					'body_request.mo_so_num as body_mo_so_num'
+					'body_request.mo_so_num as body_mo_so_num',
+                    'receiver.name as received_by'
 				    ) 
                     ->whereNull('body_request.deleted_at')
                     ->groupBy('body_request.id');
