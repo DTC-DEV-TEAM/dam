@@ -19,6 +19,7 @@ class Assetlists implements FromCollection, WithHeadings, WithTitle
         return AssetsInventoryBody::leftjoin('statuses', 'assets_inventory_body.statuses_id','=','statuses.id')
         ->leftjoin('assets_inventory_header', 'assets_inventory_body.header_id','=','assets_inventory_header.id')
         ->leftjoin('cms_users', 'assets_inventory_body.created_by', '=', 'cms_users.id')
+        ->leftjoin('departments','cms_users.department_id','departments.id')
         ->leftjoin('warehouse_location_model', 'assets_inventory_body.location', '=', 'warehouse_location_model.id')
         ->leftjoin('assets', 'assets_inventory_body.item_id', '=', 'assets.id')
         ->leftjoin('category', 'assets.category_id', '=', 'category.id')
@@ -29,6 +30,7 @@ class Assetlists implements FromCollection, WithHeadings, WithTitle
           'assets_inventory_body.serial_no',
           'statuses.status_description',
           'assets_inventory_body.deployed_to',
+          'departments.department_name',
           'assets_inventory_header.rr_date',
           'warehouse_location_model.loc_description',
           'assets_inventory_body.item_condition',
@@ -55,6 +57,7 @@ class Assetlists implements FromCollection, WithHeadings, WithTitle
                 "Serial No",
                 "Status", 
                 "Deployed To",
+                "Deparment",
                 "RR Date",
                 "Location",
                 "Item Condition",
