@@ -369,7 +369,9 @@
 			$required_system           = $fields['required_system'];
 			$count_header              = DB::table('erf_header_request')->count();
 			$header_ref                = str_pad($count_header + 1, 7, '0', STR_PAD_LEFT);			
-	
+			if(!$department || !$position){
+				return CRUDBooster::redirect(CRUDBooster::mainpath(),"Your account does not have an assigned department. Please contact administrator!","danger");
+			}
 			if($manpower_type === "AGENCY"){
 				$reference_number	       = "ERF-".$header_ref."-A";
 			}elseif($manpower_type === "DIRECT"){

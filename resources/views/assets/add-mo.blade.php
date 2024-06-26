@@ -459,6 +459,7 @@
                 width: 450,
                 height: 200
                 }, function () {
+                    $("#btnSubmit").attr('disabled', true);
                     $("#AssetRequest").submit();                                                   
             });
         }

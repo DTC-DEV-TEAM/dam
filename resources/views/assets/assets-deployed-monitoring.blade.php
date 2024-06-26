@@ -37,6 +37,7 @@
                         <th width="auto">MO Reference</th>
                         <th width="auto">Request Type</th>
                         <th width="auto">Employee Name</th>
+                        <th width="auto">Department</th>
                         <th width="auto">Digits Code</th>
                         <th width="auto">Asset Code</th>
                         <th width="auto">Item Description</th>
@@ -58,6 +59,7 @@
                     <td>{{$val['mo_reference_number']}}</td>  
                     <td>{{$val['category_id']}}</td>
                     <td>{{$val['requestedby']}}</td>
+                    <td>{{$val['u_dept']}}</td>
                     <td>{{$val['digits_code']}}</td>  
                     <td>{{$val['asset_code']}}</td>
                     <td>{{$val['item_description']}}</td>                                                

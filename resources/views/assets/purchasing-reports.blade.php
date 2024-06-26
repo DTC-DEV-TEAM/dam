@@ -100,6 +100,8 @@
                         <th width="auto">IT Comments</th> --}}
                         <th width="auto">Transacted By</th>
                         <th width="auto">Transacted Date</th>
+                        <th width="auto">Received By</th>
+                        <th width="auto">Received Date</th>
                
                     </tr>
                 </thead>
@@ -251,6 +253,8 @@
                         // {data: 'it_comments'},  
                         {data: 'transacted_by'},  
                         {data: 'transacted_date'},  
+                        {data: 'received_by'},  
+                        {data: 'received_at'},  
                 ],
                 columnDefs: [{
                     targets: [1],

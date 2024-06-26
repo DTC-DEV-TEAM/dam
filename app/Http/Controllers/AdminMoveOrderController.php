@@ -1009,7 +1009,7 @@
 				  where('mo_plug', 0)
 				->where('to_mo', 1)
 				->where('request_type_id' , 1)
-				->whereNotIn('status_id',[8,13])
+				->whereNotIn('status_id',[8,13,19])
 				->whereNotNull('created_by')
 				->get();
 			}else if(in_array(CRUDBooster::myPrivilegeId(),[9])){
@@ -1017,7 +1017,7 @@
 				  where('mo_plug', 0)
 				->where('to_mo', 1)
 				->where('request_type_id' , 5)
-				->whereNotIn('status_id',[8,13])
+				->whereNotIn('status_id',[8,13,19])
 				->whereNotNull('created_by')
 			
 				->get();
@@ -1025,7 +1025,7 @@
 				$data['AssetRequest'] = HeaderRequest::
 				  where('mo_plug', 0)
 				->where('to_mo', 1)
-				->whereNotIn('status_id',[8,13])
+				->whereNotIn('status_id',[8,13,19])
 				->whereNotNull('created_by')
 				->get();
 			}
