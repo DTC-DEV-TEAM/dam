@@ -340,7 +340,7 @@
 			//Create your own query 
 			$data = [];
 			$data['page_title'] = 'Request Assets Status Reports';
-
+			
 			// $result_one = BodyRequest::arrayone();
 			// $result_two = ReturnTransferAssets::arraytwo();
             // $suppliesMarketing = [];
@@ -424,6 +424,7 @@
 			$data['page_title'] = 'Export Request/Return and Transfer Reports';
 
 			$requestRes = BodyRequest::requestfilter($fields);
+			$assetDeployedDirectInventory = MoveOrder::arrayone();
 			$returnTransferRes = ReturnTransferAssets::returnfilter($fields);
 			$suppliesMarketing = [];
 			$suppliesMarketingCon = [];
@@ -500,6 +501,35 @@
 				$returnTransferCon['transacted_date']            = $rtVal['transacted_date'];
 				$returnTransfer[]                                = $returnTransferCon;
 			}
+
+			$deployedDirectToInvCon = [];
+			$deployedDirectToInvFinal = [];
+			foreach($assetDeployedDirectInventory as $ddVal){
+				$deployedDirectToInvCon['id'] = $ddVal['mo_body_request'];
+				$deployedDirectToInvCon['reference_number'] = NULL;
+				$deployedDirectToInvCon['requested_by'] = $ddVal['requestedby'];
+				$deployedDirectToInvCon['department'] = $ddVal['department'];
+				$deployedDirectToInvCon['store_branch'] = $ddVal['department'];
+				$deployedDirectToInvCon['transaction_type'] = "DEPLOYED VIA UPLOAD INVENTORY";
+				$deployedDirectToInvCon['status']              = $ddVal['mo_statuses_description'];
+				$deployedDirectToInvCon['body_digits_code']    = NULL;
+				$deployedDirectToInvCon['description']         = NULL;
+				$deployedDirectToInvCon['request_quantity']    = NULL;
+				$deployedDirectToInvCon['request_type']        = NULL;
+				$deployedDirectToInvCon['mo_reference']        = $ddVal['mo_reference_number'];
+				$deployedDirectToInvCon['mo_item_code']        = $ddVal['digits_code'];
+				$deployedDirectToInvCon['mo_item_description'] = $ddVal['item_description'];
+				$deployedDirectToInvCon['mo_qty_serve_qty']    = $ddVal['quantity'];
+				$deployedDirectToInvCon['requested_date']          = $ddVal['created_at'];
+				$deployedDirectToInvCon['replenish_qty']           = NULL;
+				$deployedDirectToInvCon['reorder_qty']             = NULL;
+				$deployedDirectToInvCon['fulfill_qty']             = NULL;
+				$deployedDirectToInvCon['transacted_by']           = NULL;
+				$deployedDirectToInvCon['transacted_date']         = NULL;
+				$deployedDirectToInvCon['received_by']             = NULL;
+				$deployedDirectToInvCon['received_at']             = NULL;
+				$deployedDirectToInvFinal[] = $deployedDirectToInvCon;
+			}
 			//dd($returnTransfer);
 			$data['result'] = array_merge($suppliesMarketing, $returnTransfer);
 			$insertData = [];
@@ -559,9 +589,11 @@
 			ini_set('memory_limit','-1');
             ini_set('max_execution_time', 0);
 			$result_one = BodyRequest::arrayone();
+			$assetDeployedDirectInventory = MoveOrder::arrayone();
 			$result_two = ReturnTransferAssets::arraytwo();
             $suppliesMarketing = [];
 			$suppliesMarketingCon = [];
+			$deployedDirectToInv = [];
 	
 			foreach($result_one as $smVal){
 				$suppliesMarketingCon['id'] = $smVal['requestid'];
@@ -603,6 +635,35 @@
 				$suppliesMarketing[] = $suppliesMarketingCon;
 			}
 
+			$deployedDirectToInvCon = [];
+			$deployedDirectToInvFinal = [];
+			foreach($assetDeployedDirectInventory as $ddVal){
+				$deployedDirectToInvCon['id'] = $ddVal['mo_body_request'];
+				$deployedDirectToInvCon['reference_number'] = NULL;
+				$deployedDirectToInvCon['requested_by'] = $ddVal['requestedby'];
+				$deployedDirectToInvCon['department'] = $ddVal['department'];
+				$deployedDirectToInvCon['store_branch'] = $ddVal['department'];
+				$deployedDirectToInvCon['transaction_type'] = "DEPLOYED VIA UPLOAD INVENTORY";
+				$deployedDirectToInvCon['status']              = $ddVal['mo_statuses_description'];
+				$deployedDirectToInvCon['body_digits_code']    = NULL;
+				$deployedDirectToInvCon['description']         = NULL;
+				$deployedDirectToInvCon['request_quantity']    = NULL;
+				$deployedDirectToInvCon['request_type']        = NULL;
+				$deployedDirectToInvCon['mo_reference']        = $ddVal['mo_reference_number'];
+				$deployedDirectToInvCon['mo_item_code']        = $ddVal['digits_code'];
+				$deployedDirectToInvCon['mo_item_description'] = $ddVal['item_description'];
+				$deployedDirectToInvCon['mo_qty_serve_qty']    = $ddVal['quantity'];
+				$deployedDirectToInvCon['requested_date']          = $ddVal['created_at'];
+				$deployedDirectToInvCon['replenish_qty']           = NULL;
+				$deployedDirectToInvCon['reorder_qty']             = NULL;
+				$deployedDirectToInvCon['fulfill_qty']             = NULL;
+				$deployedDirectToInvCon['transacted_by']           = NULL;
+				$deployedDirectToInvCon['transacted_date']         = NULL;
+				$deployedDirectToInvCon['received_by']             = NULL;
+				$deployedDirectToInvCon['received_at']             = NULL;
+				$deployedDirectToInvFinal[] = $deployedDirectToInvCon;
+			}
+
 			$returnTransfer = [];
 			$returnTransferCon = [];
 			foreach($result_two as $rtVal){
@@ -634,7 +695,7 @@
 
 			//dd($suppliesMarketing, $returnTransfer);
 	
-			$data['finalData'] = array_merge($suppliesMarketing, $returnTransfer);
+			$data['finalData'] = array_merge($suppliesMarketing, $returnTransfer, $deployedDirectToInvFinal);
 
 			return datatables($data['finalData'])
 			->addIndexColumn()
