@@ -531,7 +531,7 @@
 				$deployedDirectToInvFinal[] = $deployedDirectToInvCon;
 			}
 			//dd($returnTransfer);
-			$data['result'] = array_merge($suppliesMarketing, $returnTransfer);
+			$data['result'] = array_merge($suppliesMarketing, $returnTransfer, $deployedDirectToInvFinal);
 			$insertData = [];
 			$container = [];
 			foreach($data['result'] as $key => $val){

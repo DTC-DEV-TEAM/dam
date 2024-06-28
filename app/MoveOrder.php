@@ -95,6 +95,7 @@ class MoveOrder extends Model
 				    ) 
                     ->whereNull('mo_body_request.header_request_id')
                     ->whereNull('mo_body_request.mo_reference_number')
+                    ->whereNull('mo_body_request.return_flag')
                     ->groupBy('mo_body_request.id');
          
 			return $query->get();
