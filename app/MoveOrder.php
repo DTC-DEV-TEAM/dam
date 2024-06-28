@@ -70,6 +70,33 @@ class MoveOrder extends Model
         ->whereIn('mo_body_request.status_id', [$closed, $for_closing])
         ->whereNull('mo_body_request.return_flag')
         ->get();
+    }
 
+    public function scopeArrayone($query){
+        $from = $fields['from'];
+        $to = $fields['to'];
+        $category = $fields['category'];
+    
+       $query->orderby('mo_body_request.id','asc')
+			->leftjoin('cms_users as requested', 'mo_body_request.request_created_by','=', 'requested.id')
+			->leftjoin('departments', 'requested.department_id', '=', 'departments.id')
+			->leftjoin('statuses as mo_statuses', 'mo_body_request.status_id', '=', 'mo_statuses.id')
+			->select(
+					'mo_body_request.*',
+                    'mo_body_request.id as requestid',
+					'requested.name as requestedby',
+					'requested.bill_to as employee_name',
+					'requested.company_name_id as company_name',
+					'departments.department_name as department',
+					'mo_statuses.status_description as mo_statuses_description',
+					'mo_body_request.body_request_id as mo_body_request_id',
+                    'mo_body_request.digits_code as mo_digits_code',
+                    'mo_body_request.item_description as mo_item_description'
+				    ) 
+                    ->whereNull('mo_body_request.header_request_id')
+                    ->whereNull('mo_body_request.mo_reference_number')
+                    ->groupBy('mo_body_request.id');
+         
+			return $query->get();
     }
 }
