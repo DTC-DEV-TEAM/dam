@@ -62,6 +62,7 @@
 			$this->col[] = ["label"=>"Value","name"=>"value","callback_php"=>'number_format($row->value, 2, ".", ",")'];
 			$this->col[] = ["label"=>"RR Date","name"=>"header_id","join"=>"assets_inventory_header,rr_date","visible" => false];
 			$this->col[] = ["label"=>"Quantity","name"=>"quantity"];
+			$this->col[] = ["label"=>"Created By","name"=>"created_by","join"=>"cms_users,name"];
 			$this->col[] = ["label"=>"Date Created","name"=>"created_at"];
 			// $this->col[] = ["label"=>"Warranty Coverage Year","name"=>"warranty_coverage"];
 			// $this->col[] = ["label"=>"Item Photo","name"=>"item_id","join"=>"assets,image","image"=>1];
@@ -161,8 +162,10 @@
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
 			    $this->index_button[] = ["label"=>"Export Data","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('asset-lists-export'),"color"=>"primary"];
+				if(in_array(CRUDBooster::myPrivilegeId(),[1,25])){
+					$this->index_button[] = ["title"=>"Upload Inventory","label"=>"Upload Inventory","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('inventory-upload')];
+				}
 				if(CRUDBooster::isSuperadmin()){
-				    $this->index_button[] = ["title"=>"Upload Inventory","label"=>"Upload Inventory","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('inventory-upload')];
 					$this->index_button[] = ["title"=>"Upload Not Available Inventory","label"=>"Upload Not Available Inventory","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('upload-inventory-not-available'), "color"=>"warning"];
 					$this->index_button[] = ["title"=>"Update Inventory","label"=>"Update Inventory","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('upload-inventory-update'), "color"=>"success"];
 				}
@@ -694,7 +697,7 @@
 					$flag = true;
 				}
 				
-				fputcsv($out, array('johndoe@digits.ph', '40000769', 'ASUS X415J LAPTOP', 'XSER12', '1', 'WORKING', 'IT WAREHOUSE' , '1'));
+				fputcsv($out, array('johndoe@digits.ph(leave blank if for buffer upload)', '40001122', 'OFE LAPTOP WINDOWS ADVANCED', 'XSER12', '1', 'WORKING', 'IT WAREHOUSE' , '12'));
 				fclose($out);
 				
 				exit;
