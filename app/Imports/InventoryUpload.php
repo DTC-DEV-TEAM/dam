@@ -33,7 +33,9 @@ class InventoryUpload implements ToCollection, SkipsEmptyRows, WithHeadingRow, W
             $name        = DB::table('cms_users')->where('id','!=',1)->where(DB::raw('LOWER(TRIM(email))'),strtolower(trim($row['email'])))->value('name');
             $item_id 	 = DB::table('assets')->where(['digits_code' => trim($row['digits_code'])])->first();
             $location_id = DB::table('warehouse_location_model')->where(DB::raw('LOWER(TRIM(location))'),strtolower(trim($row['location'])))->first();
-        
+            if(!$location_id){
+                return CRUDBooster::redirect(CRUDBooster::adminpath('assets_inventory_body'),"Location not exist. Please refer to this(IT WAREHOUSE, ADMIN GF)".($key+2),"danger");
+            }
             if(strtolower($row['status']) == "working" && empty($row['email'])){
 				$statuses = 6;
                 $item_condition = "Good";
