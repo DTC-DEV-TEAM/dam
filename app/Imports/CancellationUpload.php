@@ -57,17 +57,37 @@ class CancellationUpload implements ToCollection, WithHeadingRow
             $checkBodyQty = DB::table('body_request')->where(['header_request_id'=>$header->id])->whereNull('deleted_at')->get();
 
             $resData = [];
+            $requestQty = [];
+            $servedQty = [];
+            $cancelledQty = [];
             foreach($checkBodyQty as $item){
-                if($item->quantity != $item->serve_qty + $item->cancelled_qty){                
-                    $t = $item;
-                    $resData[] = $t;                
-                }
+                $requestQty[] = $item->quantity;
+                $servedQty[] = $item->serve_qty;
+                $cancelledQty[] = $item->cancelled_qty;
+                // if($item->quantity != $item->serve_qty + $item->cancelled_qty){                
+                //     $t = $item;
+                //     $resData[] = $t;                
+                // }
             }
-
-            if(empty($resData)){
+        
+            if(array_sum($requestQty) == array_sum($cancelledQty)){
                 HeaderRequest::where('id',$header->id)
 				->update([
 						'status_id'      => 8,
+                        'purchased2_by'	 => CRUDBooster::myId(),
+				        'purchased2_at'  => date('Y-m-d H:i:s')
+				]);	
+            }else if(array_sum($requestQty) == (array_sum($servedQty) + array_sum($cancelledQty))){
+                HeaderRequest::where('id',$header->id)
+				->update([
+						'status_id'      => 19,
+                        'purchased2_by'	 => CRUDBooster::myId(),
+				        'purchased2_at'  => date('Y-m-d H:i:s')
+				]);	
+            }else{
+                HeaderRequest::where('id',$header->id)
+				->update([
+						'status_id'      => 14,
                         'purchased2_by'	 => CRUDBooster::myId(),
 				        'purchased2_at'  => date('Y-m-d H:i:s')
 				]);	

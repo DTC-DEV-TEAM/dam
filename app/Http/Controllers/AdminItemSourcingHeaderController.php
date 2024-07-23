@@ -465,7 +465,9 @@
 			}
 			
 			$saveDepartment = implode(",",array_unique($eachDepartmentsIds));
-	 
+			if(empty($saveDepartment)){
+				CRUDBooster::redirect(CRUDBooster::mainpath(), 'No users and department', 'danger');
+			}
 			$pending                 = DB::table('statuses')->where('id', 1)->value('id');
 			$approved                = DB::table('statuses')->where('id', 4)->value('id');
 
@@ -515,10 +517,11 @@
 	    | @id = last insert id
 	    | 
 	    */
-	    public function hook_after_add($id) {        
+	    public function hook_after_add($id) {      
 	        $fields = Request::all();
 			$dataLines = array();
-			$nis_header = DB::table('item_sourcing_header')->where(['created_by' => CRUDBooster::myId()])->orderBy('id','desc')->first();
+			//$nis_header = DB::table('item_sourcing_header')->where(['created_by' => CRUDBooster::myId()])->orderBy('id','desc')->first();
+			$nis_header = DB::table('item_sourcing_header')->where('id',$id)->orderBy('id','desc')->first();
 
 			$item_description 	     = $fields['item_description'];
 			$category_id 		     = $fields['category_id'];
