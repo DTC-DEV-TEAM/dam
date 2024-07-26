@@ -82,17 +82,45 @@ class FulfillmentRoUpload implements ToCollection, WithHeadingRow
             //Close if all unserved quantity is fulfill
             $checkBodyQty = DB::table('body_request')->where(['header_request_id'=>$header->id])->whereNull('deleted_at')->get();
             $resData = [];
+            $requestQty = [];
+            $servedQty = [];
+            $cancelledQty = [];
             foreach($checkBodyQty as $item){
-                if($item->quantity != $item->serve_qty){                
-                    $t = $item;
-                    $resData[] = $t;                
-                }
+                // if($item->quantity != $item->serve_qty){                
+                //     $t = $item;
+                //     $resData[] = $t;                
+                // }
+                $requestQty[] = $item->quantity;
+                $servedQty[] = $item->serve_qty;
+                $cancelledQty[] = $item->cancelled_qty;
             }
 
-            if(empty($resData)){
+            // if(empty($resData)){
+            //     HeaderRequest::where('id',$header->id)
+			// 	->update([
+			// 			'status_id'      => 19,
+            //             'purchased2_by'	 => CRUDBooster::myId(),
+			// 	        'purchased2_at'  => date('Y-m-d H:i:s')
+			// 	]);	
+            // }
+            if(array_sum($requestQty) == array_sum($cancelledQty)){
+                HeaderRequest::where('id',$header->id)
+				->update([
+						'status_id'      => 8,
+                        'purchased2_by'	 => CRUDBooster::myId(),
+				        'purchased2_at'  => date('Y-m-d H:i:s')
+				]);	
+            }else if(array_sum($requestQty) == (array_sum($servedQty) + array_sum($cancelledQty))){
                 HeaderRequest::where('id',$header->id)
 				->update([
 						'status_id'      => 19,
+                        'purchased2_by'	 => CRUDBooster::myId(),
+				        'purchased2_at'  => date('Y-m-d H:i:s')
+				]);	
+            }else{
+                HeaderRequest::where('id',$header->id)
+				->update([
+						'status_id'      => 14,
                         'purchased2_by'	 => CRUDBooster::myId(),
 				        'purchased2_at'  => date('Y-m-d H:i:s')
 				]);	
