@@ -25,7 +25,9 @@ class CheckOrderSchedule
         $current_schedule = OrderSchedule::where('status','ACTIVE')->orderBy('id','desc')->first();
         $latest_inactive_date = OrderSchedule::where('status','INACTIVE')->orderBy('id','desc')->first();
         //$current_schedule = OrderSchedule::where('status','ACTIVE')->whereDate('start_date','<=',$current_date)->whereDate('end_date','>=',$current_date)->orderBy('id','desc')->first();
-        $open_date = strtoupper(date('F d, Y g:i A', strtotime($latest_inactive_date->end_date. ' + 4 days + 18 hours + 5 minutes')));
+        $format_date = Carbon::parse($latest_inactive_date->end_date)->addDays(5)->addHours(6)->addMinutes(5);
+        $open_date = strtoupper($format_date->format('F d, Y g:i A'));
+        $open_date = strtoupper(date('F d, Y g:i A', $format_date));
         $data['open_date'] = $open_date;
         $privileges_list = array_map('intval',explode(",",$current_schedule->privilege_id)); //additional code 20200624
 

@@ -62,7 +62,22 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 
 		if(CRUDBooster::isSuperadmin() || CRUDBooster::myPrivilegeId() == 9 || CRUDBooster::myPrivilegeId() == 4 || CRUDBooster::myPrivilegeId() == 15) {
 			$this->form[] = array("label"=>"Email","name"=>"email",'required'=>true,'type'=>'email','validation'=>'required|email|unique:cms_users,email,'.CRUDBooster::getCurrentId(), 'width'=>'col-sm-5');		
-    		$this->form[] = array("label"=>"Password","name"=>"password","type"=>"password","help"=>"Please leave empty if not changed", 'width'=>'col-sm-5');
+    		// $this->form[] = array("label"=>"Password","name"=>"password","type"=>"password","help"=>"Please leave empty if not changed", 'width'=>'col-sm-5');
+			$this->form[] = [
+				"label" => "Password",
+				"name" => "password",
+				"type" => "custom",
+				'width'=>'col-sm-5',
+				"help" => "Please leave empty if not changed",
+				'html' => '<div class="form-group header-group-0" id="form-group-password" style="width:100%">
+							<div class="col-md-12" style="display:flex;">
+								<input type="password" name="password" class="form-control" id="password">
+								<span class="password-toggle-icon" id="togglePassword" style="margin-top:10px; margin-right:10px">
+									<i class="fa fa-eye"></i>
+								</span>
+							</div>
+						  </div>'
+			];
 			$this->form[] = array("label"=>"Photo","name"=>"photo","type"=>"upload","help"=>"Recommended resolution is 200x200px",'validation'=>'image|max:1000','resize_width'=>90,'resize_height'=>90, 'width'=>'col-sm-5');
 		    $this->form[] = array("label"=>"First Name","name"=>"first_name",'required'=>true,'validation'=>'required|min:2', 'width'=>'col-sm-5');
     		$this->form[] = array("label"=>"Last Name","name"=>"last_name",'required'=>true,'validation'=>'required|min:2', 'width'=>'col-sm-5');
@@ -77,12 +92,30 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 
 		}else{
 			$this->form[] = array("label"=>"Email","name"=>"email",'required'=>true,'type'=>'email','validation'=>'required|email|unique:cms_users,email,'.CRUDBooster::getCurrentId(), 'width'=>'col-sm-5', 'readonly'=>true);		
-    		$this->form[] = array("label"=>"Password","name"=>"password","type"=>"password","help"=>"Please leave empty if not changed", 'width'=>'col-sm-5');
 			$this->form[] = array("label"=>"Photo","name"=>"photo","type"=>"upload","help"=>"Recommended resolution is 200x200px",'validation'=>'image|max:1000','resize_width'=>90,'resize_height'=>90, 'width'=>'col-sm-5', 'readonly'=>true);
 		    $this->form[] = array("label"=>"First Name","name"=>"first_name",'required'=>true,'validation'=>'required|min:3', 'width'=>'col-sm-5', 'readonly'=>true);
     		$this->form[] = array("label"=>"Last Name","name"=>"last_name",'required'=>true,'validation'=>'required|min:2', 'width'=>'col-sm-5', 'readonly'=>true);
-    		$this->form[] = array("label"=>"Full Name","name"=>"name", "type"=>"hidden",'required'=>true,'validation'=>'required|min:3','width'=>'col-sm-5','readonly'=>true, 'readonly'=>true);
-    	}
+			$this->form[] = array("label"=>"Role","name"=>"id_cms_privileges","type"=>"select","datatable"=>"cms_privileges,name", 'width'=>'col-sm-5', 'disabled'=>true);	
+			if(!in_array(CRUDBooster::myPrivilegeId(),[11,12,14,15,24])){
+				$this->form[] = array('label'=>'Approver','name'=>'approver_id','type'=>'select','datatable'=>'cms_users,name','datatable_where'=>"id_cms_privileges in (3,11,12,14,15,17,18,20,24)",'width'=>'col-sm-5', 'disabled'=>true);
+			}
+			// $this->form[] = array("label"=>"Password","name"=>"password","type"=>"password","help"=>"Please leave empty if not changed", 'width'=>'col-sm-5');
+		
+			$this->form[] = [
+				"label" => "Password",
+				"name" => "password",
+				"type" => "custom",
+				"help" => "Please leave empty if not changed",
+				'html' => '<div class="form-group header-group-0" id="form-group-password" style="width:100%">
+							<div class="col-sm-6" style="display:flex;">
+								<input type="password" name="password" class="form-control" id="password">
+								<span class="password-toggle-icon" id="togglePassword" style="margin-top:10px; margin-right:10px">
+									<i class="fa fa-eye"></i>
+								</span>
+							</div>
+						  </div>'
+			];
+		}
 		
 		
 		if((CRUDBooster::isSuperadmin() || CRUDBooster::myPrivilegeId() == 4 || CRUDBooster::myPrivilegeId() == 15) && (CRUDBooster::getCurrentMethod() == 'getEdit' || CRUDBooster::getCurrentMethod() == 'postEditSave')){
@@ -95,7 +128,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 			// $this->form[] = array("label"=>"Store Name","name"=>"stores_id","type"=>"check-box","datatable"=>"stores,store_name", 'width'=>'col-sm-10' );
 			//$this->form[] = array("label"=>"Stores","name"=>"stores_id","type"=>"select","datatable"=>"stores,name_name", 'required'=>true,'width'=>'col-sm-5');				
 		}elseif(CRUDBooster::myPrivilegeId() == 4 || CRUDBooster::myPrivilegeId() == 15){
-			$this->form[] = array("label"=>"Privilege","name"=>"id_cms_privileges","required"=>true,"type"=>"select","datatable"=>"cms_privileges,name", 'datatable_where'=>"id in (2,3,11,12)", 'width'=>'col-sm-5');	
+			$this->form[] = array("label"=>"Privilege","name"=>"id_cms_privileges","required"=>true,"type"=>"select2","datatable"=>"cms_privileges,name", 'datatable_where'=>"id in (2,3,11,12)", 'width'=>'col-sm-5');	
 			$this->form[] = array('label'=>'Approver','name'=>'approver_id','type'=>'select2','datatable'=>'cms_users,name','datatable_where'=>"id_cms_privileges in (3,11,12,14,15,17,18,20)",'width'=>'col-sm-5');
 			$this->form[] = array('label'=>'Approver','name'=>'approver_id_manager','type'=>'select2','datatable'=>'cms_users,name','datatable_where'=>"id_cms_privileges in (11,12,14,15)",'width'=>'col-sm-5', 'class'=>'approver_one');
 			$this->form[] = array("label"=>"Location","name"=>"location_id","type"=>"select2","required"=>true,"datatable"=>"locations,store_name", 'datatable_where'=>"store_status = 'ACTIVE'",'width'=>'col-sm-5');
@@ -103,7 +136,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 			
 		}elseif(CRUDBooster::isSuperadmin()) {
 
-			$this->form[] = array("label"=>"Privilege","name"=>"id_cms_privileges","required"=>true,"type"=>"select","datatable"=>"cms_privileges,name", 'width'=>'col-sm-5');	
+			$this->form[] = array("label"=>"Privilege","name"=>"id_cms_privileges","required"=>true,"type"=>"select2","datatable"=>"cms_privileges,name", 'width'=>'col-sm-5');	
 			$this->form[] = array('label'=>'Approver','name'=>'approver_id','type'=>'select2','datatable'=>'cms_users,name','datatable_where'=>"id_cms_privileges in (3,11,12,14,15,17,18,20,24)",'width'=>'col-sm-5');
 			$this->form[] = array('label'=>'Approver','name'=>'approver_id_manager','type'=>'select2','datatable'=>'cms_users,name','datatable_where'=>"id_cms_privileges in (11,12,14,15,24)",'width'=>'col-sm-5', 'class'=>'approver_one');
 			//$this->form[] = array('label'=>'Approver','name'=>'approver_id_executive','type'=>'select2','datatable'=>'cms_users,name','datatable_where'=>"id_cms_privileges = '12'",'width'=>'col-sm-5');
@@ -148,38 +181,72 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 		
 
 		$this->load_js[] = asset("js/employee_master.js");
-
+		// $this->load_js[] = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css';
 		$this->style_css = NULL;
 		$this->style_css = "
-
 			.ui-datepicker-year, .ui-datepicker-month{
 				color:	#337ab7 !important;
 			}
+			.password-toggle-icon {
+			position: absolute;
+			top: 50%;
+			right: 10px;
+			transform: translateY(-50%);
+			cursor: pointer;
+			}
 
+			.password-toggle-icon i {
+			font-size: 18px;
+			line-height: 1;
+			color: #333;
+			transition: color 0.3s ease-in-out;
+			margin-bottom: 20px;
+			}
 
-			";
+			.password-toggle-icon i:hover {
+			color: #000;
+			}
+		";
 
 		$this->script_js = "
 		$(document).ready(function() {
+		
+			// $('#togglePassword').on('click', function() {
+			// 	var password = $('#password');
+			// 	var type = password.attr('type') === 'password' ? 'text' : 'password';
+			// 	password.attr('type', type);
+				
+			// 	$(this).find('i').toggleClass('fa-eye fa-eye-slash');
+			// });
+			const passwordField = document.getElementById('password');
+			const togglePassword = document.querySelector('.password-toggle-icon i');
+
+			togglePassword.addEventListener('click', function () {
+			if (passwordField.type === 'password') {
+				passwordField.type = 'text';
+				togglePassword.classList.remove('fa-eye');
+				togglePassword.classList.add('fa-eye-slash');
+			} else {
+				passwordField.type = 'password';
+				togglePassword.classList.remove('fa-eye-slash');
+				togglePassword.classList.add('fa-eye');
+			}
+			});
 			$('form').submit(function(){
- 
-                    $('.btn.btn-success').attr('disabled', true);
-                    return true; 
+				$('.btn.btn-success').attr('disabled', true);
+				return true; 
             });
 
 			$('.js-example-basic-multiple').select2();
-			$('.js-example-basic-multiple').select2({
-			theme: 'classic'
-			});
+			$('.js-example-basic-multiple').select2({theme: 'classic'});
 			$('#department_id').select2();
 			$('#sub_department_id').select2();
-			$('#id_cms_privileges').select2();
+			// $('#id_cms_privileges').select2();
 
 			let x = $(location).attr('pathname').split('/');
 			let add_action = x.includes('add');
 			let edit_action = x.includes('edit');
             
-
 			if (add_action){
 				$('#form-group-approver_id_manager').hide();
 				$('#approver_id_manager').removeAttr('required');
@@ -335,13 +402,10 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 				var selectedValues = new Array();
 
 				for (let i = 0; i < a; i++) {
-				
 					selectedValues[i] = b[i];
-
 					$('#department_id').val(selectedValues);
 				}
 
-			
 				$('#id_cms_privileges').change(function() {
 					if($(this).val() == 1 || $(this).val() == 22){
 						$('#form-group-approver_id_manager').hide();
@@ -599,29 +663,19 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 			}
 
 			$('input[name=\"submit\"]').click(function(){
-
 				var strconfirm = confirm('Are you sure you want to save?');
-
 				if (strconfirm == true) {
-
 					return true;
-					
 				}else{
-					
 					return false;
 					window.stop();
-
 				}
-
 			});
-
 		});
 		";		
 
 		
 	}
-
-	
 
 	public function getProfile() {			
 
@@ -630,7 +684,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 		$this->button_show    = FALSE;			
 		$this->button_add     = FALSE;
 		$this->button_delete  = FALSE;	
-		$this->hide_form 	  = ['id_cms_privileges'];
+		// $this->hide_form 	  = ['id_cms_privileges'];
 
 		$data['page_title'] = trans("crudbooster.label_button_profile");
 		$data['row']        = CRUDBooster::first('cms_users',CRUDBooster::myId());		
@@ -733,7 +787,8 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 		// ]);	
     }
 
-	public function hook_before_edit(&$postdata,$id) {        
+	public function hook_before_edit(&$postdata,$id) {    
+			dd($postdata);
             $postdata['name'] = $postdata['first_name'].' '.$postdata['last_name'];
     		$postdata['user_name'] = $postdata['last_name'].''.substr($postdata['first_name'], 0, 1);
 			if($postdata['status']){
@@ -742,18 +797,21 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 				$postdata['status'] = 'ACTIVE';
 			}
 			$postdata['bill_to'] = $postdata['last_name'].', '.$postdata['first_name'];
-			if($postdata['id_cms_privileges'] == 3){
-				$postdata['approver_id'] = $postdata['approver_id_manager'];
-				$postdata['approver_id_manager'] = $postdata['approver_id_manager'];
-				$postdata['approver_id_executive'] = NULL;
-			}else if($postdata['id_cms_privileges'] == 11){
-				$postdata['approver_id'] = $postdata['approver_id_executive'];
-				$postdata['approver_id_manager'] = NULL;
-				$postdata['approver_id_executive'] = $postdata['approver_id_executive'];
-			}else{
-				$postdata['approver_id'] = $postdata['approver_id'];
-				$postdata['approver_id_manager'] = NULL;
-				$postdata['approver_id_executive'] = NULL;
+
+			if($postdata['approver_id']){
+				if($postdata['id_cms_privileges'] == 3){
+					$postdata['approver_id'] = $postdata['approver_id_manager'];
+					$postdata['approver_id_manager'] = $postdata['approver_id_manager'];
+					$postdata['approver_id_executive'] = NULL;
+				}else if($postdata['id_cms_privileges'] == 11){
+					$postdata['approver_id'] = $postdata['approver_id_executive'];
+					$postdata['approver_id_manager'] = NULL;
+					$postdata['approver_id_executive'] = $postdata['approver_id_executive'];
+				}else{
+					$postdata['approver_id'] = $postdata['approver_id'];
+					$postdata['approver_id_manager'] = NULL;
+					$postdata['approver_id_executive'] = NULL;
+				}
 			}
 
 			//LOCATION
