@@ -67,10 +67,10 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 				"label" => "Password",
 				"name" => "password",
 				"type" => "custom",
-				'width'=>'col-sm-5',
+				'width'=>'col-sm-7',
 				"help" => "Please leave empty if not changed",
 				'html' => '<div class="form-group header-group-0" id="form-group-password" style="width:100%">
-							<div class="col-md-12" style="display:flex;">
+							<div class="col-md-9" style="display:flex;">
 								<input type="password" name="password" class="form-control" id="password">
 								<span class="password-toggle-icon" id="togglePassword" style="margin-top:10px; margin-right:10px">
 									<i class="fa fa-eye"></i>
@@ -105,9 +105,10 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 				"label" => "Password",
 				"name" => "password",
 				"type" => "custom",
+				'width'=>'col-sm-7',
 				"help" => "Please leave empty if not changed",
 				'html' => '<div class="form-group header-group-0" id="form-group-password" style="width:100%">
-							<div class="col-sm-6" style="display:flex;">
+							<div class="col-sm-9" style="display:flex;">
 								<input type="password" name="password" class="form-control" id="password">
 								<span class="password-toggle-icon" id="togglePassword" style="margin-top:10px; margin-right:10px">
 									<i class="fa fa-eye"></i>
