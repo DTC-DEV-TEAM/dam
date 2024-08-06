@@ -789,7 +789,6 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
     }
 
 	public function hook_before_edit(&$postdata,$id) {    
-			dd($postdata);
             $postdata['name'] = $postdata['first_name'].' '.$postdata['last_name'];
     		$postdata['user_name'] = $postdata['last_name'].''.substr($postdata['first_name'], 0, 1);
 			if($postdata['status']){
