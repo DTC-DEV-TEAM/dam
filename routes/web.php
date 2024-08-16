@@ -194,6 +194,9 @@ Route::group(['middleware' => ['web']], function() {
     Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/deleteLockformCloseRequest','AdminErfEditStatusController@closeRequestlockDelete')->name('delete-locking-close-request'); //new
     Route::post(config('crudbooster.ADMIN_PATH').'/erf_edit_status/setCloseRequest','AdminErfEditStatusController@setRequestClose')->name('set-close-request'); // new
     Route::get('/admin/erf_edit_status/getLockingErfCloseRequest/{id}','AdminErfEditStatusController@getLockingCloseErfFormView')->name('get-locking-erf-close-form');
+    //EDIT ERF
+    Route::get('admin/erf_header_request/getEditDetails/{id}','AdminHrRequisitionController@getEditDetails')->name('getEditDetails');
+    Route::post('admin/erf_header_request/save-edit-erf','AdminHrRequisitionController@saveEditErf')->name('save-edit-erf');
 
     //PRINT ERF
     Route::get('/admin/erf_edit_status/getDetailPrintErf/{id}','AdminErfEditStatusController@getDetailPrintErf')->name('print-details-erf');
