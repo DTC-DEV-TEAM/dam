@@ -7,6 +7,7 @@
 	use App\Users;
 	use App\Models\ErfHeaderRequest;
 	use App\Models\ErfBodyRequest;
+	use App\Models\AssetsInventoryReserved;
 	use App\ApprovalMatrix;
 	use App\StatusMatrix;
 	use App\Models\ErfHeaderDocuments;
@@ -91,9 +92,11 @@
 	        */
 	        $this->addaction = array();
 			if(CRUDBooster::isUpdate()) {
-
 				$pending           = 1;
 				$this->addaction[] = ['title'=>'Cancel Request','url'=>CRUDBooster::mainpath('getRequestCancel/[id]'),'icon'=>'fa fa-times', "showIf"=>"[status_id] == $pending"];
+				if(CRUDBooster::isSuperadmin()){
+					$this->addaction[] = ['title'=>'Edit Details','url'=>CRUDBooster::mainpath('getEditDetails/[id]'),'icon'=>'fa fa-edit', "showIf"=>"in_array([status_id], [1, 29, 30])"];
+				}
 			}
 	        /* 
 	        | ---------------------------------------------------------------------- 
@@ -138,9 +141,9 @@
 				// $this->index_button[] = ["label"=>"Marketing Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-requisition-marketing'),"color"=>"success"];
 				// $this->index_button[] = ["label"=>"Supplies Request","icon"=>"fa fa-files-o","url"=>CRUDBooster::mainpath('add-requisition-supplies'),"color"=>"success"];
 
-			}
-			if(CRUDBooster::isSuperadmin() || in_array(CRUDBooster::myPrivilegeId(),[15])){
-				$this->index_button[] = ["label"=>"Export Lists","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('export').'/'.$userslist,"color"=>"primary"];
+				if(CRUDBooster::isSuperadmin() || in_array(CRUDBooster::myPrivilegeId(),[15])){
+					$this->index_button[] = ["label"=>"Export Lists","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('export').'/'.$userslist,"color"=>"primary"];
+				}
 			}
 	        /* 
 	        | ---------------------------------------------------------------------- 
@@ -859,6 +862,82 @@
 			} catch (Exception $e) {
 				return;
 			}
+		}
+
+		public function getEditDetails($id) {
+			$this->cbLoader();
+            if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
+                CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
+            }
+
+			$data = array();
+
+			$data['page_title'] = 'Erf Edit Details';
+
+			$data['Header'] = ErfHeaderRequest::
+				leftjoin('companies', 'erf_header_request.company', '=', 'companies.id')
+				->leftjoin('cms_users as approver', 'erf_header_request.approved_immediate_head_by', '=', 'approver.id')
+				->leftjoin('cms_users as verifier', 'erf_header_request.approved_hr_by', '=', 'verifier.id')
+				->leftJoin('applicant_table', function($join) 
+				{
+					$join->on('erf_header_request.reference_number', '=', 'applicant_table.erf_number')
+					->where('applicant_table.status',31);
+				})
+				->select(
+						'erf_header_request.*',
+						'erf_header_request.id as header_id',
+						'approver.name as approved_head_by',
+						'verifier.name as verified_by',
+			
+						'applicant_table.*'
+						)
+				->where('erf_header_request.id', $id)->first();
+			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
+			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
+			$data['positions'] = DB::table('positions')->where('status', 'ACTIVE')->get();
+			$data['statuses'] = DB::table('statuses')->where('status', 'ACTIVE')->get();
+			return $this->view("erf.erf-edit-details", $data);
+		}
+
+		public function saveEditErf(Request $request){
+			$fields = Request::all();
+			$headerDetails = erfHeaderRequest::where('id',$fields['header_id'])->first();
+
+			if(!in_array($fields['status_id'], [5,8])){
+				erfHeaderRequest::where('id',$fields['header_id'])
+				->update([
+						'status_id'=> $fields['status_id'],
+						'company'=> $fields['company'],	
+						'department'=> $fields['department'],	
+						'position'=> $fields['position'],	
+						'work_location'=> $fields['work_location']
+				]);	
+			}else{
+				erfHeaderRequest::where('id',$fields['header_id'])
+				->update([
+						'status_id'=> 8,
+						'cancelled_by'=> CRUDBooster::myId(),
+						'cancelled_at'=> date('Y-m-d H:i:s')
+						
+				]);	
+				$arfHeader = HeaderRequest::where('if_from_erf',$headerDetails->reference_number)->first();
+				HeaderRequest::where('id',$arfHeader->id)
+				->update([
+						'status_id'=> 8,
+						'cancelled_by'=> CRUDBooster::myId(),
+						'cancelled_at'=> date('Y-m-d H:i:s'),
+						'reason_to_cancel' => 'ERF CANCELLED'	
+
+				]);	
+				BodyRequest::where('header_request_id', $arfHeader->id)
+				->update([
+					'deleted_at'=> 		date('Y-m-d H:i:s'),
+					'deleted_by'=> 		CRUDBooster::myId()
+				]);	
+
+				AssetsInventoryReserved::where('reference_number', $arfHeader->reference_number)->delete();	
+			}
+			CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Edit successfully!"), 'success');
 		}
 
 	}
