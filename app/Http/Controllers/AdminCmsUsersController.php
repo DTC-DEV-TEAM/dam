@@ -802,7 +802,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 
 			$currentApprover = DB::table('cms_users')->where('email',$postdata['email'])->first();
 
-			if($postdata['approver_id']){
+			if($postdata['approver_id'] || $postdata['approver_id_manager'] || $postdata['approver_id_executive']){
 				if($postdata['id_cms_privileges'] == 3){
 					$postdata['approver_id'] = $postdata['approver_id_manager'];
 					$postdata['approver_id_manager'] = $postdata['approver_id_manager'];
