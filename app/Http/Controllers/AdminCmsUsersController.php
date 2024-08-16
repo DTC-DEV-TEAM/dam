@@ -687,8 +687,10 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 		$this->button_delete  = FALSE;	
 		// $this->hide_form 	  = ['id_cms_privileges'];
 
+
 		$data['page_title'] = trans("crudbooster.label_button_profile");
-		$data['row']        = CRUDBooster::first('cms_users',CRUDBooster::myId());		
+		$data['row']        = CRUDBooster::first('cms_users',CRUDBooster::myId());
+		$data['approver_id'] = $data['row']->approver_id;		
 		return $this->view('crudbooster::default.form',$data);				
 	}
 
@@ -798,6 +800,8 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 			}
 			$postdata['bill_to'] = $postdata['last_name'].', '.$postdata['first_name'];
 
+			$currentApprover = DB::table('cms_users')->where('email',$postdata['email'])->first();
+
 			if($postdata['approver_id']){
 				if($postdata['id_cms_privileges'] == 3){
 					$postdata['approver_id'] = $postdata['approver_id_manager'];
@@ -812,6 +816,8 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 					$postdata['approver_id_manager'] = NULL;
 					$postdata['approver_id_executive'] = NULL;
 				}
+			}else{
+				$postdata['approver_id'] = $currentApprover->approver_id;
 			}
 
 			//LOCATION
