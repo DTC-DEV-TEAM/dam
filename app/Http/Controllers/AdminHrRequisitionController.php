@@ -8,6 +8,7 @@
 	use App\Models\ErfHeaderRequest;
 	use App\Models\ErfBodyRequest;
 	use App\Models\AssetsInventoryReserved;
+	use App\HeaderRequest;
 	use App\ApprovalMatrix;
 	use App\StatusMatrix;
 	use App\Models\ErfHeaderDocuments;
@@ -895,7 +896,7 @@
 			$data['companies'] = DB::table('companies')->where('status', 'ACTIVE')->get();
 			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
 			$data['positions'] = DB::table('positions')->where('status', 'ACTIVE')->get();
-			$data['statuses'] = DB::table('statuses')->where('status', 'ACTIVE')->get();
+			$data['statuses'] = DB::table('statuses')->where('status', 'ACTIVE')->whereNotIn('id',[21])->get();
 			return $this->view("erf.erf-edit-details", $data);
 		}
 
@@ -921,21 +922,22 @@
 						
 				]);	
 				$arfHeader = HeaderRequest::where('if_from_erf',$headerDetails->reference_number)->first();
-				HeaderRequest::where('id',$arfHeader->id)
-				->update([
-						'status_id'=> 8,
-						'cancelled_by'=> CRUDBooster::myId(),
-						'cancelled_at'=> date('Y-m-d H:i:s'),
-						'reason_to_cancel' => 'ERF CANCELLED'	
-
-				]);	
-				BodyRequest::where('header_request_id', $arfHeader->id)
-				->update([
-					'deleted_at'=> 		date('Y-m-d H:i:s'),
-					'deleted_by'=> 		CRUDBooster::myId()
-				]);	
-
-				AssetsInventoryReserved::where('reference_number', $arfHeader->reference_number)->delete();	
+				if($arfHeader){
+					HeaderRequest::where('id',$arfHeader->id)
+					->update([
+							'status_id'=> 8,
+							'cancelled_by'=> CRUDBooster::myId(),
+							'cancelled_at'=> date('Y-m-d H:i:s'),
+							'reason_to_cancel' => 'ERF CANCELLED'	
+	
+					]);	
+					BodyRequest::where('header_request_id', $arfHeader->id)
+					->update([
+						'deleted_at'=> 		date('Y-m-d H:i:s'),
+						'deleted_by'=> 		CRUDBooster::myId()
+					]);	
+					AssetsInventoryReserved::where('reference_number', $arfHeader->reference_number)->delete();	
+				}
 			}
 			CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Edit successfully!"), 'success');
 		}
