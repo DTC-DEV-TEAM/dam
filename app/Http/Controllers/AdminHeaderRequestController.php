@@ -1200,6 +1200,10 @@
 				'deleted_at'=> 		date('Y-m-d H:i:s'),
 				'deleted_by'=> 		CRUDBooster::myId()
 			]);	
+
+			$arf_number = HeaderRequest::where('id',$id)->first();
+
+			DB::table('assets_inventory_reserved')->where('reference_number', $arf_number->reference_number)->delete();
 			
 			CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Request has been cancelled successfully!"), 'success');
 		}
@@ -1256,9 +1260,11 @@
 				'deleted_at'=> 		date('Y-m-d H:i:s'),
 				'deleted_by'=> 		CRUDBooster::myId()
 			]);	
-
+			
 			$bodyCount = DB::table('body_request')->where('header_request_id',$headerID)->whereNull('body_request.deleted_at')->count();
-
+			
+			DB::table('assets_inventory_reserved')->where('body_id', $bodyID)->delete();
+			
 			if($bodyCount == 0){
 			HeaderRequest::where('id', $headerID)
 				->update([
