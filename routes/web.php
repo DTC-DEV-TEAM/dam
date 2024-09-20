@@ -281,6 +281,13 @@ Route::group(['middleware' => ['web']], function() {
     Route::post('/admin/positions/upload-positions','AdminPositionsController@positionsUpload')->name('upload-positions');
     Route::get('/admin/positions/upload-positions-template','AdminPositionsController@uploadpositionsTemplate');
  
+    //UPDATE PASSWORD
+     //Update Password
+     Route::post('change-password', 'AdminCmsUsersController@postUpdatePassword')->name('update_password');
+     Route::post('check-password', 'AdminCmsUsersController@checkPassword')->name('check-current-password');
+     Route::post('check-waive', 'AdminCmsUsersController@checkWaive')->name('check-waive-count');
+     Route::get('show-change-pass', 'AdminCmsUsersController@showChangePassword')->name('change-password');
+
     //Deployed Assets Send to Users Via Email
     //Route::get('/admin/send-assets-email','SendAssetsEmailController@sendEmails');
     //Route::get('/admin/db-truncate','TruncateController@dbtruncate');

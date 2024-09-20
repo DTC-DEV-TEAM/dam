@@ -18,6 +18,8 @@ use App\Exports\ExportUsersList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 use Maatwebsite\Excel\HeadingRowImport;
+use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 
 class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -101,21 +103,21 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 			}
 			// $this->form[] = array("label"=>"Password","name"=>"password","type"=>"password","help"=>"Please leave empty if not changed", 'width'=>'col-sm-5');
 		
-			$this->form[] = [
-				"label" => "Password",
-				"name" => "password",
-				"type" => "custom",
-				'width'=>'col-sm-7',
-				"help" => "Please leave empty if not changed",
-				'html' => '<div class="form-group header-group-0" id="form-group-password" style="width:100%">
-							<div class="col-sm-9" style="display:flex;">
-								<input type="password" name="password" class="form-control" id="password">
-								<span class="password-toggle-icon" id="togglePassword" style="margin-top:10px; margin-right:10px">
-									<i class="fa fa-eye"></i>
-								</span>
-							</div>
-						  </div>'
-			];
+			// $this->form[] = [
+			// 	"label" => "Password",
+			// 	"name" => "password",
+			// 	"type" => "custom",
+			// 	'width'=>'col-sm-7',
+			// 	"help" => "Please leave empty if not changed",
+			// 	'html' => '<div class="form-group header-group-0" id="form-group-password" style="width:100%">
+			// 				<div class="col-sm-9" style="display:flex;">
+			// 					<input type="password" name="password" class="form-control" id="password">
+			// 					<span class="password-toggle-icon" id="togglePassword" style="margin-top:10px; margin-right:10px">
+			// 						<i class="fa fa-eye"></i>
+			// 					</span>
+			// 				</div>
+			// 			  </div>'
+			// ];
 		}
 		
 		
@@ -685,6 +687,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 		$this->button_show    = FALSE;			
 		$this->button_add     = FALSE;
 		$this->button_delete  = FALSE;	
+		$this->button_save  = FALSE;	
 		// $this->hide_form 	  = ['id_cms_privileges'];
 
 
@@ -1096,6 +1099,116 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 
 	public function getExport(){
 		return Excel::download(new ExportUsersList, 'DAM-UsersList.xlsx');
+	}
+
+	public function postUpdatePassword(Request $request) {
+		$fields = $request->all();
+		$user = DB::table('cms_users')->where('id',$fields['user_id'])->first();
+		if($fields['type'] == 1){
+			if (Hash::check($fields['current_password'], $user->password)){
+				//Check if password exist in history
+				$passwordHistory = DB::table('cms_password_histories')->where('cms_user_id',$fields['user_id'])->get()->toArray();
+				$isExist = array_column($passwordHistory, 'cms_user_old_pass');
+				if(!self::checkPasswordInArray($fields['new_password'], $isExist)) {
+					$validatedData = $request->validate([
+						'current_password' => 'required',
+						'new_password' => 'required',
+						'confirm_password' => 'required|same:new_password'
+					]);
+					DB::table('cms_users')->where('id', $fields['user_id'])
+					->update([
+						'password'=>Hash::make($fields['new_password']),
+						'last_password_updated' => now()->format('Y-m-d'),
+						'waiver_count' => 0
+					]);
+					$newPass = DB::table('cms_users')->where('id',$fields['user_id'])->first();
+					Session::put('admin_password', $newPass->password);
+					$passwordLastUpdated = Carbon::parse($newPass->last_password_updated);
+					if ($passwordLastUpdated->diffInMonths(Carbon::now()) > 3) {
+						Session::put('password_is_old', $newPass->last_password_updated);
+					}else{
+						Session::put('password_is_old', '');
+					}
+					
+					//Save password history
+					DB::table('cms_password_histories')->insert([
+						'cms_user_id' => $newPass->id,
+						'cms_user_old_pass' => $newPass->password,
+						'created_at' => date('Y-m-d h:i:s')
+					]);
+
+					session()->flash('message_type', 'success');
+					session()->flash('message', 'Password Updated, You Will Be Logged-Out.');
+					return redirect()->to('admin/statistic_builder/dashboard')->with('info', 'Password Updated, You Will Be Logged-Out.');
+				}else{
+					session()->flash('message_type', 'danger');
+					session()->flash('message', 'Password already useed! Please try another password');
+					return redirect()->to('admin/statistic_builder/dashboard')->with('danger', 'Password already used! Please try another password');
+				}
+			}else{
+				session()->flash('message_type', 'danger');
+				session()->flash('message', 'Incorrect Current Password.');
+				return redirect()->to('admin/statistic_builder/dashboard')->with('danger', 'Incorrect Current Password.');
+			}
+		}else{
+			DB::table('cms_users')->where('id', $fields['user_id'])
+			->update([
+				'last_password_updated' => now()->format('Y-m-d'),
+				'waiver_count' => DB::raw('COALESCE(waiver_count, 0) + 1')
+			]);
+			$newPass = DB::table('cms_users')->where('id',$fields['user_id'])->first();
+			Session::put('admin_password', $newPass->password);
+			$passwordLastUpdated = Carbon::parse($newPass->last_password_updated);
+			if ($passwordLastUpdated->diffInMonths(Carbon::now()) > 3) {
+				Session::put('password_is_old', $newPass->last_password_updated);
+			}else{
+				Session::put('password_is_old', '');
+			}
+			session()->flash('message_type', 'info');
+			session()->flash('message', 'Waive completed!');
+			return redirect()->to('admin/statistic_builder/dashboard')->with('info', 'Waive completed!');
+		}
+	}
+
+	public function checkPassword(Request $request) {
+		$data = [];
+		$fields = $request->all();
+		$user = DB::table('cms_users')->where('id',$fields['id'])->first();
+		if (Hash::check($fields['password'], $user->password)){
+			$data['items'] = 1;
+		}else{
+			$data['items'] = 0;
+		}
+	
+		return json_encode($data);
+	}
+
+	public function checkWaive(Request $request) {
+		$data = [];
+		$fields = $request->all();
+		$user = DB::table('cms_users')->where('id',$fields['id'])->first();
+		if ($user->waiver_count === 4){
+			$data['items'] = 0;
+		}else{
+			$data['items'] = 1;
+		}
+	
+		return json_encode($data);
+	}
+
+	// Function to check if the new password matches any hashed password
+	function checkPasswordInArray($newPassword, $hashedPasswords) {
+		foreach ($hashedPasswords as $hashedPassword) {
+			if (Hash::check($newPassword, $hashedPassword)) {
+				return true; // Password exists in the array
+			}
+		}
+		return false; // Password does not exist
+	}
+
+	public function showChangePassword(){
+		$data['page_title'] = 'Change Password';
+		return view('user-account.change-password',$data);
 	}
 	
 }
