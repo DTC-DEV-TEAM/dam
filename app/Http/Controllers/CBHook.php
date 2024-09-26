@@ -7,7 +7,6 @@ use Request;
 use CRUDBooster;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Hash;
 class CBHook extends Controller {
 
 	/*
@@ -68,12 +67,12 @@ class CBHook extends Controller {
     }
 
 	public function afterLogin() {
-		$user =  DB::table('cms_users')->where("id", CRUDbooster::myId())->first();
-        $today = Carbon::now()->format('Y-m-d');
+       
+		$user =  DB::table('cms_users')->where("id", CRUDBooster::myId())->first();
+        $today = Carbon::now();
         $lastChangePass = Carbon::parse($user->last_password_updated);
-        $needsPasswordChange = Hash::check('qwerty', $user->password) || $lastChangePass->diffInMonths($today) >= 3;
-        $defaultPass = Hash::check('qwerty', $user->password);
-
+        $needsPasswordChange = \Hash::check('qwerty', $user->password) || $lastChangePass->diffInMonths($today) > 3;
+        $defaultPass = \Hash::check('qwerty', $user->password);
         if($needsPasswordChange){
             Log::debug("message: {$needsPasswordChange}");
             Session::put('check-user',true);

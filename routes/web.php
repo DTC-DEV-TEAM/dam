@@ -26,7 +26,18 @@ Route::post('/send_resetpass_email/reset','AdminCmsUsersController@postSaveReset
 
 Route::get('/admin/receiving_asset/getADFStatus/{id}','AdminReceivingAssetController@getADFStatus')->name('ADF.API');
 //Route::get('/admin/items/item-updated','AdminItemsController@getItemsUpdatedAPI')->name('itemsupdate.API');
-    
+     //UPDATE PASSWORD
+Route::group(['middleware' => ['web'], 'prefix' => config('crudbooster.ADMIN_PATH')], function () {
+    Route::get('change-password', 'AdminCmsUsersController@showChangeForcePasswordForm')->name('show-change-force-password');
+    Route::post('save-change-password', 'AdminCmsUsersController@postUpdatePassword')->name('update_password');
+    Route::post('check-password', 'AdminCmsUsersController@checkPassword')->name('check-current-password');
+    Route::post('check-waive', 'AdminCmsUsersController@checkWaive')->name('check-waive-count');
+    Route::get('show-change-pass', 'AdminCmsUsersController@showChangePassword')->name('change-password');
+    Route::post('reset-password', 'AdminCmsUsersController@postSendEmailResetPassword')->name('reset-password');
+    Route::get('show-change-pass', 'AdminCmsUsersController@showChangePassword')->name('change-password');
+    Route::post('waive-change-password','AdminCmsUsersController@waiveChangePassword')->name('waive-change-password');
+});
+
 Route::group(['middleware' => ['web','\crocodicstudio\crudbooster\middlewares\CBBackend','check.user']], function() {
 
     Route::get('admin/employees/getCity/{id}','AdminEmployeesController@getCity')->name('getCity');
@@ -296,16 +307,6 @@ Route::group(['middleware' => ['web','\crocodicstudio\crudbooster\middlewares\CB
     });
 });
 
- //UPDATE PASSWORD
-Route::group(['middleware' => ['web'], 'prefix' => config('crudbooster.ADMIN_PATH')], function () {
-    Route::get('change-password', 'AdminCmsUsersController@showChangeForcePasswordForm')->name('show-change-force-password');
-    Route::post('save-change-password', 'AdminCmsUsersController@postUpdatePassword')->name('update_password');
-    Route::post('check-password', 'AdminCmsUsersController@checkPassword')->name('check-current-password');
-    Route::post('check-waive', 'AdminCmsUsersController@checkWaive')->name('check-waive-count');
-    Route::get('show-change-pass', 'AdminCmsUsersController@showChangePassword')->name('change-password');
-    Route::post('reset-password', 'AdminCmsUsersController@postSendEmailResetPassword')->name('reset-password');
-    Route::get('show-change-pass', 'AdminCmsUsersController@showChangePassword')->name('change-password');
-    Route::post('waive-change-password','AdminCmsUsersController@waiveChangePassword')->name('waive-change-password');
-});
+
 
 
