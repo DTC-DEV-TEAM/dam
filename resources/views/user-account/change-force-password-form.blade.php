@@ -49,6 +49,25 @@
 		#textChar.active {
 			color: #00a65a; /* Excellent */
 		}
+
+		.loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            border-top-color: #000;
+            animation: spin 1s infinite linear;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
 	</style>
 @endpush
 	<div class="modal fade" id="tos-modal" role="dialog" data-keyboard="false" data-backdrop="static">
@@ -198,7 +217,7 @@
 						event.preventDefault();
 						return false;
 					  } else{
-                        $('#btnWaive').attr('disabled',true);     
+						$('#btnSubmit').html('<div class="loading"></div> Loading...').attr('disabled', true);   
                         $.ajax({
                             url: "{{ route('update_password') }}",
                             dataType: "json",
@@ -213,8 +232,8 @@
                                         confirmButtonColor: "#359D9D",
                                     },function(){
                                         location.assign(admin_path+'/logout');
+										$('#btnSubmit').html('Loading...').attr('disabled', false);
                                     });
-                                    
                                 } else {
                                     swal({
                                         type: data.status,
@@ -223,6 +242,7 @@
                                         confirmButtonColor: "#359D9D",
                                     },function(){
                                         location.reload();
+										$('#btnSubmit').html('Loading...').attr('disabled', false);
                                     });
                                 }  
                                 
@@ -252,7 +272,6 @@
 						"id": '{{session()->get("admin_id")}}'
 					},
 					success: function (data) {
-						console.log(data.items);
 					  if(data.items === 0){
 						swal({
 							type: 'error',
@@ -263,7 +282,7 @@
 						event.preventDefault();
 						return false;
 					  } else{
-						$('#btnWaive').attr('disabled',true);     
+						$('#btnWaive').html('<div class="loading"></div> Loading...').attr('disabled', true);     
                         $.ajax({
                             url: "{{ route('waive-change-password') }}",
                             dataType: "json",
@@ -278,6 +297,7 @@
                                         confirmButtonColor: "#359D9D",
                                     },function(){
                                         location.reload();
+										$('#btnWaive').attr('disabled', false);
                                     });
                                     
                                 } else {
@@ -288,6 +308,7 @@
                                         confirmButtonColor: "#359D9D",
                                     },function(){
                                         location.reload();
+										$('#btnWaive').attr('disabled', false);
                                     });
                                     
                                 }  
