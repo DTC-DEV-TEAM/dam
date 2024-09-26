@@ -59,5 +59,6 @@ class Kernel extends HttpKernel
         'check.orderschedule' => \App\Http\Middleware\CheckOrderSchedule::class,
         'check.approvalschedule' => \App\Http\Middleware\CheckApprovalSchedule::class,
         'check.suppliescheckrestriction' => \App\Http\Middleware\RestrictSuppliesRequisition::class,
+        'check.user' => \App\Http\Middleware\CheckUserForceChangePassword::class,
     ];
 }
