@@ -1104,73 +1104,67 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 		return Excel::download(new ExportUsersList, 'DAM-UsersList.xlsx');
 	}
 
+	public function showChangeForcePasswordForm(){
+		$data['page_title'] = 'Change Password';
+		return view('user-account.change-force-password-form',$data);
+	}
+
 	public function postUpdatePassword(Request $request) {
 		$fields = $request->all();
 		$user = DB::table('cms_users')->where('id',$fields['user_id'])->first();
-		if($fields['type'] == 1){
-			if (Hash::check($fields['current_password'], $user->password)){
-				//Check if password exist in history
-				$passwordHistory = DB::table('cms_password_histories')->where('cms_user_id',$fields['user_id'])->get()->toArray();
-				$isExist = array_column($passwordHistory, 'cms_user_old_pass');
-				if(!self::checkPasswordInArray($fields['new_password'], $isExist)) {
-					$validatedData = $request->validate([
-						'current_password' => 'required',
-						'new_password' => 'required',
-						'confirm_password' => 'required|same:new_password'
-					]);
-					DB::table('cms_users')->where('id', $fields['user_id'])
-					->update([
-						'password'=>Hash::make($fields['new_password']),
-						'last_password_updated' => now()->format('Y-m-d'),
-						'waiver_count' => 0
-					]);
-					$newPass = DB::table('cms_users')->where('id',$fields['user_id'])->first();
-					Session::put('admin_password', $newPass->password);
-					$passwordLastUpdated = Carbon::parse($newPass->last_password_updated);
-					if ($passwordLastUpdated->diffInMonths(Carbon::now()) > 3) {
-						Session::put('password_is_old', $newPass->last_password_updated);
-					}else{
-						Session::put('password_is_old', '');
-					}
-					
-					//Save password history
-					DB::table('cms_password_histories')->insert([
-						'cms_user_id' => $newPass->id,
-						'cms_user_old_pass' => $newPass->password,
-						'created_at' => date('Y-m-d h:i:s')
-					]);
-
-					session()->flash('message_type', 'success');
-					session()->flash('message', 'Password Updated, You Will Be Logged-Out.');
-					return redirect()->to('admin/statistic_builder/dashboard')->with('info', 'Password Updated, You Will Be Logged-Out.');
-				}else{
-					session()->flash('message_type', 'danger');
-					session()->flash('message', 'Password already useed! Please try another password');
-					return redirect()->to('admin/statistic_builder/dashboard')->with('danger', 'Password already used! Please try another password');
+	
+		if (Hash::check($fields['current_password'], $user->password)){
+			//Check if password exist in history
+			$passwordHistory = DB::table('cms_password_histories')->where('cms_user_id',$fields['user_id'])->get()->toArray();
+			$isExist = array_column($passwordHistory, 'cms_user_old_pass');
+			if(!self::checkPasswordInArray($fields['new_password'], $isExist)) {
+				$validator = \Validator::make($request->all(), [
+					'current_password' => 'required',
+					'new_password' => 'required',
+					'confirm_password' => 'required|same:new_password'
+				]);
+			
+				if ($validator->fails()) {
+					return redirect()->to('admin/statistic_builder/dashboard')
+							->withErrors($validator)
+							->withInput();
 				}
+				DB::table('cms_users')->where('id', $fields['user_id'])
+				->update([
+					'password'=>Hash::make($fields['new_password']),
+					'last_password_updated' => Carbon::now()->format('Y-m-d'),
+					'waiver_count' => 0
+				]);
+				$newPass = DB::table('cms_users')->where('id',$fields['user_id'])->first();
+				Session::put('admin-password', $newPass->password);
+				Session::put('check-user',false);
+				//Save password history
+				DB::table('cms_password_histories')->insert([
+					'cms_user_id' => $newPass->id,
+					'cms_user_old_pass' => $newPass->password,
+					'created_at' => date('Y-m-d h:i:s')
+				]);
+
+				return response()->json(['message' => 'Password Updated, You Will Be Logged-Out.', 'status'=>'success']);
 			}else{
-				session()->flash('message_type', 'danger');
-				session()->flash('message', 'Incorrect Current Password.');
-				return redirect()->to('admin/statistic_builder/dashboard')->with('danger', 'Incorrect Current Password.');
+				return response()->json(['message' => 'Password already used! Please try another password', 'status'=>'error']);
 			}
 		}else{
-			DB::table('cms_users')->where('id', $fields['user_id'])
+			return response()->json(['message' => 'Incorrect Current Password.', 'status'=>'error']);
+		}
+		
+	}
+
+	public function waiveChangePassword(Request $request){
+		$user = DB::table('cms_users')->where('id',CRUDBooster::myId())->first();
+		DB::table('cms_users')->where('id', CRUDBooster::myId())
 			->update([
-				'last_password_updated' => now()->format('Y-m-d'),
+				'last_password_updated' => Carbon::now()->format('Y-m-d'),
 				'waiver_count' => DB::raw('COALESCE(waiver_count, 0) + 1')
 			]);
-			$newPass = DB::table('cms_users')->where('id',$fields['user_id'])->first();
-			Session::put('admin_password', $newPass->password);
-			$passwordLastUpdated = Carbon::parse($newPass->last_password_updated);
-			if ($passwordLastUpdated->diffInMonths(Carbon::now()) > 3) {
-				Session::put('password_is_old', $newPass->last_password_updated);
-			}else{
-				Session::put('password_is_old', '');
-			}
-			session()->flash('message_type', 'info');
-			session()->flash('message', 'Waive completed!');
-			return redirect()->to('admin/statistic_builder/dashboard')->with('info', 'Waive completed!');
-		}
+		Session::put('admin-password', $user->password);
+		Session::put('check-user',false);
+		return response()->json(['message' => 'Waive completed!', 'status'=>'success']);
 	}
 
 	public function checkPassword(Request $request) {

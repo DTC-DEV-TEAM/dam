@@ -6,6 +6,7 @@ use Session;
 use Request;
 use CRUDBooster;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 class CBHook extends Controller {
 
 	/*
@@ -66,18 +67,17 @@ class CBHook extends Controller {
     }
 
 	public function afterLogin() {
-		$user =  DB::table('cms_users')->where("id", CRUDbooster::myId())->first();
-		if ($user->last_password_updated) {
-			// Compare the password updated date with the current date
-			$passwordLastUpdated = Carbon::parse($user->last_password_updated);
-	
-			if ($passwordLastUpdated->diffInMonths(Carbon::now()) > 3) {
-				// Password is older than 3 months
-				Session::put('password_is_old', $user->last_password_updated);
-			}else{
-				Session::put('password_is_old', '');
-			}
-		}
-		Session::put('admin_password', $user->password);
+       
+		$user =  DB::table('cms_users')->where("id", CRUDBooster::myId())->first();
+        $today = Carbon::now();
+        $lastChangePass = Carbon::parse($user->last_password_updated);
+        $needsPasswordChange = \Hash::check('qwerty', $user->password) || $lastChangePass->diffInMonths($today) > 3;
+        $defaultPass = \Hash::check('qwerty', $user->password);
+        if($needsPasswordChange){
+            Log::debug("message: {$needsPasswordChange}");
+            Session::put('check-user',true);
+            Session::put('admin-password',$user->password);
+            return redirect()->route('show-change-force-password')->send();
+        }
 	}
 }

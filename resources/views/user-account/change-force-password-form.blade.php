@@ -51,17 +51,19 @@
 		}
 	</style>
 @endpush
-    @include('crudbooster::statistic_builder.index')
 	<div class="modal fade" id="tos-modal" role="dialog" data-keyboard="false" data-backdrop="static">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header btn-danger" style="text-center; font-size:14px">
-					<h4 class="modal-title" id="pass_qwerty"><b> <i class="fa fa-lock"></i> System detect password using qwerty, Please change your password!</b></h4>
-					<h4 class="modal-title" id="pass_old"><b> <i class="fa fa-lock"></i> <span class="label label-danger">Your password is out of date, Please change it!</span> </b></h4>
+                    @if(Hash::check('qwerty',Session::get('admin-password')))
+					    <h4 class="modal-title" id="pass_qwerty"><b> <i class="fa fa-lock"></i> System detect password using qwerty, Please change your password!</b></h4>
+					@else
+                        <h4 class="modal-title" id="pass_old"><b> <i class="fa fa-lock"></i> <span class="label label-danger">Your password is out of date, Please change it!</span> </b></h4>
+                    @endif
 				</div>
 			
 				<form method="POST" action="{{ route('update_password') }}" id="changePasswordForm">
-					@csrf
+					<input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
 					<input type="hidden" value="{{Session::get('admin_id')}}" name="user_id">
 					<input type="hidden" id="type" name="type">
 					<div class="modal-body">
@@ -117,8 +119,10 @@
 					</div>
 	
 					<div class="modal-footer">
-						<button type="button" class="btn btn-danger" id="btnWaive"><i class="fa fa-refresh"></i> Waive</button>
-						<button type="button" class="btn btn-danger" id="btnSubmit"><i class="fa fa-key"></i> Change password</button>
+                        @if(!Hash::check('qwerty',Session::get('admin-password')))
+						    <button type="button" class="btn btn-danger" id="btnWaive"><i class="fa fa-refresh"></i> Waive</button>
+						@endif
+                        <button type="button" class="btn btn-danger" id="btnSubmit"><i class="fa fa-key"></i> Change password</button>
 					</div>
 				</form>
 			</div>
@@ -128,29 +132,14 @@
 @endsection
 @push('bottom')
     <script type="text/javascript">
-        $(window).on('load',function(){
-            @if (Hash::check('qwerty',Session::get('admin_password')))
-                $('#tos-modal').modal('show');
-				$('#pass_old').hide();
-				$('#btnWaive').hide();
-			@elseif (Hash::check('qwerty1234',Session::get('admin_password')))
-                $('#tos-modal').modal('show');
-				$('#pass_old').hide();
-			@elseif(Session::get('password_is_old'))
-				$('#tos-modal').modal('show');
-				$('#pass_old').show();
-				$('#pass_qwerty').hide();
-            @endif     
-        });
 
-		$(document).ready(function() {
+        $(document).ready(function() {
+            $(window).on('load',function(){
+                @if (Session::get('check-user'))   
+                    $('#tos-modal').modal('show');
+                @endif
+            });
 			const admin_path = "{{CRUDBooster::adminPath()}}"
-			const msg_type = "{{ session('message_type') }}";
-			if (msg_type == 'success'){
-				setTimeout(function(){
-					location.assign(admin_path+'/logout');
-				}, 2000);
-			}
 
 			$('#btnSubmit').attr('disabled',true);
 			// Toggle for current password
@@ -209,9 +198,36 @@
 						event.preventDefault();
 						return false;
 					  } else{
-							$('#type').val(1);
-							$("#changePasswordForm").submit();       
-							$('#btnSubmit').attr('disabled',true);         
+                        $('#btnWaive').attr('disabled',true);     
+                        $.ajax({
+                            url: "{{ route('update_password') }}",
+                            dataType: "json",
+                            type: "POST",
+                            data: $('#changePasswordForm').serialize(),
+                            success: function (data) {
+                                if (data.status === 'success') {
+                                    swal({
+                                        type: data.status,
+                                        title: data.message,
+                                        icon: data.status,
+                                        confirmButtonColor: "#359D9D",
+                                    },function(){
+                                        location.assign(admin_path+'/logout');
+                                    });
+                                    
+                                } else {
+                                    swal({
+                                        type: data.status,
+                                        title: data.message,
+                                        icon: data.status,
+                                        confirmButtonColor: "#359D9D",
+                                    },function(){
+                                        location.reload();
+                                    });
+                                }  
+                                
+                            }
+                        });          
 					  }
 						
 					}
@@ -247,9 +263,38 @@
 						event.preventDefault();
 						return false;
 					  } else{
-							$('#type').val(0);
-							$("#changePasswordForm").submit();       
-							$('#btnWaive').attr('disabled',true);         
+						$('#btnWaive').attr('disabled',true);     
+                        $.ajax({
+                            url: "{{ route('waive-change-password') }}",
+                            dataType: "json",
+                            type: "POST",
+                            data: $('#changePasswordForm').serialize(),
+                            success: function (data) {
+                                if (data.status === 'success') {
+                                    swal({
+                                        type: data.status,
+                                        title: data.message,
+                                        icon: data.status,
+                                        confirmButtonColor: "#359D9D",
+                                    },function(){
+                                        location.reload();
+                                    });
+                                    
+                                } else {
+                                    swal({
+                                        type: data.status,
+                                        title: data.message,
+                                        icon: data.status,
+                                        confirmButtonColor: "#359D9D",
+                                    },function(){
+                                        location.reload();
+                                    });
+                                    
+                                }  
+                                
+                            }
+                        });  
+							    
 					  }
 						
 					}
