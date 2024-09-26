@@ -16,7 +16,13 @@ Route::get('/', function () {
     return redirect('admin/login');
     //return view('welcome');
 });
+Route::group(['middleware' => ['web'], 'prefix' => config('crudbooster.ADMIN_PATH')], function () {
+    Route::post('login', ['uses' => 'CBHook@postLogin', 'as' => 'postLogin']);
+});
 
+//RESET PASSWORD
+Route::get('/reset_password_email/{email}', 'AdminCmsUsersController@getResetView')->name('reset_password_email');
+Route::post('/send_resetpass_email/reset','AdminCmsUsersController@postSaveResetPassword')->name('postResetPassword');
 
 Route::get('/admin/receiving_asset/getADFStatus/{id}','AdminReceivingAssetController@getADFStatus')->name('ADF.API');
 //Route::get('/admin/items/item-updated','AdminItemsController@getItemsUpdatedAPI')->name('itemsupdate.API');
@@ -282,12 +288,11 @@ Route::group(['middleware' => ['web']], function() {
     Route::get('/admin/positions/upload-positions-template','AdminPositionsController@uploadpositionsTemplate');
  
     //UPDATE PASSWORD
-     //Update Password
-     Route::post('change-password', 'AdminCmsUsersController@postUpdatePassword')->name('update_password');
-     Route::post('check-password', 'AdminCmsUsersController@checkPassword')->name('check-current-password');
-     Route::post('check-waive', 'AdminCmsUsersController@checkWaive')->name('check-waive-count');
-     Route::get('show-change-pass', 'AdminCmsUsersController@showChangePassword')->name('change-password');
-
+    Route::post('change-password', 'AdminCmsUsersController@postUpdatePassword')->name('update_password');
+    Route::post('check-password', 'AdminCmsUsersController@checkPassword')->name('check-current-password');
+    Route::post('check-waive', 'AdminCmsUsersController@checkWaive')->name('check-waive-count');
+    Route::get('show-change-pass', 'AdminCmsUsersController@showChangePassword')->name('change-password');
+    Route::post('reset-password', 'AdminCmsUsersController@postSendEmailResetPassword')->name('reset-password');
     //Deployed Assets Send to Users Via Email
     //Route::get('/admin/send-assets-email','SendAssetsEmailController@sendEmails');
     //Route::get('/admin/db-truncate','TruncateController@dbtruncate');
@@ -296,4 +301,5 @@ Route::group(['middleware' => ['web']], function() {
         return "View cache is cleared!";
     });
 });
+
 

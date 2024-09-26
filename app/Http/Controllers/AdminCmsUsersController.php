@@ -20,6 +20,9 @@ use Illuminate\Support\Facades\Input;
 use Maatwebsite\Excel\HeadingRowImport;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
+use App\Mail\EmailResetPassword;
+use Mail;
+use Illuminate\Support\Str;
 
 class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -1209,6 +1212,78 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 	public function showChangePassword(){
 		$data['page_title'] = 'Change Password';
 		return view('user-account.change-password',$data);
+	}
+
+	//RESET PASSWORD
+	public function postSendEmailResetPassword(Request $request){
+		$key = Str::random(32);
+        $iv = Str::random(16);
+        
+        $emailExist = DB::table('cms_users')->where('email',$request->email)->exists();
+        if(!$emailExist){
+			return redirect()->route('getForgot')->with('message', trans("passwords.user"), 'danger');
+		}
+        $encryptedEmail = openssl_encrypt($request->email, 'aes-256-cbc', $key, 0, $iv);
+        $encryptedEmailBase64 = base64_encode($encryptedEmail);
+
+        session(['encryption_key' => $key, 'encryption_iv' => $iv]);
+       
+        $cleanEncryptedEmail = str_replace('/', '_', $encryptedEmailBase64);
+
+		Mail::to($request->email)
+		->send(new EmailResetPassword($cleanEncryptedEmail));
+		return redirect()->route('getLogin')->with('message', trans("passwords.sent"),'success');
+	}
+
+	public function getResetView($email){
+		$data['page_title'] = 'Reset Password Form';
+		$data['email'] = $email;
+		return view('user-account.reset-password',$data);
+    }
+
+	public function postSaveResetPassword(Request $request){
+		$key = session('encryption_key');
+        $iv = session('encryption_iv');
+
+        if (!$key || !$iv) {
+            return json_encode(["message"=>"Request expired, please request another one", "status"=>"error", 'redirect'=>url('admin/login')]);
+        }
+
+        $encryptedEmail = base64_decode(str_replace('_', '/', $request->email));
+        $decryptedEmail = openssl_decrypt($encryptedEmail, 'aes-256-cbc', $key, 0, $iv);
+	
+        if ($decryptedEmail === false) {
+            return json_encode(["message"=>"Request expired, please request another one", "status"=>"error", 'redirect'=>url('admin/login')]);
+        }
+		//Check if password exist in history
+		$user = DB::table('cms_users')->where('email',$decryptedEmail)->first();
+		$passwordHistory = DB::table('cms_password_histories')->where('cms_user_id',$user->id)->get()->toArray();
+		$isExist = array_column($passwordHistory, 'cms_user_old_pass');
+
+		if(!self::checkPasswordInArray($request->get('new_password'), $isExist)) {
+			$user = Users::where('email', $decryptedEmail)->first();
+			$request->validate([
+				'new_password' => 'required',
+				'confirm_password' => 'required|same:new_password'
+			]);
+
+			$user->waiver_count = 0;
+			$user->	last_password_updated = now();
+			$user->password = Hash::make($request->get('new_password'));
+			$user->save();
+
+			DB::table('cms_password_histories')->insert([
+				'cms_user_id' => $user->id,
+				'cms_user_old_pass' => $user->password,
+				'created_at' => date('Y-m-d h:i:s')
+			]);
+
+			session()->forget('encryption_key');
+			session()->forget('encryption_iv');
+			return json_encode(["message"=>"Password successfully reset, you will be redirect to login!", "status"=>"success", 'redirect'=>url('admin/login')]);
+		}else{
+			return json_encode(["message"=>"Password not available, please try another one!"]);
+		}
 	}
 	
 }
