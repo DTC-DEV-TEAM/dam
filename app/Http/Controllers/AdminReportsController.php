@@ -9,6 +9,9 @@
 	use App\MoveOrder;
 	use App\Models\ReturnTransferAssets;
 	use App\Models\GeneratedAssetsReports;
+	use App\Models\ReportRequestAssets;
+	use App\Models\ReportDeployedAssets;
+	use App\Models\ReportReturnAssets;
 	use Maatwebsite\Excel\Facades\Excel;
 	use PhpOffice\PhpSpreadsheet\Spreadsheet;
 	use PhpOffice\PhpSpreadsheet\Reader\Exception;
@@ -21,6 +24,9 @@
 	use App\Exports\ExportReportAssetsList;
 	use Carbon\Carbon;
 	//use DataTables;
+	use Yajra\DataTables\DataTables;
+	use Illuminate\Support\Facades\Response;
+	use Rap2hpoutre\FastExcel\FastExcel;
 
 	class AdminReportsController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -333,78 +339,11 @@
 	    }
 		//customize index
 		public function getIndex(Request $request) {
-			//First, Add an auth
-			// dd(Request::all());
 			if(!CRUDBooster::isView()) CRUDBooster::redirect(CRUDBooster::adminPath(),trans('crudbooster.denied_access'));
 			
-			//Create your own query 
 			$data = [];
 			$data['page_title'] = 'Request Assets Status Reports';
-			
-			// $result_one = BodyRequest::arrayone();
-			// $result_two = ReturnTransferAssets::arraytwo();
-            // $suppliesMarketing = [];
-			// $suppliesMarketingCon = [];
-	
-			// foreach($result_one as $smVal){
-			// 	$suppliesMarketingCon['id'] = $smVal['requestid'];
-			// 	$suppliesMarketingCon['reference_number'] = $smVal['reference_number'];
-			// 	$suppliesMarketingCon['requested_by'] = $smVal['requestedby'];
-			// 	$suppliesMarketingCon['department'] = $smVal['department'] ? $smVal['department'] : $smVal['store_branch'];
-			// 	$suppliesMarketingCon['store_branch'] = $smVal['store_branch'] ? $smVal['store_branch'] : $smVal['department'];
-			// 	$suppliesMarketingCon['transaction_type'] = "REQUEST";
-			// 	$bodyStatus = $smVal['body_statuses_description'] ? $smVal['body_statuses_description'] : $smVal['status_description'];
-			// 	if(in_array($smVal['request_type_id'], [6,7])){
-			// 		$suppliesMarketingCon['status'] = $smVal['status_description'];
-			// 		$suppliesMarketingCon['description'] = $smVal['body_description'];
-			// 		$suppliesMarketingCon['request_quantity'] = $smVal['body_quantity'];
-			// 		$suppliesMarketingCon['request_type'] = $smVal['body_category_id'];
-			// 		$suppliesMarketingCon['mo_reference'] = $smVal['body_mo_so_num'];
-			// 		$suppliesMarketingCon['mo_item_code'] = $smVal['body_digits_code'];
-			// 		$suppliesMarketingCon['mo_item_description'] = $smVal['body_description'];
-			// 		$suppliesMarketingCon['mo_qty_serve_qty'] = $smVal['serve_qty'];
-			// 	}else{
-			// 		$suppliesMarketingCon['status'] = isset($smVal['mo_reference_number']) ? $smVal['mo_statuses_description'] : $bodyStatus;
-			// 		$suppliesMarketingCon['description'] = $smVal['body_description'];
-			// 		$suppliesMarketingCon['request_quantity'] = $smVal['body_quantity'];
-			// 		$suppliesMarketingCon['request_type'] = $smVal['body_category_id'];
-			// 		$suppliesMarketingCon['mo_reference'] = $smVal['mo_reference_number'];
-			// 		$suppliesMarketingCon['mo_item_code'] = $smVal['digits_code'];
-			// 		$suppliesMarketingCon['mo_item_description'] = $smVal['item_description'];
-			// 		$suppliesMarketingCon['mo_qty_serve_qty'] = $smVal['quantity'];
-			// 	}
-			// 	$suppliesMarketingCon['requested_date'] = $smVal['created_at'];
-			// 	$suppliesMarketingCon['transacted_by'] = $smVal['taggedby'];
-			// 	$suppliesMarketingCon['transacted_date'] = $smVal['transacted_date'];
-			// 	$suppliesMarketing[] = $suppliesMarketingCon;
-			// }
-
-			// $returnTransfer = [];
-			// $returnTransferCon = [];
-			// foreach($result_two as $rtVal){
-			// 	$returnTransferCon['id'] = $rtVal['requestid'];
-			// 	$returnTransferCon['reference_number'] = $rtVal['reference_no'];
-			// 	$returnTransferCon['requested_by'] = $rtVal['employee_name'];
-			// 	$returnTransferCon['department'] = $rtVal['department_name'] ? $rtVal['department_name'] : $rtVal['store_branch'];
-			// 	$returnTransferCon['store_branch'] = $rtVal['store_branch'] ? $rtVal['store_branch'] : $rtVal['department_name'];
-			// 	$returnTransferCon['status'] = $rtVal['status_description'];
-			// 	$returnTransferCon['description'] = $rtVal['description'];
-			// 	$returnTransferCon['request_quantity'] = $rtVal['quantity'];
-			// 	$returnTransferCon['transaction_type'] = $rtVal['request_type'];
-			// 	$returnTransferCon['request_type'] = $rtVal['request_name'];
-			// 	$returnTransferCon['mo_reference'] = $rtVal['reference_no'];
-			// 	$returnTransferCon['mo_item_code'] = $rtVal['digits_code'];
-			// 	$returnTransferCon['mo_item_description'] = $rtVal['description'];
-			// 	$returnTransferCon['mo_qty_serve_qty'] = $rtVal['quantity'];
-			// 	$returnTransferCon['requested_date'] = $rtVal['requested_date'];
-			// 	$returnTransferCon['transacted_by'] = $rtVal['receivedby'];
-			// 	$returnTransferCon['transacted_date'] = $rtVal['transacted_date'];
-			// 	$returnTransfer[] = $returnTransferCon;
-			// }
-			// //dd($returnTransfer);
-			// $data['finalData'] = array_merge($suppliesMarketing, $returnTransfer);
-
-			$data['categories'] = DB::table('requests')->whereIn('id', [1,5,6,7])->where('status', 'ACTIVE')
+			$data['categories'] = DB::table('requests')->whereIn('id', [1,5, 7])->where('status', 'ACTIVE')
 													   ->orderby('request_name', 'asc')
 													   ->get();
 
@@ -585,136 +524,139 @@
 
 		}
 
-		public function getReports(){
+		public function getReports(Request $request){
 			ini_set('memory_limit','-1');
             ini_set('max_execution_time', 0);
-			$result_one = BodyRequest::arrayone();
-			$assetDeployedDirectInventory = MoveOrder::arrayone();
-			$result_two = ReturnTransferAssets::arraytwo();
-            $suppliesMarketing = [];
-			$suppliesMarketingCon = [];
-			$deployedDirectToInv = [];
+			$filter = Request::all();
+			// $result_one = BodyRequest::arrayone()->count();
+			// $assetDeployedDirectInventory = MoveOrder::arrayone();
+			// $result_two = ReturnTransferAssets::arraytwo();
+		  	// $suppliesMarketing = [];
+			// $suppliesMarketingCon = [];
+			// $deployedDirectToInv = [];
+			// foreach($result_one as $smVal){
+			// 	$suppliesMarketingCon['id'] = $smVal['requestid'];
+			// 	$suppliesMarketingCon['reference_number'] = $smVal['reference_number'];
+			// 	$suppliesMarketingCon['requested_by'] = $smVal['requestedby'];
+			// 	$suppliesMarketingCon['department'] = $smVal['department'] ? $smVal['department'] : $smVal['store_branch'];
+			// 	$suppliesMarketingCon['store_branch'] = $smVal['store_branch'] ? $smVal['store_branch'] : $smVal['department'];
+			// 	$suppliesMarketingCon['transaction_type'] = "REQUEST";
+			// 	$bodyStatus = $smVal['body_statuses_description'] ? $smVal['body_statuses_description'] : $smVal['status_description'];
+			// 	if(in_array($smVal['request_type_id'], [6,7])){
+			// 		$suppliesMarketingCon['status'] = $smVal['status_description'];
+			// 		$suppliesMarketingCon['body_digits_code'] = $smVal['body_digits_code'];
+			// 		$suppliesMarketingCon['description'] = $smVal['body_description'];
+			// 		$suppliesMarketingCon['request_quantity'] = $smVal['body_quantity'];
+			// 		$suppliesMarketingCon['request_type'] = $smVal['body_category_id'];
+			// 		$suppliesMarketingCon['mo_reference'] = $smVal['body_mo_so_num'];
+			// 		$suppliesMarketingCon['mo_item_code'] = $smVal['body_digits_code'];
+			// 		$suppliesMarketingCon['mo_item_description'] = $smVal['body_description'];
+			// 		$suppliesMarketingCon['mo_qty_serve_qty'] = $smVal['serve_qty'];
+			// 	}else{
+			// 		$suppliesMarketingCon['status']              = isset($smVal['mo_reference_number']) ? $smVal['mo_statuses_description'] : $bodyStatus;
+			// 		$suppliesMarketingCon['body_digits_code']    = $smVal['body_digits_code'];
+			// 		$suppliesMarketingCon['description']         = $smVal['body_description'];
+			// 		$suppliesMarketingCon['request_quantity']    = $smVal['body_quantity'];
+			// 		$suppliesMarketingCon['request_type']        = $smVal['body_category_id'];
+			// 		$suppliesMarketingCon['mo_reference']        = $smVal['mo_reference_number'];
+			// 		$suppliesMarketingCon['mo_item_code']        = $smVal['digits_code'];
+			// 		$suppliesMarketingCon['mo_item_description'] = $smVal['item_description'];
+			// 		$suppliesMarketingCon['mo_qty_serve_qty']    = $smVal['quantity'];
+			// 	}
+			// 	$suppliesMarketingCon['requested_date']          = $smVal['created_at'];
+			// 	$suppliesMarketingCon['replenish_qty']           = $smVal['replenish_qty'];
+			// 	$suppliesMarketingCon['reorder_qty']             = $smVal['reorder_qty'];
+			// 	$suppliesMarketingCon['fulfill_qty']             = $smVal['serve_qty'];
+			// 	$suppliesMarketingCon['transacted_by']           = $smVal['taggedby'];
+			// 	$suppliesMarketingCon['transacted_date']         = $smVal['transacted_date'];
+			// 	$suppliesMarketingCon['received_by']             = $smVal['received_by'];
+			// 	$suppliesMarketingCon['received_at']             = $smVal['received_at'];
+			// 	$suppliesMarketing[] = $suppliesMarketingCon;
+			// }
+			// $deployedDirectToInvCon = [];
+			// $deployedDirectToInvFinal = [];
+			// foreach($assetDeployedDirectInventory as $ddVal){
+			// 	$deployedDirectToInvCon['id'] = $ddVal['mo_body_request'];
+			// 	$deployedDirectToInvCon['reference_number'] = NULL;
+			// 	$deployedDirectToInvCon['requested_by'] = $ddVal['requestedby'];
+			// 	$deployedDirectToInvCon['department'] = $ddVal['department'];
+			// 	$deployedDirectToInvCon['store_branch'] = $ddVal['department'];
+			// 	$deployedDirectToInvCon['transaction_type'] = "DEPLOYED VIA UPLOAD INVENTORY";
+			// 	$deployedDirectToInvCon['status']              = $ddVal['mo_statuses_description'];
+			// 	$deployedDirectToInvCon['body_digits_code']    = NULL;
+			// 	$deployedDirectToInvCon['description']         = NULL;
+			// 	$deployedDirectToInvCon['request_quantity']    = NULL;
+			// 	$deployedDirectToInvCon['request_type']        = NULL;
+			// 	$deployedDirectToInvCon['mo_reference']        = $ddVal['mo_reference_number'];
+			// 	$deployedDirectToInvCon['mo_item_code']        = $ddVal['digits_code'];
+			// 	$deployedDirectToInvCon['mo_item_description'] = $ddVal['item_description'];
+			// 	$deployedDirectToInvCon['mo_qty_serve_qty']    = $ddVal['quantity'];
+			// 	$deployedDirectToInvCon['requested_date']          = $ddVal['created_at'];
+			// 	$deployedDirectToInvCon['replenish_qty']           = NULL;
+			// 	$deployedDirectToInvCon['reorder_qty']             = NULL;
+			// 	$deployedDirectToInvCon['fulfill_qty']             = NULL;
+			// 	$deployedDirectToInvCon['transacted_by']           = NULL;
+			// 	$deployedDirectToInvCon['transacted_date']         = NULL;
+			// 	$deployedDirectToInvCon['received_by']             = NULL;
+			// 	$deployedDirectToInvCon['received_at']             = NULL;
+			// 	$deployedDirectToInvFinal[] = $deployedDirectToInvCon;
+			// }
+			// $returnTransfer = [];
+			// $returnTransferCon = [];
+			// foreach($result_two as $rtVal){
+			// 	$returnTransferCon['id']                  = $rtVal['requestid'];
+			// 	$returnTransferCon['reference_number']    = $rtVal['reference_no'];
+			// 	$returnTransferCon['requested_by']        = $rtVal['employee_name'];
+			// 	$returnTransferCon['department']          = $rtVal['department_name'] ? $rtVal['department_name'] : $rtVal['store_branch'];
+			// 	$returnTransferCon['store_branch']        = $rtVal['store_branch'] ? $rtVal['store_branch'] : $rtVal['department_name'];
+			// 	$returnTransferCon['status']              = $rtVal['status_description'];
+			// 	$returnTransferCon['body_digits_code']    = $rtVal['r_digits_code'];
+			// 	$returnTransferCon['description']         = $rtVal['description'];
+			// 	$returnTransferCon['request_quantity']    = $rtVal['quantity'];
+			// 	$returnTransferCon['transaction_type']    = $rtVal['request_type'];
+			// 	$returnTransferCon['request_type']        = $rtVal['request_name'];
+			// 	$returnTransferCon['mo_reference']        = $rtVal['reference_no'];
+			// 	$returnTransferCon['mo_item_code']        = $rtVal['digits_code'];
+			// 	$returnTransferCon['mo_item_description'] = $rtVal['description'];
+			// 	$returnTransferCon['mo_qty_serve_qty']    = $rtVal['quantity'];
+			// 	$returnTransferCon['requested_date']      = Carbon::parse($rtVal['requested_date']);
+			// 	$returnTransferCon['replenish_qty']       = NULL;
+			// 	$returnTransferCon['reorder_qty']         = NULL;
+			// 	$returnTransferCon['fulfill_qty']         = NULL;
+			// 	$returnTransferCon['transacted_by']       = $rtVal['receivedby'];
+			// 	$returnTransferCon['transacted_date']     = $rtVal['transacted_date'];
+			// 	$returnTransferCon['received_by']         = $rtVal['received_by'];
+			// 	$returnTransferCon['received_at']         = $rtVal['received_at'];
+			// 	$returnTransfer[] = $returnTransferCon;
+			// }
+			// $query = array_merge($suppliesMarketing, $returnTransfer, $deployedDirectToInvFinal);
+
+			if ($filter['datefrom'] || $filter['dateto'] || $filter['category']) {
+				$requestAssets = ReportRequestAssets::request($filter);
+				$returnAssets = ReportReturnAssets::return($filter);
+				$deployedAssets = collect(); // Initialize as an empty collection to avoid errors
+			} else {
+				$requestAssets = ReportRequestAssets::request($filter);
+				$returnAssets = ReportReturnAssets::return($filter);
+				$deployedAssets = ReportDeployedAssets::deployed();
+			}
+
+			$query = $requestAssets->merge($deployedAssets)->merge($returnAssets);
 	
-			foreach($result_one as $smVal){
-				$suppliesMarketingCon['id'] = $smVal['requestid'];
-				$suppliesMarketingCon['reference_number'] = $smVal['reference_number'];
-				$suppliesMarketingCon['requested_by'] = $smVal['requestedby'];
-				$suppliesMarketingCon['department'] = $smVal['department'] ? $smVal['department'] : $smVal['store_branch'];
-				$suppliesMarketingCon['store_branch'] = $smVal['store_branch'] ? $smVal['store_branch'] : $smVal['department'];
-				$suppliesMarketingCon['transaction_type'] = "REQUEST";
-				$bodyStatus = $smVal['body_statuses_description'] ? $smVal['body_statuses_description'] : $smVal['status_description'];
-				if(in_array($smVal['request_type_id'], [6,7])){
-					$suppliesMarketingCon['status'] = $smVal['status_description'];
-					$suppliesMarketingCon['body_digits_code'] = $smVal['body_digits_code'];
-					$suppliesMarketingCon['description'] = $smVal['body_description'];
-					$suppliesMarketingCon['request_quantity'] = $smVal['body_quantity'];
-					$suppliesMarketingCon['request_type'] = $smVal['body_category_id'];
-					$suppliesMarketingCon['mo_reference'] = $smVal['body_mo_so_num'];
-					$suppliesMarketingCon['mo_item_code'] = $smVal['body_digits_code'];
-					$suppliesMarketingCon['mo_item_description'] = $smVal['body_description'];
-					$suppliesMarketingCon['mo_qty_serve_qty'] = $smVal['serve_qty'];
-				}else{
-					$suppliesMarketingCon['status']              = isset($smVal['mo_reference_number']) ? $smVal['mo_statuses_description'] : $bodyStatus;
-					$suppliesMarketingCon['body_digits_code']    = $smVal['body_digits_code'];
-					$suppliesMarketingCon['description']         = $smVal['body_description'];
-					$suppliesMarketingCon['request_quantity']    = $smVal['body_quantity'];
-					$suppliesMarketingCon['request_type']        = $smVal['body_category_id'];
-					$suppliesMarketingCon['mo_reference']        = $smVal['mo_reference_number'];
-					$suppliesMarketingCon['mo_item_code']        = $smVal['digits_code'];
-					$suppliesMarketingCon['mo_item_description'] = $smVal['item_description'];
-					$suppliesMarketingCon['mo_qty_serve_qty']    = $smVal['quantity'];
-				}
-				$suppliesMarketingCon['requested_date']          = $smVal['created_at'];
-				$suppliesMarketingCon['replenish_qty']           = $smVal['replenish_qty'];
-				$suppliesMarketingCon['reorder_qty']             = $smVal['reorder_qty'];
-				$suppliesMarketingCon['fulfill_qty']             = $smVal['serve_qty'];
-				$suppliesMarketingCon['transacted_by']           = $smVal['taggedby'];
-				$suppliesMarketingCon['transacted_date']         = $smVal['transacted_date'];
-				$suppliesMarketingCon['received_by']             = $smVal['received_by'];
-				$suppliesMarketingCon['received_at']             = $smVal['received_at'];
-				$suppliesMarketing[] = $suppliesMarketingCon;
-			}
-
-			$deployedDirectToInvCon = [];
-			$deployedDirectToInvFinal = [];
-			foreach($assetDeployedDirectInventory as $ddVal){
-				$deployedDirectToInvCon['id'] = $ddVal['mo_body_request'];
-				$deployedDirectToInvCon['reference_number'] = NULL;
-				$deployedDirectToInvCon['requested_by'] = $ddVal['requestedby'];
-				$deployedDirectToInvCon['department'] = $ddVal['department'];
-				$deployedDirectToInvCon['store_branch'] = $ddVal['department'];
-				$deployedDirectToInvCon['transaction_type'] = "DEPLOYED VIA UPLOAD INVENTORY";
-				$deployedDirectToInvCon['status']              = $ddVal['mo_statuses_description'];
-				$deployedDirectToInvCon['body_digits_code']    = NULL;
-				$deployedDirectToInvCon['description']         = NULL;
-				$deployedDirectToInvCon['request_quantity']    = NULL;
-				$deployedDirectToInvCon['request_type']        = NULL;
-				$deployedDirectToInvCon['mo_reference']        = $ddVal['mo_reference_number'];
-				$deployedDirectToInvCon['mo_item_code']        = $ddVal['digits_code'];
-				$deployedDirectToInvCon['mo_item_description'] = $ddVal['item_description'];
-				$deployedDirectToInvCon['mo_qty_serve_qty']    = $ddVal['quantity'];
-				$deployedDirectToInvCon['requested_date']          = $ddVal['created_at'];
-				$deployedDirectToInvCon['replenish_qty']           = NULL;
-				$deployedDirectToInvCon['reorder_qty']             = NULL;
-				$deployedDirectToInvCon['fulfill_qty']             = NULL;
-				$deployedDirectToInvCon['transacted_by']           = NULL;
-				$deployedDirectToInvCon['transacted_date']         = NULL;
-				$deployedDirectToInvCon['received_by']             = NULL;
-				$deployedDirectToInvCon['received_at']             = NULL;
-				$deployedDirectToInvFinal[] = $deployedDirectToInvCon;
-			}
-
-			$returnTransfer = [];
-			$returnTransferCon = [];
-			foreach($result_two as $rtVal){
-				$returnTransferCon['id']                  = $rtVal['requestid'];
-				$returnTransferCon['reference_number']    = $rtVal['reference_no'];
-				$returnTransferCon['requested_by']        = $rtVal['employee_name'];
-				$returnTransferCon['department']          = $rtVal['department_name'] ? $rtVal['department_name'] : $rtVal['store_branch'];
-				$returnTransferCon['store_branch']        = $rtVal['store_branch'] ? $rtVal['store_branch'] : $rtVal['department_name'];
-				$returnTransferCon['status']              = $rtVal['status_description'];
-				$returnTransferCon['body_digits_code']    = $rtVal['r_digits_code'];
-				$returnTransferCon['description']         = $rtVal['description'];
-				$returnTransferCon['request_quantity']    = $rtVal['quantity'];
-				$returnTransferCon['transaction_type']    = $rtVal['request_type'];
-				$returnTransferCon['request_type']        = $rtVal['request_name'];
-				$returnTransferCon['mo_reference']        = $rtVal['reference_no'];
-				$returnTransferCon['mo_item_code']        = $rtVal['digits_code'];
-				$returnTransferCon['mo_item_description'] = $rtVal['description'];
-				$returnTransferCon['mo_qty_serve_qty']    = $rtVal['quantity'];
-				$returnTransferCon['requested_date']      = Carbon::parse($rtVal['requested_date']);
-				$returnTransferCon['replenish_qty']       = NULL;
-				$returnTransferCon['reorder_qty']         = NULL;
-				$returnTransferCon['fulfill_qty']         = NULL;
-				$returnTransferCon['transacted_by']       = $rtVal['receivedby'];
-				$returnTransferCon['transacted_date']     = $rtVal['transacted_date'];
-				$returnTransferCon['received_by']         = $rtVal['received_by'];
-				$returnTransferCon['received_at']         = $rtVal['received_at'];
-				$returnTransfer[] = $returnTransferCon;
-			}
-
-			//dd($suppliesMarketing, $returnTransfer);
-	
-			$data['finalData'] = array_merge($suppliesMarketing, $returnTransfer, $deployedDirectToInvFinal);
-
-			return datatables($data['finalData'])
+			$dt = new DataTables();
+			return $dt->collection($query)
 			->addIndexColumn()
 			->addColumn('action', function($row){
-                if($row['transaction_type'] === "RETURN" || $row['transaction_type'] === "TRANSFER"){
-					$actionBtn = '<a class="btn btn-primary btn-xs" href="'.CRUDBooster::adminpath("return_transfer_assets_header/detail/".$row["id"]).'"><i class="fa fa-eye"></i></a>';
+                if($row->transaction_type === "RETURN" || $row->transaction_type === "TRANSFER"){
+					$actionBtn = '<a class="btn btn-primary btn-xs" href="'.CRUDBooster::adminpath("return_transfer_assets_header/detail/".$row->id).'"><i class="fa fa-eye"></i></a>';
 				}else{
-					$actionBtn = '<a class="btn btn-primary btn-xs" href="'.CRUDBooster::adminpath("request_history/detail/".$row["id"]).'"><i class="fa fa-eye"></i></a>';
+					$actionBtn = '<a class="btn btn-primary btn-xs" href="'.CRUDBooster::adminpath("request_history/detail/".$row->id).'"><i class="fa fa-eye"></i></a>';
 				}
 				
 				return $actionBtn;
 			})
-			->editColumn('requested_date', function ($row) {
-				return [
-				   'display' => e($row['requested_date']->format('Y-m-d')),
-				];
-			 })
 			->rawColumns(['action'])
-			->make(true);
+			->toJson();
 		}
 
 		public function getGeneratedReports(){
@@ -730,5 +672,52 @@
 			return Excel::download(new ExportReportAssetsList, $filename.'.xlsx');
 		}
 
+		public function exportFilterReport(Request $request) {
+			$filter = Request::all();
+			$filename = $filter['filename'].'.csv';
+			
+			if (isset($filter['datefrom']) || isset($filter['dateto']) || isset($filter['category'])) {
+				$requestAssets = ReportRequestAssets::request($filter);
+				$returnAssets = ReportReturnAssets::return($filter);
+				$deployedAssets = collect(); // Initialize as an empty collection to avoid errors
+			} else {
+				$requestAssets = ReportRequestAssets::request($filter);
+				$returnAssets = ReportReturnAssets::return($filter);
+				$deployedAssets = ReportDeployedAssets::deployed();
+			}
+
+			$report = $requestAssets->merge($deployedAssets)->merge($returnAssets);
+
+			$report->transform(function($item){
+				return [
+					'Status' => $item->status,
+					'Reference Number' => $item->reference_number,
+					'Digits Code' => $item->digits_code,
+					'Description' => $item->description,
+					'Request Quantity' => $item->request_quantity,
+					'Transaction Type' => $item->transaction_type,
+					'Request Type' => $item->request_type,
+					'Requested By' => $item->requested_by,
+					'Department' => $item->department,
+					'Coa' => $item->coa,
+					'Store Branch' => $item->store_branch,
+					'Replenish Qty' => $item->replenish_qty,
+					'Reorder Qty' => $item->reorder_qty,
+					'Fulfill Qty' => $item->fulfill_qty,
+					'Mo Reference' => $item->mo_reference,
+					'Mo Item_code' => $item->item_code,
+					'Mo Item Description' => $item->mo_item_description,
+					'Mo Qty Serve Qty' => $item->mo_qty_serve_qty,
+					'Requested Date' => $item->requested_date,
+					'Transacted By' => $item->transacted_by,
+					'Transacted Date' => $item->transacted_date,
+					'Received By' => $item->received_by,
+					'Received At' => $item->received_at
+				];
+			});
+	
+			return (new FastExcel($report))->download($filename);	
+		
+		}
 
 	}

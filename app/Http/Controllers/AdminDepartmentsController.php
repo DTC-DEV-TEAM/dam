@@ -37,7 +37,7 @@
 			# START COLUMNS DO NOT REMOVE THIS LINE
 			$this->col = [];
 			$this->col[] = ["label"=>"Department Name","name"=>"department_name"];
-			//$this->col[] = ["label"=>"COA","name"=>"coa_id"];
+			$this->col[] = ["label"=>"COA","name"=>"coa_id"];
 			$this->col[] = ["label"=>"Status","name"=>"status"];
 			//$this->col[] = ["label" => "Created By", "name" => "created_by", "join" => "cms_users,name"];
 			$this->col[] = ["label" => "Created At", "name" => "created_at"];
