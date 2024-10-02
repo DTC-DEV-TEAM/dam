@@ -28,6 +28,33 @@
             .select2-selection__arrow {
                 height: 34px !important;
             }
+
+              /* Custom loading spinner */
+            .spinner {
+                display: none;
+                margin: 0 auto;
+                width: 40px;
+                height: 40px;
+                border: 6px solid #ccc;
+                border-top: 6px solid #1d72b8;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+
+            .span_processing{
+                font-size: 1em;
+                font-weight: bold;
+            }
+
+            .dataTables_wrapper .dataTables_processing {
+                height: 100px !important;
+                opacity: 5 !important;
+            }
     
         </style>
     @endpush
@@ -69,10 +96,15 @@
             <!-- <button type="button" id="btn-export" class="btn btn-primary btn-sm btn-export" style="margin-bottom:10px"><i class="fa fa-download"></i>
                 <span>Export Data</span>
             </button> -->
-            <button type="button" id="btn-export" class="btn btn-primary btn-sm btn-export" data-toggle="modal" data-target="#myModal" style="margin-bottom:10px"><i class="fa fa-search"></i>
-             <span>Export Filter</span>
-            </button>
-            <table class='table table-hover table-striped table-bordered' id="table_dashboard">
+            <div class="clearfix" style="margin-bottom:8px">
+                <button type="button" id="btn-export" class="btn btn-primary btn-sm btn-export" data-toggle="modal" data-target="#myModal" style="margin-bottom:10px"><i class="fa fa-search"></i>
+                <span>Export Filter</span>
+                </button>
+                <a href="javascript:showSalesFilteredReportExport()" style="display: none" id="export-filtered-sales" class="btn btn-primary btn-sm" style="margin-bottom:10px">
+                    <i class="fa fa-download"></i> <span>Export Filtered Sales</span>
+                </a>
+            </div>
+            <table class='table table-hover table-striped table-bordered' id="table-dashboard">
             
                 <thead>
                     <tr class="active">
@@ -86,6 +118,7 @@
                         <th width="auto">Request Type</th>
                         <th width="auto">Requested By</th>
                         <th width="auto">Department</th>
+                        <th width="auto">Coa</th>
                         <th width="auto">Store Branch</th>
                         <th width="auto">Replenish Qty</th>
                         <th width="auto">Re Order Qty</th>
@@ -95,9 +128,6 @@
                         <th width="auto">MO Item Description</th>
                         <th width="auto">MO QTY/Serve QTY</th>
                         <th width="auto">Requested Date</th>
-                        {{-- <th width="auto">Recommended By</th>
-                        <th width="auto">Recommended At</th>
-                        <th width="auto">IT Comments</th> --}}
                         <th width="auto">Transacted By</th>
                         <th width="auto">Transacted Date</th>
                         <th width="auto">Received By</th>
@@ -108,12 +138,7 @@
                 <tbody>
                 
                 </tbody>
-                <tfoot>
-                    <th><strong>Total:</strong></th>
-                    <?php for($x=1;$x<=4;$x++): ?>
-                        <th></th>
-                    <?php endfor;?>
-                </tfoot>
+
             </table>
         </div>                 
         </div>
@@ -131,7 +156,7 @@
                             <h3 class="modal-title text-center" id="exportModalLabel">Filter Export</h3>
                     </div>
                     <div class="modal-body">
-                        <form  id="filterForm" method='post' target='_blank' name="filterForm" action="{{route('request-search')}}">
+                        <form  method='post'>
                             <input type="hidden" value="{{csrf_token()}}" name="_token" id="token">
                             <input type="hidden" value="1" name="overwrite" id="overwrite">
                             <div class="row">
@@ -172,6 +197,38 @@
         </div>
         <!-- Modal Edit End-->
 
+        <div class='modal fade' tabindex='-1' role='dialog' id='export-filtered-report'>
+            <div class='modal-dialog'>
+                <div class='modal-content'>
+                    <div class='modal-header'>
+                        <button class='close' aria-label='Close' type='button' data-dismiss='modal'>
+                            <span aria-hidden='true'>×</span></button>
+                        <h4 class='modal-title'><i class='fa fa-download'></i> Download Report</h4>
+                    </div>
+        
+                    {{-- <form method='post' target='_blank' id="exportForm"> --}}
+                <form method='post' target='_blank' action="{{ route('report-filter-export') }}">
+                    <input type='hidden' name='_token' value="{{ csrf_token()}}">
+                    <input type='hidden' name='datefrom' id="date_from">
+                    <input type='hidden' name='dateto' id="date_to">
+                    <input type='hidden' name='category' id="category_id">
+                    {!! CRUDBooster::getUrlParameters() !!}
+                    <div class='modal-body'>
+                        <div class='form-group'>
+                            <label>File Name</label>
+                            <input type='text' name='filename' class='form-control' required value="Export {{ CRUDBooster::getCurrentModule()->name }} - {{ date('Y-m-d H:i:s')}}"/>
+                        </div>
+                    </div>
+                    <div class='modal-footer' align='right'>
+                        <button class='btn btn-default' type='button' data-dismiss='modal'>Close</button>
+                        {{-- <button class='btn btn-primary btn-submit' type='submit' id="exportBtn">Submit</button> --}}
+                        <button class='btn btn-primary btn-submit' type='submit'><i class='fa fa-download'></i> Download</button>
+                    </div>
+                </form>
+                </div>
+            </div>
+        </div>
+
 
 </div>
 
@@ -189,144 +246,172 @@
     </script>
 
     <script type="text/javascript">
-        $(function(){
-            $('body').addClass("sidebar-collapse");
-        });
-       var table;
-       $(document).ready(function() {
-        let targetColumns = [4]
-           table = $("#table_dashboard").DataTable({
-                ordering:false,
-                language: {
-                    searchPlaceholder: "Search"
-                },
-                lengthMenu: [
-                    [10, 25, 50, 100, -1],
-                    [10, 25, 50, 100, "All"],
-                    ],
-                buttons: [
-                    {
-                        extend: "excel",
-                        title: "Request Assets Report",
-                        exportOptions: {
-                        columns: ":not(.not-export-column)",
-                        columns: ":gt(0)",
-                            modifier: {
-                            page: "current",
-                        }
-                        },
-                    },
-                    ],
+    $(function(){
+        $('body').addClass("sidebar-collapse");
+    });
 
+    $(document).ready(function() {
+        load_data();
+
+        function load_data(start_date = '', end_date = '', category = '') {
+            $("#table-dashboard").DataTable({
+                    ordering:false,
                     processing: true,
                     serverSide: true,
-                    ajax: '{{ route("api.reports.index") }}',
-                    columns : [
-                        {data: 'action'},
-                        {data: 'status'},
-                        {data: 'reference_number'},
-                        {data: 'body_digits_code'}, 
-                        {data: 'description'},  
-                        {data: 'request_quantity'},
-                        {data: 'transaction_type'},  
-                        {data: 'request_type'},
-                        {data: 'requested_by'},     
-                        {data: 'department'},                                                                
-                        {data: 'store_branch'},  
-                        {data: 'replenish_qty'},  
-                        {data: 'reorder_qty'},  
-                        {data: 'fulfill_qty'},  
-                        {data: 'mo_reference'},  
-                        {data: 'mo_item_code'},  
-                        {data: 'mo_item_description'},  
-                        {data: 'mo_qty_serve_qty'},  
-                        {
-                            data: 'requested_date',
-                            type: 'num',
-                            render: {
-                                _: 'display',
-                            }
-                        }, 
-                       
-                        // {data: 'recommended_by'},  
-                        // {data: 'recommended_at'},  
-                        // {data: 'it_comments'},  
-                        {data: 'transacted_by'},  
-                        {data: 'transacted_date'},  
-                        {data: 'received_by'},  
-                        {data: 'received_at'},  
-                ],
-                columnDefs: [{
-                    targets: [1],
-                            render : function (data, type, row) {
-                              	if(row.status == "FOR APPROVAL"){
-                                    return '<label class="label label-warning" style="align:center">'+row.status+'</label>';
-                                }else if(row.status == "CLOSED"){
-                                    return '<label class="label label-success" style="align:center">'+row.status+'</label';
-                                }else if(row.status == "CANCELLED" || row.status == "REJECTED"){
-                                    return '<label class="label label-danger" style="align:center">'+row.status+'</label';
-                                }else{
-                                    return '<label class="label label-info" style="align:center">'+row.status+'</label';
-                                }
-                    
+                    language: {
+                        processing: '<div class="spinner" id="spinner"></div> <span class="span_processing">Processing... Please wait...</span>' // Custom processing text with spinner
                     },
-                    // targets : targetColumns,
-                    // render(v){
-                    //     return (+v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})
+                    order: [[0, 'desc']],
+                    pageLength: 10,
+                    lengthMenu: [10, 25, 50, 100],
+
+                    ajax: {
+                        url: '{{ route("api.reports.index") }}',
+                        data: {
+                            datefrom: start_date,
+                            dateto: end_date,
+                            category: category
+                        },
+                        beforeSend: function() {
+                            $('#spinner').show(); // Show spinner before the request
+                        },
+                        complete: function() {
+                            $('#spinner').hide(); // Hide spinner after the request completes
+                        }
+                    },
+                    columns : [
+                            {data: 'action'},
+                            {data: 'status', name:'status'},
+                            {data: 'reference_number', name: 'reference_number'},
+                            {data: 'digits_code', name: 'digits_code',}, 
+                            {data: 'description', name: 'description'},  
+                            {data: 'request_quantity', name: 'request_quantity'},
+                            {data: 'transaction_type', name: 'transaction_type'},  
+                            {data: 'request_type', name: 'request_type'},
+                            {data: 'requested_by', name: 'requested_by'},     
+                            {data: 'department', name: 'department'}, 
+                            {data: 'coa', name: 'coa'},                                                                
+                            {data: 'store_branch', name: 'store_branch'},  
+                            {data: 'replenish_qty', name: 'replenish_qty'},  
+                            {data: 'reorder_qty', name: 'reorder_qty'},  
+                            {data: 'fulfill_qty', name: 'fulfill_qty'},  
+                            {data: 'mo_reference', name: 'mo_reference'},  
+                            {data: 'mo_item_code', name: 'mo_item_code'},  
+                            {data: 'mo_item_description', name: 'mo_item_description'},  
+                            {data: 'mo_qty_serve_qty', name: 'mo_qty_serve_qty'},  
+                            {
+                                data: 'requested_date',
+                                name: 'requested_date',
+                            }, 
+                        
+                            {data: 'transacted_by', name: 'transacted_by'},  
+                            {data: 'transacted_date', name: 'transacted_date'},  
+                            {data: 'received_by', name: 'received_by'},  
+                            {data: 'received_at', name: 'received_at'}
+                    ],
+                    columnDefs: [{
+                        targets: [1],
+                                render : function (data, type, row) {
+                                    if(row.status == "FOR APPROVAL"){
+                                        return '<label class="label label-warning" style="align:center">'+row.status+'</label>';
+                                    }else if(row.status == "CLOSED"){
+                                        return '<label class="label label-success" style="align:center">'+row.status+'</label';
+                                    }else if(row.status == "CANCELLED" || row.status == "REJECTED"){
+                                        return '<label class="label label-danger" style="align:center">'+row.status+'</label';
+                                    }else{
+                                        return '<label class="label label-info" style="align:center">'+row.status+'</label';
+                                    }
+                        
+                        },
+                        // targets : targetColumns,
+                        // render(v){
+                        //     return (+v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})
+                        // }
+            
+                    }],
+                        
+                    // footerCallback : function ( row, data, start, end, display ) {
+                    //     var api = this.api();
+                    //     api.columns(targetColumns, {
+                    //         page: 'current'
+                    //     }).every(function() {
+                    //         var sum = this.data().reduce(function(a, b) {
+                    //             var x = parseFloat(a) || 0;
+                    //             var y = parseFloat(b) || 0;
+                    //             return x + y;
+                    //         }, 0);
+                    //         $(this.footer()).html(sum.toLocaleString(undefined,{
+                    //             minimumFractionDigits: 2,
+                    //             maximumFractionDigits: 2
+                    //         }));
+                    //     });
                     // }
         
-                }],
                     
-                // footerCallback : function ( row, data, start, end, display ) {
-                //     var api = this.api();
-                //     api.columns(targetColumns, {
-                //         page: 'current'
-                //     }).every(function() {
-                //         var sum = this.data().reduce(function(a, b) {
-                //             var x = parseFloat(a) || 0;
-                //             var y = parseFloat(b) || 0;
-                //             return x + y;
-                //         }, 0);
-                //         $(this.footer()).html(sum.toLocaleString(undefined,{
-                //             minimumFractionDigits: 2,
-                //             maximumFractionDigits: 2
-                //         }));
-                //     });
-                // }
-     
+                });
+            
+                // $("#btn-export").on("click", function () {
+                //     table.button(".buttons-excel").trigger();
+                // });
+
+                $('#erf_number,#status, #category').select2({})
+                $(".date").datetimepicker({
+                        viewMode: "days",
+                        format: "YYYY-MM-DD",
+                        dayViewHeaderFormat: "MMMM YYYY",
+                });
+
+                // $('#btnExport').click(function(event) {
+                //     event.preventDefault();
+                //     var from = $('#from').val();
+                //     var to = $('#to').val();
+                //     if(from > to){
+                //         swal({
+                //             type: 'error',
+                //             title: 'Invalid Date of Range',
+                //             icon: 'error',
+                //             confirmButtonColor: "#367fa9",
+                //         }); 
+                //         event.preventDefault(); // cancel default behavior
+                //         return false;
+                //     }else{
+                //         $('#filterForm').submit(); 
+                //     }
                 
-            });
-          
-            // $("#btn-export").on("click", function () {
-            //     table.button(".buttons-excel").trigger();
-            // });
+                // });
+        }
 
-            $('#erf_number,#status, #category').select2({})
-            $(".date").datetimepicker({
-                    viewMode: "days",
-                    format: "YYYY-MM-DD",
-                    dayViewHeaderFormat: "MMMM YYYY",
-            });
-
-            $('#btnExport').click(function(event) {
-                event.preventDefault();
-                var from = $('#from').val();
-                var to = $('#to').val();
-                if(from > to){
-                    swal({
-                        type: 'error',
-                        title: 'Invalid Date of Range',
-                        icon: 'error',
-                        confirmButtonColor: "#367fa9",
-                    }); 
-                    event.preventDefault(); // cancel default behavior
-                    return false;
-                }else{
-                    $('#filterForm').submit(); 
+        $('#btnExport').off('click').on('click', function(e) {
+            e.preventDefault();
+            var start_date = $('#from').val();
+            var end_date = $('#to').val();
+            var category_id = $('#category').val();
+            $('#date_from').val(start_date);
+            $('#date_to').val(end_date);
+            $('#category_id').val(category_id);
+            $('#myModal').modal('hide');
+            if (start_date > end_date) {
+                swal({
+                    type: 'error',
+                    title: 'Invalid Date of Range',
+                    icon: 'error',
+                    confirmButtonColor: "#367fa9"
+                }); 
+            } else {
+                $('#btn-export').hide();
+                $('#export-filtered-sales').show();
+                if ($.fn.DataTable.isDataTable('#table-dashboard')) {
+                    $('#table-dashboard').DataTable().destroy();
                 }
-               
-            });
+                load_data(start_date, end_date, category_id); 
+            }
         });
+
+    });
+
+    function showSalesFilteredReportExport() {
+        $('#export-filtered-report').modal('show');
+    }
  
     </script>
 @endpush

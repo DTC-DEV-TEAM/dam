@@ -12,7 +12,7 @@ use App\Http\Controllers\AdminAssetsInventoryBodyController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::get('/admin/reports/request-reports', 'AdminReportsController@getReports')->name('api.reports.index');
+// Route::any('/admin/reports/request-reports', 'AdminReportsController@getReports')->name('api.reports.index');
 Route::get('/admin/reports/request-reports-search', 'AdminReportsController@getGeneratedReports')->name('api.searched.reports');
 
 //Route::get('/admin/reports/search-approved', 'AdminReportsController@searchApplicant')->name('api.reports.approved');

@@ -298,6 +298,8 @@ Route::group(['middleware' => ['web','\crocodicstudio\crudbooster\middlewares\CB
     Route::post('/admin/positions/upload-positions','AdminPositionsController@positionsUpload')->name('upload-positions');
     Route::get('/admin/positions/upload-positions-template','AdminPositionsController@uploadpositionsTemplate');
 
+    Route::any('/admin/reports/request-reports', 'AdminReportsController@getReports')->name('api.reports.index');
+    Route::post('/admin/reports/export-filter','AdminReportsController@exportFilterReport')->name('report-filter-export');
     //Deployed Assets Send to Users Via Email
     //Route::get('/admin/send-assets-email','SendAssetsEmailController@sendEmails');
     //Route::get('/admin/db-truncate','TruncateController@dbtruncate');
