@@ -13,6 +13,7 @@ class ReportReturnAssets extends Model
         $to = $fields['dateto'];
         $category = $fields['category'];
         $query->select(
+                        'requestid as header_id',
                         'requestid as id',
                         'status as status',
                         'reference_number as reference_number',

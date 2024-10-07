@@ -10,6 +10,7 @@ class ReportDeployedAssets extends Model
 
     public function scopeDeployed($query){
         return $query->select(
+                            'id as header_id',
                             'id as id',
                             'status as status',
                             'reference_number as reference_number',

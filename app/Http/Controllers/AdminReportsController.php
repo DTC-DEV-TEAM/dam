@@ -640,9 +640,8 @@
 				$returnAssets = ReportReturnAssets::return($filter);
 				$deployedAssets = ReportDeployedAssets::deployed();
 			}
-
+			
 			$query = $requestAssets->merge($deployedAssets)->merge($returnAssets);
-	
 			$dt = new DataTables();
 			return $dt->collection($query)
 			->addIndexColumn()
@@ -650,7 +649,7 @@
                 if($row->transaction_type === "RETURN" || $row->transaction_type === "TRANSFER"){
 					$actionBtn = '<a class="btn btn-primary btn-xs" href="'.CRUDBooster::adminpath("return_transfer_assets_header/detail/".$row->id).'"><i class="fa fa-eye"></i></a>';
 				}else{
-					$actionBtn = '<a class="btn btn-primary btn-xs" href="'.CRUDBooster::adminpath("request_history/detail/".$row->id).'"><i class="fa fa-eye"></i></a>';
+					$actionBtn = '<a class="btn btn-primary btn-xs" href="'.CRUDBooster::adminpath("request_history/detail/".$row->header_id).'"><i class="fa fa-eye"></i></a>';
 				}
 				
 				return $actionBtn;
