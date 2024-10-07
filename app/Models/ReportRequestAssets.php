@@ -12,7 +12,7 @@ class ReportRequestAssets extends Model
         $from = $fields['datefrom'];
         $to = $fields['dateto'];
         $category = $fields['category'];
-        $query->select('body_request_id as id',
+        $query->select('header_id as id',
                        'status as status',
                        'reference_number as reference_number',
                        'body_digits_code as digits_code',
