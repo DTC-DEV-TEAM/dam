@@ -85,6 +85,8 @@ Route::group(['middleware' => ['web','\crocodicstudio\crudbooster\middlewares\CB
     //Cancel Request
     Route::post(config('crudbooster.ADMIN_PATH').'/header_request/cancel-arf-request','AdminHeaderRequestController@cancelArfRequest')->name('cancel-arf-request');
     Route::post(config('crudbooster.ADMIN_PATH').'/header_request/cancel-arf-mo-perline-request','AdminHeaderRequestController@cancelArfMoPerLineRequest')->name('cancel-arf-mo-perline-request');
+    //SUB DEPARTMENT
+    Route::post(config('crudbooster.ADMIN_PATH').'/header_request/sub_department','AdminHeaderRequestController@subDepartment')->name('get-sub-department');
 
     //Temporary Update Status
     Route::get('/admin/header_request/status-update-upload','AdminHeaderRequestController@UploadStatus');
