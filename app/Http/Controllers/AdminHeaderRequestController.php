@@ -32,6 +32,7 @@
         public function __construct() {
 			$this->middleware('check.orderschedule',['only' => ['getAddRequisitionSupplies']]);
 			DB::getDoctrineSchemaManager()->getDatabasePlatform()->registerDoctrineTypeMapping("enum", "string");
+			$this->managerial = [11,12,14,15,24];
 		}
 
 		private static $apiContext; 
@@ -438,10 +439,15 @@
 			$fields = Request::all();
 
 			if(!in_array(CRUDBooster::myPrivilegeId(), [8])){
-				if(!$fields['coa']){
-					CRUDBooster::redirect(CRUDBooster::mainpath(), 'Coa required!', 'danger');
+				if(!$fields['sub_department']){
+					CRUDBooster::redirect(CRUDBooster::mainpath(), 'Sub department required!', 'danger');
 				}
-				$coaId = DB::table('sub_department')->where('id', $fields['coa'])->value('id');
+				$isExistcoaId = DB::table('sub_department')->where('id', $fields['sub_department'])->value('coa_id');
+				if(!$isExistcoaId){
+					CRUDBooster::redirect(CRUDBooster::mainpath(), "Missing coa id in your Sub Department!", 'danger');
+				}else{
+					$coaId = $isExistcoaId; 
+				}
 			}
 
 			$purpose 			= $fields['purpose'];
@@ -459,7 +465,7 @@
 			$reference_number	= "ARF-".$header_ref;
 			$employees          = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
 			
-			if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15,24])){ 
+			if(in_array(CRUDBooster::myPrivilegeId(), $this->managerial)){ 
 				$postdata['status_id']              = self::For_move_order;
 				$postdata['approved_by'] 		    = CRUDBooster::myId();
 				$postdata['approved_at'] 		    = date('Y-m-d H:i:s');	
@@ -526,7 +532,7 @@
 				}
 	
 				$app_count++;
-				if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15,24])){ 
+				if(in_array(CRUDBooster::myPrivilegeId(), $this->managerial)){ 
 					if($category_id[$x] == "IT ASSETS"){
 						HeaderRequest::where('id', $arf_header->id)->update([
 							'to_reco'=> 1
@@ -568,7 +574,7 @@
 			
 			    //manager replenishment
 				$arf_body = BodyRequest::where(['header_request_id' => $arf_header->id])->whereNull('deleted_at')->get();
-				if(in_array(CRUDBooster::myPrivilegeId(), [11,12,14,15,24])){ 
+				if(in_array(CRUDBooster::myPrivilegeId(), $this->managerial)){ 
 					if(in_array($request_type_id, [7])){
 						//Get the inventory value per digits code
 						$arraySearch = DB::table('assets_supplies_inventory')->select('*')->get()->toArray();
@@ -838,15 +844,15 @@
 			$this->cbLoader();
 			$data['page_title'] = 'Create New FA Request';
 			$data['conditions'] = DB::table('condition_type')->where('status', 'ACTIVE')->get();
-			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
 			$data['stores'] = DB::table('stores')->where('status', 'ACTIVE')->get();
-			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
 			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
 			$data['employeeinfos'] = DB::table('cms_users')
 										 ->leftjoin('positions', 'cms_users.position_id', '=', 'positions.id')
 										 ->leftjoin('departments', 'cms_users.department_id', '=', 'departments.id')
 										 ->select( 'cms_users.*', 'positions.position_description as position_description', 'departments.department_name as department_name')
 										 ->where('cms_users.id', $data['user']->id)->first();
+			$departmentList = array_map('intval',explode(",",$data['user']->department_id));
+			$data['departments'] = DB::table('departments')->whereIn('id',$departmentList)->where('status', 'ACTIVE')->get();
 			$data['categories'] = DB::table('category')->whereIn('id', [4])->where('category_status', 'ACTIVE')
 													   ->orderby('category_description', 'asc')
 													   ->get();
@@ -878,16 +884,15 @@
 			$this->cbLoader();
 			$data['page_title'] = 'Create New Marketing Material Request';
 			$data['conditions'] = DB::table('condition_type')->where('status', 'ACTIVE')->get();
-			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
 			$data['stores'] = DB::table('stores')->where('status', 'ACTIVE')->get();
-			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
 			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
 			$data['employeeinfos'] = DB::table('cms_users')
 										 ->leftjoin('positions', 'cms_users.position_id', '=', 'positions.id')
 										 ->leftjoin('departments', 'cms_users.department_id', '=', 'departments.id')
 										 ->select( 'cms_users.*', 'positions.position_description as position_description', 'departments.department_name as department_name')
 										 ->where('cms_users.id', $data['user']->id)->first();
-			
+			$departmentList = array_map('intval',explode(",",$data['user']->department_id));
+			$data['departments'] = DB::table('departments')->whereIn('id',$departmentList)->where('status', 'ACTIVE')->get();
 			$data['categories'] = DB::table('category')->where('id', 4)->where('category_status', 'ACTIVE')
 													   ->orderby('category_description', 'asc')
 													   ->get();

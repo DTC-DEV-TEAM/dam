@@ -117,7 +117,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label require">{{ trans('message.form-label.department') }}</label>
-                            <input type="text" class="form-control finput"  id="department" name="department"  required readonly value="{{$employeeinfos->department_name}}">
+                            <input type="text" class="form-control finput"  name="department"  required readonly value="{{$employeeinfos->department_name}}">
                         </div>
                     </div>
                     <div class="row">
@@ -135,7 +135,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label require">{{ trans('message.form-label.department') }}</label> 
-                        <select required id="department" name="department" class="form-select select2" style="width:100%;">
+                        <select required id="department_id" name="department" class="form-select select2" style="width:100%;">
                             @foreach($departments as $res)
                                 <option value="{{ $res->id }}">{{ $res->department_name }}</option>
                             @endforeach
@@ -307,10 +307,10 @@
         };
         setTimeout("preventBack()", 0);
         $(document).ready(function() {
-            $('#department').trigger('change');  
+            $('#department_id').trigger('change');  
             $('#sub_department').attr('disabled',true);
         });
-        $('#department').select2({});
+        $('#department_id').select2({});
         $('#sub_department').select2({});
         var tableRow = 1;
 
@@ -348,7 +348,7 @@
         });
 
         //Sub Department
-        $('#department').change(function(){
+        $('#department_id').change(function(){
             var dept_id =  this.value;
             $.ajax
             ({ 
@@ -787,6 +787,15 @@
                     }); 
                     event.preventDefault(); // cancel default behavior
                 }else{
+                    if ($('#department_id').val() === "") {
+                        swal({
+                            type: 'error',
+                            title: 'Department is required!',
+                            icon: 'error',
+                            confirmButtonColor: "#367fa9",
+                        }); 
+                        event.preventDefault(); // cancel default behavior
+                    }
                     if($('#sub-department').is(":visible")){
                         if($('#sub_department').val() === ""){
                             swal({

@@ -1,9 +1,9 @@
 <?php namespace App\Http\Controllers;
 
-	use Session;
-	use Request;
-	use DB;
-	use CRUDBooster;
+use Request;
+use App\Exports\ExportSubDepartment;
+use CRUDBooster;
+use Maatwebsite\Excel\Facades\Excel;
 
 	class AdminSubDepartmentsController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -24,7 +24,7 @@
 			$this->button_show = true;
 			$this->button_filter = true;
 			$this->button_import = false;
-			$this->button_export = true;
+			$this->button_export = false;
 			$this->table = "sub_department";
 			# END CONFIGURATION DO NOT REMOVE THIS LINE
 
@@ -133,7 +133,16 @@
 	        | 
 	        */
 	        $this->index_button = array();
-
+			if(CRUDBooster::getCurrentMethod() == 'getIndex') {
+				if(CRUDBooster::isSuperadmin()){
+					// $this->index_button[] = [
+					// 	"title"=>"Upload Item Master",
+					// 	"label"=>"Upload Item Master",
+					// 	"icon"=>"fa fa-upload",
+					// 	"url"=>CRUDBooster::mainpath('item-master-upload')];
+					$this->index_button[] = ["label"=>"Export","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('export'),"color"=>"primary"];
+				}
+			}
 
 
 	        /* 
@@ -340,9 +349,10 @@
 
 	    }
 
-
-
-	    //By the way, you can still create your own method in here... :) 
+		public function getExport(){
+			$fields = Request::all();
+			return Excel::download(new ExportSubDepartment($fields), 'sub-department.xlsx');
+		}
 
 
 	}
