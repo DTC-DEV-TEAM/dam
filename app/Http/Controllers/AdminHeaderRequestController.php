@@ -923,15 +923,15 @@
 			$this->cbLoader();
 			$data['page_title'] = 'Create New Supplies Request';
 			$data['conditions'] = DB::table('condition_type')->where('status', 'ACTIVE')->get();
-			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
 			$data['stores'] = DB::table('stores')->where('status', 'ACTIVE')->get();
-			$data['departments'] = DB::table('departments')->where('status', 'ACTIVE')->get();
 			$data['user'] = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
 			$data['employeeinfos'] = DB::table('cms_users')
 										 ->leftjoin('positions', 'cms_users.position_id', '=', 'positions.id')
 										 ->leftjoin('departments', 'cms_users.department_id', '=', 'departments.id')
 										 ->select( 'cms_users.*', 'positions.position_description as position_description', 'departments.department_name as department_name')
 										 ->where('cms_users.id', $data['user']->id)->first();
+			$departmentList = array_map('intval',explode(",",$data['user']->department_id));
+			$data['departments'] = DB::table('departments')->whereIn('id',$departmentList)->where('status', 'ACTIVE')->get();						
 			$data['categories'] = DB::table('category')->where('id', 2)->where('category_status', 'ACTIVE')
 													   ->orderby('category_description', 'asc')
 													   ->get();
@@ -961,72 +961,20 @@
 		}
 
 		public function getDetail($id){
-			
 			$this->cbLoader();
             if(!CRUDBooster::isRead() && $this->global_privilege==FALSE) {    
                 CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
             }
-
 			$item = DB::table('header_request')->where('id', $id)->first();
-		
 			if($item->created_by != CRUDBooster::myId() && !CRUDBooster::isSuperAdmin()){
 				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
 			}
-
 			$data = array();
-
 			$data['page_title'] = 'View Request';
+			$data['Header'] = HeaderRequest::header($id);
+			$data['Body'] = BodyRequest::select('body_request.*')->where('body_request.header_request_id', $id)->get();
 
-			$data['Header'] = HeaderRequest::
-				  leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
-				->leftjoin('condition_type', 'header_request.conditions', '=', 'condition_type.id')
-				->leftjoin('cms_users as employees', 'header_request.employee_name', '=', 'employees.id')
-				->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
-				->leftjoin('departments', 'header_request.department', '=', 'departments.id')
-				->leftjoin('locations', 'employees.location_id', '=', 'locations.id')
-				->leftjoin('cms_users as requested', 'header_request.created_by','=', 'requested.id')
-				->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
-				->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
-				->leftjoin('cms_users as processed', 'header_request.purchased2_by','=', 'processed.id')
-				->leftjoin('cms_users as mo_by', 'header_request.mo_by','=', 'mo_by.id')
-				->leftjoin('cms_users as picked', 'header_request.picked_by','=', 'picked.id')
-				->leftjoin('cms_users as received', 'header_request.received_by','=', 'received.id')
-				->leftjoin('cms_users as closed', 'header_request.closed_by','=', 'closed.id')
-				->select(
-						'header_request.*',
-						'header_request.id as requestid',
-						'header_request.created_at as created',
-						'request_type.*',
-						'condition_type.*',
-						'requested.name as requestedby',
-						'employees.bill_to as employee_name',
-						'header_request.employee_name as header_emp_name',
-						'header_request.created_by as header_created_by',
-						//'employees.company_name_id as company_name',
-						'departments.department_name as department',
-						'locations.store_name as store_branch',
-						'approved.name as approvedby',
-						'recommended.name as recommendedby',
-						'mo_by.name as mo_by',
-						'picked.name as pickedby',
-						'received.name as receivedby',
-						'processed.name as processedby',
-						'closed.name as closedby',
-						'header_request.created_at as created_at'
-						)
-				->where('header_request.id', $id)->first();
-		
-			$data['Body'] = BodyRequest::
-				select(
-				  'body_request.*'
-				)
-				->where('body_request.header_request_id', $id)
-				->get();
-
-			$data['Body1'] = BodyRequest::
-				select(
-				  'body_request.*'
-				)
+			$data['Body1'] = BodyRequest::select('body_request.*')
 				->where('body_request.header_request_id', $id)
 				->wherenotnull('body_request.digits_code')
 				->orderby('body_request.id', 'desc')
@@ -1055,28 +1003,18 @@
 
 		public function itemSearch(Request $request) {
 			$data = array();
-
 			$fields = Request::all();
-
-			$search 				= $fields['search'];
-
-
-			
+			$search = $fields['search'];
 			$data['status_no'] = 0;
 			$data['message']   ='No Item Found!';
 			$data['items'] = array();
-
-			//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
-
 			$items = DB::table('assets')
 			    ->where('assets.digits_code','LIKE','%'.$search.'%')->whereIn('assets.category_id',[1,4,6,7,8])->whereNotIn('assets.status',['EOL-DIGITS','INACTIVE'])
 				->orWhere('assets.item_description','LIKE','%'.$search.'%')->whereIn('assets.category_id',[1,4,6,7,8])->whereNotIn('assets.status',['EOL-DIGITS','INACTIVE'])
 				->join('category', 'assets.category_id','=', 'category.id')
-				//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
 				->select(	'assets.*',
 				            'category.id as cat_id',
 							'assets.id as assetID',
-							//'digits_imfs.digits_code as dcode',
 							'category.category_description as category_description'
 						)
 				->take(10)->get();
@@ -1108,15 +1046,12 @@
 				}
 				$data['items'] = $return_data;
 			}
-
-
 			echo json_encode($data);
 			exit;  
 		}
 
 
-		public function Employees(Request $request)
-		{
+		public function Employees(Request $request){
 			$employees = 	DB::table('employees')
 							->leftjoin('positions', 'employees.position_id', '=', 'positions.id')
 							->leftjoin('departments', 'employees.department_id', '=', 'departments.id')
@@ -1128,15 +1063,11 @@
 		}
 
 
-		public function Companies(Request $request)
-		{
-
+		public function Companies(Request $request){
 			$companies = DB::table('companies')->where('company_name', $request->company_name)->first();
-
 			$employees = 	DB::table('employees')
 							->leftjoin('positions', 'employees.position_id', '=', 'positions.id')
 							->leftjoin('departments', 'employees.department_id', '=', 'departments.id')
-							//->leftjoin('companies', 'employees.company_name', '=', 'companies.id')
 							->select( 'employees.*', 'positions.position_description as position_description', 'departments.department_name as department_name')
 							->where('status_id', 1)->where('company_name', $companies->id)->get();
 	
@@ -1144,7 +1075,6 @@
 		}
 
 		public function getRequestCancel($id) {
-
 			HeaderRequest::where('id',$id)
 			->update([
 					'status_id'=> 8,
@@ -1166,9 +1096,7 @@
 
 
 		public function getRequestReceive($id) {
-
 			$arf_header = 		HeaderRequest::where(['id' => $id])->first();
-
 			HeaderRequest::where('id',$id)
 			->update([
 					'status_id'=> 	StatusMatrix::where('current_step', 8)
@@ -1182,13 +1110,10 @@
 			//CRUDBooster::redirect(CRUDBooster::mainpath(), trans("Request has been cancelled successfully!"), 'info');
 		}
 
-		public function SubCategories(Request $request)
-		{
+		public function SubCategories(Request $request){
 			$data = Request::all();	
 			$id = $data['id'];
-
 			$categories = DB::table('category')->where('category_description', $id)->first();
-
 			$subcategories = DB::table('class')
 							->select( 'class.*' )
 							->where('category_id', $categories->id)
@@ -1689,37 +1614,25 @@
 				}
 				$data['items'] = $return_data;
 			}
-
-
 			echo json_encode($data);
 			exit;  
 		}
 
 		public function itemMarketingSearch(Request $request) {
-
 			$request = Request::all();
-
 			$cont = (new static)->apiContext;
-
 			$search 		= $request['search'];
-
 			$data = array();
-
 			$data['status_no'] = 0;
 			$data['message']   ='No Item Found!';
 			$data['items'] = array();
 
-			//$search_item =  DB::table('digits_code')>where('digits_code','LIKE','%'.$request->search.'%')->first();
-
 			$items = DB::table('assets')
 			->where('assets.digits_code','LIKE','%'.$search.'%')->where('assets.category_id','=',4)->where('assets.status','!=','INACTIVE')
 			->orWhere('assets.item_description','LIKE','%'.$search.'%')->where('assets.category_id','=',4)->where('assets.status','!=','INACTIVE')
-			
 				->join('category', 'assets.category_id','=', 'category.id')
-				//->join('digits_imfs', 'assets.digits_code','=', 'digits_imfs.id')
 				->select(	'assets.*',
 							'assets.id as assetID',
-							//'digits_imfs.digits_code as dcode',
 							'category.category_description as category_description'
 						)->take(10)->get();
 			
