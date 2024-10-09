@@ -92,7 +92,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 			$this->form[] = ["label"=>"Customer/Location Name","name"=>"customer_location_name","type"=>"text","validation"=>"required|min:1|max:255",'width'=>'col-sm-5','placeholder'=>'Customer/Location Name','readonly'=>true];
 			$this->form[] = ['label'=>'Company Name','name'=>'company_name_id','validation'=>'required|min:0','width'=>'col-sm-5','value' => 'DIGITS','readonly'=>true];
 			$this->form[] = ['label'=>'Department','name'=>'department_id','type'=>'select2-department','validation'=>'required','width'=>'col-sm-5','datatable'=>'departments,department_name','datatable_where'=>"status = 'ACTIVE'",'width'=>'col-sm-5'];
-			$this->form[] = ['label'=>'Sub Department','name'=>'sub_department_id','type'=>'select2-sub-department','width'=>'col-sm-5','datatable'=>'sub_department,sub_department_name','parent_select'=>'department_id','width'=>'col-sm-5'];
+			$this->form[] = ['label'=>'Sub Department','name'=>'sub_department_id','type'=>'select2-sub-department','validation'=>'required','width'=>'col-sm-5','datatable'=>'sub_department,sub_department_name','parent_select'=>'department_id','width'=>'col-sm-5'];
 			$this->form[] = ["label"=>"Position","name"=>"position_id","type"=>"text","validation"=>"required|min:1|max:255",'width'=>'col-sm-5','placeholder'=>'Position'];
 
 		}else{
@@ -678,9 +678,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 				}
 			});
 		});
-		";		
-
-		
+		";	
 	}
 
 	public function getProfile() {			

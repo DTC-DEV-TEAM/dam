@@ -448,7 +448,7 @@
 										'assign_by'=>$assign_by->name
 									]; 
 		    
-							CRUDBooster::sendEmail(['to'=>'rickyalnin201995@gmail.com','data'=>$data,'template'=>'assets_confirmation','attachments'=>$files]);
+							CRUDBooster::sendEmail(['to'=>'rickyalnin201995@gmail.com','data'=>$data,'template'=>'assets_confirmation']);
 
 				}
 
@@ -568,7 +568,7 @@
 							'assign_by'=>			$assign_by->name
 						]; 
 
-				CRUDBooster::sendEmail(['to'=>'rickyalnin201995@gmail.com','data'=>$data,'template'=>'assets_confirmation','attachments'=>$files]);
+				CRUDBooster::sendEmail(['to'=>'rickyalnin201995@gmail.com','data'=>$data,'template'=>'assets_confirmation']);
 
 			}
 
@@ -631,7 +631,7 @@
 								'assign_by'=>$assign_by->name
 							]; 
 
-					CRUDBooster::sendEmail(['to'=>'rickyalnin201995@gmail.com','data'=>$data,'template'=>'assets_confirmation','attachments'=>$files]);
+					CRUDBooster::sendEmail(['to'=>'rickyalnin201995@gmail.com','data'=>$data,'template'=>'assets_confirmation']);
 			}
 
 	    }

@@ -1,9 +1,9 @@
 <?php namespace App\Http\Controllers;
 
-	use Session;
-	use Request;
-	use DB;
-	use CRUDBooster;
+use Request;
+use App\Exports\ExportSubDepartment;
+use CRUDBooster;
+use Maatwebsite\Excel\Facades\Excel;
 
 	class AdminSubDepartmentsController extends \crocodicstudio\crudbooster\controllers\CBController {
 
@@ -17,8 +17,8 @@
 			$this->button_table_action = true;
 			$this->button_bulk_action = true;
 			$this->button_action_style = "button_icon";
-			$this->button_add = false;
-			$this->button_edit = false;
+			$this->button_add = true;
+			$this->button_edit = true;
 			$this->button_delete = true;
 			$this->button_detail = true;
 			$this->button_show = true;
@@ -41,11 +41,11 @@
 
 			# START FORM DO NOT REMOVE THIS LINE
 			$this->form = [];
-			$this->form[] = ['label'=>'Department','name'=>'department_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-10','datatable'=>'departments,department_name'];
+			$this->form[] = ['label'=>'Department','name'=>'department_id','type'=>'select2','validation'=>'required|integer|min:0','width'=>'col-sm-5','datatable'=>'departments,department_name'];
 			
-			$this->form[] = ['label'=>'Sub Department Name','name'=>'sub_department_name','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Sub Department Name','name'=>'sub_department_name','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
 			
-			$this->form[] = ['label'=>'Coa','name'=>'coa_id','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-10'];
+			$this->form[] = ['label'=>'Coa','name'=>'coa_id','type'=>'text','validation'=>'required|min:1|max:255','width'=>'col-sm-5'];
 			
 			if(CRUDBooster::getCurrentMethod() == 'getEdit' || CRUDBooster::getCurrentMethod() == 'postEditSave' || CRUDBooster::getCurrentMethod() == 'getDetail') {
 				$this->form[] = ['label'=>'Status','name'=>'status','type'=>'select','validation'=>'required','width'=>'col-sm-5','dataenum'=>'ACTIVE;INACTIVE'];
@@ -133,7 +133,16 @@
 	        | 
 	        */
 	        $this->index_button = array();
-
+			if(CRUDBooster::getCurrentMethod() == 'getIndex') {
+				if(CRUDBooster::isSuperadmin()){
+					// $this->index_button[] = [
+					// 	"title"=>"Upload Item Master",
+					// 	"label"=>"Upload Item Master",
+					// 	"icon"=>"fa fa-upload",
+					// 	"url"=>CRUDBooster::mainpath('item-master-upload')];
+					$this->index_button[] = ["label"=>"Export","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('export'),"color"=>"primary"];
+				}
+			}
 
 
 	        /* 
@@ -340,9 +349,10 @@
 
 	    }
 
-
-
-	    //By the way, you can still create your own method in here... :) 
+		public function getExport(){
+			$fields = Request::all();
+			return Excel::download(new ExportSubDepartment($fields), 'sub-department.xlsx');
+		}
 
 
 	}

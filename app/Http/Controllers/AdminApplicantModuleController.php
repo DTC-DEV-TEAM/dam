@@ -1,6 +1,5 @@
 <?php namespace App\Http\Controllers;
 
-	use Session;
 	use Request;
 	use DB;
 	use CRUDBooster;
@@ -11,13 +10,7 @@
 	use App\Exports\ExportApplicantMultipleSheet;
 	use Maatwebsite\Excel\Facades\Excel;
 	use PhpOffice\PhpSpreadsheet\Spreadsheet;
-	use PhpOffice\PhpSpreadsheet\Reader\Exception;
 	use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-	use PhpOffice\PhpSpreadsheet\IOFactory;
-	use Illuminate\Support\Facades\Log;
-	use Illuminate\Support\Facades\Redirect;
-	use Illuminate\Contracts\Cache\LockTimeoutException;
-	use Carbon\Carbon;
 
 	class AdminApplicantModuleController extends \crocodicstudio\crudbooster\controllers\CBController {
 		private $cancelled;
@@ -106,7 +99,7 @@
 				$for_job_offer =  $this->jo_done;
 				$cancelled     =  $this->cancelled;
 
-				$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('edit-applicant'),'icon'=>'fa fa-pencil' , "showIf"=>"[status] != $for_job_offer && [status] != $cancelled && [status] != $rejected"];
+				$this->addaction[] = ['title'=>'Update','url'=>CRUDBooster::mainpath('edit-applicant'),'icon'=>'fa fa-pencil' , "showIf"=>"[status] != $for_job_offer && [status] != $cancelled && [status] != $this->rejected"];
 				$this->addaction[] = ['title'=>'Detail','url'=>CRUDBooster::mainpath('detail-applicant'),'icon'=>'fa fa-eye', "showIf"=>"[status] == $for_job_offer || [status] == $cancelled"];
 
 			}

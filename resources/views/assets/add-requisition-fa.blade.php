@@ -99,14 +99,47 @@
             </div>
 
             <div class="row">
+                @if(CRUDBooster::myPrivilegeId() == 8)
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label require">{{ trans('message.form-label.department') }}</label>
+                            <input type="text" class="form-control finput"  name="department"  required readonly value="{{$employeeinfos->department_name}}">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label require">{{ trans('message.form-label.store_branch') }}</label>
+                                
+                                <input type="text" class="form-control finput"  id="store_branch" name="store_branch"  required readonly value="{{$stores->store_name}}"> 
+                                <input type="hidden" class="form-control"  id="store_branch_id" name="store_branch_id"  required readonly value="{{$stores->id}}"> 
+    
+                            </div>
+                        </div>
+                    </div>
+                @else
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label class="control-label require">{{ trans('message.form-label.department') }}</label>
-                        <input type="text" class="form-control finput"  id="department" name="department"  required readonly value="{{$employeeinfos->department_name}}">
-
+                        <label class="control-label require">{{ trans('message.form-label.department') }}</label> 
+                        <select required id="department_id" name="department" class="form-select select2" style="width:100%;">
+                            @foreach($departments as $res)
+                                <option value="{{ $res->id }}">{{ $res->department_name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
-                
+                <div class="col-md-6" id="sub-department">
+                    <div class="form-group">
+                        <label class="control-label require">{{ trans('message.form-label.sub_department_id') }}</label>
+                        <select selected data-placeholder="Select Sub Department" class="form-control sub_department" name="sub_department" id="sub_department" required style="width:100%"> 
+                                                        
+                        </select>
+                    </div>
+                </div>
+                @endif
+            </div>
+
+            <div class="row">  
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label require">{{ trans('message.form-label.position') }}</label>
@@ -114,20 +147,6 @@
                     </div>
                 </div>
             </div>
-
-            @if(CRUDBooster::myPrivilegeId() == 8)
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="control-label require">{{ trans('message.form-label.store_branch') }}</label>
-                            
-                            <input type="text" class="form-control finput"  id="store_branch" name="store_branch"  required readonly value="{{$stores->store_name}}"> 
-                            <input type="hidden" class="form-control"  id="store_branch_id" name="store_branch_id"  required readonly value="{{$stores->id}}"> 
-
-                        </div>
-                    </div>
-                </div>
-            @endif
 
             <hr/>
 
@@ -242,8 +261,38 @@
             null;
         };
         setTimeout("preventBack()", 0);
-
+        $(document).ready(function() {
+            $('#department_id').trigger('change');  
+            $('#sub_department').attr('disabled',true);
+        });
+        $('#department_id').select2({});
+        $('#sub_department').select2({});
         var tableRow = 1;
+
+        //Sub Department
+        $('#department_id').change(function(){
+            var dept_id =  this.value;
+            $.ajax
+            ({ 
+                type: 'POST',
+                url: "{{ route('get-sub-department') }}",
+                data: {
+                    "id": dept_id
+                },
+                success: function(result) {
+                    var i;
+                    var showData = [];
+                    showData[0] = "<option value=''></option>";
+                    for (i = 0; i < result.length; ++i) {
+                        var j = i + 1;
+                        showData[j] = "<option value='"+result[i].id+"'>"+result[i].sub_department_name+"</option>";
+                    }
+                    $('#sub_department').attr('disabled', false);
+                    jQuery('#sub_department').html(showData);        
+                    $('#sub_department').val('').trigger('change');  
+                }
+            });
+        });
 
         $(document).ready(function() {
 
@@ -559,8 +608,6 @@
 
         });
 
-   
-        
         $('#employee_name').change(function() {
     
                 var employee_name =  this.value;
@@ -683,6 +730,28 @@
                     event.preventDefault(); // cancel default behavior
                     return false;
                 }else{ 
+                    if ($('#department_id').val() === "") {
+                        swal({
+                            type: 'error',
+                            title: 'Department is required!',
+                            icon: 'error',
+                            confirmButtonColor: "#367fa9",
+                        }); 
+                        event.preventDefault(); // cancel default behavior
+                    }
+                    if($('#sub-department').is(":visible")){
+                        if($('#sub_department').val() === ""){
+                            swal({
+                                type: 'error',
+                                title: 'Sub department is required!',
+                                icon: 'error',
+                                confirmButtonColor: "#367fa9",
+                            });
+                            event.preventDefault();
+                            return false;
+                        }
+                    }
+
                     var item = $("input[name^='item_description']").length;
                     var item_value = $("input[name^='item_description']");
                     for(i=0;i<item;i++){

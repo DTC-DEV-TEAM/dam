@@ -37,7 +37,7 @@ class ReportRequestAssets extends Model
                        'transacted_date as transacted_date',
                        'received_by as received_by',
                        'received_at as received_at')
-        ->orderBy('requested_date','DESC');
+        ->orderBy('reference_number','ASC');
 
         if($from != '' && !is_null($from)){
             $query->whereBetween('requested_date',[$from,$to]);
