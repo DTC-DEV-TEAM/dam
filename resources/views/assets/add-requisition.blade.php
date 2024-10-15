@@ -142,11 +142,17 @@
                         </select>
                     </div>
                 </div>
+    
                 <div class="col-md-6" id="sub-department">
                     <div class="form-group">
                         <label class="control-label require">{{ trans('message.form-label.sub_department_id') }}</label>
                         <select selected data-placeholder="Select Sub Department" class="form-control sub_department" name="sub_department" id="sub_department" required style="width:100%"> 
-                                                        
+                            @foreach($sub_departments as $res)
+                                <option value="{{ $res->id }}"
+                                    {{ isset($subDepartmentList) && in_array($res->id, $subDepartmentList) ? 'selected' : '' }}>
+                                    {{ $res->sub_department_name }} 
+                                </option>
+                            @endforeach                         
                         </select>
                     </div>
                 </div>
@@ -306,10 +312,10 @@
             null;
         };
         setTimeout("preventBack()", 0);
-        $(document).ready(function() {
-            $('#department_id').trigger('change');  
-            $('#sub_department').attr('disabled',true);
-        });
+        // $(document).ready(function() {
+        //     $('#department_id').trigger('change');  
+        //     $('#sub_department').attr('disabled',true);
+        // });
         $('#department_id').select2({});
         $('#sub_department').select2({});
         var tableRow = 1;
