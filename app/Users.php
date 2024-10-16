@@ -32,8 +32,7 @@ class Users extends Model
     ] ;
 
       //customers query
-      public function scopeUser($query, $id)
-      {
+      public function scopeUser($query, $id){
           return $query->where('cms_users.id', $id)
                         ->leftjoin('cms_privileges', 'cms_users.id_cms_privileges','=','cms_privileges.id')
                         ->leftjoin('departments', 'cms_users.department_id','=','departments.id')
@@ -50,5 +49,9 @@ class Users extends Model
                          
                           ) 
                         ->first();
+      }
+
+      public function announcements(){
+          return $this->belongsToMany(Announcement::class,'announcement_user')->withTimestamps();
       }
 }

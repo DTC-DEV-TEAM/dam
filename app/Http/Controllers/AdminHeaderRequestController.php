@@ -812,7 +812,9 @@
 										 ->select( 'cms_users.*', 'positions.position_description as position_description', 'departments.department_name as department_name')
 										 ->where('cms_users.id', $data['user']->id)->first();
 			$departmentList = array_map('intval',explode(",",$data['user']->department_id));
+			$data['subDepartmentList'] = array_map('intval',explode(",",$data['user']->sub_department_id));
 			$data['departments'] = DB::table('departments')->whereIn('id',$departmentList)->where('status', 'ACTIVE')->get();
+			$data['sub_departments'] = DB::table('sub_department')->whereIn('department_id',$departmentList)->where('status', 'ACTIVE')->get();
 			$data['categories'] = DB::table('category')->where('category_status', 'ACTIVE')->where('id', 6)->orderby('category_description', 'asc')->get();
 			$data['sub_categories'] = DB::table('class')->where('class_status', 'ACTIVE')->where('category_id', 6)->orderby('class_description', 'asc')->get();
 			$data['applications'] = DB::table('applications')->where('status', 'ACTIVE')->orderby('app_name', 'asc')->get();
@@ -852,7 +854,9 @@
 										 ->select( 'cms_users.*', 'positions.position_description as position_description', 'departments.department_name as department_name')
 										 ->where('cms_users.id', $data['user']->id)->first();
 			$departmentList = array_map('intval',explode(",",$data['user']->department_id));
+			$data['subDepartmentList'] = array_map('intval',explode(",",$data['user']->sub_department_id));
 			$data['departments'] = DB::table('departments')->whereIn('id',$departmentList)->where('status', 'ACTIVE')->get();
+			$data['sub_departments'] = DB::table('sub_department')->whereIn('department_id',$departmentList)->where('status', 'ACTIVE')->get();
 			$data['categories'] = DB::table('category')->whereIn('id', [4])->where('category_status', 'ACTIVE')
 													   ->orderby('category_description', 'asc')
 													   ->get();
@@ -931,7 +935,9 @@
 										 ->select( 'cms_users.*', 'positions.position_description as position_description', 'departments.department_name as department_name')
 										 ->where('cms_users.id', $data['user']->id)->first();
 			$departmentList = array_map('intval',explode(",",$data['user']->department_id));
-			$data['departments'] = DB::table('departments')->whereIn('id',$departmentList)->where('status', 'ACTIVE')->get();						
+			$data['subDepartmentList'] = array_map('intval',explode(",",$data['user']->sub_department_id));
+			$data['departments'] = DB::table('departments')->whereIn('id',$departmentList)->where('status', 'ACTIVE')->get();
+			$data['sub_departments'] = DB::table('sub_department')->whereIn('department_id',$departmentList)->where('status', 'ACTIVE')->get();
 			$data['categories'] = DB::table('category')->where('id', 2)->where('category_status', 'ACTIVE')
 													   ->orderby('category_description', 'asc')
 													   ->get();
