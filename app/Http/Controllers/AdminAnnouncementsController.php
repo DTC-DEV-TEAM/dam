@@ -289,8 +289,9 @@
 	    | 
 	    */
 	    public function hook_before_edit(&$postdata,$id) {        
-	        //Your code here
-
+			if($postdata['status'] == 'INACTIVE'){
+				DB::table('announcement_user')->where('announcement_id',$id)->delete();
+			}
 	    }
 
 	    /* 
@@ -339,15 +340,25 @@
 			return $this->view('announcements.announcement',$data);
 		}
 
+		public function getAnnouncements(){
+			$user = DB::table('cms_users')->where("id", CRUDBooster::myId())->first();
+			$data = [];
+			$data['unreadAnnouncements'] = Announcement::where('title','New Feature Update')->where('status','ACTIVE')->get();
+			return $this->view('announcements.default-announcement',$data);
+		}
+
 		public function markAnnouncementAsRead(Request $request){
 			$announcementId = $request->announcement_id;
 			$user = Users::find(CRUDBooster::myId());
 			// Attach the announcement to the user, marking it as read
 			$user->announcements()->attach($announcementId);
-
+			$config = [
+				'content'      => '',
+				'to'           => 'link',
+				'id_cms_users' =>  CRUDBooster::myId()
+			];
+			CRUDBooster::sendNotification($config);
 			return response()->json(['status' => 'success', 'message' => 'Announcement marked as read.']);
 		}
-
-
 
 	}

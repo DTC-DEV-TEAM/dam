@@ -40,6 +40,7 @@ Route::group(['middleware' => ['web'], 'prefix' => config('crudbooster.ADMIN_PAT
     //ANNOUNCEMENT
     Route::get('unread-announcement', 'AdminAnnouncementsController@getUnreadAnnouncements')->name('show-announcement');
     Route::post('read-announcement', 'AdminAnnouncementsController@markAnnouncementAsRead')->name('read-announcement');
+    Route::get('announcement', 'AdminAnnouncementsController@getAnnouncements')->name('announcement');
 });
 
 Route::group(['middleware' => ['web','\crocodicstudio\crudbooster\middlewares\CBBackend','check.user']], function() {
