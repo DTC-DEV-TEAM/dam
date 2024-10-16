@@ -48,8 +48,9 @@
 
         .login-box-body {
             box-shadow: 0px 0px 50px rgba(0, 0, 0, 0.8);
-            background: rgba(255, 255, 255, 0.9);
+            background: rgb(255, 255, 255);
             color: {{ CRUDBooster::getSetting("login_font_color")?:'#666666' }}  !important;
+            border-radius: 4px;
         }
 
         html, body {
@@ -91,7 +92,6 @@
             <input type="hidden" name="_token" value="{{ csrf_token() }}"/>
             
             @if(!empty(config('services.google')))
-
                 <div style="margin-bottom:10px" class='row'>
                     <div class='col-xs-12'>
 
@@ -126,22 +126,24 @@
                     </div>
                 </div>
             </div>
-            <div style="margin-bottom:10px" class='row'>
+            <div style="margin-bottom:15px" class='row'>
                 <div class='col-xs-12'>
                     <button type="submit" class="btn btn-primary btn-block btn-flat"><i class='fa fa-lock'></i> {{cbLang("button_sign_in")}}</button>
                 </div>
             </div>
 
             <div class='row'>
-                <div class='col-xs-12' align="center"><p style="padding:10px 0px 10px 0px">{{cbLang("text_forgot_password")}} <a
-                                href='{{route("getForgot")}}'>{{cbLang("click_here")}}</a></p></div>
+                <div class='col-xs-12' align="center">
+                    <p style="padding:10px 0px 10px 0px">{{cbLang("text_forgot_password")}}
+                        <a href='{{route("getForgot")}}'>{{cbLang("click_here")}}</a>
+                    </p>
+                </div>
             </div>
             
-             @if($alertmessage == 1)
+            @if($alertmessage == 1)
                 <script type="text/javascript">
                     alert("Asset has been received successfully!");
                 </script>
-
             @endif
         </form>
 

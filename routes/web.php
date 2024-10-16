@@ -36,6 +36,10 @@ Route::group(['middleware' => ['web'], 'prefix' => config('crudbooster.ADMIN_PAT
     Route::post('reset-password', 'AdminCmsUsersController@postSendEmailResetPassword')->name('reset-password');
     Route::get('show-change-pass', 'AdminCmsUsersController@showChangePassword')->name('change-password');
     Route::post('waive-change-password','AdminCmsUsersController@waiveChangePassword')->name('waive-change-password');
+
+    //ANNOUNCEMENT
+    Route::get('unread-announcement', 'AdminAnnouncementsController@getUnreadAnnouncements')->name('show-announcement');
+    Route::post('read-announcement', 'AdminAnnouncementsController@markAnnouncementAsRead')->name('read-announcement');
 });
 
 Route::group(['middleware' => ['web','\crocodicstudio\crudbooster\middlewares\CBBackend','check.user']], function() {
