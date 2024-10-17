@@ -39,28 +39,26 @@
 
         ::-webkit-scrollbar-track
         {
-            /* -webkit-box-shadow: inset 0 0 6px rgba(32, 83, 178, 0.3); */
             background-color: #F5F5F5;
         }
 
         ::-webkit-scrollbar
         {
-            width: 10px;
+            width: 5px;
             background-color: #F5F5F5;
         }
 
         ::-webkit-scrollbar-thumb
         {
             background-color: #3c8dbc;
-            /* border: px solid #367fa9; */
         }
 
     </style>
 @endpush
 
-@if (count($unreadAnnouncements) > 0)
-    <div class="modal fade" id="tos-modal" role="dialog" data-keyboard="false" data-backdrop="static">
-        <div class="modal-dialog modal-md">
+<div class="modal fade" id="tos-modal" role="dialog" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-md">
+        @if (count($unreadAnnouncements) > 0)
             @foreach ($unreadAnnouncements as $announcement)
                 <div class="modal-content announcement-modal" id="announcement-modal-{{ $announcement->id }}">
                     <div class="modal-header btn-primary" style="text-center; font-size: 20px; font-weight:bold">
@@ -75,26 +73,45 @@
                     </div>
                 </div>
             @endforeach
-        </div>
+        @else
+            <div class="modal-content">
+                <div class="modal-header btn-primary" style="text-center; font-size: 20px; font-weight:bold">
+                    <i class="fa fa-info"></i> There's no update
+                    <span class="close-button">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <p>No announcements at the moment.</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        @endif
     </div>
-@endif
+</div>
 
 @endsection
+
 @push('bottom')
     <script type="text/javascript">
         $(document).ready(function() {
             var announcementIndex = 0;
             var announcements = $('.announcement-modal');
-            console.log(announcements);
+        
             function showNextAnnouncement() {
                 if (announcementIndex < announcements.length) {
                     var currentAnnouncement = announcements.eq(announcementIndex);
                     $('#tos-modal').modal('show');
                     currentAnnouncement.show();
+                } else {
+                    // If no announcements, show the modal with no updates message
+                    if (announcements.length === 0) {
+                        $('#tos-modal').modal('show');
+                    }
                 }
             }
 
-            // Show the first announcement on page load
+            // Show the first announcement on page load or the empty modal if none exist
             $(window).on('load', function() {
                 showNextAnnouncement();
             });
@@ -105,22 +122,6 @@
 
                 // Hide the current modal
                 $('#announcement-modal-' + announcementId).hide();
-
-                // Send AJAX request to store in session
-                $.ajax({
-                    url: "{{ route('read-announcement') }}",
-                    type: 'POST',
-                    data: {
-                        _token: "{{ csrf_token() }}", // CSRF token
-                        announcement_id: announcementId
-                    },
-                    success: function(response) {
-                        console.log(response.message); // Optional: Show success message in console
-                    },
-                    error: function(xhr) {
-                        console.error(xhr.responseText); // Optional: Handle error
-                    }
-                });
 
                 // Move to the next announcement
                 announcementIndex++;
