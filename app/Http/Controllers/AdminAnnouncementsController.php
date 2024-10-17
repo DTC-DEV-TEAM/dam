@@ -15,7 +15,7 @@
 			# START CONFIGURATION DO NOT REMOVE THIS LINE
 			$this->title_field = "title";
 			$this->limit = "20";
-			$this->orderby = "id,desc";
+			$this->orderby = "id,asc";
 			$this->global_privilege = false;
 			$this->button_table_action = true;
 			$this->button_bulk_action = true;
@@ -352,12 +352,6 @@
 			$user = Users::find(CRUDBooster::myId());
 			// Attach the announcement to the user, marking it as read
 			$user->announcements()->attach($announcementId);
-			$config = [
-				'content'      => '',
-				'to'           => 'link',
-				'id_cms_users' =>  CRUDBooster::myId()
-			];
-			CRUDBooster::sendNotification($config);
 			return response()->json(['status' => 'success', 'message' => 'Announcement marked as read.']);
 		}
 

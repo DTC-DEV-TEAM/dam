@@ -30,6 +30,31 @@
         .announcement-modal {
             display: none;
         }
+
+        /* Scrollable modal body */
+        .modal-body {
+            max-height: 560px; /* Adjust this value based on your needs */
+            overflow-y: auto;
+        }
+
+        ::-webkit-scrollbar-track
+        {
+            /* -webkit-box-shadow: inset 0 0 6px rgba(32, 83, 178, 0.3); */
+            background-color: #F5F5F5;
+        }
+
+        ::-webkit-scrollbar
+        {
+            width: 10px;
+            background-color: #F5F5F5;
+        }
+
+        ::-webkit-scrollbar-thumb
+        {
+            background-color: #3c8dbc;
+            /* border: px solid #367fa9; */
+        }
+
     </style>
 @endpush
 

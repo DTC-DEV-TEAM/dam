@@ -31,6 +31,28 @@
             display: none;
         }
 
+        /* Scrollable modal body */
+        .modal-body {
+            max-height: 560px; /* Adjust this value based on your needs */
+            overflow-y: auto;
+        }
+
+        ::-webkit-scrollbar-track
+        {
+            background-color: #F5F5F5;
+        }
+
+        ::-webkit-scrollbar
+        {
+            width: 5px;
+            background-color: #F5F5F5;
+        }
+
+        ::-webkit-scrollbar-thumb
+        {
+            background-color: #3c8dbc;
+        }
+
     </style>
 @endpush
 
