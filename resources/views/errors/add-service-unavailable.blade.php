@@ -41,7 +41,7 @@
               <p><span class="text-info">Thank you for understanding.</span></p>
              
             </div>
-            <p><span class="text-dark" style="font-weight: bold"> Open on:</span> <span class="text-dark" style="font-size: 15px; font-weight:bold"> {{$open_date}}</span></p>
+            {{-- <p><span class="text-dark" style="font-weight: bold"> Open on:</span> <span class="text-dark" style="font-size: 15px; font-weight:bold"> {{$open_date}}</span></p> --}}
           </div>
         </div>
       </div>
