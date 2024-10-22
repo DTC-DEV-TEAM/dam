@@ -990,41 +990,8 @@
 
 			$data['page_title'] = 'Processing Request';
 
-			$data['Header'] = HeaderRequest::
-				  leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
-				->leftjoin('condition_type', 'header_request.conditions', '=', 'condition_type.id')
-				->leftjoin('cms_users as employees', 'header_request.employee_name', '=', 'employees.id')
-				->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
-				->leftjoin('departments', 'header_request.department', '=', 'departments.id')
-				->leftjoin('positions', 'header_request.position', '=', 'positions.id')
-				->leftjoin('locations', 'employees.location_id', '=', 'locations.id')
-				->leftjoin('cms_users as requested', 'header_request.created_by','=', 'requested.id')
-				->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
-				->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
-				->select(
-						'header_request.*',
-						'header_request.id as requestid',
-						'header_request.created_at as created',
-						'request_type.*',
-						'condition_type.*',
-						'requested.name as requestedby',
-						'employees.bill_to as employee_name',
-						'header_request.employee_name as header_emp_name',
-						'header_request.created_by as header_created_by',
-						//'employees.company_name_id as company_name',
-						'departments.department_name as department',
-						//'positions.position_description as position',
-						//'locations.store_name as store_branch',
-						'approved.name as approvedby',
-						'recommended.name as recommendedby',
-						'header_request.created_at as created_at'
-						)
-				->where('header_request.id', $id)->first();
-
-			$data['Body'] = BodyRequest::
-				select(
-				  'body_request.*'
-				)
+			$data['Header'] = HeaderRequest::header($id);
+			$data['Body'] = BodyRequest::select('body_request.*')
 				->where('body_request.header_request_id', $id)
 				->whereNull('deleted_at')
 				->get();
@@ -1037,7 +1004,6 @@
 				->get();				
 
 			$data['recommendations'] = DB::table('recommendations')->where('status', 'ACTIVE')->get();
-
 			return $this->view("assets.purchasing-request", $data);
 		}
 
@@ -1048,48 +1014,8 @@
 			}  
 
 			$data = array();
-
 			$data['page_title'] = 'Fulfillment';
-
-			$data['Header'] = HeaderRequest::
-				  leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
-				->leftjoin('condition_type', 'header_request.conditions', '=', 'condition_type.id')
-				->leftjoin('cms_users as employees', 'header_request.employee_name', '=', 'employees.id')
-				->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
-				->leftjoin('departments', 'header_request.department', '=', 'departments.id')
-				->leftjoin('positions', 'header_request.position', '=', 'positions.id')
-				->leftjoin('locations', 'employees.location_id', '=', 'locations.id')
-				->leftjoin('cms_users as requested', 'header_request.created_by','=', 'requested.id')
-				->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
-				->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
-				->leftjoin('cms_users as processed', 'header_request.purchased2_by','=', 'processed.id')
-				->leftjoin('cms_users as picked', 'header_request.picked_by','=', 'picked.id')
-				->leftjoin('cms_users as received', 'header_request.received_by','=', 'received.id')
-				->leftjoin('cms_users as closed', 'header_request.closed_by','=', 'closed.id')
-				->select(
-						'header_request.*',
-						'header_request.id as requestid',
-						'header_request.created_at as created',
-						'request_type.*',
-						'condition_type.*',
-						'requested.name as requestedby',
-						'employees.bill_to as employee_name',
-						'header_request.employee_name as header_emp_name',
-						'header_request.created_by as header_created_by',
-						//'employees.company_name_id as company_name',
-						'departments.department_name as department',
-						//'positions.position_description as position',
-						//'locations.store_name as store_branch',
-						'approved.name as approvedby',
-						'recommended.name as recommendedby',
-						'picked.name as pickedby',
-						'received.name as receivedby',
-						'processed.name as processedby',
-						'closed.name as closedby',
-						'header_request.created_at as created_at'
-						)
-				->where('header_request.id', $id)->first();
-
+			$data['Header'] = HeaderRequest::header($id);
 			$data['Body'] = BodyRequest::
 				select(
 				  'body_request.*'
@@ -1126,42 +1052,9 @@
 				CRUDBooster::redirect(CRUDBooster::adminPath(),trans("crudbooster.denied_access"));
 			}  
 
-
 			$data = array();
-
 			$data['page_title'] = 'List of Request';
-
-			$data['Header'] = HeaderRequest::
-				  leftjoin('request_type', 'header_request.purpose', '=', 'request_type.id')
-				->leftjoin('condition_type', 'header_request.conditions', '=', 'condition_type.id')
-				->leftjoin('cms_users as employees', 'header_request.employee_name', '=', 'employees.id')
-				->leftjoin('companies', 'header_request.company_name', '=', 'companies.id')
-				->leftjoin('departments', 'header_request.department', '=', 'departments.id')
-				->leftjoin('positions', 'header_request.position', '=', 'positions.id')
-				->leftjoin('locations', 'employees.location_id', '=', 'locations.id')
-				->leftjoin('cms_users as requested', 'header_request.created_by','=', 'requested.id')
-				->leftjoin('cms_users as approved', 'header_request.approved_by','=', 'approved.id')
-				->leftjoin('cms_users as recommended', 'header_request.recommended_by','=', 'recommended.id')
-				->select(
-						'header_request.*',
-						'header_request.id as requestid',
-						'header_request.created_at as created',
-						'request_type.*',
-						'condition_type.*',
-						'requested.name as requestedby',
-						'employees.bill_to as employee_name',
-						'header_request.employee_name as header_emp_name',
-						'header_request.created_by as header_created_by',
-						//'employees.company_name_id as company_name',
-						'departments.department_name as department',
-						//'positions.position_description as position',
-						'locations.store_name as store_branch',
-						'approved.name as approvedby',
-						'recommended.name as recommendedby',
-						'header_request.created_at as created_at'
-						)
-				->where('header_request.id', $id)->first();
-
+			$data['Header'] = HeaderRequest::header($id);
 			$data['Body'] = BodyRequest::
 				select(
 				  'body_request.*'
