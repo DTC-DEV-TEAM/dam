@@ -721,11 +721,11 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 		$postdata['user_name'] = $postdata['last_name'].''.substr($postdata['first_name'], 0, 1);
 		$postdata['bill_to'] = $postdata['last_name'].', '.$postdata['first_name'];
 		
-        if($postdata['id_cms_privileges'] == 3){
+        if(in_array($postdata['id_cms_privileges'], [3,18,20,26])){
 			$postdata['approver_id'] = $postdata['approver_id_manager'];
 			$postdata['approver_id_manager'] = $postdata['approver_id_manager'];
 			$postdata['approver_id_executive'] = NULL;
-		}else if($postdata['id_cms_privileges'] == 11){
+		}else if(in_array($postdata['id_cms_privileges'], [11,14,24])){
 			$postdata['approver_id'] = $postdata['approver_id_executive'];
 			$postdata['approver_id_manager'] = NULL;
 			$postdata['approver_id_executive'] = $postdata['approver_id_executive'];
@@ -807,11 +807,11 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 			$currentApprover = DB::table('cms_users')->where('email',$postdata['email'])->first();
 
 			if($postdata['approver_id'] || $postdata['approver_id_manager'] || $postdata['approver_id_executive']){
-				if($postdata['id_cms_privileges'] == 3){
+				if(in_array($postdata['id_cms_privileges'], [3,18,20,26])){
 					$postdata['approver_id'] = $postdata['approver_id_manager'];
 					$postdata['approver_id_manager'] = $postdata['approver_id_manager'];
 					$postdata['approver_id_executive'] = NULL;
-				}else if($postdata['id_cms_privileges'] == 11){
+				}else if(in_array($postdata['id_cms_privileges'], [11,14,24])){
 					$postdata['approver_id'] = $postdata['approver_id_executive'];
 					$postdata['approver_id_manager'] = NULL;
 					$postdata['approver_id_executive'] = $postdata['approver_id_executive'];
