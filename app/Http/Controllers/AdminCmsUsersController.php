@@ -143,7 +143,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 		}elseif(CRUDBooster::isSuperadmin()) {
 
 			$this->form[] = array("label"=>"Privilege","name"=>"id_cms_privileges","required"=>true,"type"=>"select2","datatable"=>"cms_privileges,name", 'width'=>'col-sm-5');	
-			$this->form[] = array('label'=>'Approver','name'=>'approver_id','type'=>'select2','datatable'=>'cms_users,name','datatable_where'=>"id_cms_privileges in (3,11,12,14,15,16,17,18,20,24)",'width'=>'col-sm-5');
+			$this->form[] = array('label'=>'Approver','name'=>'approver_id','type'=>'select2','datatable'=>'cms_users,name','datatable_where'=>"id_cms_privileges in (3,11,12,14,15,16,17,18,20,24,26)",'width'=>'col-sm-5');
 			$this->form[] = array('label'=>'Approver','name'=>'approver_id_manager','type'=>'select2','datatable'=>'cms_users,name','datatable_where'=>"id_cms_privileges in (11,12,14,15,24)",'width'=>'col-sm-5', 'class'=>'approver_one');
 			//$this->form[] = array('label'=>'Approver','name'=>'approver_id_executive','type'=>'select2','datatable'=>'cms_users,name','datatable_where'=>"id_cms_privileges = '12'",'width'=>'col-sm-5');
 			$this->form[] = array("label"=>"Location","name"=>"location_id","type"=>"select2","datatable"=>"locations,store_name", 'datatable_where'=>"store_status = 'ACTIVE'",'width'=>'col-sm-5');
@@ -301,7 +301,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 					// 	$('#location_to_pick').removeAttr('required');
 
 					// }
-					else if($(this).val() == 3){
+					else if($(this).val() == 3 || $(this).val() == 18 || $(this).val() == 20 || $(this).val() == 26){
 						$('#form-group-approver_id_manager').show();
 						$('#approver_id_manager').attr('required', 'required');
 
@@ -447,7 +447,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 					// 	$('#location_to_pick').removeAttr('required');
 
 					// }
-					else if($(this).val() == 3){
+					else if($(this).val() == 3  || $(this).val() == 18 || $(this).val() == 20 || $(this).val() == 26){
 						$('#form-group-approver_id_manager').show();
 						$('#approver_id_manager').attr('required', 'required');
 
@@ -576,7 +576,7 @@ class AdminCmsUsersController extends \crocodicstudio\crudbooster\controllers\CB
 				// 	$('#location_to_pick').removeAttr('required');
 
 				// }
-				else if($('#id_cms_privileges').val() == 3){
+				else if($('#id_cms_privileges').val() == 3 || $('#id_cms_privileges').val() == 18 || $('#id_cms_privileges').val() == 20 || $('#id_cms_privileges').val() == 26){
 					$('#form-group-approver_id_manager').show();
 					$('#approver_id_manager').attr('required', 'required');
 
