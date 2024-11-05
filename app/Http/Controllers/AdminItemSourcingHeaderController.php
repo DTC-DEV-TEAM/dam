@@ -342,15 +342,13 @@
 	    |
 	    */
 	    public function hook_query_index(&$query) {
+			$res = $query->select('item_sourcing_header.*')->get();
+			$user = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
 			if(CRUDBooster::isSuperadmin()){
 				$query->whereNull('item_sourcing_header.deleted_at')
 					  ->orderBy('item_sourcing_header.status_id', 'ASC')
 					  ->orderBy('item_sourcing_header.id', 'DESC');
-
 			}else if(CRUDBooster::myPrivilegeId() == 8){
-				$res = $query->select('item_sourcing_header.*')->get();
-				$user = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-    
 				$query->where(function($sub_query){
 					$sub_query->where('item_sourcing_header.created_by', CRUDBooster::myId())
 							->whereNull('item_sourcing_header.deleted_at')
@@ -361,9 +359,6 @@
 				$query->orderBy('item_sourcing_header.status_id', 'ASC')->orderBy('item_sourcing_header.id', 'DESC');
 					
 			}else{
-				$res = $query->select('item_sourcing_header.*')->get();
-				$user = DB::table('cms_users')->where('id', CRUDBooster::myId())->first();
-    
 				$query->where(function($sub_query){
 					$sub_query->where('item_sourcing_header.created_by','LIKE','%'.CRUDBooster::myId().'%')
 							->whereNull('item_sourcing_header.deleted_at')
@@ -372,8 +367,6 @@
 							
 				});
 				$query->orderBy('item_sourcing_header.status_id', 'ASC')->orderBy('item_sourcing_header.id', 'DESC');
-					
-				//$query->orderByRaw('FIELD( item_sourcing_header.status_id, "For Approval")');
 			}
 	            
 	    }

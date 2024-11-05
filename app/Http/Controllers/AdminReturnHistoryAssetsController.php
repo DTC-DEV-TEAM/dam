@@ -261,7 +261,7 @@
 				
 				$query->where('return_transfer_assets_header.requested_by', CRUDBooster::myId())->whereNull('return_transfer_assets_header.archived')->orderBy('return_transfer_assets_header.status', 'asc')->orderBy('return_transfer_assets_header.id', 'DESC');
 			
-			}else if(in_array(CRUDBooster::myPrivilegeId(), [3, 11, 12, 14])){ 
+			}else if(in_array(CRUDBooster::myPrivilegeId(), [3,11,12,14,15,17,18,20,24,26])){ 
 
 				$approvalMatrix = Users::where('cms_users.approver_id', CRUDBooster::myId())->get();
 				
