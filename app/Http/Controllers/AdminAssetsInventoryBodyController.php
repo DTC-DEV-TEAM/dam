@@ -162,7 +162,7 @@
 	        $this->index_button = array();
 			if(CRUDBooster::getCurrentMethod() == 'getIndex'){
 			    $this->index_button[] = ["label"=>"Export Data","icon"=>"fa fa-upload","url"=>CRUDBooster::mainpath('asset-lists-export'),"color"=>"primary"];
-				if(in_array(CRUDBooster::myPrivilegeId(),[1,25])){
+				if(in_array(CRUDBooster::myPrivilegeId(),[1,25,26])){
 					$this->index_button[] = ["title"=>"Upload Inventory","label"=>"Upload Inventory","icon"=>"fa fa-download","url"=>CRUDBooster::mainpath('inventory-upload')];
 				}
 				if(CRUDBooster::isSuperadmin()){
